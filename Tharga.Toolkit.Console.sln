@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Toolkit.Console", "Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj", "{B8BD1635-042F-4EB3-8018-5CEB7302C31B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{2B08D378-9CE9-497A-96FB-BA17B13B5789}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleConsole", "Samples\SampleConsole\SampleConsole.csproj", "{49F7E0AC-7856-415A-B760-300A37BC9889}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Toolkit.Console.Tests", "Tharga.Toolkit.Console.Tests\Tharga.Toolkit.Console.Tests.csproj", "{A397CA7F-616B-43F9-8AEF-60C6ADA59270}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49F7E0AC-7856-415A-B760-300A37BC9889}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49F7E0AC-7856-415A-B760-300A37BC9889}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49F7E0AC-7856-415A-B760-300A37BC9889}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49F7E0AC-7856-415A-B760-300A37BC9889}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A397CA7F-616B-43F9-8AEF-60C6ADA59270}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A397CA7F-616B-43F9-8AEF-60C6ADA59270}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A397CA7F-616B-43F9-8AEF-60C6ADA59270}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A397CA7F-616B-43F9-8AEF-60C6ADA59270}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{49F7E0AC-7856-415A-B760-300A37BC9889} = {2B08D378-9CE9-497A-96FB-BA17B13B5789}
+	EndGlobalSection
+EndGlobal
