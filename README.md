@@ -1,4 +1,4 @@
-tharga-console
+Tharga Console
 ==============
 
 Tharga Toolkit Console is used to simplify construction of advanced console applications.
@@ -26,3 +26,7 @@ There are some features I would like to add but did not yet prioritize.
 A main goal would be to have better test coverage.
 
 Please feel free to contribute if you have other ideas of how the project can be improved.
+
+License
+------
+Tharga Console goes under The MIT License (MIT).
