@@ -11,7 +11,7 @@ namespace SampleConsole
     {
         static void Main(string[] args)
         {
-            var command = new RootCommand();
+            var command = new RootCommand(new VoiceConsole());
             command.RegisterCommand(new SomeContainerCommand());
             new CommandEngine(command).Run(args);
         }
@@ -32,7 +32,6 @@ namespace SampleConsole
         public SomeItemCommand()
             : base("item", "Gets a single item")
         {
-
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -56,7 +55,6 @@ namespace SampleConsole
         public SomeListCommand() 
             : base("list", "Lists some information")
         {
-
         }
 
         public override async Task<bool> InvokeAsync(string paramList)

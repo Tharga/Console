@@ -11,7 +11,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         public string HelpText { get; set; }
 
         protected ActionCommandBase(string name, string description)
-            : this(new ClientConsole(), name, description, null)
+            : this(null, name, description, null)
         {
         }
 
@@ -20,10 +20,21 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
         }
 
-        internal ActionCommandBase(IConsole console, string name, string description, string helpText)
+        internal ActionCommandBase(IConsole console, string[] names, string description)
+            : this(console, names, description, null)
+        {
+        }
+
+        private ActionCommandBase(IConsole console, string name, string description, string helpText)
             : base(console, name, description)
         {
             HelpText = helpText ?? string.Format("There is no detailed help for command {0}.", name);
+        }
+
+        private ActionCommandBase(IConsole console, string[] names, string description, string helpText)
+            : base(console, names, description)
+        {
+            HelpText = helpText ?? string.Format("There is no detailed help for command {0}.", names[0]);
         }
 
         protected override CommandBase GetHelpCommand()

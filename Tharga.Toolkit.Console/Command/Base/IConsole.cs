@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
@@ -19,5 +20,6 @@ namespace Tharga.Toolkit.Console.Command.Base
         void SetCursorPosition(int left, int top);
         void Write(string message, object[] args);
         void Clear();
+        void Initiate(IEnumerable<string> commandKeys);
     }
 }

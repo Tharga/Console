@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected readonly List<CommandBase> SubCommands = new List<CommandBase>();
 
         protected ContainerCommandBase(string name)
-            : base(new ClientConsole(), name, string.Format("Command that manages {0}.", name))
+            : base(null, name, string.Format("Command that manages {0}.", name))
         {
         }
 
@@ -21,13 +21,44 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
         }
 
+        protected virtual IEnumerable<string> CommandKeys
+        {
+            get
+            {
+                foreach (var sub in SubCommands)
+                {
+                    foreach (var name in sub.Names)
+                    {
+                        if (this is RootCommand)
+                            yield return "help";
+
+                        yield return name;
+
+                        var subContainer = sub as ContainerCommandBase;
+                        if (subContainer == null) continue;
+                        yield return name + " help";
+                        var commandKeys = subContainer.CommandKeys;
+                        foreach (var key in commandKeys)
+                            yield return name + " " + key;
+                    }
+                }
+            }
+        }
+
         public ContainerCommandBase RegisterCommand(CommandBase command)
         {
-            if (GetCommand(command.Name) != null)
+            if (command.Names.Any(x => GetCommand(x) != null))
                 throw new CommandAlreadyRegisteredException(command.Name, Name);
-            SubCommands.Add(command);
 
+            SubCommands.Add(command);
+            command.CommandRegistered(_console);
             return this;
+        }
+
+        public override void CommandRegistered(IConsole console)
+        {
+            base.CommandRegistered(console);
+            SubCommands.ForEach(x => x.CommandRegistered(_console));
         }
 
         public void UnregisterCommand(string commandName)
@@ -77,7 +108,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             var name = arr[0].ToLower();
 
             //Look for a command registered in current list
-            var command = SubCommands.FirstOrDefault(x => string.Compare(x.Name, name, StringComparison.InvariantCultureIgnoreCase) == 0);
+            var command = SubCommands.FirstOrDefault(y => y.Names.Any(x => string.Compare(x, name, StringComparison.InvariantCultureIgnoreCase) == 0));
             if (command == null) return null;
 
             if (!(command is ContainerCommandBase))

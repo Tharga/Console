@@ -40,6 +40,8 @@ namespace Tharga.Toolkit.Console
 
             var commandIndex = 0;
 
+            _rootCommand.Initiate();
+
             while (_running)
             {
                 var entry = _commandMode ? GetCommandModeEntry(commands, ref commandIndex, flags) : _rootCommand.QueryParam<string>("> ");

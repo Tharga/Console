@@ -6,7 +6,7 @@ namespace Tharga.Toolkit.Console.Command
     class ClearCommand : ActionCommandBase
     {
         internal ClearCommand(IConsole console)
-            : base(console, "cls", "Clears the display")
+            : base(console, new []{ "cls", "clear"}, "Clears the display")
         {
         }
 

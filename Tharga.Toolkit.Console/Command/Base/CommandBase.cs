@@ -10,25 +10,34 @@ namespace Tharga.Toolkit.Console.Command.Base
     {
         private readonly static object SyncRoot = new object();
 
-        protected readonly IConsole _console;
+        protected IConsole _console;
 
-        private readonly string _name;
         private readonly string _description;
         protected HelpCommand HelpCommand;
+        private readonly string[] _names;
 
-        public string Name { get { return _name; } }
+        public string Name { get { return _names[0]; } }
+        public IEnumerable<string> Names { get { return _names; } }
         public string Description { get { return _description; } }
         
         internal CommandBase(IConsole console, string name, string description = null)
         {
-            _console = console ?? new ClientConsole();
-            _name = name.ToLower();
+            _console = console;
+            _names = new []{ name.ToLower()};
+            _description = description;
+        }
+
+        internal CommandBase(IConsole console, IEnumerable<string> names, string description = null)
+        {
+            _console = console;
+            _names = names.Select(x => x.ToLower()).ToArray();
             _description = description;
         }
 
         public abstract Task<bool> InvokeAsync(string paramList);
         protected abstract CommandBase GetHelpCommand();
         public abstract bool CanExecute();
+
         protected virtual string GetCanExecuteFaileMessage()
         {
             return string.Format("You cannot execute this {0} command.", Name);
@@ -134,7 +143,6 @@ namespace Tharga.Toolkit.Console.Command.Base
                         var q2 = GetParamByString(input, selection);
                         if (q2 != null)
                             return q2.Value.Key;
-                        //return (T) Convert.ChangeType(input, typeof (T));
                         return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(input);
                     }
                     return selection[tabIndex].Key;
@@ -202,93 +210,6 @@ namespace Tharga.Toolkit.Console.Command.Base
                     return item;
             }
             return null;
-        }
-
-        private string QueryParam(string paramName, string autoProvideValue) //, Func<List<KeyValuePair<string, string>>> selectionDelegate)
-        {
-            if (!string.IsNullOrEmpty(autoProvideValue))
-            {
-                //NOTE: Check if the ecco flag is set, if so, ecco the entry back to the user
-                //OutputLine(string.Format("{0}{1}", paramName, autoProvideValue), null, false);
-
-                return autoProvideValue;
-            }
-
-            //Output(string.Format("{0} [TAB]: ", paramName), null, false);
-            Output(string.Format("{0}: ", paramName), null, false);
-
-            var left = _console.CursorLeft;
-            var tabIndex = -1;
-            var input = string.Empty;
-            List<KeyValuePair<string, string>> selection = null;
-
-            while (true)
-            {
-                var key = _console.ReadKey();
-
-                if (key.Key == ConsoleKey.Enter)
-                {
-                    _console.NewLine();
-                    return tabIndex == -1 || selection == null ? input : selection[tabIndex].Key;
-                }
-                if (key.KeyChar >= 32 && key.KeyChar <= 126)
-                {
-                    input += key.KeyChar;  //NOTE: When changing the input, automatically exit tab mode (tabIndex = -1;)
-                    tabIndex = -1;
-                }
-                else
-                {
-                    //Take special action
-                    switch (key.Key)
-                    {
-                        case ConsoleKey.Backspace:
-                            if (_console.CursorLeft >= left)
-                            {
-                                input = input.Substring(0, input.Length - 1);
-                                tabIndex = -1;
-                                _console.Write(" ");
-                                _console.CursorLeft--;
-                            }
-                            else
-                                _console.CursorLeft++;
-                            break;
-                        //case ConsoleKey.Tab:
-                        //    if (selectionDelegate != null)
-                        //    {
-                        //        if (selection == null)
-                        //            selection = selectionDelegate.Invoke();
-
-                        //        if (!selection.Any())
-                        //        {
-                        //            System.Diagnostics.Debug.WriteLine("There are no selections.");
-                        //            _console.CursorLeft--;
-                        //            break;
-                        //        }
-
-                        //        if (tabIndex >= selection.Count() - 1)
-                        //            tabIndex = -1;
-
-                        //        var emptyString = new string(' ', _console.CursorLeft - left);
-                        //        _console.CursorLeft = left;
-                        //        _console.Write(emptyString);
-
-                        //        _console.CursorLeft = left;
-                        //        _console.Write(selection[++tabIndex].Value);
-                        //        input = selection[tabIndex].Value;
-                        //    }
-                        //    else
-                        //    {
-                        //        System.Diagnostics.Debug.WriteLine("There is no selection. Ignore the tab key.");
-                        //        _console.CursorLeft--;
-                        //    }
-                        //    break;
-                        default:
-                            System.Diagnostics.Debug.WriteLine(key);
-                            _console.CursorLeft--;
-                            break;
-                    }
-                }
-            }
         }
 
         public void OutputError(string message, params object[] args)
@@ -367,6 +288,11 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
 
             Output(message, null, true, null);
+        }
+
+        public virtual void CommandRegistered(IConsole console)
+        {
+            _console = console;            
         }
     }
 }

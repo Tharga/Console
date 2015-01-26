@@ -95,5 +95,12 @@ namespace Tharga.Toolkit.Console.Command.Base
 
             return success;
         }
+
+        public void Initiate()
+        {
+            _console.Initiate(CommandKeys);
+            //foreach(var c in CommandKeys)
+            //    System.Console.WriteLine(c);
+        }
     }
 }

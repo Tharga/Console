@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
@@ -32,8 +33,8 @@ namespace Tharga.Toolkit.Console.Command.Base
             set { System.Console.ForegroundColor = value; }
         }
 
-        public string ReadLine() { return System.Console.ReadLine(); }
-        public ConsoleKeyInfo ReadKey() { return System.Console.ReadKey(); }
+        public virtual string ReadLine() { return System.Console.ReadLine(); }
+        public virtual ConsoleKeyInfo ReadKey() { return System.Console.ReadKey(); }
         public void NewLine() { System.Console.WriteLine(); }
         public void Write(string value) { System.Console.Write(value); }
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
@@ -97,6 +98,10 @@ namespace Tharga.Toolkit.Console.Command.Base
         public void Clear()
         {
             System.Console.Clear();
-        }        
+        }
+
+        public virtual void Initiate(IEnumerable<string> commandKeys)
+        {
+        }
     }
 }
