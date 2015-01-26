@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Speech.Recognition;
+using System.Speech.Synthesis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,6 +54,19 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected override void WriteLine(string value)
         {
             System.Console.WriteLine(value);
+
+            //var builder = new PromptBuilder();
+            //builder.StartSentence();
+            //builder.AppendText(value);
+            //builder.EndSentence();
+
+            //using (var synthesizer = new SpeechSynthesizer())
+            //{
+            //    //synthesizer.SelectVoice("Microsoft David Desktop");
+            //    //synthesizer.SelectVoice("Microsoft Hazel Desktop");
+            //    synthesizer.SelectVoice("Microsoft Zira Desktop");
+            //    synthesizer.Speak(builder);
+            //}
         }
 
         void _mainSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)

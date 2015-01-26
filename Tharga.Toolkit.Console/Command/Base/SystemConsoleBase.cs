@@ -45,7 +45,6 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
             catch (ArgumentOutOfRangeException)
             {
-                
             }            
         }
 
