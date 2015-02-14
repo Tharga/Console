@@ -34,7 +34,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         #endregion
 
-        internal RootCommandBase(IConsole console, Action stopAction)
+        protected RootCommandBase(IConsole console, Action stopAction)
             : base(console, "root")
         {
             RegisterCommand(new ExitCommand(_console, stopAction));
