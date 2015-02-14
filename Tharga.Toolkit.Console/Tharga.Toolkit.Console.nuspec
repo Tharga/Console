@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>Tharga Console</title>
+    <authors>$author$</authors>
+    <description>Tharga Console is used to simplify construction of advanced console applications.</description>
+    <projectUrl>https://github.com/poxet/tharga-console</projectUrl>
+    <iconUrl>http://www.thargelion.se/Images/Logotype/Thargelion-White-Icon-48.png</iconUrl>
+    <language>en-US</language>
+    <tags>Console</tags>
+  </metadata>
+</package>
