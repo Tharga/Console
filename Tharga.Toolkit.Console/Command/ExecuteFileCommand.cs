@@ -34,8 +34,6 @@ namespace Tharga.Toolkit.Console.Command
                 if (!line.StartsWith("#"))
                 {
                     var success = _rootCommand.ExecuteCommand(line);
-                    System.Threading.Thread.Sleep(2000);
-
                     if (!success)
                     {
                         OutputError("Terminating command chain.");
