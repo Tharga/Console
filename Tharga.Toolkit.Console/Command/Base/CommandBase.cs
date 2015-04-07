@@ -262,10 +262,9 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                     if (line)
                     {
-                        _console.MoveBufferArea(0, _console.CursorTop, _console.BufferWidth, 1, 0, _console.CursorTop + 1);
-                        var cursorLeft = _console.CursorLeft;
-                        _console.CursorLeft = 0;
-                        
+                        MoveInputBufferDown();
+                        var cursorLeft = ResetCursor();
+
                         if (args == null)
                         {
                             _console.WriteLine(message);
@@ -275,7 +274,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                             _console.WriteLine(string.Format(message, args));
                         }
 
-                        _console.CursorLeft = cursorLeft;
+                        RestoreCursor(cursorLeft);
                     }
                     else
                     {
@@ -292,6 +291,41 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
+        private void RestoreCursor(int cursorLeft)
+        {
+            try
+            {
+                _console.CursorLeft = cursorLeft;
+            }
+            catch (System.IO.IOException)
+            {
+            }
+        }
+
+        private int ResetCursor()
+        {
+            try
+            {
+                var cursorLeft = _console.CursorLeft;
+                _console.CursorLeft = 0;
+                return cursorLeft;
+            }
+            catch (System.IO.IOException)
+            {
+                return 0;
+            }
+        }
+
+        private void MoveInputBufferDown()
+        {
+            try
+            {
+                _console.MoveBufferArea(0, _console.CursorTop, _console.BufferWidth, 1, 0, _console.CursorTop + 1);
+            }
+            catch (System.IO.IOException)
+            {
+            }
+        }
 
         #endregion
 
