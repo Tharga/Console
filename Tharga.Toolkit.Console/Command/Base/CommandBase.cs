@@ -261,17 +261,33 @@ namespace Tharga.Toolkit.Console.Command.Base
                     }
 
                     if (line)
+                    {
+                        _console.MoveBufferArea(0, _console.CursorTop, _console.BufferWidth, 1, 0, _console.CursorTop + 1);
+                        var cursorLeft = _console.CursorLeft;
+                        _console.CursorLeft = 0;
+                        
                         if (args == null)
+                        {
                             _console.WriteLine(message);
+                        }
                         else
+                        {
                             _console.WriteLine(string.Format(message, args));
+                        }
+
+                        _console.CursorLeft = cursorLeft;
+                    }
                     else
+                    {
                         _console.Write(message, args);
+                    }
                 }
                 finally
                 {
                     if (color != null)
+                    {
                         _console.ForegroundColor = defaultColor;
+                    }
                 }
             }
         }
