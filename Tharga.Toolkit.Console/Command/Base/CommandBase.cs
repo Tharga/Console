@@ -38,7 +38,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected abstract CommandBase GetHelpCommand();
         public abstract bool CanExecute();
 
-        protected virtual string GetCanExecuteFaileMessage()
+        protected virtual string GetCanExecuteFailMessage()
         {
             return string.Format("You cannot execute this {0} command.", Name);
         }
@@ -47,7 +47,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             if (!CanExecute())
             {
-                OutputWarning(GetCanExecuteFaileMessage());
+                OutputWarning(GetCanExecuteFailMessage());
                 return true;
             }
 
