@@ -11,6 +11,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         int BufferWidth { get; set; }
         int CursorTop { get; set; }
         ConsoleColor ForegroundColor { get; set; }
+        ConsoleColor BackgroundColor { get; set; }
         string ReadLine();
         ConsoleKeyInfo ReadKey();
         void NewLine();

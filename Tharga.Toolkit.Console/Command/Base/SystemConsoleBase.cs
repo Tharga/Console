@@ -33,6 +33,12 @@ namespace Tharga.Toolkit.Console.Command.Base
             set { System.Console.ForegroundColor = value; }
         }
 
+        public ConsoleColor BackgroundColor
+        {
+            get { return System.Console.BackgroundColor; }
+            set { System.Console.BackgroundColor = value; }
+        }
+
         public virtual string ReadLine() { return System.Console.ReadLine(); }
         public virtual ConsoleKeyInfo ReadKey() { return System.Console.ReadKey(); }
         public void NewLine() { System.Console.WriteLine(); }
