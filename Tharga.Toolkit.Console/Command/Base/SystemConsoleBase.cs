@@ -63,6 +63,9 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             lock (SyncRoot)
             {
+                MoveInputBufferDown();
+                var cursorLeft = ResetCursor();
+
                 var preColor = System.Console.ForegroundColor;
                 try
                 {
@@ -90,8 +93,45 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
                 finally
                 {
+                    RestoreCursor(cursorLeft);
                     System.Console.ForegroundColor = preColor;
                 }
+            }
+        }
+
+        private void RestoreCursor(int cursorLeft)
+        {
+            try
+            {
+                CursorLeft = cursorLeft;
+            }
+            catch (System.IO.IOException)
+            {
+            }
+        }
+
+        private int ResetCursor()
+        {
+            try
+            {
+                var cursorLeft = CursorLeft;
+                CursorLeft = 0;
+                return cursorLeft;
+            }
+            catch (System.IO.IOException)
+            {
+                return 0;
+            }
+        }
+
+        private void MoveInputBufferDown()
+        {
+            try
+            {
+                MoveBufferArea(0, CursorTop, BufferWidth, 1, 0, CursorTop + 1);
+            }
+            catch (System.IO.IOException)
+            {
             }
         }
 
