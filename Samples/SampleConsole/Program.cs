@@ -61,7 +61,7 @@ namespace SampleConsole
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "BB"),
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "CCC"),
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "D"),
-                new KeyValuePair<Guid, string>(Guid.NewGuid(), "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "EEEEE"),
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "F"),
             };
         }
@@ -77,7 +77,7 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var id = QueryParam<Guid>("Some Huge Id", GetParam(paramList, index), HugeKeyNameList);
+            var id = QueryParam<Guid>("Some Huge Id", GetParam(paramList, index++), HugeKeyNameList);
 
             OutputInformation("Some data for {0}", id);
 
@@ -91,8 +91,9 @@ namespace SampleConsole
                 new KeyValuePair<Guid, string>(Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"),
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"),
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "CCCCCCCCCC"),
-                new KeyValuePair<Guid, string>(Guid.NewGuid(), "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"),
-                new KeyValuePair<Guid, string>(Guid.NewGuid(), "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "EEEEEEEEEEEEEEEEEEEE"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "FFFFFFFFFF"),
             };
         }
     }
@@ -135,7 +136,8 @@ namespace SampleConsole
         private void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var rng = new Random();
-            var output = new string('X', rng.Next(30, 200));
+            //var output = new string('X', rng.Next(30, 200));
+            var output = new string('X', rng.Next(3, 20));
 
             switch (rng.Next(3))
             {

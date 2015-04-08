@@ -72,8 +72,11 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             lock (SyncRoot)
             {
-                var lineCount = GetLineCount(value);
-                var cursorLeft = MoveInputBufferDown(lineCount);
+                var linesToInsert = GetLineCount(value);
+                var inputBufferLines = InputManager.CurrentBufferLineCount;
+                var intCursorLineOffset = InputManager.CursorLineOffset;
+                CursorTop = CursorTop - intCursorLineOffset;
+                var cursorLeft = MoveInputBufferDown(linesToInsert, inputBufferLines);
 
                 var preColor = System.Console.ForegroundColor;
                 try
@@ -104,7 +107,8 @@ namespace Tharga.Toolkit.Console.Command.Base
                 {
                     RestoreCursor(cursorLeft);
                     System.Console.ForegroundColor = preColor;
-                    InvokeLinesInsertedEvent(lineCount);
+                    InvokeLinesInsertedEvent(linesToInsert);
+                    CursorTop = CursorTop + intCursorLineOffset;
                 }
             }
         }
@@ -132,11 +136,11 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        private int MoveInputBufferDown(int lines)
+        private int MoveInputBufferDown(int linesToInsert, int inputBufferLines)
         {
             try
             {
-                MoveBufferArea(0, CursorTop, BufferWidth, 1, 0, CursorTop + lines);
+                MoveBufferArea(0, CursorTop, BufferWidth, inputBufferLines, 0, CursorTop + linesToInsert);
                 var cursorLeft = CursorLeft;
                 CursorLeft = 0;
                 return cursorLeft;
