@@ -47,10 +47,12 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Speech" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -87,16 +89,6 @@
     <Compile Include="Command\HelpCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Command\RootCommand.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MongoDB\Local\Tharga.Toolkit.LocalStorage\Tharga.Toolkit.LocalStorage.csproj">
-      <Project>{3387E4B5-CE13-4D7C-9975-12C51ED9092E}</Project>
-      <Name>Tharga.Toolkit.LocalStorage</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MongoDB\Tharga.Toolkit.Storage\Tharga.Toolkit.Storage.csproj">
-      <Project>{F9699C87-C488-492D-8F84-01E41EDD9759}</Project>
-      <Name>Tharga.Toolkit.Storage</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

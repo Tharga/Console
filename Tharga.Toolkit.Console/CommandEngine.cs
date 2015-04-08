@@ -8,6 +8,8 @@ using Tharga.Toolkit.Console.Command.Base;
 
 namespace Tharga.Toolkit.Console
 {
+    using System.Threading;
+
     public class CommandEngine
     {
         private bool _running = true;
@@ -45,8 +47,7 @@ namespace Tharga.Toolkit.Console
             while (_running)
             {
                 var entry = _commandMode ? GetCommandModeEntry(commands, ref commandIndex, flags) : _rootCommand.QueryParam<string>("> ");
-                if (!ExecuteCommand(entry))
-                    break;
+                if (!ExecuteCommand(entry)) break;
             }
         }
 

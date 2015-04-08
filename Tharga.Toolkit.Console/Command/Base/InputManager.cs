@@ -2,6 +2,8 @@ using System;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
+    using System.Threading;
+
     internal class InputManager
     {
         private readonly CommandBase _commandBase;
@@ -32,94 +34,121 @@ namespace Tharga.Toolkit.Console.Command.Base
 
             while (true)
             {
-                var currentScreenLocation = new Location(_console.CursorLeft, _console.CursorTop);
-                var currentBufferPosition = (currentScreenLocation.Top - startLocation.Top) * _console.BufferWidth + currentScreenLocation.Left - startLocation.Left;
-
-                var readKey = this._console.ReadKey(true);
-
-                if (readKey.KeyChar >= 32 && readKey.KeyChar <= 126)
+                try
                 {
-                    var charInput = readKey.KeyChar;
-                    if (_console.CursorLeft < inputBuffer.Length + startLocation.Left)
+                    var currentScreenLocation = new Location(_console.CursorLeft, _console.CursorTop);
+                    var currentBufferPosition = (currentScreenLocation.Top - startLocation.Top) * _console.BufferWidth + currentScreenLocation.Left - startLocation.Left;
+
+                    var readKey = _console.ReadKey(true);
+
+                    if (readKey.KeyChar >= 32 && readKey.KeyChar <= 126 || readKey.Key == ConsoleKey.Oem5)
                     {
-                        //Push the end of the line forward.
-                        _console.MoveBufferArea(
-                            currentScreenLocation.Left,
-                            currentScreenLocation.Top,
-                            _console.BufferWidth - currentScreenLocation.Left,
-                            1,
-                            currentScreenLocation.Left + 1,
-                            currentScreenLocation.Top);
+                        var input = readKey.KeyChar.ToString();
+                        InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition);
                     }
-                    _console.Write(charInput.ToString());
-                    inputBuffer.Insert(currentBufferPosition, charInput);
+                    else if (readKey.Modifiers == ConsoleModifiers.Control)
+                    {
+                        switch (readKey.Key)
+                        {
+                            case ConsoleKey.V:
+                                //TODO: Invoke this on the correct thread.
+                                var input = System.Windows.Clipboard.GetText();
+                                InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition);
+                                break;
+
+                            default:
+                                throw new ArgumentOutOfRangeException(
+                                    "Ctrl feature not handled for " + readKey.Key + " (" + readKey.KeyChar + ").");
+                        }
+                    }
+                    else
+                    {
+                        switch (readKey.Key)
+                        {
+                            case ConsoleKey.Enter:
+                                _console.NewLine();
+                                return inputBuffer.ToString();
+
+                            case ConsoleKey.LeftArrow:
+                                if (currentBufferPosition == 0) continue;
+                                MoveCursorLeft();
+                                break;
+
+                            case ConsoleKey.RightArrow:
+                                if (currentBufferPosition == inputBuffer.Length) continue;
+                                MoveCursorRight();
+                                break;
+
+                            case ConsoleKey.Home:
+                                MoveToStart(startLocation);
+                                break;
+
+                            case ConsoleKey.End:
+                                MoveToEnd(startLocation, inputBuffer);
+                                break;
+
+                            case ConsoleKey.DownArrow:
+                            case ConsoleKey.UpArrow:
+                                //TODO: If in prompt mode, toggle between previous commands
+                                break;
+
+                            case ConsoleKey.Delete:
+                                if (currentBufferPosition == inputBuffer.Length) continue;
+                                MoveBufferLeft(
+                                    new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top),
+                                    inputBuffer,
+                                    startLocation);
+                                inputBuffer.RemoveAt(currentBufferPosition);
+                                break;
+
+                            case ConsoleKey.Backspace:
+                                if (currentBufferPosition == 0) continue;
+                                MoveBufferLeft(currentScreenLocation, inputBuffer, startLocation);
+                                inputBuffer.RemoveAt(currentBufferPosition - 1);
+                                MoveCursorLeft();
+                                break;
+
+                            case ConsoleKey.Escape:
+                                if (inputBuffer.IsEmpty)
+                                {
+                                    //TODO: If within a command, break the entire command, exiting the command with 'false'. (Perhaps just throw)
+                                    continue;
+                                }
+                                MoveToStart(startLocation);
+                                _console.Write(new string(' ', inputBuffer.Length));
+                                MoveToStart(startLocation);
+                                inputBuffer.Clear();
+                                break;
+
+                            case ConsoleKey.PageUp:
+                            case ConsoleKey.PageDown:
+                            case ConsoleKey.LeftWindows:
+                            case ConsoleKey.RightWindows:
+                            case ConsoleKey.Applications:
+                            case ConsoleKey.Insert:
+                                //Ignore
+                                break;
+
+                            default:
+                                throw new ArgumentOutOfRangeException(
+                                    "Key " + readKey.Key + " is not handled (" + readKey.KeyChar + ").");
+                        }
+                    }
                 }
-                else
+                catch (Exception exception)
                 {
-                    switch (readKey.Key)
-                    {
-                        case ConsoleKey.Enter:
-                            _console.NewLine();
-                            return inputBuffer.ToString();
-
-                        case ConsoleKey.LeftArrow:
-                            if (currentBufferPosition == 0) continue;
-                            MoveCursorLeft();
-                            break;
-
-                        case ConsoleKey.RightArrow:
-                            if (currentBufferPosition == inputBuffer.Length) continue;
-                            MoveCursorRight();
-                            break;
-
-                        case ConsoleKey.Home:
-                            MoveToStart(startLocation);
-                            break;
-
-                        case ConsoleKey.End:
-                            MoveToEnd(startLocation, inputBuffer);
-                            break;
-
-                        case ConsoleKey.PageUp:
-                        case ConsoleKey.PageDown:
-                            //Ignore
-                            break;
-
-                        case ConsoleKey.DownArrow:
-                        case ConsoleKey.UpArrow:
-                            //TODO: If in prompt mode, toggle between previous commands
-                            break;
-
-                        case ConsoleKey.Delete:
-                            if (currentBufferPosition == inputBuffer.Length) continue;
-                            MoveBufferLeft(new Location(currentScreenLocation.Left+1, currentScreenLocation.Top), inputBuffer, startLocation);
-                            inputBuffer.RemoveAt(currentBufferPosition);
-                            break;
-
-                        case ConsoleKey.Backspace:
-                            if (currentBufferPosition == 0) continue;
-                            MoveBufferLeft(currentScreenLocation, inputBuffer, startLocation);
-                            inputBuffer.RemoveAt(currentBufferPosition - 1);
-                            MoveCursorLeft();
-                            break;
-
-                        case ConsoleKey.Escape:
-                            if (inputBuffer.IsEmpty)
-                            {
-                                //TODO: If within a command, break the entire command, exiting the command with 'false'. (Perhaps just throw)
-                                continue;
-                            }
-                            MoveToStart(startLocation);
-                            _console.Write(new string(' ', inputBuffer.Length));
-                            MoveToStart(startLocation);
-                            inputBuffer.Clear();
-                            break;
-
-                        default:
-                            throw new ArgumentOutOfRangeException("Key " + readKey.Key + " is not handled.");
-                    }
+                    var lines = (int)Math.Ceiling((decimal)exception.Message.Length / _console.BufferWidth);
+                    startLocation = new Location(startLocation.Left, startLocation.Top + lines);
+                    _commandBase.OutputError(exception.Message);
                 }
             }
+        }
+
+        private void InsertText(Location currentScreenLocation, string input, InputBuffer inputBuffer, int currentBufferPosition)
+        {
+            _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, _console.BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + input.Length, currentScreenLocation.Top);
+            _console.Write(input);
+            inputBuffer.Insert(currentBufferPosition, input);
         }
 
         private void MoveBufferLeft(Location currentScreenLocation, InputBuffer inputBuffer, Location startLocation)

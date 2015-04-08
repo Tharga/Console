@@ -15,9 +15,12 @@ namespace Tharga.Toolkit.Console.Command.Base
             return this._inputBuffer.LastOrDefault();
         }
 
-        public void Insert(int index, char keyChar)
+        public void Insert(int index, string input)
         {
-            this._inputBuffer.Insert(index, keyChar);
+            foreach (var chr in input.ToCharArray())
+            {
+                _inputBuffer.Insert(index++, chr);
+            }
         }
 
         public void RemoveAt(int index)
