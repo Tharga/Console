@@ -64,10 +64,8 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             lock (SyncRoot)
             {
-                //TODO: Push down as many lines needed, not just one.
                 var lines = (int)Math.Ceiling((decimal)value.Length / BufferWidth);
-                MoveInputBufferDown(lines);
-                var cursorLeft = ResetCursor();
+                var cursorLeft = MoveInputBufferDown(lines);
 
                 var preColor = System.Console.ForegroundColor;
                 try
@@ -113,10 +111,11 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        private int ResetCursor()
+        private int MoveInputBufferDown(int lines)
         {
             try
             {
+                MoveBufferArea(0, CursorTop, BufferWidth, 1, 0, CursorTop + lines);
                 var cursorLeft = CursorLeft;
                 CursorLeft = 0;
                 return cursorLeft;
@@ -124,17 +123,6 @@ namespace Tharga.Toolkit.Console.Command.Base
             catch (System.IO.IOException)
             {
                 return 0;
-            }
-        }
-
-        private void MoveInputBufferDown(int lines)
-        {
-            try
-            {
-                MoveBufferArea(0, CursorTop, BufferWidth, 1, 0, CursorTop + lines);
-            }
-            catch (System.IO.IOException)
-            {
             }
         }
 

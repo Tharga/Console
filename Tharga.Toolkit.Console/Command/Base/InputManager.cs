@@ -44,7 +44,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     if (readKey.KeyChar >= 32 && readKey.KeyChar <= 126 || readKey.Key == ConsoleKey.Oem5)
                     {
                         var input = readKey.KeyChar.ToString();
-                        InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition);
+                        InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition, startLocation);
                     }
                     else if (readKey.Modifiers == ConsoleModifiers.Control)
                     {
@@ -53,7 +53,12 @@ namespace Tharga.Toolkit.Console.Command.Base
                             case ConsoleKey.V:
                                 //TODO: Invoke this on the correct thread.
                                 var input = System.Windows.Clipboard.GetText();
-                                InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition);
+                                InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition, startLocation);
+                                break;
+
+                            case ConsoleKey.LeftArrow:
+                                //TODO:
+                                System.Diagnostics.Debug.WriteLine("Jump back to previous whitespace");
                                 break;
 
                             default:
@@ -144,8 +149,21 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        private void InsertText(Location currentScreenLocation, string input, InputBuffer inputBuffer, int currentBufferPosition)
+        private void InsertText(Location currentScreenLocation, string input, InputBuffer inputBuffer, int currentBufferPosition, Location startLocation)
         {
+            //Check if the text to the right is on more than one line
+            var charsToTheRight = inputBuffer.Length - currentBufferPosition;
+            var bufferToTheRight = _console.BufferWidth - currentScreenLocation.Left - startLocation.Left + 1;            
+            if (charsToTheRight > bufferToTheRight)
+            {
+                var lines = (int)Math.Ceiling((decimal)(inputBuffer.Length - _console.BufferWidth + startLocation.Left + 1) / _console.BufferWidth);
+                for (var i = lines; i > 0; i--)
+                {
+                    _console.MoveBufferArea(0, currentScreenLocation.Top + i - 1 + 1, _console.BufferWidth - input.Length, 1, input.Length, currentScreenLocation.Top + i - 1 + 1);
+                    _console.MoveBufferArea(_console.BufferWidth - 1, currentScreenLocation.Top + i - 1, input.Length, 1, 0, currentScreenLocation.Top + i - 1 + 1);
+                }
+            }
+
             _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, _console.BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + input.Length, currentScreenLocation.Top);
             _console.Write(input);
             inputBuffer.Insert(currentBufferPosition, input);
