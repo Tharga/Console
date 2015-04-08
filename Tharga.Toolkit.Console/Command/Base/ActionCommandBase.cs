@@ -41,10 +41,11 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             if (HelpCommand == null)
             {
-                HelpCommand = new HelpCommand(_console);
+                HelpCommand = new HelpCommand(Console);
                 HelpCommand.AddLine(string.Format("Help for command {0}. {1}", Name, Description));
                 HelpCommand.AddLine(HelpText, CanExecute);
             }
+
             return HelpCommand;
         }
 
@@ -65,14 +66,13 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         protected void AssignVariables(object entity, string paramList)
         {
-            if (paramList == null || !paramList.Contains(">"))
-                return;
+            if (paramList == null || !paramList.Contains(">")) return;
 
-            var variablePart = paramList.Substring(paramList.IndexOf(">") + 1);
+            var variablePart = paramList.Substring(paramList.IndexOf(">", StringComparison.Ordinal) + 1);
             var variablePairs = variablePart.Split(',');
             foreach (var variablePair in variablePairs)
             {
-                var pair = variablePair.Replace(" ", "").Split('=');
+                var pair = variablePair.Replace(" ", string.Empty).Split('=');
                 var variable = new Variable(pair[0]);
                 var entitySource = pair[1];
 
@@ -81,6 +81,6 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                 VariableStore.Instance.Add(variable);
             }
-        } 
+        }
     }
 }

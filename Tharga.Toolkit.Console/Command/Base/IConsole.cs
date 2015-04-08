@@ -23,5 +23,6 @@ namespace Tharga.Toolkit.Console.Command.Base
         void Write(string message, object[] args);
         void Clear();
         void Initiate(IEnumerable<string> commandKeys);
+        event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
     }
 }

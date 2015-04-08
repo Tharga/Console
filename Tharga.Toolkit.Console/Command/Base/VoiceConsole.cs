@@ -12,24 +12,24 @@ namespace Tharga.Toolkit.Console.Command.Base
     public class VoiceConsole : SystemConsoleBase
     {
         [DllImport("User32.Dll", EntryPoint = "PostMessageA")]
-        private static extern bool PostMessage(IntPtr hWnd, uint msg, int wParam, int lParam);
+        private static extern bool PostMessage(IntPtr hwnd, uint msg, int wparam, int lparam);
 
-        const int VK_RETURN = 0x0D;
-        const int WM_KEYDOWN = 0x100;
+        private const int Retrun = 0x0D;
+        private const int Keydown = 0x100;
 
         private enum InputMethod
         {
             Unknown,
             Keyboard,
             Voice
-        };
+        }
 
         private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
         private readonly SpeechRecognitionEngine _mainSpeechRecognitionEngine = new SpeechRecognitionEngine();
         private readonly SpeechRecognitionEngine _subSpeechRecognitionEngine = new SpeechRecognitionEngine();
         private string _input;
         private InputMethod _inputMethod;
-        private bool _reading = false;
+        private bool _reading;
         private ConsoleKeyInfo _keyInput;
 
         public override void Initiate(IEnumerable<string> commandKeys)
@@ -43,7 +43,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             _mainSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
 
             var subChoices = new Choices();
-            subChoices.Add(new[] {"tab", "enter"});
+            subChoices.Add(new[] { "tab", "enter" });
             var subGr = new Grammar(new GrammarBuilder(subChoices));
             _subSpeechRecognitionEngine.RequestRecognizerUpdate();
             _subSpeechRecognitionEngine.LoadGrammar(subGr);
@@ -69,7 +69,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             //}
         }
 
-        void _mainSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        private void _mainSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             if (_reading)
             {
@@ -80,22 +80,22 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        void _subSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        private void _subSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             if (_reading)
             {
                 _inputMethod = InputMethod.Voice;
                 _input = e.Result.Text;
 
-                var hWnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+                var hwnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
 
                 switch (_input)
                 {
-                    case"tab":
-                        PostMessage(hWnd, WM_KEYDOWN, 9, 0);
+                    case "tab":
+                        PostMessage(hwnd, Keydown, 9, 0);
                         break;
                     case "enter":
-                        PostMessage(hWnd, WM_KEYDOWN, 13, 0);
+                        PostMessage(hwnd, Keydown, 13, 0);
                         break;
                 }
             }
@@ -124,8 +124,8 @@ namespace Tharga.Toolkit.Console.Command.Base
 
             if (_inputMethod == InputMethod.Voice)
             {
-                var hWnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
-                PostMessage(hWnd, WM_KEYDOWN, VK_RETURN, 0);
+                var hwnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+                PostMessage(hwnd, Keydown, Retrun, 0);
             }
 
             task.Wait();

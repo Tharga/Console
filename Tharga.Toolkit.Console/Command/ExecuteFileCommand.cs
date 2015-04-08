@@ -3,7 +3,7 @@ using Tharga.Toolkit.Console.Command.Base;
 
 namespace Tharga.Toolkit.Console.Command
 {
-    class ExecuteFileCommand : ActionCommandBase
+    internal class ExecuteFileCommand : ActionCommandBase
     {
         private readonly RootCommandBase _rootCommand;
 

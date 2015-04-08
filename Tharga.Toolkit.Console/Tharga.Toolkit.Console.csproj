@@ -71,6 +71,7 @@
     <Compile Include="Command\Base\ClientConsole.cs" />
     <Compile Include="Command\Base\InputBuffer.cs" />
     <Compile Include="Command\Base\InputManager.cs" />
+    <Compile Include="Command\Base\LinesInsertedEventArgs.cs" />
     <Compile Include="Command\Base\Location.cs" />
     <Compile Include="Command\Base\ServerConsole.cs" />
     <Compile Include="Command\Base\SystemConsoleBase.cs" />

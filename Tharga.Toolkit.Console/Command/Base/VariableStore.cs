@@ -5,16 +5,14 @@ using System.Linq;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    class VariableStore
+    internal class VariableStore
     {
+        private static readonly Lazy<VariableStore> InstanceLoader = new Lazy<VariableStore>(() => new VariableStore());
         private readonly List<Variable> _variables = new List<Variable>();
-
-        private readonly static Lazy<VariableStore> _instanceLoader = new Lazy<VariableStore>(() => new VariableStore());
-        public static VariableStore Instance { get { return _instanceLoader.Value; } }
+        public static VariableStore Instance { get { return InstanceLoader.Value; } }
 
         private VariableStore()
         {
-            
         }
 
         public void Add(Variable variable)

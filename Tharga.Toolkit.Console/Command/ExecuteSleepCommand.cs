@@ -3,7 +3,7 @@ using Tharga.Toolkit.Console.Command.Base;
 
 namespace Tharga.Toolkit.Console.Command
 {
-    class ExecuteSleepCommand : ActionCommandBase
+    internal class ExecuteSleepCommand : ActionCommandBase
     {
         internal ExecuteSleepCommand(IConsole console)
             : base(console, "sleep", "Sleep a number of milliseconds")

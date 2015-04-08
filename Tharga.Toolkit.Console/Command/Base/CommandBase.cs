@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,19 +8,12 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     public abstract class CommandBase
     {
-        private readonly static object SyncRoot = new object();
-
-        //private const int TabSize = 6;
-
-        protected IConsole _console;
+        private static readonly object SyncRoot = new object();
 
         private readonly string _description;
-        protected HelpCommand HelpCommand;
         private readonly string[] _names;
-
-        //private string _inputBuffer;
-        private int _tabSize;
-
+        private IConsole _console;
+        protected HelpCommand HelpCommand { get; set; }
         public string Name { get { return _names[0]; } }
         public IEnumerable<string> Names { get { return _names; } }
         public string Description { get { return _description; } }
@@ -30,7 +22,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         internal CommandBase(IConsole console, string name, string description = null)
         {
             _console = console;
-            _names = new []{ name.ToLower()};
+            _names = new[] { name.ToLower() };
             _description = description;
         }
 
@@ -69,14 +61,10 @@ namespace Tharga.Toolkit.Console.Command.Base
             var verbs = GetDelimiteredVerbs(ref paramList, '\"');
 
             var paramArray = paramList.Split(' ');
-            if (paramArray.Length <= index)
-                return null;
+            if (paramArray.Length <= index) return null;
 
             //Put the grouped verbs back in to the original
-            if (verbs.Count > 0)
-                for (var i = 0; i < paramArray.Length; i++)
-                    if (verbs.ContainsKey(paramArray[i]))
-                        paramArray[i] = verbs[paramArray[i]];
+            if (verbs.Count > 0) for (var i = 0; i < paramArray.Length; i++) if (verbs.ContainsKey(paramArray[i])) paramArray[i] = verbs[paramArray[i]];
 
             return paramArray[index];
         }
@@ -101,8 +89,6 @@ namespace Tharga.Toolkit.Console.Command.Base
             return verbs;
         }
 
-        #region IO
-
         internal T QueryParam<T>(string paramName, string autoProvideValue = null, string defaultValue = null)
         {
             var value = QueryParam(paramName, autoProvideValue, defaultValue);
@@ -112,11 +98,9 @@ namespace Tharga.Toolkit.Console.Command.Base
         //TODO: If this works, move the code to the function above.
         private string QueryParam(string paramName, string autoProvideValue, string defaultValue)
         {
-            if (!string.IsNullOrEmpty(autoProvideValue))
-                return autoProvideValue;
+            if (!string.IsNullOrEmpty(autoProvideValue)) return autoProvideValue;
 
-            if (!string.IsNullOrEmpty(defaultValue))
-                return QueryParam(paramName, null, () => new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) });
+            if (!string.IsNullOrEmpty(defaultValue)) return QueryParam(paramName, null, () => new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) });
             return QueryParam(paramName, null, (Func<List<KeyValuePair<string, string>>>)null);
 
             ////TODO: Remember the location of the input here.
@@ -128,23 +112,9 @@ namespace Tharga.Toolkit.Console.Command.Base
             //return read;
         }
 
-        //private string InputBuffer
-        //{
-        //    get
-        //    {
-        //        return _inputBuffer;
-        //    }
-        //    set
-        //    {
-        //        _inputBuffer = value;
-        //        //Debug.WriteLine("Input buffer changed: " + _inputBuffer);
-        //    }
-        //}        
-
         protected T QueryParam<T>(string paramName, string autoProvideValue, Func<List<KeyValuePair<T, string>>> selectionDelegate)
         {
-            if (selectionDelegate != null)
-                throw new NotSupportedException("Enter data with [TAB] alternatives is not yet supported.");
+            if (selectionDelegate != null) throw new NotSupportedException("Enter data with [TAB] alternatives is not yet supported.");
 
             var inputManager = new InputManager(this, paramName);
             var response = inputManager.ReadLine();
@@ -280,13 +250,12 @@ namespace Tharga.Toolkit.Console.Command.Base
             if (!string.IsNullOrEmpty(autoProvideValue))
             {
                 var item = selection.SingleOrDefault(x => string.Compare(x.Value, autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (item.Value == autoProvideValue)
-                    return item;
+                if (item.Value == autoProvideValue) return item;
 
                 item = selection.SingleOrDefault(x => string.Compare(x.Key.ToString(), autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (item.Key.ToString() == autoProvideValue)
-                    return item;
+                if (item.Key.ToString() == autoProvideValue) return item;
             }
+
             return null;
         }
 
@@ -317,6 +286,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     _console.MoveBufferArea(0, _console.CursorTop, cursorLeft, 1, 0, _console.CursorTop + lines);
                     _console.SetCursorPosition(0, _console.CursorTop);
                 }
+
                 Output(message, ConsoleColor.Yellow, true, args);
                 if (cursorLeft != 0)
                 {
@@ -364,9 +334,6 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-
-        #endregion
-
         internal void OutputInformationLine(string message, bool commandMode)
         {
             if (commandMode)
@@ -380,7 +347,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public virtual void CommandRegistered(IConsole console)
         {
-            _console = console;            
+            _console = console;
         }
     }
 }

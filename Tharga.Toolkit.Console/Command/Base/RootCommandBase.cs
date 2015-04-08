@@ -5,9 +5,6 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     public abstract class RootCommandBase : ContainerCommandBase
     {
-        #region Event
-
-
         public class ExceptionOccuredEventArgs : EventArgs
         {
             private readonly Exception _exception;
@@ -31,15 +28,12 @@ namespace Tharga.Toolkit.Console.Command.Base
             if (handler != null) handler(this, e);
         }
 
-
-        #endregion
-
         protected RootCommandBase(IConsole console, Action stopAction)
             : base(console, "root")
         {
-            RegisterCommand(new ExitCommand(_console, stopAction));
-            RegisterCommand(new ClearCommand(_console));
-            RegisterCommand(new ExecuteCommand(_console, this));
+            RegisterCommand(new ExitCommand(Console, stopAction));
+            RegisterCommand(new ClearCommand(Console));
+            RegisterCommand(new ExecuteCommand(Console, this));
         }
 
         protected internal virtual void SetStopAction(Action stopAction)
@@ -98,9 +92,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void Initiate()
         {
-            _console.Initiate(CommandKeys);
-            //foreach(var c in CommandKeys)
-            //    System.Console.WriteLine(c);
+            Console.Initiate(CommandKeys);
         }
     }
 }

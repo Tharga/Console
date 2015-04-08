@@ -5,6 +5,14 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     public abstract class SystemConsoleBase : IConsole
     {
+        public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
+
+        protected virtual void InvokeLinesInsertedEvent(int lineCount)
+        {
+            var handler = LinesInsertedEvent;
+            if (handler != null) handler(this, new LinesInsertedEventArgs(lineCount));
+        }
+
         protected abstract void WriteLine(string value);
 
         private static readonly object SyncRoot = new object();
@@ -64,8 +72,8 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             lock (SyncRoot)
             {
-                var lines = (int)Math.Ceiling((decimal)value.Length / BufferWidth);
-                var cursorLeft = MoveInputBufferDown(lines);
+                var lineCount = GetLineCount(value);
+                var cursorLeft = MoveInputBufferDown(lineCount);
 
                 var preColor = System.Console.ForegroundColor;
                 try
@@ -96,7 +104,20 @@ namespace Tharga.Toolkit.Console.Command.Base
                 {
                     RestoreCursor(cursorLeft);
                     System.Console.ForegroundColor = preColor;
+                    InvokeLinesInsertedEvent(lineCount);
                 }
+            }
+        }
+
+        private int GetLineCount(string value)
+        {
+            try
+            {
+                return (int)Math.Ceiling((decimal)value.Length / BufferWidth);
+            }
+            catch (System.IO.IOException)
+            {
+                return 0;
             }
         }
 

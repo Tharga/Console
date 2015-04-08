@@ -4,7 +4,7 @@ using Tharga.Toolkit.Console.Command.Base;
 
 namespace Tharga.Toolkit.Console.Command
 {
-    class ExitCommand : ActionCommandBase
+    internal class ExitCommand : ActionCommandBase
     {
         private Action _stopAction;
 
