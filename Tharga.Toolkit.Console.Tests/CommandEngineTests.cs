@@ -20,4 +20,21 @@ namespace Tharga.Toolkit.Console.Tests
             Assert.True(true);
         }
     }
+
+    [TestFixture]
+    public class TextInputTests
+    {
+        [Test]
+        public void When_()
+        {
+            //Arrange
+            //var consoleMock = Mock<
+            //var inputManager = new InputManager(consoleMock, null, "> ");
+
+            //Act
+
+
+            //Assert
+        }
+    }
 }

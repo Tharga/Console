@@ -67,9 +67,11 @@
     <Compile Include="Command\Base\CommandBase.cs" />
     <Compile Include="Command\Base\ContainerCommandBase.cs" />
     <Compile Include="CommandEngine.cs" />
+    <Compile Include="Command\Base\ICommandBase.cs" />
     <Compile Include="Command\Base\IConsole.cs" />
     <Compile Include="Command\Base\ClientConsole.cs" />
     <Compile Include="Command\Base\InputBuffer.cs" />
+    <Compile Include="Command\Base\InputBufferChangedEventArgs.cs" />
     <Compile Include="Command\Base\InputManager.cs" />
     <Compile Include="Command\Base\LinesInsertedEventArgs.cs" />
     <Compile Include="Command\Base\Location.cs" />

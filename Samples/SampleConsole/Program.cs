@@ -53,7 +53,15 @@ namespace SampleConsole
 
         private List<KeyValuePair<Guid, string>> KeyNameList()
         {
-            return new List<KeyValuePair<Guid, string>>() { new KeyValuePair<Guid, string>(Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A"), new KeyValuePair<Guid, string>(Guid.NewGuid(), "B") };
+            return new List<KeyValuePair<Guid, string>>
+            {
+                new KeyValuePair<Guid, string>(Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "BB"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "CCC"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "D"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "F"),
+            };
         }
     }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public abstract class CommandBase
+    public abstract class CommandBase : ICommandBase
     {
         private static readonly object SyncRoot = new object();
 
@@ -98,151 +98,35 @@ namespace Tharga.Toolkit.Console.Command.Base
         //TODO: If this works, move the code to the function above.
         private string QueryParam(string paramName, string autoProvideValue, string defaultValue)
         {
-            if (!string.IsNullOrEmpty(autoProvideValue)) return autoProvideValue;
+            if (!string.IsNullOrEmpty(autoProvideValue))
+            {
+                return autoProvideValue;
+            }
 
-            if (!string.IsNullOrEmpty(defaultValue)) return QueryParam(paramName, null, () => new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) });
-            return QueryParam(paramName, null, (Func<List<KeyValuePair<string, string>>>)null);
-
-            ////TODO: Remember the location of the input here.
-            //Output(string.Format("{0}{1}", paramName, paramName.Length > 2 ? ": " : string.Empty), null, false);
-            //RememberInputPosition();
-
-            //var read = _console.ReadLine();
-            //Debug.WriteLine(string.Format("Read: {0}", read));
-            //return read;
+            if (!string.IsNullOrEmpty(defaultValue))
+            {
+                return QueryParam(paramName, null, () => new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) });
+            }
+            else
+                return QueryParam(paramName, null, (Func<List<KeyValuePair<string, string>>>)null);
         }
 
         protected T QueryParam<T>(string paramName, string autoProvideValue, Func<List<KeyValuePair<T, string>>> selectionDelegate)
         {
-            if (selectionDelegate != null) throw new NotSupportedException("Enter data with [TAB] alternatives is not yet supported.");
+            var selection = new List<KeyValuePair<T, string>>();
+            if (selectionDelegate != null)
+            {
+                selection = selectionDelegate.Invoke();
+                var q = GetParamByString(autoProvideValue, selection);
+                if (q != null)
+                {
+                    return q.Value.Key;
+                }
+            }
 
-            var inputManager = new InputManager(this, paramName);
-            var response = inputManager.ReadLine();
-            var result = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(response);
-            return result;
-
-            ////Show prompt
-            //var prompt = string.Format("{0}{1}", paramName, paramName.Length > 2 ? ": " : string.Empty);
-            //if (selectionDelegate != null)
-            //    prompt = string.Format("{0} [TAB]: ", paramName);
-            //Output(prompt, null, false);
-
-            ////Execute function with alternatives
-            //List<KeyValuePair<T, string>> selection = new List<KeyValuePair<T, string>>();
-            //if (selectionDelegate != null)
-            //{
-            //    selection = selectionDelegate.Invoke();
-
-            //    var q = GetParamByString(autoProvideValue, selection);
-            //    if (q != null) return q.Value.Key;
-            //}
-
-            //var startLocation = new Location(_console.CursorLeft, _console.CursorTop);
-
-            //var tabIndex = -1;
-            //InputBuffer = string.Empty;
-
-            //while (true)
-            //{
-            //    var lastLocation = new Location(_console.CursorLeft, _console.CursorTop);
-
-            //    var key = _console.ReadKey();
-
-            //    if (key.Key == ConsoleKey.Enter)
-            //    {
-            //        _console.NewLine();
-            //        if (selectionDelegate == null)
-            //        {
-            //            var result = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(InputBuffer);
-            //            return result;
-            //        }
-
-            //        if (tabIndex == -1 || selection == null)
-            //        {
-            //            var q2 = GetParamByString(InputBuffer, selection);
-            //            if (q2 != null)
-            //                return q2.Value.Key;
-            //            return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(InputBuffer);
-            //        }
-
-            //        return selection[tabIndex].Key;
-            //    }
-            //    if (key.KeyChar >= 32 && key.KeyChar <= 126)
-            //    {
-            //        InputBuffer += key.KeyChar; //NOTE: When changing the input, automatically exit tab mode (tabIndex = -1;)
-            //        tabIndex = -1;
-            //    }
-            //    else
-            //    {
-            //        //Take special action
-            //        switch (key.Key)
-            //        {
-            //            case ConsoleKey.Backspace:
-
-            //                if (_console.CursorLeft >= startLocation.Left)
-            //                {
-            //                    var charToBeRemoved = InputBuffer.Substring(InputBuffer.Length - 1).ToCharArray()[0];
-
-            //                    InputBuffer = InputBuffer.Substring(0, InputBuffer.Length - 1);
-
-            //                    //If this is a special char, the console might react differently.
-            //                    switch (charToBeRemoved)
-            //                    {
-            //                        case (char)9: //Tab
-
-            //                            //_console.Write(" ");
-            //                            _console.CursorLeft = _console.CursorLeft - TabSize + 1;
-            //                            break;
-
-            //                        default:
-            //                            _console.Write(" ");
-            //                            _console.CursorLeft--;
-
-            //                            break;
-            //                    }
-
-            //                    tabIndex = -1;
-            //                }
-            //                else
-            //                    _console.CursorLeft++;
-            //                break;
-
-            //            case ConsoleKey.Tab:
-
-            //                if (!selection.Any())
-            //                {
-            //                    _console.CursorLeft = lastLocation.Left + TabSize;
-            //                    InputBuffer += key.KeyChar;
-            //                    break;
-            //                }
-
-            //                if (tabIndex >= selection.Count() - 1)
-            //                    tabIndex = -1;
-
-            //                var emptyString = new string(' ', _console.CursorLeft - startLocation.Left);
-            //                _console.CursorLeft = startLocation.Left;
-            //                _console.Write(emptyString);
-
-            //                _console.CursorLeft = startLocation.Left;
-            //                _console.Write(selection[++tabIndex].Value);
-            //                InputBuffer = selection[tabIndex].Value;
-            //                break;
-
-            //            case ConsoleKey.Escape:
-
-            //                Debug.WriteLine("Escape resets the input");
-            //                //TODO: Remove the entire input and move the cursor back to input position
-            //                //TODO: Reset the tab index to start over
-            //                break;
-
-            //            default:
-
-            //                Debug.WriteLine("No support for key: " + key);
-            //                _console.CursorLeft--;
-            //                break;
-            //        }
-            //    }
-            //}
+            var inputManager = new InputManager(_console, this, paramName);
+            var response = inputManager.ReadLine(selection.ToArray());
+            return response;
         }
 
         private static KeyValuePair<T, string>? GetParamByString<T>(string autoProvideValue, List<KeyValuePair<T, string>> selection)

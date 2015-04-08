@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,6 +6,14 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     internal class InputBuffer
     {
+        public event EventHandler<InputBufferChangedEventArgs> InputBufferChangedEvent;
+
+        protected virtual void InvokeInputBufferChangedEvent()
+        {
+            var handler = InputBufferChangedEvent;
+            if (handler != null) handler(this, new InputBufferChangedEventArgs());
+        }
+
         private readonly List<char> _inputBuffer = new List<char>();
 
         public int Length { get { return _inputBuffer.Count; } }
@@ -21,16 +30,30 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 _inputBuffer.Insert(index++, chr);
             }
+
+            InvokeInputBufferChangedEvent();
+        }
+
+        public void Add(string value)
+        {
+            foreach (var chr in value.ToCharArray())
+            {
+                _inputBuffer.Add(chr);
+            }
+
+            InvokeInputBufferChangedEvent();
         }
 
         public void RemoveAt(int index)
         {
             _inputBuffer.RemoveAt(index);
+            InvokeInputBufferChangedEvent();
         }
 
         public void Clear()
         {
             _inputBuffer.Clear();
+            InvokeInputBufferChangedEvent();
         }
 
         public override string ToString()

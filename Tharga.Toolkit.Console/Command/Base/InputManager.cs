@@ -1,20 +1,32 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
+    public class EntryException : Exception
+    {
+        public EntryException(string message)
+            : base(message)
+        {
+        }
+    }
+
     internal class InputManager
     {
-        private readonly CommandBase _commandBase;
+        private readonly ICommandBase _commandBase;
         private readonly string _paramName;
         private readonly IConsole _console;
 
         private Location _startLocation;
+        private int _tabIndex = -1;
 
-        public InputManager(CommandBase commandBase, string paramName)
+        public InputManager(IConsole console, ICommandBase commandBase, string paramName)
         {
             _commandBase = commandBase;
-            _console = _commandBase.Console;
+            _console = console;
             _console.LinesInsertedEvent += Console_LinesInsertedEvent;
             _paramName = paramName;
         }
@@ -32,7 +44,13 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public string ReadLine()
         {
+            return ReadLine(new KeyValuePair<string, string>[] { });
+        }
+
+        public T ReadLine<T>(KeyValuePair<T, string>[] selection)
+        {
             var inputBuffer = new InputBuffer();
+            inputBuffer.InputBufferChangedEvent += InputBuffer_InputBufferChangedEvent;
 
             _console.Write(string.Format("{0}{1}", _paramName, _paramName.Length > 2 ? ": " : string.Empty));
             _startLocation = new Location(_console.CursorLeft, _console.CursorTop);
@@ -48,18 +66,18 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                     if ((readKey.KeyChar >= 32 && readKey.KeyChar <= 126) || readKey.Key == ConsoleKey.Oem5)
                     {
-                        var input = readKey.KeyChar.ToString(CultureInfo.InvariantCulture);
+                        var input = readKey.KeyChar;
                         InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition, _startLocation);
                     }
                     else if (readKey.Modifiers == ConsoleModifiers.Control)
                     {
                         switch (readKey.Key)
                         {
-                            case ConsoleKey.V:
-                                //TODO: Invoke this on the correct thread.
-                                var input = System.Windows.Clipboard.GetText();
-                                InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition, _startLocation);
-                                break;
+                                //case ConsoleKey.V:
+                                //    //TODO: Invoke this on the correct thread.
+                                //    var input = System.Windows.Clipboard.GetText();
+                                //    InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition, _startLocation);
+                                //    break;
 
                             case ConsoleKey.LeftArrow:
                                 //TODO:
@@ -75,8 +93,8 @@ namespace Tharga.Toolkit.Console.Command.Base
                         switch (readKey.Key)
                         {
                             case ConsoleKey.Enter:
-                                _console.NewLine();
-                                return inputBuffer.ToString();
+                                var response = GetResponse(selection, inputBuffer);
+                                return response;
 
                             case ConsoleKey.LeftArrow:
                                 if (currentBufferPosition == 0) continue;
@@ -118,13 +136,28 @@ namespace Tharga.Toolkit.Console.Command.Base
                                 if (inputBuffer.IsEmpty)
                                 {
                                     //TODO: If within a command, break the entire command, exiting the command with 'false'. (Perhaps just throw)
+                                    //return default(T);
                                     continue;
                                 }
 
-                                MoveToStart(_startLocation);
-                                _console.Write(new string(' ', inputBuffer.Length));
-                                MoveToStart(_startLocation);
-                                inputBuffer.Clear();
+                                Clear<T>(inputBuffer);
+                                break;
+
+                            case ConsoleKey.Tab:
+                                if (selection.Any())
+                                {
+                                    var tabIndex = _tabIndex + 1;
+                                    if (tabIndex == selection.Length) tabIndex = 0;
+                                    Clear<T>(inputBuffer);
+                                    _console.Write(selection[tabIndex].Value);
+                                    inputBuffer.Add(selection[tabIndex].Value);
+                                    _tabIndex = tabIndex;
+                                }
+                                else
+                                {
+                                    InsertText(currentScreenLocation, (char)9, inputBuffer, currentBufferPosition, _startLocation);
+                                }
+
                                 break;
 
                             case ConsoleKey.PageUp:
@@ -133,15 +166,31 @@ namespace Tharga.Toolkit.Console.Command.Base
                             case ConsoleKey.RightWindows:
                             case ConsoleKey.Applications:
                             case ConsoleKey.Insert:
+                            case ConsoleKey.F1:
+                            case ConsoleKey.F2:
+                            case ConsoleKey.F3:
+                            case ConsoleKey.F4:
+                            case ConsoleKey.F5:
+                            case ConsoleKey.F6:
+                            case ConsoleKey.F7:
+                            case ConsoleKey.F8:
+                            case ConsoleKey.F9:
+                            case ConsoleKey.F10:
+                            case ConsoleKey.F11:
+                            case ConsoleKey.F12:
+                            case ConsoleKey.F13:
                                 //Ignore
                                 break;
 
                             default:
-                                throw new ArgumentOutOfRangeException(
-                                    "Key " + readKey.Key + " is not handled (" + readKey.KeyChar + ").");
+                                throw new ArgumentOutOfRangeException(string.Format("Key {0} is not handled ({1}).", readKey.Key, readKey.KeyChar));
                         }
                     }
                 }
+                //catch (EntryException exception)
+                //{
+                //    throw;
+                //}
                 catch (Exception exception)
                 {
                     _commandBase.OutputError(exception.Message);
@@ -149,7 +198,49 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        private void InsertText(Location currentScreenLocation, string input, InputBuffer inputBuffer, int currentBufferPosition, Location startLocation)
+        private void Clear<T>(InputBuffer inputBuffer)
+        {
+            MoveToStart(_startLocation);
+            _console.Write(new string(' ', inputBuffer.Length));
+            MoveToStart(_startLocation);
+            inputBuffer.Clear();
+        }
+
+        private T GetResponse<T>(KeyValuePair<T, string>[] selection, InputBuffer inputBuffer)
+        {
+            T response;
+            if (selection.Any())
+            {
+                if (_tabIndex != -1)
+                {
+                    _console.NewLine();
+                    response = selection[_tabIndex].Key;
+                }
+                else
+                {
+                    var items = selection.Where(x => x.Value == inputBuffer.ToString());
+                    if (!items.Any()) throw new EntryException("No item match the entry.");
+                    if (items.Count() > 1) throw new EntryException("There are several matches to the entry.");
+
+                    _console.NewLine();
+                    response = items.Single().Key;
+                }
+            }
+            else
+            {
+                response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
+                _console.NewLine();
+            }
+
+            return response;
+        }
+
+        private void InputBuffer_InputBufferChangedEvent(object sender, InputBufferChangedEventArgs e)
+        {
+            _tabIndex = -1;
+        }
+
+        private void InsertText(Location currentScreenLocation, char input, InputBuffer inputBuffer, int currentBufferPosition, Location startLocation)
         {
             //Check if the text to the right is on more than one line
             var charsToTheRight = inputBuffer.Length - currentBufferPosition;
@@ -159,14 +250,15 @@ namespace Tharga.Toolkit.Console.Command.Base
                 var lines = (int)Math.Ceiling((decimal)(inputBuffer.Length - _console.BufferWidth + startLocation.Left + 1) / _console.BufferWidth);
                 for (var i = lines; i > 0; i--)
                 {
-                    _console.MoveBufferArea(0, currentScreenLocation.Top + i - 1 + 1, _console.BufferWidth - input.Length, 1, input.Length, currentScreenLocation.Top + i - 1 + 1);
-                    _console.MoveBufferArea(_console.BufferWidth - 1, currentScreenLocation.Top + i - 1, input.Length, 1, 0, currentScreenLocation.Top + i - 1 + 1);
+                    _console.MoveBufferArea(0, currentScreenLocation.Top + i - 1 + 1, _console.BufferWidth - 1, 1, 1, currentScreenLocation.Top + i - 1 + 1);
+                    _console.MoveBufferArea(_console.BufferWidth - 1, currentScreenLocation.Top + i - 1, 1, 1, 0, currentScreenLocation.Top + i - 1 + 1);
                 }
             }
 
-            _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, _console.BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + input.Length, currentScreenLocation.Top);
-            _console.Write(input);
-            inputBuffer.Insert(currentBufferPosition, input);
+            _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, _console.BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + 1, currentScreenLocation.Top);
+            if (input == 9) _console.Write(((char)26).ToString(CultureInfo.InvariantCulture));
+            else _console.Write(input.ToString());
+            inputBuffer.Insert(currentBufferPosition, input.ToString());
         }
 
         private void MoveBufferLeft(Location currentScreenLocation, InputBuffer inputBuffer, Location startLocation)
