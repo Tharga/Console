@@ -41,6 +41,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public virtual string ReadLine() { return System.Console.ReadLine(); }
         public virtual ConsoleKeyInfo ReadKey() { return System.Console.ReadKey(); }
+        public virtual ConsoleKeyInfo ReadKey(bool intercept) { return System.Console.ReadKey(intercept); }
         public void NewLine() { System.Console.WriteLine(); }
         public void Write(string value) { System.Console.Write(value); }
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)

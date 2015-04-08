@@ -14,6 +14,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         ConsoleColor BackgroundColor { get; set; }
         string ReadLine();
         ConsoleKeyInfo ReadKey();
+        ConsoleKeyInfo ReadKey(bool intercept);        
         void NewLine();
         void Write(string value);
         void WriteLine(string value, OutputLevel level = OutputLevel.Default);
