@@ -30,6 +30,7 @@ namespace SampleConsole
         {
             RegisterCommand(new SomeListCommand());
             RegisterCommand(new SomeItemCommand());
+            RegisterCommand(new SomeHugeItemCommand());
         }
     }
 
@@ -53,6 +54,36 @@ namespace SampleConsole
         private List<KeyValuePair<Guid, string>> KeyNameList()
         {
             return new List<KeyValuePair<Guid, string>>() { new KeyValuePair<Guid, string>(Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A"), new KeyValuePair<Guid, string>(Guid.NewGuid(), "B") };
+        }
+    }
+
+    class SomeHugeItemCommand : ActionCommandBase
+    {
+        public SomeHugeItemCommand()
+            : base("huge", "Gets a single huge item")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            var index = 0;
+            var id = QueryParam<Guid>("Some Huge Id", GetParam(paramList, index), HugeKeyNameList);
+
+            OutputInformation("Some data for {0}", id);
+
+            return true;
+        }
+
+        private List<KeyValuePair<Guid, string>> HugeKeyNameList()
+        {
+            return new List<KeyValuePair<Guid, string>>
+                       {
+                           new KeyValuePair<Guid, string>(Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"),
+                           new KeyValuePair<Guid, string>(Guid.NewGuid(), "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"),
+                           new KeyValuePair<Guid, string>(Guid.NewGuid(), "CCCCCCCCCC"),
+                           new KeyValuePair<Guid, string>(Guid.NewGuid(), "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"),
+                           new KeyValuePair<Guid, string>(Guid.NewGuid(), "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"),
+                       };
         }
     }
 
