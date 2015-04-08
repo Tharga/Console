@@ -41,7 +41,7 @@ namespace Tharga.Toolkit.Console
 
             while (_running)
             {
-                var entry = _commandMode ? GetCommandModeEntry(commands, ref commandIndex, flags) : _rootCommand.QueryParam<string>("> ");
+                var entry = _commandMode ? GetCommandModeEntry(commands, ref commandIndex, flags) : _rootCommand.QueryRootParam();
                 if (!ExecuteCommand(entry)) break;
             }
         }

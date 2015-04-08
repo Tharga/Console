@@ -6,14 +6,6 @@ using System.Linq;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public class EntryException : Exception
-    {
-        public EntryException(string message)
-            : base(message)
-        {
-        }
-    }
-
     internal class InputManager
     {
         private readonly ICommandBase _commandBase;
@@ -36,18 +28,8 @@ namespace Tharga.Toolkit.Console.Command.Base
             _startLocation = new Location(_startLocation.Left, _startLocation.Top + e.LineCount);
         }
 
-        ////public string ReadLine()
-        ////{
-        ////    _commandBase.Output(string.Format("{0}{1}", _paramName, _paramName.Length > 2 ? ": " : string.Empty), null, false);
-        ////    return _commandBase.Console.ReadLine();
-        ////}
-
-        public string ReadLine()
-        {
-            return ReadLine(new KeyValuePair<string, string>[] { });
-        }
-
-        public T ReadLine<T>(KeyValuePair<T, string>[] selection)
+        //TODO: Test this function
+        public T ReadLine<T>(KeyValuePair<T, string>[] selection, bool allowEscape)
         {
             var inputBuffer = new InputBuffer();
             inputBuffer.InputBufferChangedEvent += InputBuffer_InputBufferChangedEvent;
@@ -133,14 +115,13 @@ namespace Tharga.Toolkit.Console.Command.Base
                                 break;
 
                             case ConsoleKey.Escape:
-                                if (inputBuffer.IsEmpty)
+                                if (inputBuffer.IsEmpty && allowEscape)
                                 {
-                                    //TODO: If within a command, break the entire command, exiting the command with 'false'. (Perhaps just throw)
-                                    //return default(T);
-                                    continue;
+                                    _console.NewLine();
+                                    throw new CommandEscapeException();
                                 }
 
-                                Clear<T>(inputBuffer);
+                                Clear(inputBuffer);
                                 break;
 
                             case ConsoleKey.Tab:
@@ -148,7 +129,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                                 {
                                     var tabIndex = _tabIndex + 1;
                                     if (tabIndex == selection.Length) tabIndex = 0;
-                                    Clear<T>(inputBuffer);
+                                    Clear(inputBuffer);
                                     _console.Write(selection[tabIndex].Value);
                                     inputBuffer.Add(selection[tabIndex].Value);
                                     _tabIndex = tabIndex;
@@ -187,10 +168,10 @@ namespace Tharga.Toolkit.Console.Command.Base
                         }
                     }
                 }
-                //catch (EntryException exception)
-                //{
-                //    throw;
-                //}
+                catch (CommandEscapeException)
+                {
+                    throw;
+                }
                 catch (Exception exception)
                 {
                     _commandBase.OutputError(exception.Message);
@@ -198,7 +179,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        private void Clear<T>(InputBuffer inputBuffer)
+        private void Clear(InputBuffer inputBuffer)
         {
             MoveToStart(_startLocation);
             _console.Write(new string(' ', inputBuffer.Length));
@@ -256,9 +237,16 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
 
             _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, _console.BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + 1, currentScreenLocation.Top);
-            if (input == 9) _console.Write(((char)26).ToString(CultureInfo.InvariantCulture));
-            else _console.Write(input.ToString());
-            inputBuffer.Insert(currentBufferPosition, input.ToString());
+            if (input == 9)
+            {
+                _console.Write(((char)26).ToString(CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                _console.Write(input.ToString());
+            }
+
+            inputBuffer.Insert(currentBufferPosition, input.ToString(CultureInfo.InvariantCulture));
         }
 
         private void MoveBufferLeft(Location currentScreenLocation, InputBuffer inputBuffer, Location startLocation)

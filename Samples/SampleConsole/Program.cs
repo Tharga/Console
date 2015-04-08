@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using Tharga.Toolkit.Console;
@@ -19,6 +20,7 @@ namespace SampleConsole
             var command = new RootCommand(console);
             command.RegisterCommand(new SomeContainerCommand());
             command.RegisterCommand(new EngineContainerCommand());
+            command.RegisterCommand(new MathContainerCommand());
             new CommandEngine(command).Run(args);
         }
     }
@@ -44,7 +46,7 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var id = QueryParam<Guid>("Some Id", GetParam(paramList, index), KeyNameList);
+            var id = QueryParam<Guid>("Some Id", GetParam(paramList, index++), KeyNameList);
 
             OutputInformation("Some data for {0}", id);
 
@@ -185,6 +187,62 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             _timer.Start();
+
+            return true;
+        }
+    }
+
+    public class MathContainerCommand : ContainerCommandBase
+    {
+        public MathContainerCommand()
+            : base("math")
+        {
+            RegisterCommand(new MathAddCommand());
+            RegisterCommand(new MathAddMultipleCommand());
+        }
+    }
+
+    public class MathAddCommand : ActionCommandBase
+    {
+        public MathAddCommand()
+            : base("add", "Adds two values together")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            var index = 0;
+            var val1 = QueryParam<int>("First value", GetParam(paramList, index++));
+            var val2 = QueryParam<int>("Second value", GetParam(paramList, index++));
+
+            OutputInformation("{0} + {1} = {2}", val1, val2, val1 + val2);
+
+            return true;
+        }
+    }
+
+    public class MathAddMultipleCommand : ActionCommandBase
+    {
+        public MathAddMultipleCommand()
+            : base("addm", "Adds multiple values together")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            var index = 0;
+            var vals = new List<int>();
+
+            OutputInformation("Enter multiple values to add. Enter nothing to calculate.");
+
+            while (true)
+            {
+                var val = QueryParam<int?>("Value", GetParam(paramList, index++));
+                if (val == null) break;
+                vals.Add(val.Value);
+            }
+
+            OutputInformation("{0}", vals.Sum());
 
             return true;
         }

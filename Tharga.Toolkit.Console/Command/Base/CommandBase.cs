@@ -50,7 +50,15 @@ namespace Tharga.Toolkit.Console.Command.Base
                 return true;
             }
 
-            return await InvokeAsync(paramList);
+            try
+            {
+                return await InvokeAsync(paramList);
+            }
+            catch (CommandEscapeException)
+            {
+                //TODO: This is used to exit an ongoing command. Is there another way, that does not use exceptions?
+                return false;
+            }
         }
 
         protected static string GetParam(string paramList, int index)
@@ -89,29 +97,41 @@ namespace Tharga.Toolkit.Console.Command.Base
             return verbs;
         }
 
-        internal T QueryParam<T>(string paramName, string autoProvideValue = null, string defaultValue = null)
+        internal string QueryRootParam()
         {
-            var value = QueryParam(paramName, autoProvideValue, defaultValue);
-            return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(value);
+            return QueryParam<string>("> ", null, null, false);
         }
 
-        //TODO: If this works, move the code to the function above.
-        private string QueryParam(string paramName, string autoProvideValue, string defaultValue)
+        protected T QueryParam<T>(string paramName, string autoProvideValue = null, string defaultValue = null)
         {
+            string value;
+
             if (!string.IsNullOrEmpty(autoProvideValue))
             {
-                return autoProvideValue;
-            }
-
-            if (!string.IsNullOrEmpty(defaultValue))
-            {
-                return QueryParam(paramName, null, () => new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) });
+                value = autoProvideValue;
             }
             else
-                return QueryParam(paramName, null, (Func<List<KeyValuePair<string, string>>>)null);
+            {
+                if (!string.IsNullOrEmpty(defaultValue))
+                {
+                    value = QueryParam(paramName, null, () => new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) });
+                }
+                else
+                {
+                    value = QueryParam(paramName, null, (Func<List<KeyValuePair<string, string>>>)null);
+                }
+            }
+
+            var response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(value);
+            return response;
         }
 
         protected T QueryParam<T>(string paramName, string autoProvideValue, Func<List<KeyValuePair<T, string>>> selectionDelegate)
+        {
+            return QueryParam<T>(paramName, autoProvideValue, selectionDelegate, true);
+        }
+
+        private T QueryParam<T>(string paramName, string autoProvideValue, Func<List<KeyValuePair<T, string>>> selectionDelegate, bool allowEscape)
         {
             var selection = new List<KeyValuePair<T, string>>();
             if (selectionDelegate != null)
@@ -125,7 +145,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
 
             var inputManager = new InputManager(_console, this, paramName);
-            var response = inputManager.ReadLine(selection.ToArray());
+            var response = inputManager.ReadLine(selection.ToArray(), allowEscape);
             return response;
         }
 
@@ -134,10 +154,18 @@ namespace Tharga.Toolkit.Console.Command.Base
             if (!string.IsNullOrEmpty(autoProvideValue))
             {
                 var item = selection.SingleOrDefault(x => string.Compare(x.Value, autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (item.Value == autoProvideValue) return item;
+                if (item.Value == autoProvideValue)
+                {
+                    return item;
+                }
 
                 item = selection.SingleOrDefault(x => string.Compare(x.Key.ToString(), autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (item.Key.ToString() == autoProvideValue) return item;
+                if (item.Key.ToString() == autoProvideValue)
+                {
+                    return item;
+                }
+
+                throw new InvalidOperationException("Cannot find provided value in selection.");
             }
 
             return null;
