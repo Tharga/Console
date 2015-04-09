@@ -74,8 +74,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 var linesToInsert = GetLineCount(value);
                 var inputBufferLines = InputManager.CurrentBufferLineCount;
-                var intCursorLineOffset = InputManager.CursorLineOffset;
-                CursorTop = CursorTop - intCursorLineOffset;
+                var intCursorLineOffset = MoveCursorUp();
                 var cursorLeft = MoveInputBufferDown(linesToInsert, inputBufferLines);
 
                 var preColor = System.Console.ForegroundColor;
@@ -108,8 +107,33 @@ namespace Tharga.Toolkit.Console.Command.Base
                     RestoreCursor(cursorLeft);
                     System.Console.ForegroundColor = preColor;
                     InvokeLinesInsertedEvent(linesToInsert);
-                    CursorTop = CursorTop + intCursorLineOffset;
+                    MoveCursorDown(intCursorLineOffset);
                 }
+            }
+        }
+
+        private void MoveCursorDown(int intCursorLineOffset)
+        {
+            try
+            {
+                CursorTop = CursorTop + intCursorLineOffset;
+            }
+            catch (System.IO.IOException)
+            {
+            }
+        }
+
+        private int MoveCursorUp()
+        {
+            try
+            {
+                var intCursorLineOffset = InputManager.CursorLineOffset;
+                CursorTop = CursorTop - intCursorLineOffset;
+                return intCursorLineOffset;
+            }
+            catch (System.IO.IOException)
+            {
+                return 0;
             }
         }
 
