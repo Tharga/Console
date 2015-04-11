@@ -12,6 +12,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         private readonly ICommandBase _commandBase;
         private readonly string _paramName;
         private readonly IConsole _console;
+        private static readonly List<string> _commandHistory = new List<string>();
 
         private Location _startLocation;
         private int _tabIndex = -1;
@@ -84,6 +85,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                         {
                             case ConsoleKey.Enter:
                                 var response = GetResponse(selection, inputBuffer);
+                                _commandHistory.Add(inputBuffer.ToString());
                                 return response;
 
                             case ConsoleKey.LeftArrow:
@@ -107,6 +109,12 @@ namespace Tharga.Toolkit.Console.Command.Base
                             case ConsoleKey.DownArrow:
                             case ConsoleKey.UpArrow:
                                 //TODO: If in prompt mode, toggle between previous commands
+                                if (_commandHistory.Any())
+                                {
+                                    Clear(inputBuffer);
+                                    _console.Write(_commandHistory.Last());
+                                    inputBuffer.Add(_commandHistory.Last());
+                                }
                                 break;
 
                             case ConsoleKey.Delete:
