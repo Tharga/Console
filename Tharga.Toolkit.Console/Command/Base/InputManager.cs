@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Input;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
@@ -12,8 +11,8 @@ namespace Tharga.Toolkit.Console.Command.Base
         private readonly ICommandBase _commandBase;
         private readonly string _paramName;
         private readonly IConsole _console;
-        private static readonly List<string> _commandHistory = new List<string>();
-
+        private static readonly Dictionary<string, List<string>> CommandHistory = new Dictionary<string, List<string>>();
+        private int _commandHistoryIndex = -1;
         private Location _startLocation;
         private int _tabIndex = -1;
 
@@ -85,7 +84,8 @@ namespace Tharga.Toolkit.Console.Command.Base
                         {
                             case ConsoleKey.Enter:
                                 var response = GetResponse(selection, inputBuffer);
-                                _commandHistory.Add(inputBuffer.ToString());
+                                if (!CommandHistory.ContainsKey(_paramName)) CommandHistory.Add(_paramName, new List<string>());
+                                CommandHistory[_paramName].Add(inputBuffer.ToString());
                                 return response;
 
                             case ConsoleKey.LeftArrow:
@@ -109,12 +109,28 @@ namespace Tharga.Toolkit.Console.Command.Base
                             case ConsoleKey.DownArrow:
                             case ConsoleKey.UpArrow:
                                 //TODO: If in prompt mode, toggle between previous commands
-                                if (_commandHistory.Any())
+                                if (CommandHistory.ContainsKey(_paramName))
                                 {
+                                    if (_commandHistoryIndex == -1)
+                                    {
+                                        _commandHistoryIndex = 0;
+                                    }
+                                    else if (readKey.Key == ConsoleKey.UpArrow)
+                                    {
+                                        _commandHistoryIndex++;
+                                        if (_commandHistoryIndex == CommandHistory[_paramName].Count) _commandHistoryIndex = 0;
+                                    }
+                                    else if (readKey.Key == ConsoleKey.DownArrow)
+                                    {
+                                        _commandHistoryIndex--;
+                                        if (_commandHistoryIndex < 0) _commandHistoryIndex = CommandHistory[_paramName].Count - 1;
+                                    }
+
                                     Clear(inputBuffer);
-                                    _console.Write(_commandHistory.Last());
-                                    inputBuffer.Add(_commandHistory.Last());
+                                    _console.Write(CommandHistory[_paramName][_commandHistoryIndex]);
+                                    inputBuffer.Add(CommandHistory[_paramName][_commandHistoryIndex]);
                                 }
+
                                 break;
 
                             case ConsoleKey.Delete:
