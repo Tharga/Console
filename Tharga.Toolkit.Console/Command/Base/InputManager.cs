@@ -11,7 +11,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         private readonly ICommandBase _commandBase;
         private readonly string _paramName;
         private readonly IConsole _console;
-        private static readonly Dictionary<string, List<string>> CommandHistory = new Dictionary<string, List<string>>();
+        private static readonly Dictionary<string, List<string>> _commandHistory = new Dictionary<string, List<string>>();
         private int _commandHistoryIndex = -1;
         private Location _startLocation;
         private int _tabIndex = -1;
@@ -22,16 +22,15 @@ namespace Tharga.Toolkit.Console.Command.Base
         public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
         public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
-
         public InputManager(IConsole console, ICommandBase commandBase, string paramName)
         {
             _commandBase = commandBase;
             _console = console;
-            _console.LinesInsertedEvent += Console_LinesInsertedEvent;
+            _console.LinesInsertedEvent += LinesInsertedEvent;
             _paramName = paramName;
         }
 
-        private void Console_LinesInsertedEvent(object sender, LinesInsertedEventArgs e)
+        private void LinesInsertedEvent(object sender, LinesInsertedEventArgs e)
         {
             _startLocation = new Location(_startLocation.Left, _startLocation.Top + e.LineCount);
         }
@@ -40,7 +39,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         public T ReadLine<T>(KeyValuePair<T, string>[] selection, bool allowEscape)
         {
             var inputBuffer = new InputBuffer();
-            inputBuffer.InputBufferChangedEvent += InputBuffer_InputBufferChangedEvent;
+            inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
 
             _console.Write(string.Format("{0}{1}", _paramName, _paramName.Length > 2 ? ": " : string.Empty));
             _startLocation = new Location(_console.CursorLeft, _console.CursorTop);
@@ -84,8 +83,8 @@ namespace Tharga.Toolkit.Console.Command.Base
                         {
                             case ConsoleKey.Enter:
                                 var response = GetResponse(selection, inputBuffer);
-                                if (!CommandHistory.ContainsKey(_paramName)) CommandHistory.Add(_paramName, new List<string>());
-                                CommandHistory[_paramName].Add(inputBuffer.ToString());
+                                RememberCommandHistory(inputBuffer);
+
                                 return response;
 
                             case ConsoleKey.LeftArrow:
@@ -108,29 +107,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                             case ConsoleKey.DownArrow:
                             case ConsoleKey.UpArrow:
-                                //TODO: If in prompt mode, toggle between previous commands
-                                if (CommandHistory.ContainsKey(_paramName))
-                                {
-                                    if (_commandHistoryIndex == -1)
-                                    {
-                                        _commandHistoryIndex = 0;
-                                    }
-                                    else if (readKey.Key == ConsoleKey.UpArrow)
-                                    {
-                                        _commandHistoryIndex++;
-                                        if (_commandHistoryIndex == CommandHistory[_paramName].Count) _commandHistoryIndex = 0;
-                                    }
-                                    else if (readKey.Key == ConsoleKey.DownArrow)
-                                    {
-                                        _commandHistoryIndex--;
-                                        if (_commandHistoryIndex < 0) _commandHistoryIndex = CommandHistory[_paramName].Count - 1;
-                                    }
-
-                                    Clear(inputBuffer);
-                                    _console.Write(CommandHistory[_paramName][_commandHistoryIndex]);
-                                    inputBuffer.Add(CommandHistory[_paramName][_commandHistoryIndex]);
-                                }
-
+                                RecallCommandHistory(readKey, inputBuffer);
                                 break;
 
                             case ConsoleKey.Delete:
@@ -216,6 +193,51 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
+        private void RecallCommandHistory(ConsoleKeyInfo readKey, InputBuffer inputBuffer)
+        {
+            if (_commandHistory.ContainsKey(_paramName))
+            {
+                if (_commandHistoryIndex == -1)
+                {
+                    _commandHistoryIndex = 0;
+                }
+                else if (readKey.Key == ConsoleKey.UpArrow)
+                {
+                    _commandHistoryIndex++;
+                    if (_commandHistoryIndex == _commandHistory[_paramName].Count)
+                    {
+                        _commandHistoryIndex = 0;
+                    }
+                }
+                else if (readKey.Key == ConsoleKey.DownArrow)
+                {
+                    _commandHistoryIndex--;
+                    if (_commandHistoryIndex < 0)
+                    {
+                        _commandHistoryIndex = _commandHistory[_paramName].Count - 1;
+                    }
+                }
+
+                Clear(inputBuffer);
+                _console.Write(_commandHistory[_paramName][_commandHistoryIndex]);
+                inputBuffer.Add(_commandHistory[_paramName][_commandHistoryIndex]);
+            }
+        }
+
+        private void RememberCommandHistory(InputBuffer inputBuffer)
+        {
+            if (!_commandHistory.ContainsKey(_paramName))
+            {
+                _commandHistory.Add(_paramName, new List<string>());
+            }
+
+            var inputString = inputBuffer.ToString();
+            if (_commandHistory[_paramName].All(x => string.Compare(inputString, x, StringComparison.InvariantCulture) != 0) && !string.IsNullOrEmpty(inputString))
+            {
+                _commandHistory[_paramName].Add(inputString);
+            }
+        }
+
         private void Clear(InputBuffer inputBuffer)
         {
             MoveCursorToStart(_startLocation);
@@ -237,7 +259,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
                 else
                 {
-                    var items = selection.Where(x => x.Value == inputBuffer.ToString());
+                    var items = selection.Where(x => x.Value == inputBuffer.ToString()).ToArray();
                     if (!items.Any()) throw new EntryException("No item match the entry.");
                     if (items.Count() > 1) throw new EntryException("There are several matches to the entry.");
 
@@ -254,7 +276,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             return response;
         }
 
-        private void InputBuffer_InputBufferChangedEvent(object sender, InputBufferChangedEventArgs e)
+        private void InputBufferChangedEvent(object sender, InputBufferChangedEventArgs e)
         {
             _tabIndex = -1;
         }
