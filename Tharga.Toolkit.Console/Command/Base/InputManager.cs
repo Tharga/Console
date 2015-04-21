@@ -69,8 +69,30 @@ namespace Tharga.Toolkit.Console.Command.Base
                                 //    break;
 
                             case ConsoleKey.LeftArrow:
-                                //TODO:
-                                System.Diagnostics.Debug.WriteLine("Jump back to previous whitespace");
+                                if (currentBufferPosition > 0)
+                                {
+                                    var leftOfCursor = inputBuffer.ToString().Substring(0, currentBufferPosition).TrimEnd(' ');
+                                    var last = leftOfCursor.LastIndexOf(' ');
+                                    if (last != -1)
+                                        _console.CursorLeft = last + _startLocation.Left + 1;
+                                    else
+                                        _console.CursorLeft = _startLocation.Left;
+                                }
+
+                                break;
+
+                            case ConsoleKey.RightArrow:
+
+                                var l2 = inputBuffer.ToString().IndexOf(' ', currentBufferPosition);
+                                if (l2 != -1)
+                                {
+                                    while (inputBuffer.ToString().Length > l2 + 1 && inputBuffer.ToString()[l2 + 1] == ' ')
+                                        l2++;
+                                    _console.CursorLeft = l2 + _startLocation.Left + 1;
+                                }
+                                else
+                                    _console.CursorLeft = inputBuffer.ToString().Length + _startLocation.Left;
+
                                 break;
 
                             default:
