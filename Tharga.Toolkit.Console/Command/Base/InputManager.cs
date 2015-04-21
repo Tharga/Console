@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 
 namespace Tharga.Toolkit.Console.Command.Base
-{
+{    
     internal class InputManager
     {
         private readonly ICommandBase _commandBase;
@@ -35,7 +35,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             _startLocation = new Location(_startLocation.Left, _startLocation.Top + e.LineCount);
         }
 
-        //TODO: Test this function
+        //TODO: Test this function        
         public T ReadLine<T>(KeyValuePair<T, string>[] selection, bool allowEscape)
         {
             var inputBuffer = new InputBuffer();
@@ -62,11 +62,19 @@ namespace Tharga.Toolkit.Console.Command.Base
                     {
                         switch (readKey.Key)
                         {
-                                //case ConsoleKey.V:
-                                //    //TODO: Invoke this on the correct thread.
-                                //    var input = System.Windows.Clipboard.GetText();
-                                //    InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition, _startLocation);
-                                //    break;
+                            case ConsoleKey.V:
+                                var input = System.Windows.Clipboard.GetText().ToArray();
+                                foreach (var chr in input)
+                                {
+                                    InsertText(currentScreenLocation, chr, inputBuffer, currentBufferPosition, _startLocation);
+                                    if (currentScreenLocation.Left == _console.BufferWidth - 1)
+                                        currentScreenLocation = new Location(0, currentScreenLocation.Top + 1);
+                                    else
+                                        currentScreenLocation = new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top);
+                                    currentBufferPosition++;
+                                }
+
+                                break;
 
                             case ConsoleKey.LeftArrow:
                                 if (currentBufferPosition > 0)
@@ -96,7 +104,8 @@ namespace Tharga.Toolkit.Console.Command.Base
                                 break;
 
                             default:
-                                throw new ArgumentOutOfRangeException(string.Format("Ctrl feature not handled for {0} ({1}).", readKey.Key, readKey.KeyChar));
+                                System.Diagnostics.Debug.WriteLine("No action for ctrl-" + readKey.Key);
+                                break;
                         }
                     }
                     else
