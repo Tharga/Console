@@ -28,6 +28,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             _console = console;
             _console.LinesInsertedEvent += LinesInsertedEvent;
             _paramName = paramName;
+            _startLocation = new Location(_console.CursorLeft, _console.CursorTop);
         }
 
         private void LinesInsertedEvent(object sender, LinesInsertedEventArgs e)
