@@ -229,31 +229,46 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             if (_commandHistory.ContainsKey(_paramName))
             {
-                if (_commandHistoryIndex == -1)
-                {
-                    _commandHistoryIndex = 0;
-                }
-                else if (readKey.Key == ConsoleKey.UpArrow)
-                {
-                    _commandHistoryIndex++;
-                    if (_commandHistoryIndex == _commandHistory[_paramName].Count)
-                    {
-                        _commandHistoryIndex = 0;
-                    }
-                }
-                else if (readKey.Key == ConsoleKey.DownArrow)
-                {
-                    _commandHistoryIndex--;
-                    if (_commandHistoryIndex < 0)
-                    {
-                        _commandHistoryIndex = _commandHistory[_paramName].Count - 1;
-                    }
-                }
+                var chi = GetNextCommandHistoryIndex(readKey, _commandHistoryIndex);
 
                 Clear(inputBuffer);
+                _commandHistoryIndex = chi;
                 _console.Write(_commandHistory[_paramName][_commandHistoryIndex]);
                 inputBuffer.Add(_commandHistory[_paramName][_commandHistoryIndex]);
             }
+        }
+
+        private int GetNextCommandHistoryIndex(ConsoleKeyInfo readKey, int commandHistoryIndex)
+        {
+            if (commandHistoryIndex == -1)
+            {
+                if (readKey.Key == ConsoleKey.UpArrow)
+                {
+                    commandHistoryIndex = _commandHistory[_paramName].Count - 1;
+                }
+                else
+                {
+                    commandHistoryIndex = 0;
+                }
+            }
+            else if (readKey.Key == ConsoleKey.UpArrow)
+            {
+                commandHistoryIndex++;
+                if (commandHistoryIndex == _commandHistory[_paramName].Count)
+                {
+                    commandHistoryIndex = 0;
+                }
+            }
+            else if (readKey.Key == ConsoleKey.DownArrow)
+            {
+                commandHistoryIndex--;
+                if (commandHistoryIndex < 0)
+                {
+                    commandHistoryIndex = _commandHistory[_paramName].Count - 1;
+                }
+            }
+
+            return commandHistoryIndex;
         }
 
         private void RememberCommandHistory(InputBuffer inputBuffer)
@@ -269,14 +284,18 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
 
             var inputString = inputBuffer.ToString();
-            if (_commandHistory[_paramName].All(x => string.Compare(inputString, x, StringComparison.InvariantCulture) != 0) && !string.IsNullOrEmpty(inputString))
-            {
-                _commandHistory[_paramName].Add(inputString);
-            }
+            //if (!_commandHistory[_paramName].All(x => string.Compare(inputString, x, StringComparison.InvariantCulture) != 0) && !string.IsNullOrEmpty(inputString))
+            //{
+            //    _commandHistory[_paramName].Add(inputString);
+            //}
+
+            _commandHistory[_paramName].RemoveAll(x => string.Compare(inputString, x, StringComparison.InvariantCulture) == 0);
+            _commandHistory[_paramName].Add(inputString);
         }
 
         private void Clear(InputBuffer inputBuffer)
         {
+            _commandHistoryIndex = -1;
             MoveCursorToStart(_startLocation);
             _console.Write(new string(' ', inputBuffer.Length));
             MoveCursorToStart(_startLocation);
