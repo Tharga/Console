@@ -8,7 +8,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     public abstract class CommandBase : ICommandBase
     {
-        private static readonly object SyncRoot = new object();
+        private static readonly object _syncRoot = new object();
 
         private readonly string _description;
         private readonly string[] _names;
@@ -114,11 +114,11 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 if (!string.IsNullOrEmpty(defaultValue))
                 {
-                    value = QueryParam(paramName, null, () => new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) });
+                    value = QueryParam(paramName, null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) });
                 }
                 else
                 {
-                    value = QueryParam(paramName, null, (Func<List<KeyValuePair<string, string>>>)null);
+                    value = QueryParam(paramName, null, (List<KeyValuePair<string, string>>)null);
                 }
             }
 
@@ -126,17 +126,22 @@ namespace Tharga.Toolkit.Console.Command.Base
             return response;
         }
 
-        protected T QueryParam<T>(string paramName, string autoProvideValue, Func<List<KeyValuePair<T, string>>> selectionDelegate)
+        protected T QueryParam<T>(string paramName, string autoProvideValue, IDictionary<T, string> selectionDelegate)
         {
-            return QueryParam<T>(paramName, autoProvideValue, selectionDelegate, true);
+            return QueryParam(paramName, autoProvideValue, selectionDelegate, true);
         }
 
-        private T QueryParam<T>(string paramName, string autoProvideValue, Func<List<KeyValuePair<T, string>>> selectionDelegate, bool allowEscape)
+        protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate)
+        {
+            return QueryParam(paramName, autoProvideValue, selectionDelegate, true);
+        }
+
+        private T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool allowEscape)
         {
             var selection = new List<KeyValuePair<T, string>>();
             if (selectionDelegate != null)
             {
-                selection = selectionDelegate.Invoke();
+                selection = selectionDelegate.ToList();
                 var q = GetParamByString(autoProvideValue, selection);
                 if (q != null)
                 {
@@ -188,7 +193,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void OutputEvent(string message, params object[] args)
         {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
                 var cursorLeft = _console.CursorLeft;
                 if (cursorLeft != 0)
@@ -209,7 +214,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void Output(string message, ConsoleColor? color, bool line, params object[] args)
         {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
                 var defaultColor = ConsoleColor.White;
                 try

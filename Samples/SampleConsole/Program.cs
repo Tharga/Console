@@ -47,23 +47,23 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var id = QueryParam<Guid>("Some Id", GetParam(paramList, index++), KeyNameList);
+            var id = QueryParam<Guid>("Some Id", GetParam(paramList, index++), KeyNameList());
 
             OutputInformation("Some data for {0}", id);
 
             return true;
         }
 
-        private List<KeyValuePair<Guid, string>> KeyNameList()
+        private Dictionary<Guid, string> KeyNameList()
         {
-            return new List<KeyValuePair<Guid, string>>
+            return new Dictionary<Guid, string>
             {
-                new KeyValuePair<Guid, string>(Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A"),
-                new KeyValuePair<Guid, string>(Guid.NewGuid(), "BB"),
-                new KeyValuePair<Guid, string>(Guid.NewGuid(), "CCC"),
-                new KeyValuePair<Guid, string>(Guid.NewGuid(), "D"),
-                new KeyValuePair<Guid, string>(Guid.NewGuid(), "EEEEE"),
-                new KeyValuePair<Guid, string>(Guid.NewGuid(), "F"),
+                { Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A" },
+                { Guid.NewGuid(), "BB" },
+                { Guid.NewGuid(), "CCC" },
+                { Guid.NewGuid(), "D" },
+                { Guid.NewGuid(), "EEEEE" },
+                { Guid.NewGuid(), "F" },
             };
         }
     }
@@ -78,7 +78,7 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var id = QueryParam<Guid>("Some Huge Id", GetParam(paramList, index++), HugeKeyNameList);
+            var id = QueryParam<Guid>("Some Huge Id", GetParam(paramList, index++), HugeKeyNameList());
 
             OutputInformation("Some data for {0}", id);
 
