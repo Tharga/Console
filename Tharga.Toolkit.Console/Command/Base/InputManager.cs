@@ -258,6 +258,11 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         private void RememberCommandHistory(InputBuffer inputBuffer)
         {
+            if (inputBuffer.Length == 0)
+            {
+                return;
+            }
+
             if (!_commandHistory.ContainsKey(_paramName))
             {
                 _commandHistory.Add(_paramName, new List<string>());
