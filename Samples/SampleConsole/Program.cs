@@ -47,15 +47,16 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var id = QueryParam<Guid>("Some Id", GetParam(paramList, index++), KeyNameList());
+            var id = await QueryParamAsync<Guid>("Some Id", GetParam(paramList, index++), KeyNameList);
 
             OutputInformation("Some data for {0}", id);
 
             return true;
         }
 
-        private Dictionary<Guid, string> KeyNameList()
+        private async Task<IDictionary<Guid, string>> KeyNameList()
         {
+            System.Threading.Thread.Sleep(2000); //Simulate that it takes a while to get this data
             return new Dictionary<Guid, string>
             {
                 { Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A" },

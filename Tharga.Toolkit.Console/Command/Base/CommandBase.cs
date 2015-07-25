@@ -126,6 +126,19 @@ namespace Tharga.Toolkit.Console.Command.Base
             return response;
         }
 
+        protected async Task<T> QueryParamAsync<T>(string paramName, string autoProvideValue, Func<Task<IDictionary<T, string>>> selectionDelegate)
+        {
+            List<KeyValuePair<T, string>> selection = null;
+            if (selectionDelegate != null)
+            {
+                OutputInformation("Loading data for " + paramName + "...");
+                selection = (await selectionDelegate()).ToList();
+            }
+
+            var response = QueryParam(paramName, autoProvideValue, selection, true);
+            return response;
+        }
+
         protected T QueryParam<T>(string paramName, string autoProvideValue, IDictionary<T, string> selectionDelegate)
         {
             return QueryParam(paramName, autoProvideValue, selectionDelegate, true);
