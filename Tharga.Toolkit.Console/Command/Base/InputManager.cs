@@ -316,11 +316,28 @@ namespace Tharga.Toolkit.Console.Command.Base
                 else
                 {
                     var items = selection.Where(x => x.Value == inputBuffer.ToString()).ToArray();
-                    if (!items.Any()) throw new EntryException("No item match the entry.");
-                    if (items.Count() > 1) throw new EntryException("There are several matches to the entry.");
+                    if (!items.Any())
+                    {
+                        try
+                        {
+                            response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
+                            _console.NewLine();
+                        }
+                        catch (FormatException exception)
+                        {
+                            throw new EntryException("No item match the entry.", exception);
+                        }
+                    }
+                    else
+                    {
+                        if (items.Count() > 1)
+                        {
+                            throw new EntryException("There are several matches to the entry.");
+                        }
 
-                    _console.NewLine();
-                    response = items.Single().Key;
+                        _console.NewLine();
+                        response = items.Single().Key;
+                    }
                 }
             }
             else

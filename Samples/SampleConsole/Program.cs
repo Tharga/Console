@@ -34,6 +34,7 @@ namespace SampleConsole
             RegisterCommand(new SomeListCommand());
             RegisterCommand(new SomeItemCommand());
             RegisterCommand(new SomeHugeItemCommand());
+            RegisterCommand(new SomeStringItemCommand());
         }
     }
 
@@ -97,6 +98,24 @@ namespace SampleConsole
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "EEEEEEEEEEEEEEEEEEEE"),
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "FFFFFFFFFF"),
             };
+        }
+    }
+
+    internal class SomeStringItemCommand : ActionCommandBase
+    {
+        public SomeStringItemCommand()
+            : base("string", "Make some string input")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            var index = 0;
+            var id = QueryParam<string>("Some string", GetParam(paramList, index++), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
+
+            OutputInformation("Entered string was: {0}", id);
+
+            return true;
         }
     }
 

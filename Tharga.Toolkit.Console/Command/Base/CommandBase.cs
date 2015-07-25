@@ -178,12 +178,20 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
 
                 item = selection.SingleOrDefault(x => string.Compare(x.Key.ToString(), autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (item.Key.ToString() == autoProvideValue)
+                if (item.Key != null && item.Key.ToString() == autoProvideValue)
                 {
                     return item;
                 }
 
-                throw new InvalidOperationException("Cannot find provided value in selection.");
+                try
+                {
+                    var r = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(autoProvideValue);
+                    return new KeyValuePair<T, string>(r, autoProvideValue);
+                }
+                catch (FormatException exception)
+                {
+                    throw new InvalidOperationException("Cannot find provided value in selection.", exception);
+                }
             }
 
             return null;

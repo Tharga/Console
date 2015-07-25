@@ -8,5 +8,10 @@ namespace Tharga.Toolkit.Console.Command.Base
             : base(message)
         {
         }
+
+        public EntryException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
     }
 }
