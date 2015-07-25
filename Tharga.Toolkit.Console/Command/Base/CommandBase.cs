@@ -144,7 +144,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
             }
 
-            var inputManager = new InputManager(_console, this, paramName);
+            var inputManager = new InputManager(_console, this, paramName + (selectionDelegate == null ? "" : " [Tab]"));
             var response = inputManager.ReadLine(selection.ToArray(), allowEscape);
             return response;
         }
