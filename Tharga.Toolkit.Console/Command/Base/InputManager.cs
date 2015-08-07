@@ -55,7 +55,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     var currentScreenLocation = new Location(_console.CursorLeft, _console.CursorTop);
                     var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * _console.BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
 
-                    if ((readKey.KeyChar >= 32 && readKey.KeyChar <= 126) || readKey.Key == ConsoleKey.Oem5)
+                    if (IsOutputKey(readKey))
                     {
                         var input = readKey.KeyChar;
                         InsertText(currentScreenLocation, input, inputBuffer, currentBufferPosition, _startLocation);
@@ -205,6 +205,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                             case ConsoleKey.F11:
                             case ConsoleKey.F12:
                             case ConsoleKey.F13:
+                            case ConsoleKey.Oem1:
                                 //Ignore
                                 break;
 
@@ -227,6 +228,50 @@ namespace Tharga.Toolkit.Console.Command.Base
                         _commandBase.OutputError("- {0}: {1}", data.Key, data.Value);
                     }
                 }
+            }
+        }
+
+        private bool IsOutputKey(ConsoleKeyInfo readKey)
+        {
+            if (readKey.Modifiers == ConsoleModifiers.Control)
+                return false;
+
+            switch (readKey.Key)
+            {
+                case ConsoleKey.Enter:
+                case ConsoleKey.LeftArrow:
+                case ConsoleKey.RightArrow:
+                case ConsoleKey.Home:
+                case ConsoleKey.End:
+                case ConsoleKey.DownArrow:
+                case ConsoleKey.UpArrow:
+                case ConsoleKey.Delete:
+                case ConsoleKey.Backspace:
+                case ConsoleKey.Escape:
+                case ConsoleKey.Tab:
+                case ConsoleKey.PageUp:
+                case ConsoleKey.PageDown:
+                case ConsoleKey.LeftWindows:
+                case ConsoleKey.RightWindows:
+                case ConsoleKey.Applications:
+                case ConsoleKey.Insert:
+                case ConsoleKey.F1:
+                case ConsoleKey.F2:
+                case ConsoleKey.F3:
+                case ConsoleKey.F4:
+                case ConsoleKey.F5:
+                case ConsoleKey.F6:
+                case ConsoleKey.F7:
+                case ConsoleKey.F8:
+                case ConsoleKey.F9:
+                case ConsoleKey.F10:
+                case ConsoleKey.F11:
+                case ConsoleKey.F12:
+                case ConsoleKey.F13: 
+                case ConsoleKey.Oem1:
+                    return false;
+                default:
+                    return true;
             }
         }
 
@@ -289,10 +334,6 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
 
             var inputString = inputBuffer.ToString();
-            //if (!_commandHistory[_paramName].All(x => string.Compare(inputString, x, StringComparison.InvariantCulture) != 0) && !string.IsNullOrEmpty(inputString))
-            //{
-            //    _commandHistory[_paramName].Add(inputString);
-            //}
 
             _commandHistory[_paramName].RemoveAll(x => string.Compare(inputString, x, StringComparison.InvariantCulture) == 0);
             _commandHistory[_paramName].Add(inputString);
