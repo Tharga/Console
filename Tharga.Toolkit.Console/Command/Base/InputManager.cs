@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -220,7 +221,11 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
                 catch (Exception exception)
                 {
-                    _commandBase.OutputError(exception.Message);
+                    _commandBase.OutputError("{0}", exception.Message);
+                    foreach (DictionaryEntry data in exception.Data)
+                    {
+                        _commandBase.OutputError("- {0}: {1}", data.Key, data.Value);
+                    }
                 }
             }
         }

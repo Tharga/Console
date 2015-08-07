@@ -49,7 +49,7 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var id = await QueryParamAsync<Guid>("Some Id", GetParam(paramList, index++), KeyNameList);
+            var id = await QueryParamAsync("Some Id", GetParam(paramList, index++), KeyNameList);
 
             OutputInformation("Some data for {0}", id);
 
@@ -130,7 +130,6 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             for (var i = 0; i < 5; i++) OutputInformation("Some data {0}", i);
-
             return true;
         }
     }

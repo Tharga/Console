@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 
 namespace Tharga.Toolkit.Console.Command.Base
@@ -71,23 +72,34 @@ namespace Tharga.Toolkit.Console.Command.Base
             catch (SystemException exception)
             {
                 InvokeExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception.Message);
+                HandleError(exception);
             }
             catch (AggregateException exception)
             {
                 InvokeExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
                 foreach (var exp in exception.InnerExceptions)
-                    OutputError(exp.Message);
+                {
+                    HandleError(exp);
+                }
             }
             catch (Exception exception)
             {
                 InvokeExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception.Message);
+                HandleError(exception);
                 OutputInformation("Terminating application...");
                 throw;
             }
 
             return success;
+        }
+
+        private void HandleError(Exception exception)
+        {
+            OutputError(exception.Message);
+            foreach (DictionaryEntry data in exception.Data)
+            {
+                OutputError("- {0}: {1}", data.Key, data.Value);
+            }
         }
 
         public void Initiate()
