@@ -35,6 +35,7 @@ namespace SampleConsole
             RegisterCommand(new SomeItemCommand());
             RegisterCommand(new SomeHugeItemCommand());
             RegisterCommand(new SomeStringItemCommand());
+            RegisterCommand(new SomeTableCommand());
         }
     }
 
@@ -129,6 +130,29 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             for (var i = 0; i < 5; i++) OutputInformation("Some data {0}", i);
+
+            return true;
+        }
+    }
+
+    internal class SomeTableCommand : ActionCommandBase
+    {
+        public SomeTableCommand()
+            : base("table", "Output information in a table")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            var table = new List<string[]> { new[] { "Index", "Guid" } };
+            for (var i = 0; i < 5; i++)
+            {
+                var line = new List<string> { i.ToString(), Guid.NewGuid().ToString() };
+                table.Add(line.ToArray());
+            }
+
+            OutputTable(table.ToArray());
+
             return true;
         }
     }

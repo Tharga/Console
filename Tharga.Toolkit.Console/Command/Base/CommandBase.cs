@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Tharga.Toolkit.Console.Command.Base
@@ -210,6 +211,46 @@ namespace Tharga.Toolkit.Console.Command.Base
         public void OutputInformation(string message, params object[] args)
         {
             Output(message, null, true, args);
+        }
+
+        public void OutputLine(string message, ConsoleColor? color = null, params object[] args)
+        {
+            Output(message, color, true, args);
+        }
+
+        public void OutputTable(string[][] data)
+        {
+            var columnLength = GetColumnSizes(data);
+
+            foreach (var line in data)
+            {
+                var sb = new StringBuilder();
+                for (var i = 0; i < line.Length; i++)
+                {
+                    sb.AppendFormat("{0}{1}", line[i], new string(' ', columnLength[i] - line[i].Length + 1));
+                }
+
+                OutputInformation(sb.ToString());
+            }
+
+            OutputInformation("{0} lines.", data.Length - 1);
+        }
+
+        private static int[] GetColumnSizes(string[][] data)
+        {
+            var length = new int[data.Count()];
+            foreach (var line in data)
+            {
+                for (var i = 0; i < line.Length; i++)
+                {
+                    if (line[i].Length > length[i])
+                    {
+                        length[i] = line[i].Length;
+                    }
+                }
+            }
+
+            return length.ToArray();
         }
 
         public void OutputEvent(string message, params object[] args)
