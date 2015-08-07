@@ -15,8 +15,8 @@ namespace SampleConsole
         private static void Main(string[] args)
         {
             var console = new ClientConsole();
-            ////var console = new VoiceConsole();
-            ////var console = new ServerConsole(string.Empty);
+            //var console = new VoiceConsole();
+            //var console = new ServerConsole(string.Empty);
 
             var command = new RootCommand(console);
             command.RegisterCommand(new SomeContainerCommand());

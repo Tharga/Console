@@ -23,6 +23,21 @@ You can send arguments to the console application having it execute commands  ri
 
 It is also possible to provide commands using a textfile. Use the command "exec file myCommandFile.txt" as a parameter and the console will execute each line in the file as a separate command. I usually use this method during development when I want to set up data or testing.
 
+Clients
+------
+There are several different type of consoles that can be used.
+- ClientConsole - Regular console used for normal console applications.
+- VoiceConsole - With this client you can use voice commands to control the application.
+- ServerConsole - This console outputs time information and writes to the event log. Great when hosting services.
+
+Color
+------
+There are four types of output, the colors for theese can be configured using the appSettings part of the config file
+- InformationColor - Default Green
+- WarningColor - Default Yellow
+- ErrorColor - Default Red
+- EventColor - Default Cyan
+
 Future
 ------
 

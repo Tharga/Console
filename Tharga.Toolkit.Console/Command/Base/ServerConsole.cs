@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
@@ -7,9 +8,12 @@ namespace Tharga.Toolkit.Console.Command.Base
     {
         private readonly string _logSource;
 
-        public ServerConsole(string logSource)
+        public ServerConsole(string logSource = null)
         {
-            _logSource = logSource;
+            if (string.IsNullOrEmpty(logSource))
+                _logSource = Assembly.GetExecutingAssembly().GetName().Name;
+            else
+                _logSource = logSource;
         }
 
         protected override void WriteLine(string value)
