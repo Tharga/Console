@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -200,25 +201,25 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void OutputError(string message, params object[] args)
         {
-            Output(message, ConsoleColor.Red, true, args);
+            Output(message, GetConsoleColor("Error", ConsoleColor.Red), true, args);
         }
 
         public void OutputWarning(string message, params object[] args)
         {
-            Output(message, ConsoleColor.Yellow, true, args);
+            Output(message, GetConsoleColor("Warning", ConsoleColor.Yellow), true, args);
         }
 
         public void OutputInformation(string message, params object[] args)
         {
+            Output(message, GetConsoleColor("Information", ConsoleColor.Green), true, args);
+        }
+
+        public void OutputDefault(string message, params object[] args)
+        {
             Output(message, null, true, args);
         }
 
-        public void OutputLine(string message, ConsoleColor? color = null, params object[] args)
-        {
-            Output(message, color, true, args);
-        }
-
-        public void OutputTable(string[][] data)
+        public void OutputTable(string[][] data, ConsoleColor? color = null)
         {
             var columnLength = GetColumnSizes(data);
 
@@ -230,10 +231,10 @@ namespace Tharga.Toolkit.Console.Command.Base
                     sb.AppendFormat("{0}{1}", line[i], new string(' ', columnLength[i] - line[i].Length + 1));
                 }
 
-                OutputInformation(sb.ToString());
+                OutputLine(sb.ToString(), color);
             }
 
-            OutputInformation("{0} lines.", data.Length - 1);
+            OutputLine("{0} lines.", color, data.Length - 1);
         }
 
         private static int[] GetColumnSizes(string[][] data)
@@ -266,12 +267,17 @@ namespace Tharga.Toolkit.Console.Command.Base
                     _console.SetCursorPosition(0, _console.CursorTop);
                 }
 
-                Output(message, ConsoleColor.Yellow, true, args);
+                Output(message, GetConsoleColor("EventColor", ConsoleColor.Cyan), true, args);
                 if (cursorLeft != 0)
                 {
                     _console.SetCursorPosition(cursorLeft, _console.CursorTop);
                 }
             }
+        }
+
+        public void OutputLine(string message, ConsoleColor? color, params object[] args)
+        {
+            Output(message, color, true, args);
         }
 
         public void Output(string message, ConsoleColor? color, bool line, params object[] args)
@@ -327,6 +333,18 @@ namespace Tharga.Toolkit.Console.Command.Base
         public virtual void CommandRegistered(IConsole console)
         {
             _console = console;
+        }
+
+        private static ConsoleColor GetConsoleColor(string name, ConsoleColor defaultColor)
+        {
+            var colorString = ConfigurationManager.AppSettings[name + "Color"];
+            ConsoleColor color;
+            if (!Enum.TryParse(colorString, out color))
+            {
+                color = defaultColor;
+            }
+
+            return color;
         }
     }
 }
