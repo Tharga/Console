@@ -21,6 +21,21 @@ Arguments
 
 You can send arguments to the console application having it execute commands  right when it starts. Each *command* is sent using quotation marks (ie "some list" "some item A"). When sending parameters the console will exit automatically. If you want the console to stay open send the switch /c.
 
+The switch /e will make the console stay open if something goes wrong, otherwise it will close.
+
+###Theese examples will make the console stay open when completed
+- "status success" /c
+- "status fail" /c
+- "status exception" /c
+- "status fail" /e
+- "status exception" /e
+
+###Theese examples will make the console close when completed
+- "status success"
+- "status fail"
+- "status exception"
+- "status success" /e
+
 It is also possible to provide commands using a textfile. Use the command "exec file myCommandFile.txt" as a parameter and the console will execute each line in the file as a separate command. I usually use this method during development when I want to set up data or testing.
 
 Clients

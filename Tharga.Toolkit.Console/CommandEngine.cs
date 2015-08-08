@@ -11,6 +11,7 @@ namespace Tharga.Toolkit.Console
     public class CommandEngine
     {
         private const string FlagContinueInConsoleMode = "c";
+        private const string FlagContinueInConsoleModeIfError = "e";
         private readonly RootCommandBase _rootCommand;
         private bool _running = true;
         private bool _commandMode;
@@ -42,7 +43,17 @@ namespace Tharga.Toolkit.Console
             while (_running)
             {
                 var entry = _commandMode ? GetCommandModeEntry(commands, ref commandIndex, flags) : _rootCommand.QueryRootParam();
-                if (!ExecuteCommand(entry)) break;
+                if (!ExecuteCommand(entry))
+                {
+                    if (_commandMode && HasFlag(args, FlagContinueInConsoleModeIfError))
+                    {
+                        _commandMode = false;
+                        _running = true;
+                        continue;
+                    }
+
+                    break;
+                }
             }
         }
 
@@ -75,8 +86,14 @@ namespace Tharga.Toolkit.Console
 
             if (commandIndex >= cmds.Count())
             {
-                if (HasFlag(flags, FlagContinueInConsoleMode)) _commandMode = false;
-                else _running = false;
+                if (HasFlag(flags, FlagContinueInConsoleMode))
+                {
+                    _commandMode = false;
+                }
+                else
+                {
+                    _running = false;
+                }
             }
 
             _rootCommand.OutputInformation("Command {0}: {1}", commandIndex, entry);

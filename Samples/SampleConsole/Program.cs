@@ -22,6 +22,7 @@ namespace SampleConsole
             command.RegisterCommand(new SomeContainerCommand());
             command.RegisterCommand(new EngineContainerCommand());
             command.RegisterCommand(new MathContainerCommand());
+            command.RegisterCommand(new StatusCommand());
             new CommandEngine(command).Run(args);
         }
     }
@@ -291,6 +292,58 @@ namespace SampleConsole
             OutputInformation("{0}", vals.Sum());
 
             return true;
+        }
+    }
+
+    public class StatusCommand : ContainerCommandBase
+    {
+        public StatusCommand()
+            : base("status")
+        {
+            RegisterCommand(new StatusSuccessCommand());
+            RegisterCommand(new StatusFailCommand());
+            RegisterCommand(new StatusExceptionCommand());
+        }
+    }
+
+    public class StatusSuccessCommand : ActionCommandBase
+    {
+        public StatusSuccessCommand() 
+            : base("success", "An action that returns success.")
+        {
+        }
+
+        public async override Task<bool> InvokeAsync(string paramList)
+        {
+            OutputInformation("This command worked.");
+            return true;
+        }
+    }
+
+    public class StatusFailCommand : ActionCommandBase
+    {
+        public StatusFailCommand()
+            : base("fail", "An action that returns failure.")
+        {
+        }
+
+        public async override Task<bool> InvokeAsync(string paramList)
+        {
+            OutputWarning("This command did not work.");
+            return false;
+        }
+    }
+
+    public class StatusExceptionCommand : ActionCommandBase
+    {
+        public StatusExceptionCommand()
+            : base("exception", "A command that throws an exception.")
+        {
+        }
+
+        public async override Task<bool> InvokeAsync(string paramList)
+        {
+            throw new InvalidOperationException("Some crash.");
         }
     }
 }
