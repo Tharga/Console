@@ -41,7 +41,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         protected virtual string GetCanExecuteFailMessage()
         {
-            return string.Format("You cannot execute this {0} command.", Name);
+            return string.Format("You cannot execute {0} command.", Name);
         }
 
         public virtual async Task<bool> InvokeWithCanExecuteCheckAsync(string paramList)
@@ -201,22 +201,17 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void OutputError(string message, params object[] args)
         {
-            Output(message, GetConsoleColor("Error", ConsoleColor.Red), true, args);
+            OutputLine(message, OutputLevel.Error, args);
         }
 
         public void OutputWarning(string message, params object[] args)
         {
-            Output(message, GetConsoleColor("Warning", ConsoleColor.Yellow), true, args);
+            OutputLine(message, OutputLevel.Warning, args);
         }
 
         public void OutputInformation(string message, params object[] args)
         {
-            Output(message, GetConsoleColor("Information", ConsoleColor.Green), true, args);
-        }
-
-        public void OutputDefault(string message, params object[] args)
-        {
-            Output(message, null, true, args);
+            OutputLine(message, GetConsoleColor(OutputLevel.Information), args);
         }
 
         public void OutputTable(string[][] data, ConsoleColor? color = null)
@@ -275,13 +270,25 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
+        public void OutputLine(string message, OutputLevel outputLevel, params object[] args)
+        {
+            Output(message, GetConsoleColor(outputLevel), true, args);
+        }
+
         public void OutputLine(string message, ConsoleColor? color, params object[] args)
         {
             Output(message, color, true, args);
         }
 
+        public void Output(string message, OutputLevel outputLevel, bool line, params object[] args)
+        {
+            Output(message, GetConsoleColor(outputLevel), line, args);
+        }
+
         public void Output(string message, ConsoleColor? color, bool line, params object[] args)
         {
+            if (_console == null) throw new InvalidOperationException("No console assigned. The command was probably not registered, use CommandRegistered to do it manually.");
+
             lock (_syncRoot)
             {
                 var defaultColor = ConsoleColor.White;
@@ -306,7 +313,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     }
                     else
                     {
-                        _console.Write(message, args);
+                        _console.Write(string.Format(message, args));
                     }
                 }
                 finally
@@ -333,6 +340,21 @@ namespace Tharga.Toolkit.Console.Command.Base
         public virtual void CommandRegistered(IConsole console)
         {
             _console = console;
+        }
+
+        private static ConsoleColor? GetConsoleColor(OutputLevel outputLevel)
+        {
+            switch (outputLevel)
+            {
+                case OutputLevel.Information:
+                    return GetConsoleColor("Information", ConsoleColor.Green);
+                case OutputLevel.Warning:
+                    return GetConsoleColor("Warning", ConsoleColor.Yellow);
+                case OutputLevel.Error:
+                    return GetConsoleColor("Error", ConsoleColor.Red);
+                default:
+                    return null;
+            }
         }
 
         private static ConsoleColor GetConsoleColor(string name, ConsoleColor defaultColor)

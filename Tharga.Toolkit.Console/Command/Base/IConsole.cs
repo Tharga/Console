@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public enum OutputLevel { Default, Information, Warning, Error }
-
     public interface IConsole
     {
         int CursorLeft { get; set; }
