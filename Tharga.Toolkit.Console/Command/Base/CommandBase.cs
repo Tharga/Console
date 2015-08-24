@@ -251,23 +251,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void OutputEvent(string message, params object[] args)
         {
-            lock (_syncRoot)
-            {
-                var cursorLeft = _console.CursorLeft;
-                if (cursorLeft != 0)
-                {
-                    message = string.Format(message, args);
-                    var lines = (int)Math.Ceiling(message.Length / (decimal)_console.BufferWidth);
-                    _console.MoveBufferArea(0, _console.CursorTop, cursorLeft, 1, 0, _console.CursorTop + lines);
-                    _console.SetCursorPosition(0, _console.CursorTop);
-                }
-
-                Output(message, GetConsoleColor("EventColor", ConsoleColor.Cyan), true, args);
-                if (cursorLeft != 0)
-                {
-                    _console.SetCursorPosition(cursorLeft, _console.CursorTop);
-                }
-            }
+            Output(message, GetConsoleColor("EventColor", ConsoleColor.Cyan), true, args);
         }
 
         public void OutputLine(string message, OutputLevel outputLevel, params object[] args)

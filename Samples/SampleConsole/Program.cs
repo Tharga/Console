@@ -184,7 +184,9 @@ namespace SampleConsole
             //var output = new string('X', rng.Next(30, 200));
             var output = new string('X', rng.Next(3, 20));
 
-            switch (rng.Next(3))
+            //OutputEvent(output);
+
+            switch (rng.Next(4))
             {
                 case 0:
                     OutputInformation(output);
