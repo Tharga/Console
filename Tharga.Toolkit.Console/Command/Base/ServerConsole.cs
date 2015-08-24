@@ -6,20 +6,21 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     public class ServerConsole : SystemConsoleBase
     {
-        private readonly string _logSource;
+        private readonly string _eventLogSource;
 
-        public ServerConsole(string logSource = null)
+        public ServerConsole( string eventLogSource = null)
+            : base(System.Console.Out)
         {
-            if (string.IsNullOrEmpty(logSource))
-                _logSource = Assembly.GetExecutingAssembly().GetName().Name;
+            if (string.IsNullOrEmpty(eventLogSource))
+                _eventLogSource = Assembly.GetExecutingAssembly().GetName().Name;
             else
-                _logSource = logSource;
+                _eventLogSource = eventLogSource;
         }
 
         protected override void WriteLine(string value)
         {
             var output = string.Format("{0} {1}: {2}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), value);
-            System.Console.WriteLine(output);
+            _consoleWriter.WriteLine(output);
         }
 
         public override void WriteLine(string value, OutputLevel level)
@@ -30,19 +31,19 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 case OutputLevel.Default:
                     if (GetSetting(level, false))
-                        EventLog.WriteEntry(_logSource, value, EventLogEntryType.Information);
+                        EventLog.WriteEntry(_eventLogSource, value, EventLogEntryType.Information);
                     break;
                 case OutputLevel.Information:
                     if (GetSetting(level, true))
-                        EventLog.WriteEntry(_logSource, value, EventLogEntryType.Information);
+                        EventLog.WriteEntry(_eventLogSource, value, EventLogEntryType.Information);
                     break;
                 case OutputLevel.Warning:
                     if (GetSetting(level, true))
-                        EventLog.WriteEntry(_logSource, value, EventLogEntryType.Warning);
+                        EventLog.WriteEntry(_eventLogSource, value, EventLogEntryType.Warning);
                     break;
                 case OutputLevel.Error:
                     if (GetSetting(level, true))
-                        EventLog.WriteEntry(_logSource, value, EventLogEntryType.Error);
+                        EventLog.WriteEntry(_eventLogSource, value, EventLogEntryType.Error);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(string.Format("Unknown level {0}.", level));

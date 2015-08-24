@@ -66,6 +66,7 @@
     <Compile Include="Command\Base\ActionCommandBase.cs" />
     <Compile Include="Command\Base\CommandBase.cs" />
     <Compile Include="Command\Base\CommandEscapeException.cs" />
+    <Compile Include="Command\Base\ConsoleInterceptor.cs" />
     <Compile Include="Command\Base\ContainerCommandBase.cs" />
     <Compile Include="CommandEngine.cs" />
     <Compile Include="Command\Base\EntryException.cs" />

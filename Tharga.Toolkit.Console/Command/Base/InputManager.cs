@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 
 namespace Tharga.Toolkit.Console.Command.Base
-{    
+{
     internal class InputManager
     {
         private readonly ICommandBase _commandBase;
@@ -20,6 +20,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         //TODO: Theese two properties are the uggliest thing. What can I do to remove them?
         private static int _currentBufferLineCount;
         private static int _cursorLineOffset;
+
         public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
         public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
@@ -51,8 +52,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 try
                 {
                     var readKey = _console.ReadKey(true);
-
-                    var currentScreenLocation = new Location(_console.CursorLeft, _console.CursorTop);
+                    var currentScreenLocation = new Location(_console.CursorLeft, _console.CursorTop); //This is where the cursor actually is on screen.
                     var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * _console.BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
 
                     if (IsOutputKey(readKey))

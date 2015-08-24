@@ -7,11 +7,11 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public Location(int left, int top)
         {
-            this._left = left;
-            this._top = top;
+            _left = left;
+            _top = top;
         }
 
-        public int Left { get { return this._left; } }
-        public int Top { get { return this._top; } }
+        public int Left { get { return _left; } }
+        public int Top { get { return _top; } }
     }
 }

@@ -1,11 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
     public abstract class SystemConsoleBase : IConsole
     {
+        private static readonly object _syncRoot = new object();
+        protected readonly TextWriter _consoleWriter;
+
         public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
+
+        protected SystemConsoleBase(TextWriter consoleWriter)
+        {
+            _consoleWriter = consoleWriter;
+            //_consoleWriter = System.Console.Out; //This is where all output should go.
+            new ConsoleInterceptor(_consoleWriter, this, _syncRoot); //This one intercepts common output.
+        }
 
         protected virtual void InvokeLinesInsertedEvent(int lineCount)
         {
@@ -14,8 +25,6 @@ namespace Tharga.Toolkit.Console.Command.Base
         }
 
         protected abstract void WriteLine(string value);
-
-        private static readonly object SyncRoot = new object();
 
         public int CursorLeft
         {
@@ -50,8 +59,13 @@ namespace Tharga.Toolkit.Console.Command.Base
         public virtual string ReadLine() { return System.Console.ReadLine(); }
         public virtual ConsoleKeyInfo ReadKey() { return System.Console.ReadKey(); }
         public virtual ConsoleKeyInfo ReadKey(bool intercept) { return System.Console.ReadKey(intercept); }
-        public void NewLine() { System.Console.WriteLine(); }
-        public void Write(string value) { System.Console.Write(value); }
+        public void NewLine() { _consoleWriter.WriteLine(); }
+
+        public void Write(string value)
+        {
+            _consoleWriter.Write(value);
+        }
+
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
             try
@@ -70,7 +84,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public virtual void WriteLine(string value, OutputLevel level)
         {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
                 var linesToInsert = GetLineCount(value);
                 var inputBufferLines = InputManager.CurrentBufferLineCount;
@@ -95,7 +109,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                             System.Console.ForegroundColor = ConsoleColor.Red;
                             break;
                         default:
-                            System.Console.WriteLine("--> Unknown level {0}.", level);
+                            _consoleWriter.WriteLine("--> Unknown level {0}.", level);
                             System.Console.ForegroundColor = ConsoleColor.Blue;
                             break;
                     }
@@ -118,7 +132,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 CursorTop = CursorTop + intCursorLineOffset;
             }
-            catch (System.IO.IOException)
+            catch (IOException)
             {
             }
         }
@@ -131,7 +145,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 CursorTop = CursorTop - intCursorLineOffset;
                 return intCursorLineOffset;
             }
-            catch (System.IO.IOException)
+            catch (IOException)
             {
                 return 0;
             }
@@ -141,6 +155,8 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             try
             {
+                if (string.IsNullOrEmpty(value))
+                    return 1;
                 return (int)Math.Ceiling((decimal)value.Length / BufferWidth);
             }
             catch (System.IO.IOException)
@@ -177,7 +193,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void Write(string value, object[] arg)
         {
-            System.Console.Write(value, arg);
+            _consoleWriter.Write(value, arg);
         }
 
         public void Clear()

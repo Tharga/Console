@@ -9,9 +9,11 @@ using Tharga.Toolkit.Console.Command.Base;
 
 namespace SampleConsole
 {
+    using System.IO;
+    using System.Text;
+
     internal class Program
-    {
-        [STAThread]
+    {        [STAThread]
         private static void Main(string[] args)
         {
             var console = new ClientConsole();
@@ -131,6 +133,7 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             for (var i = 0; i < 5; i++) OutputInformation("Some data {0}", i);
+
             return true;
         }
     }
@@ -228,9 +231,24 @@ namespace SampleConsole
         private void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var rng = new Random();
-            var output = new string('X', rng.Next(3, 10));
+            //var output = new string('X', rng.Next(3, 10));
 
-            Console.WriteLine(output);
+            var output = "X";
+
+            //Console.WriteLine(output); //Do not use Console.WriteLine or Console.Write, use OutputLine instead.
+            //Console.WriteLine('X');
+            //Console.WriteLine(new[] { 'A', 'B', 'C' });
+
+            //Console.Write(new string('x', 100));
+
+            Console.Write("ABCDEF_");
+            Console.Write("ABCDEF_");
+            Console.Write("ABCDEF_");
+            Console.Write("ABCDEF_");
+            Console.Write("xxx_");
+            //Console.WriteLine("yyy.");
+
+            //Console.Write("ABCDEFGHIJKLMNOPQRTSUVXYZ_");
         }
 
         public override async Task<bool> InvokeAsync(string paramList)

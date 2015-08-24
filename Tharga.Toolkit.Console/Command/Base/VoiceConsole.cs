@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Speech.Recognition;
-using System.Speech.Synthesis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,6 +32,11 @@ namespace Tharga.Toolkit.Console.Command.Base
         private bool _reading;
         private ConsoleKeyInfo _keyInput;
 
+        public VoiceConsole()
+            : base(System.Console.Out)
+        {
+        }
+
         public override void Initiate(IEnumerable<string> commandKeys)
         {
             var choices = new Choices();
@@ -53,7 +58,8 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         protected override void WriteLine(string value)
         {
-            System.Console.WriteLine(value);
+            _consoleWriter.WriteLine(value);
+            //System.Console.WriteLine(value);
 
             //var builder = new PromptBuilder();
             //builder.StartSentence();
@@ -75,7 +81,8 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 _inputMethod = InputMethod.Voice;
                 _input = e.Result.Text;
-                System.Console.Write(_input);
+                //System.Console.Write(_input);
+                _consoleWriter.Write(_input);
                 _autoResetEvent.Set();
             }
         }
@@ -87,7 +94,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 _inputMethod = InputMethod.Voice;
                 _input = e.Result.Text;
 
-                var hwnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+                var hwnd = Process.GetCurrentProcess().MainWindowHandle;
 
                 switch (_input)
                 {
@@ -124,7 +131,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
             if (_inputMethod == InputMethod.Voice)
             {
-                var hwnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+                var hwnd = Process.GetCurrentProcess().MainWindowHandle;
                 PostMessage(hwnd, Keydown, Retrun, 0);
             }
 
@@ -141,6 +148,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             var task = Task.Factory.StartNew(() =>
             {
                 var s = System.Console.ReadKey();
+                //var s = _consoleReader.ReadKey();
                 _inputMethod = InputMethod.Keyboard;
                 if (!_reading) return;
                 _keyInput = s;
