@@ -156,7 +156,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             var selection = new List<KeyValuePair<T, string>>();
             if (selectionDelegate != null)
             {
-                selection = selectionDelegate.ToList();
+                selection = selectionDelegate.OrderBy(x => x.Value).ToList();
                 var q = GetParamByString(autoProvideValue, selection);
                 if (q != null)
                 {

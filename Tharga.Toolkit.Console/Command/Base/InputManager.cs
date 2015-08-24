@@ -171,13 +171,23 @@ namespace Tharga.Toolkit.Console.Command.Base
                             case ConsoleKey.Tab:
                                 if (selection.Any())
                                 {
+                                    //Go to the next item by using the input buffer
+                                    if (_tabIndex == -1)
+                                    {
+                                        var enumerable = selection.Select(x => x.Value).ToList();
+                                        //var firstHit = enumerable.FirstOrDefault(x => string.Compare(x, inputBuffer.ToString(), StringComparison.InvariantCultureIgnoreCase) == 0);
+                                        var firstHit = enumerable.FirstOrDefault(x => x.StartsWith(inputBuffer.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                                        if (firstHit != null)
+                                            _tabIndex = enumerable.IndexOf(firstHit) - 1;
+                                    }
+
                                     var step = 1;
                                     if (readKey.Modifiers == ConsoleModifiers.Shift)
                                         step = -1;
 
                                     var tabIndex = _tabIndex + step;
                                     if (tabIndex == selection.Length) tabIndex = 0;
-                                    if (tabIndex == -1) tabIndex = selection.Length - 1;
+                                    if (tabIndex <= -1) tabIndex = selection.Length - 1;
                                     Clear(inputBuffer);
                                     _console.Write(selection[tabIndex].Value);
                                     inputBuffer.Add(selection[tabIndex].Value);

@@ -66,10 +66,10 @@ namespace SampleConsole
             {
                 { Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A" },
                 { Guid.NewGuid(), "BB" },
-                { Guid.NewGuid(), "CCC" },
                 { Guid.NewGuid(), "D" },
                 { Guid.NewGuid(), "EEEEE" },
                 { Guid.NewGuid(), "F" },
+                { Guid.NewGuid(), "CCC" },
             };
         }
     }
