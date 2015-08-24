@@ -286,13 +286,23 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                     if (line)
                     {
-                        if (args == null)
+                        if (args == null || !args.Any())
                         {
                             _console.WriteLine(message);
                         }
                         else
                         {
-                            _console.WriteLine(string.Format(message, args));
+                            try
+                            {
+                                _console.WriteLine(string.Format(message, args));
+                            }
+                            catch (FormatException exception)
+                            {
+                                var exp = new FormatException(exception.Message + " Perhaps the parameters provided does not match the message.", exception);
+                                exp.Data.Add("Message", message);
+                                exp.Data.Add("Parameters", args.Count());
+                                throw exp;
+                            }
                         }
                     }
                     else
