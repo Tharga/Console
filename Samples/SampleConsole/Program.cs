@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Command;
 using Tharga.Toolkit.Console.Command.Base;
+using Timer = System.Timers.Timer;
 
 namespace SampleConsole
 {
-    using System.IO;
-    using System.Text;
-
     internal class Program
-    {        [STAThread]
+    {
+        [STAThread]
         private static void Main(string[] args)
         {
             var console = new ClientConsole();
@@ -61,7 +61,7 @@ namespace SampleConsole
 
         private async Task<IDictionary<Guid, string>> KeyNameList()
         {
-            System.Threading.Thread.Sleep(2000); //Simulate that it takes a while to get this data
+            Thread.Sleep(2000); //Simulate that it takes a while to get this data
             return new Dictionary<Guid, string>
             {
                 { Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A" },
@@ -84,7 +84,7 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var id = QueryParam<Guid>("Some Huge Id", GetParam(paramList, index++), HugeKeyNameList());
+            var id = QueryParam("Some Huge Id", GetParam(paramList, index++), HugeKeyNameList());
 
             OutputInformation("Some data for {0}", id);
 
@@ -231,24 +231,9 @@ namespace SampleConsole
         private void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var rng = new Random();
-            //var output = new string('X', rng.Next(3, 10));
+            var output = new string('X', rng.Next(3, 10));
 
-            var output = "X";
-
-            //Console.WriteLine(output); //Do not use Console.WriteLine or Console.Write, use OutputLine instead.
-            //Console.WriteLine('X');
-            //Console.WriteLine(new[] { 'A', 'B', 'C' });
-
-            //Console.Write(new string('x', 100));
-
-            Console.Write("ABCDEF_");
-            Console.Write("ABCDEF_");
-            Console.Write("ABCDEF_");
-            Console.Write("ABCDEF_");
-            Console.Write("xxx_");
-            //Console.WriteLine("yyy.");
-
-            //Console.Write("ABCDEFGHIJKLMNOPQRTSUVXYZ_");
+            Console.Write(output);
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
