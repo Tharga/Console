@@ -70,6 +70,7 @@
     <Compile Include="Command\Base\ContainerCommandBase.cs" />
     <Compile Include="CommandEngine.cs" />
     <Compile Include="Command\Base\EntryException.cs" />
+    <Compile Include="Command\Base\ICommand.cs" />
     <Compile Include="Command\Base\ICommandBase.cs" />
     <Compile Include="Command\Base\IConsole.cs" />
     <Compile Include="Command\Base\ClientConsole.cs" />

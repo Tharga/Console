@@ -7,9 +7,9 @@ using Tharga.Toolkit.Console.Helper;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public abstract class ContainerCommandBase : CommandBase
+    public abstract class ContainerCommandBase : CommandBase, ICommand
     {
-        protected readonly List<CommandBase> SubCommands = new List<CommandBase>();
+        protected readonly List<ICommand> SubCommands = new List<ICommand>();
 
         protected ContainerCommandBase(string name)
             : base(null, name, string.Format("Command that manages {0}.", name))
@@ -43,7 +43,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        public ContainerCommandBase RegisterCommand(CommandBase command)
+        public ContainerCommandBase RegisterCommand(ICommand command)
         {
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
 
@@ -63,12 +63,12 @@ namespace Tharga.Toolkit.Console.Command.Base
             SubCommands.RemoveAll(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0);
         }
 
-        public CommandBase GetCommand(string commandName)
+        public ICommand GetCommand(string commandName)
         {
             return SubCommands.FirstOrDefault(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0);
         }
 
-        protected override CommandBase GetHelpCommand()
+        protected override ICommand GetHelpCommand()
         {
             if (HelpCommand == null)
             {
@@ -88,7 +88,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             return true;
         }
 
-        protected internal CommandBase GetSubCommand(string entry, out string subCommand)
+        protected internal ICommand GetSubCommand(string entry, out string subCommand)
         {
             subCommand = null;
 

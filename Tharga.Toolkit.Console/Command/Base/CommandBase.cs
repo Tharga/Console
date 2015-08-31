@@ -36,7 +36,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         }
 
         public abstract Task<bool> InvokeAsync(string paramList);
-        protected abstract CommandBase GetHelpCommand();
+        protected abstract ICommand GetHelpCommand();
         public abstract bool CanExecute();
 
         protected virtual string GetCanExecuteFailMessage()

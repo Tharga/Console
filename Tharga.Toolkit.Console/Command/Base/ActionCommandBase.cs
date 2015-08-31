@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public abstract class ActionCommandBase : CommandBase
+    public abstract class ActionCommandBase : CommandBase, ICommand
     {
         private Func<bool> _canExecute;
 
@@ -37,7 +37,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             HelpText = helpText ?? string.Format("There is no detailed help for command {0}.", names[0]);
         }
 
-        protected override CommandBase GetHelpCommand()
+        protected override ICommand GetHelpCommand()
         {
             if (HelpCommand == null)
             {
