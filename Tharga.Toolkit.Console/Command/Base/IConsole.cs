@@ -15,10 +15,11 @@ namespace Tharga.Toolkit.Console.Command.Base
         ConsoleKeyInfo ReadKey(bool intercept);        
         void NewLine();
         void Write(string value);
-        void WriteLine(string value, OutputLevel level = OutputLevel.Default);
+        //void Write(string message, object[] args);
+        //void WriteLine(string value, OutputLevel level);
+        void WriteLine(string value, OutputLevel level, ConsoleColor? consoleColor);
         void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop);
         void SetCursorPosition(int left, int top);
-        void Write(string message, object[] args);
         void Clear();
         void Initiate(IEnumerable<string> commandKeys);
         event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;

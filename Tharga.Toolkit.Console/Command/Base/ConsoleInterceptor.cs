@@ -162,6 +162,8 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         private void WriteStuff(string value, bool lineFeed)
         {
+            var outputLevel = OutputLevel.Default;
+
             if (_location != null)
             {
                 lock (_syncRoot)
@@ -171,7 +173,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     while ((lns * -System.Console.BufferWidth) + _location.Left + value.Length >= System.Console.BufferWidth)
                     {
                         lns++;
-                        _console.WriteLine(string.Empty);
+                        _console.WriteLine(string.Empty, outputLevel, null);
                     }
 
                     var pos = new Location(System.Console.CursorLeft, System.Console.CursorTop);
@@ -199,14 +201,13 @@ namespace Tharga.Toolkit.Console.Command.Base
                 {
                     //First time a write arrives. assign a new line and remember position
                     _location = new Location(value.Length, System.Console.CursorTop);
-                    //Debug.WriteLine("Remember pos: " + _location.Left + ":" + _location.Top);
-                    _console.WriteLine(value);
+                    _console.WriteLine(value, outputLevel, null);
                 }
             }
             else
             {
                 //There is no previous location, and there is linefeed. This is a normal write line action.
-                _console.WriteLine(value);
+                _console.WriteLine(value, outputLevel, null);
             }
         }
     }

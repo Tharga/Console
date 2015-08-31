@@ -14,7 +14,6 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected SystemConsoleBase(TextWriter consoleWriter)
         {
             _consoleWriter = consoleWriter;
-            //_consoleWriter = System.Console.Out; //This is where all output should go.
             new ConsoleInterceptor(_consoleWriter, this, _syncRoot); //This one intercepts common output.
         }
 
@@ -23,8 +22,6 @@ namespace Tharga.Toolkit.Console.Command.Base
             var handler = LinesInsertedEvent;
             if (handler != null) handler(this, new LinesInsertedEventArgs(lineCount));
         }
-
-        protected abstract void WriteLine(string value);
 
         public int CursorLeft
         {
@@ -82,7 +79,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             System.Console.SetCursorPosition(left, top);
         }
 
-        public virtual void WriteLine(string value, OutputLevel level)
+        public void WriteLine(string value, OutputLevel level, ConsoleColor? consoleColor)
         {
             lock (_syncRoot)
             {
@@ -91,39 +88,39 @@ namespace Tharga.Toolkit.Console.Command.Base
                 var intCursorLineOffset = MoveCursorUp();
                 var cursorLeft = MoveInputBufferDown(linesToInsert, inputBufferLines);
 
-                var preColor = System.Console.ForegroundColor;
+                var defaultColor = ConsoleColor.White;
+                if (consoleColor == null)
+                {
+                    consoleColor = CommandBase.GetConsoleColor(level);
+                }
+
+                if (consoleColor != null)
+                {
+                    defaultColor = ForegroundColor;
+                    ForegroundColor = consoleColor.Value;
+                }
+
                 try
                 {
-                    switch (level)
-                    {
-                        case OutputLevel.Default:
-                            //System.Console.ForegroundColor = ConsoleColor.White;
-                            break;
-                        case OutputLevel.Information:
-                            System.Console.ForegroundColor = ConsoleColor.Green;
-                            break;
-                        case OutputLevel.Warning:
-                            System.Console.ForegroundColor = ConsoleColor.Yellow;
-                            break;
-                        case OutputLevel.Error:
-                            System.Console.ForegroundColor = ConsoleColor.Red;
-                            break;
-                        default:
-                            _consoleWriter.WriteLine("--> Unknown level {0}.", level);
-                            System.Console.ForegroundColor = ConsoleColor.Blue;
-                            break;
-                    }
-
-                    WriteLine(value);
+                    WriteLine(value, level);
                 }
                 finally
                 {
+                    if (consoleColor != null)
+                    {
+                        ForegroundColor = defaultColor;
+                    }
+
                     RestoreCursor(cursorLeft);
-                    System.Console.ForegroundColor = preColor;
                     InvokeLinesInsertedEvent(linesToInsert);
                     MoveCursorDown(intCursorLineOffset);
                 }
             }
+        }
+
+        protected virtual void WriteLine(string value, OutputLevel level)
+        {
+            _consoleWriter.WriteLine(value);
         }
 
         private void MoveCursorDown(int intCursorLineOffset)
@@ -159,7 +156,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     return 1;
                 return (int)Math.Ceiling((decimal)value.Length / BufferWidth);
             }
-            catch (System.IO.IOException)
+            catch (IOException)
             {
                 return 0;
             }
@@ -171,7 +168,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 CursorLeft = cursorLeft;
             }
-            catch (System.IO.IOException)
+            catch (IOException)
             {
             }
         }
@@ -185,7 +182,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 CursorLeft = 0;
                 return cursorLeft;
             }
-            catch (System.IO.IOException)
+            catch (IOException)
             {
                 return 0;
             }

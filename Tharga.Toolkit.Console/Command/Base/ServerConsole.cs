@@ -17,19 +17,13 @@ namespace Tharga.Toolkit.Console.Command.Base
                 _eventLogSource = eventLogSource;
         }
 
-        protected override void WriteLine(string value)
+        protected override void WriteLine(string value, OutputLevel level)
         {
             var output = string.Format("{0} {1}: {2}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), value);
-            _consoleWriter.WriteLine(output);
-        }
-
-        public override void WriteLine(string value, OutputLevel level)
-        {
-            base.WriteLine(value, level);
-
             switch (level)
             {
                 case OutputLevel.Default:
+                    output = value;
                     if (GetSetting(level, false))
                         EventLog.WriteEntry(_eventLogSource, value, EventLogEntryType.Information);
                     break;
@@ -47,7 +41,9 @@ namespace Tharga.Toolkit.Console.Command.Base
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(string.Format("Unknown level {0}.", level));
-            }            
+            }
+
+            base.WriteLine(output, level);
         }
 
         private bool GetSetting(OutputLevel outputLevel, bool defaultValue)

@@ -45,7 +45,16 @@ namespace Tharga.Toolkit.Console.Command.Base
             _mainSpeechRecognitionEngine.RequestRecognizerUpdate();
             _mainSpeechRecognitionEngine.LoadGrammar(gr);
             _mainSpeechRecognitionEngine.SpeechRecognized += _mainSpeechRecognitionEngine_SpeechRecognized;
-            _mainSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
+
+            try
+            {
+                _mainSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
+            }
+            catch (Exception exception)
+            {
+                base.WriteLine(string.Format("Unable to set default input audio device. Error: {0}", exception.Message), OutputLevel.Error, null);
+                return;
+            }
 
             var subChoices = new Choices();
             subChoices.Add(new[] { "tab", "enter" });
@@ -56,10 +65,9 @@ namespace Tharga.Toolkit.Console.Command.Base
             _subSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
         }
 
-        protected override void WriteLine(string value)
+        protected override void WriteLine(string value, OutputLevel outputLevel)
         {
-            _consoleWriter.WriteLine(value);
-            //System.Console.WriteLine(value);
+            base.WriteLine(value, outputLevel);
 
             //var builder = new PromptBuilder();
             //builder.StartSentence();

@@ -211,7 +211,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void OutputInformation(string message, params object[] args)
         {
-            OutputLine(message, GetConsoleColor(OutputLevel.Information), args);
+            OutputLine(message, OutputLevel.Information, args);
         }
 
         public void OutputTable(string[][] data, ConsoleColor? color = null)
@@ -226,10 +226,10 @@ namespace Tharga.Toolkit.Console.Command.Base
                     sb.AppendFormat("{0}{1}", line[i], new string(' ', columnLength[i] - line[i].Length + 1));
                 }
 
-                OutputLine(sb.ToString(), color);
+                OutputLine(sb.ToString(), color, OutputLevel.Information);
             }
 
-            OutputLine("{0} lines.", color, data.Length - 1);
+            OutputLine("{0} lines.", color, OutputLevel.Information, data.Length - 1);
         }
 
         private static int[] GetColumnSizes(string[][] data)
@@ -249,73 +249,56 @@ namespace Tharga.Toolkit.Console.Command.Base
             return length.ToArray();
         }
 
-        public void OutputEvent(string message, params object[] args)
+        public void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Information, params object[] args)
         {
-            Output(message, GetConsoleColor("EventColor", ConsoleColor.Cyan), true, args);
+            Output(message, GetConsoleColor("EventColor", ConsoleColor.Cyan), outputLevel, true, args);
         }
 
         public void OutputLine(string message, OutputLevel outputLevel, params object[] args)
         {
-            Output(message, GetConsoleColor(outputLevel), true, args);
+            Output(message, GetConsoleColor(outputLevel), outputLevel, true, args);
         }
 
-        public void OutputLine(string message, ConsoleColor? color, params object[] args)
+        public void OutputLine(string message, ConsoleColor? color, OutputLevel outputLevel, params object[] args)
         {
-            Output(message, color, true, args);
+            Output(message, color ?? GetConsoleColor(outputLevel), outputLevel, true, args);
         }
 
         public void Output(string message, OutputLevel outputLevel, bool line, params object[] args)
         {
-            Output(message, GetConsoleColor(outputLevel), line, args);
+            Output(message, GetConsoleColor(outputLevel), outputLevel, line, args);
         }
 
-        public void Output(string message, ConsoleColor? color, bool line, params object[] args)
+        public void Output(string message, ConsoleColor? color, OutputLevel outputLevel, bool line, params object[] args)
         {
             if (_console == null) throw new InvalidOperationException("No console assigned. The command was probably not registered, use CommandRegistered to do it manually.");
 
             lock (_syncRoot)
             {
-                var defaultColor = ConsoleColor.White;
-                try
+                if (line)
                 {
-                    if (color != null)
+                    if (args == null || !args.Any())
                     {
-                        defaultColor = _console.ForegroundColor;
-                        _console.ForegroundColor = color.Value;
-                    }
-
-                    if (line)
-                    {
-                        if (args == null || !args.Any())
-                        {
-                            _console.WriteLine(message);
-                        }
-                        else
-                        {
-                            try
-                            {
-                                _console.WriteLine(string.Format(message, args));
-                            }
-                            catch (FormatException exception)
-                            {
-                                var exp = new FormatException(exception.Message + " Perhaps the parameters provided does not match the message.", exception);
-                                exp.Data.Add("Message", message);
-                                exp.Data.Add("Parameters", args.Count());
-                                throw exp;
-                            }
-                        }
+                        _console.WriteLine(message, outputLevel, color);
                     }
                     else
                     {
-                        _console.Write(string.Format(message, args));
+                        try
+                        {
+                            _console.WriteLine(string.Format(message, args), outputLevel, color);
+                        }
+                        catch (FormatException exception)
+                        {
+                            var exp = new FormatException(exception.Message + " Perhaps the parameters provided does not match the message.", exception);
+                            exp.Data.Add("Message", message);
+                            exp.Data.Add("Parameters", args.Count());
+                            throw exp;
+                        }
                     }
                 }
-                finally
+                else
                 {
-                    if (color != null)
-                    {
-                        _console.ForegroundColor = defaultColor;
-                    }
+                    _console.Write(string.Format(message, args));
                 }
             }
         }
@@ -328,7 +311,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 return;
             }
 
-            Output(message, null, true, null);
+            Output(message, null, OutputLevel.Default, true, null);
         }
 
         public virtual void CommandRegistered(IConsole console)
@@ -336,7 +319,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             _console = console;
         }
 
-        private static ConsoleColor? GetConsoleColor(OutputLevel outputLevel)
+        internal static ConsoleColor? GetConsoleColor(OutputLevel outputLevel)
         {
             switch (outputLevel)
             {
