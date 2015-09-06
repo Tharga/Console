@@ -20,6 +20,18 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected override void WriteLine(string value, OutputLevel level)
         {
             var output = string.Format("{0} {1}: {2}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), value);
+            if (!EventLog.SourceExists(_eventLogSource))
+            {
+                try
+                {
+                    EventLog.CreateEventSource(_eventLogSource, "Application");
+                }
+                catch (Exception)
+                {
+                    base.WriteLine(string.Format("Unable to create event source named {0} in the event log.", _eventLogSource), OutputLevel.Error);
+                }
+            }
+
             switch (level)
             {
                 case OutputLevel.Default:
