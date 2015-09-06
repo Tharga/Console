@@ -36,20 +36,28 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 case OutputLevel.Default:
                     output = value;
-                    if (GetSetting(level, false))
+                    if (GetSetting(OutputType.Log, level, false))
                         EventLog.WriteEntry(_eventLogSource, value, EventLogEntryType.Information);
+                    if (GetSetting(OutputType.Trace, level, false))
+                        Trace.TraceInformation(value);
                     break;
                 case OutputLevel.Information:
-                    if (GetSetting(level, true))
+                    if (GetSetting(OutputType.Log, level, true))
                         EventLog.WriteEntry(_eventLogSource, value, EventLogEntryType.Information);
+                    if (GetSetting(OutputType.Trace, level, true))
+                        Trace.TraceInformation(value);
                     break;
                 case OutputLevel.Warning:
-                    if (GetSetting(level, true))
+                    if (GetSetting(OutputType.Log, level, true))
                         EventLog.WriteEntry(_eventLogSource, value, EventLogEntryType.Warning);
+                    if (GetSetting(OutputType.Trace, level, true))
+                        Trace.TraceWarning(value);
                     break;
                 case OutputLevel.Error:
-                    if (GetSetting(level, true))
+                    if (GetSetting(OutputType.Log, level, true))
                         EventLog.WriteEntry(_eventLogSource, value, EventLogEntryType.Error);
+                    if (GetSetting(OutputType.Trace, level, true))
+                        Trace.TraceError(value);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(string.Format("Unknown level {0}.", level));
@@ -58,11 +66,14 @@ namespace Tharga.Toolkit.Console.Command.Base
             base.WriteLine(output, level);
         }
 
-        private bool GetSetting(OutputLevel outputLevel, bool defaultValue)
+        private bool GetSetting(OutputType outputType, OutputLevel outputLevel, bool defaultValue)
         {
-            var data = System.Configuration.ConfigurationManager.AppSettings[string.Format("Log{0}", outputLevel)];
+            var settingName = string.Format("{0}{1}", outputType, outputLevel);
+            var data = System.Configuration.ConfigurationManager.AppSettings[settingName];
             bool result;
             return bool.TryParse(data, out result) ? result : defaultValue;
         }
     }
+
+    public enum OutputType { Log, Trace }
 }
