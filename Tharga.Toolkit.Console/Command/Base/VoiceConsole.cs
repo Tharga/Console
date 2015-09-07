@@ -65,9 +65,9 @@ namespace Tharga.Toolkit.Console.Command.Base
             _subSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
         }
 
-        protected override void WriteLine(string value, OutputLevel outputLevel)
+        protected override void WriteLineEx(string value, OutputLevel outputLevel)
         {
-            base.WriteLine(value, outputLevel);
+            base.WriteLineEx(value, outputLevel);
 
             //var builder = new PromptBuilder();
             //builder.StartSentence();

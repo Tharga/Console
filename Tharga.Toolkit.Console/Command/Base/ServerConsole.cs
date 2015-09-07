@@ -17,7 +17,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 _eventLogSource = eventLogSource;
         }
 
-        protected override void WriteLine(string value, OutputLevel level)
+        protected override void WriteLineEx(string value, OutputLevel level)
         {
             var output = string.Format("{0} {1}: {2}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), value);
             if (!EventLog.SourceExists(_eventLogSource))
@@ -28,7 +28,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
                 catch (Exception)
                 {
-                    base.WriteLine(string.Format("Unable to create event source named {0} in the event log.", _eventLogSource), OutputLevel.Error);
+                    WriteLine(string.Format("Unable to create event source named {0} in the event log.", _eventLogSource), OutputLevel.Error, null);
                 }
             }
 
@@ -63,7 +63,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     throw new ArgumentOutOfRangeException(string.Format("Unknown level {0}.", level));
             }
 
-            base.WriteLine(output, level);
+            base.WriteLineEx(output, level);
         }
 
         private bool GetSetting(OutputType outputType, OutputLevel outputLevel, bool defaultValue)

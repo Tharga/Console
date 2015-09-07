@@ -79,7 +79,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             System.Console.SetCursorPosition(left, top);
         }
 
-        public void WriteLine(string value, OutputLevel level, ConsoleColor? consoleColor)
+        public void WriteLine(string value, OutputLevel level, ConsoleColor? consoleColor = null)
         {
             lock (_syncRoot)
             {
@@ -102,7 +102,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                 try
                 {
-                    WriteLine(value, level);
+                    WriteLineEx(value, level);
                 }
                 finally
                 {
@@ -118,7 +118,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        protected virtual void WriteLine(string value, OutputLevel level)
+        protected virtual void WriteLineEx(string value, OutputLevel level)
         {
             _consoleWriter.WriteLine(value);
         }
