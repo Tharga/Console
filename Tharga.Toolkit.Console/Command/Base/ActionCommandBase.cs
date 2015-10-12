@@ -14,6 +14,10 @@ namespace Tharga.Toolkit.Console.Command.Base
             : this(null, name, description, null)
         {
         }
+        protected ActionCommandBase(string[] names, string description)
+           : this(null, names, description, null)
+        {
+        }
 
         internal ActionCommandBase(IConsole console, string name, string description)
             : this(console, name, description, null)
