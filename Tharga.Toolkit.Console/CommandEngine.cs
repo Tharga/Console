@@ -27,12 +27,16 @@ namespace Tharga.Toolkit.Console
             _rootCommand = rootCommand;
         }
 
+        public string SplashScreen { get; set; }
+
         public void Run(string[] args)
         {
             _commandMode = args.Length > 0;
 
             var commands = GetCommands(args);
             var flags = GetFlags(args);
+
+            ShowSplashScreen();
 
             ShowAssemblyInfo();
 
@@ -55,6 +59,14 @@ namespace Tharga.Toolkit.Console
                     break;
                 }
             }
+        }
+
+        private void ShowSplashScreen()
+        {
+            if(string.IsNullOrEmpty(SplashScreen))
+                return;
+
+            _rootCommand.OutputInformationLine(SplashScreen, _commandMode);
         }
 
         [ExcludeFromCodeCoverage]

@@ -25,7 +25,15 @@ namespace SampleConsole
             command.RegisterCommand(new EngineContainerCommand());
             command.RegisterCommand(new MathContainerCommand());
             command.RegisterCommand(new StatusCommand());
-            new CommandEngine(command).Run(args);
+
+            const string splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
+
+            var commandEngine = new CommandEngine(command)
+            {
+                SplashScreen = splashscreen
+            };
+
+            commandEngine.Run(args);
         }
     }
 
