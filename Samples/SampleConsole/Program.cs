@@ -25,6 +25,7 @@ namespace SampleConsole
             command.RegisterCommand(new EngineContainerCommand());
             command.RegisterCommand(new MathContainerCommand());
             command.RegisterCommand(new StatusCommand());
+            command.RegisterCommand(new ParametersCommand());
 
             const string splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
 
@@ -357,6 +358,68 @@ namespace SampleConsole
         public async override Task<bool> InvokeAsync(string paramList)
         {
             throw new InvalidOperationException("Some crash.");
+        }
+    }
+
+    public class ParametersCommand : ContainerCommandBase
+    {
+        public ParametersCommand()
+            : base("param")
+        {
+            var buildParametersCommand = new BuildParametersCommand();
+            RegisterCommand(buildParametersCommand);
+
+            RegisterCommand(new ExecuteParametersCommand(buildParametersCommand));
+        }
+    }
+
+    public class BuildParametersCommand : ActionCommandBase
+    {
+        public BuildParametersCommand()
+            : base("build", "Build command parameters")
+        {
+        }
+
+        public async override Task<bool> InvokeAsync(string paramList)
+        {
+            var parameters = CreateParameters(paramList);
+            OutputInformation("Created parameters: {0}", parameters);
+
+            return true;
+        }
+
+        public string CreateParameters(string paramList)
+        {
+            var index = 0;
+            var val1 = QueryParam<string>("First value", GetParam(paramList, index++));
+            var val2 = QueryParam<string>("Second value", GetParam(paramList, index++));
+            var val3 = QueryParam<string>("Third value", GetParam(paramList, index++), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
+            var val4 = "some_constant";
+            var val5 = DateTime.UtcNow.DayOfWeek;
+
+            var parameters = string.Format("{0} {1} {2} {3} {4}", val1, val2, val3, val4, val5);
+            return parameters;
+        }
+    }
+
+    public class ExecuteParametersCommand : ActionCommandBase
+    {
+        private readonly BuildParametersCommand _parametersCommand;
+
+        public ExecuteParametersCommand(BuildParametersCommand parametersCommand)
+            : base("execute", "Execute a command")
+        {
+            _parametersCommand = parametersCommand;
+        }
+
+        public async override Task<bool> InvokeAsync(string paramList)
+        {
+            var parameters = _parametersCommand.CreateParameters(paramList);
+
+            //TODO: Execute something using the parameters
+            OutputInformation("Execute somthing using the parameters: {0}", parameters);
+
+            return true;
         }
     }
 }
