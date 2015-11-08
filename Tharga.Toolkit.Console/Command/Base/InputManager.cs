@@ -26,10 +26,12 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public InputManager(IConsole console, ICommandBase commandBase, string paramName)
         {
+            if (console == null) throw new ArgumentNullException("console", "No console provided.");
+
             _commandBase = commandBase;
             _console = console;
-            _console.LinesInsertedEvent += LinesInsertedEvent;
             _paramName = paramName;
+            _console.LinesInsertedEvent += LinesInsertedEvent;
             _startLocation = new Location(_console.CursorLeft, _console.CursorTop);
         }
 
