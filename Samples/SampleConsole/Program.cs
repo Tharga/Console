@@ -13,6 +13,8 @@ namespace SampleConsole
 {
     internal class Program
     {
+        private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
+
         [STAThread]
         private static void Main(string[] args)
         {
@@ -27,11 +29,9 @@ namespace SampleConsole
             command.RegisterCommand(new StatusCommand());
             command.RegisterCommand(new ParametersCommand());
 
-            const string splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
-
             var commandEngine = new CommandEngine(command)
             {
-                SplashScreen = splashscreen
+                SplashScreen = _splashscreen
             };
 
             commandEngine.Run(args);
@@ -357,7 +357,17 @@ namespace SampleConsole
 
         public async override Task<bool> InvokeAsync(string paramList)
         {
-            throw new InvalidOperationException("Some crash.");
+            var exception = new Exception("Some even deeper exception.");
+            exception.Data.Add("A1", "B1");
+
+            var innerException = new Exception("Some inner exception.", exception);
+            innerException.Data.Add("A1", "B1");
+            innerException.Data.Add("A2", "B2");
+
+            var invalidOperationException = new InvalidOperationException("Some crash.", innerException);
+            invalidOperationException.Data.Add("xxx", "111");
+
+            throw invalidOperationException;
         }
     }
 

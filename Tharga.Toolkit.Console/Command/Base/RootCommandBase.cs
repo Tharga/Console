@@ -93,15 +93,22 @@ namespace Tharga.Toolkit.Console.Command.Base
             return success;
         }
 
-        private void HandleError(Exception exception)
+        private void HandleError(Exception exception, int indentationLevel = 0)
         {
-            OutputError(exception.Message);
+            var indentation = new string(' ', indentationLevel * 2);
+            OutputError("{0}{1}", indentation, exception.Message);
             foreach (DictionaryEntry data in exception.Data)
             {
-                OutputError("- {0}: {1}", data.Key, data.Value);
+                //OutputError("{0}{{ \"{1}\": \"{2}\" }}", indentation, data.Key, data.Value);
+                OutputError("{0}{1}: {2}", indentation, data.Key, data.Value);
+            }
+
+            if (exception.InnerException != null)
+            {                
+                HandleError(exception.InnerException, ++indentationLevel);
             }
         }
-
+        
         public void Initiate()
         {
             Console.Initiate(CommandKeys);
