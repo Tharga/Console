@@ -237,11 +237,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
                 catch (Exception exception)
                 {
-                    _commandBase.OutputError("{0}", exception.Message);
-                    foreach (DictionaryEntry data in exception.Data)
-                    {
-                        _commandBase.OutputError("- {0}: {1}", data.Key, data.Value);
-                    }
+                    _commandBase.OutputError(exception);
                 }
             }
         }

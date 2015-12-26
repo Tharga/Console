@@ -72,20 +72,20 @@ namespace Tharga.Toolkit.Console.Command.Base
             catch (SystemException exception)
             {
                 InvokeExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                HandleError(exception);
+                OutputError(exception);
             }
             catch (AggregateException exception)
             {
                 InvokeExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
                 foreach (var exp in exception.InnerExceptions)
                 {
-                    HandleError(exp);
+                    OutputError(exp);
                 }
             }
             catch (Exception exception)
             {
                 InvokeExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                HandleError(exception);
+                OutputError(exception);
                 OutputInformation("Terminating application...");
                 throw;
             }
@@ -93,22 +93,6 @@ namespace Tharga.Toolkit.Console.Command.Base
             return success;
         }
 
-        private void HandleError(Exception exception, int indentationLevel = 0)
-        {
-            var indentation = new string(' ', indentationLevel * 2);
-            OutputError("{0}{1}", indentation, exception.Message);
-            foreach (DictionaryEntry data in exception.Data)
-            {
-                //OutputError("{0}{{ \"{1}\": \"{2}\" }}", indentation, data.Key, data.Value);
-                OutputError("{0}{1}: {2}", indentation, data.Key, data.Value);
-            }
-
-            if (exception.InnerException != null)
-            {                
-                HandleError(exception.InnerException, ++indentationLevel);
-            }
-        }
-        
         public void Initiate()
         {
             Console.Initiate(CommandKeys);

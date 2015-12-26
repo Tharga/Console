@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
@@ -197,6 +198,26 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
 
             return null;
+        }
+
+        public void OutputError(Exception exception)
+        {
+            OutputError(exception, 0);
+        }
+
+        private void OutputError(Exception exception, int indentationLevel)
+        {
+            var indentation = new string(' ', indentationLevel * 2);
+            OutputError("{0}{1}", indentation, exception.Message);
+            foreach (DictionaryEntry data in exception.Data)
+            {
+                OutputError("{0}{1}: {2}", indentation, data.Key, data.Value);
+            }
+
+            if (exception.InnerException != null)
+            {
+                OutputError(exception.InnerException, ++indentationLevel);
+            }
         }
 
         public void OutputError(string message, params object[] args)
