@@ -235,6 +235,13 @@ namespace Tharga.Toolkit.Console.Command.Base
             OutputLine(message, OutputLevel.Information, args);
         }
 
+        public void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? color = null)
+        {
+            var table = new List<string[]> { title.ToArray() };
+            table.AddRange(data.Select(item => item.ToArray()));
+            OutputTable(table.ToArray(), color);
+        }
+
         public void OutputTable(string[][] data, ConsoleColor? color = null)
         {
             var columnLength = GetColumnSizes(data);
