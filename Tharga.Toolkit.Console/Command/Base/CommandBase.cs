@@ -257,12 +257,17 @@ namespace Tharga.Toolkit.Console.Command.Base
                 OutputLine(sb.ToString(), color, OutputLevel.Information);
             }
 
-            OutputLine("{0} lines.", color, OutputLevel.Information, data.Length - 1);
+            var lineCount = data.Length - 1;
+            if (lineCount < 0) lineCount = 0;
+            OutputLine("{0} lines.", color, OutputLevel.Information, lineCount);
         }
 
         private static int[] GetColumnSizes(string[][] data)
         {
-            var length = new int[data.Count()];
+            if (data.Length == 0)
+                return new int[] {};
+
+            var length = new int[data[0].Length];
             foreach (var line in data)
             {
                 for (var i = 0; i < line.Length; i++)
