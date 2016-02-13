@@ -281,8 +281,9 @@ namespace Tharga.Toolkit.Console.Command.Base
                 case ConsoleKey.F11:
                 case ConsoleKey.F12:
                 case ConsoleKey.F13: 
-                case ConsoleKey.Oem1:
                     return false;
+                case ConsoleKey.Oem1: //This is the : key on an english keyboard
+                    return true;
                 default:
                     return true;
             }
