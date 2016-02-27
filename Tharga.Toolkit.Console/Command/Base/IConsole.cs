@@ -21,5 +21,6 @@ namespace Tharga.Toolkit.Console.Command.Base
         void Clear();
         void Initiate(IEnumerable<string> commandKeys);
         event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
+        event EventHandler<KeyReadEventArgs> KeyReadEvent;
     }
 }

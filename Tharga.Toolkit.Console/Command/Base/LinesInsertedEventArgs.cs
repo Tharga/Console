@@ -1,14 +1,14 @@
+using System;
+
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public class LinesInsertedEventArgs
+    public class LinesInsertedEventArgs : EventArgs
     {
-        private readonly int _lineCount;
-
         public LinesInsertedEventArgs(int lineCount)
         {
-            _lineCount = lineCount;
+            LineCount = lineCount;
         }
 
-        public int LineCount { get { return _lineCount; } }
+        public int LineCount { get; }
     }
 }

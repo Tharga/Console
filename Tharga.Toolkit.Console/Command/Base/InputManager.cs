@@ -54,6 +54,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 try
                 {
                     var readKey = _console.ReadKey(true);
+
                     var currentScreenLocation = new Location(_console.CursorLeft, _console.CursorTop); //This is where the cursor actually is on screen.
                     var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * _console.BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
 

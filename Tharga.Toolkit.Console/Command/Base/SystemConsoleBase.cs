@@ -10,6 +10,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected readonly TextWriter _consoleWriter;
 
         public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
+        public event EventHandler<KeyReadEventArgs> KeyReadEvent;
 
         protected SystemConsoleBase(TextWriter consoleWriter)
         {
@@ -17,10 +18,15 @@ namespace Tharga.Toolkit.Console.Command.Base
             new ConsoleInterceptor(_consoleWriter, this, _syncRoot); //This one intercepts common output.
         }
 
-        protected virtual void InvokeLinesInsertedEvent(int lineCount)
+        protected virtual void OnLinesInsertedEvent(int lineCount)
         {
             var handler = LinesInsertedEvent;
-            if (handler != null) handler(this, new LinesInsertedEventArgs(lineCount));
+            handler?.Invoke(this, new LinesInsertedEventArgs(lineCount));
+        }
+
+        protected virtual void OnKeyReadEvent(KeyReadEventArgs e)
+        {
+            KeyReadEvent?.Invoke(this, e);
         }
 
         public int CursorLeft
@@ -54,8 +60,21 @@ namespace Tharga.Toolkit.Console.Command.Base
         }
 
         public virtual string ReadLine() { return System.Console.ReadLine(); }
-        public virtual ConsoleKeyInfo ReadKey() { return System.Console.ReadKey(); }
-        public virtual ConsoleKeyInfo ReadKey(bool intercept) { return System.Console.ReadKey(intercept); }
+
+        public virtual ConsoleKeyInfo ReadKey()
+        {
+            var consoleKeyInfo = System.Console.ReadKey();
+            OnKeyReadEvent(new KeyReadEventArgs(consoleKeyInfo));
+            return consoleKeyInfo;
+        }
+
+        public virtual ConsoleKeyInfo ReadKey(bool intercept)
+        {
+            var consoleKeyInfo = System.Console.ReadKey(intercept);
+            OnKeyReadEvent(new KeyReadEventArgs(consoleKeyInfo));
+            return consoleKeyInfo;
+        }
+
         public void NewLine() { _consoleWriter.WriteLine(); }
 
         public void Write(string value)
@@ -112,7 +131,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     }
 
                     RestoreCursor(cursorLeft);
-                    InvokeLinesInsertedEvent(linesToInsert);
+                    OnLinesInsertedEvent(linesToInsert);
                     MoveCursorDown(intCursorLineOffset);
                 }
             }

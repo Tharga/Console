@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -28,7 +29,7 @@ namespace SampleConsole
             command.RegisterCommand(new MathContainerCommand());
             command.RegisterCommand(new StatusCommand());
             command.RegisterCommand(new ParametersCommand());
-
+            
             var commandEngine = new CommandEngine(command)
             {
                 SplashScreen = _splashscreen

@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -22,13 +21,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             System.Console.SetOut(this);
         }
 
-        public override Encoding Encoding
-        {
-            get
-            {
-                return _consoleWriter.Encoding;
-            }
-        }
+        public override Encoding Encoding => _consoleWriter.Encoding;
 
         public override void WriteLine()
         {
