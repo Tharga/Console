@@ -11,6 +11,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         public event EventHandler<KeyReadEventArgs> KeyReadEvent;
+        public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
 
         protected SystemConsoleBase(TextWriter consoleWriter)
         {
@@ -22,6 +23,11 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             var handler = LinesInsertedEvent;
             handler?.Invoke(this, new LinesInsertedEventArgs(lineCount));
+        }
+
+        protected virtual void OnLineWrittenEvent(LineWrittenEventArgs e)
+        {
+            LineWrittenEvent?.Invoke(this, e);
         }
 
         protected virtual void OnKeyReadEvent(KeyReadEventArgs e)
@@ -140,6 +146,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected virtual void WriteLineEx(string value, OutputLevel level)
         {
             _consoleWriter.WriteLine(value);
+            OnLineWrittenEvent(new LineWrittenEventArgs(value, level));
         }
 
         private void MoveCursorDown(int intCursorLineOffset)

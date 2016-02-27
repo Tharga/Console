@@ -79,6 +79,7 @@
     <Compile Include="Command\Base\InputManager.cs" />
     <Compile Include="Command\Base\KeyReadEventArgs.cs" />
     <Compile Include="Command\Base\LinesInsertedEventArgs.cs" />
+    <Compile Include="Command\Base\LineWrittenEventArgs.cs" />
     <Compile Include="Command\Base\Location.cs" />
     <Compile Include="Command\Base\OutputLevel.cs" />
     <Compile Include="Command\Base\ServerConsole.cs" />
