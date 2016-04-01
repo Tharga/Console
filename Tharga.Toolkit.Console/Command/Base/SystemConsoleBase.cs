@@ -186,6 +186,10 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 return 0;
             }
+			catch (DivideByZeroException) 
+			{
+				return 1;
+			}
         }
 
         private void RestoreCursor(int cursorLeft)
