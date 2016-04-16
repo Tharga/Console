@@ -282,9 +282,9 @@ namespace Tharga.Toolkit.Console.Command.Base
             return length.ToArray();
         }
 
-        public void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Information, params object[] args)
+        public void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Default, params object[] args)
         {
-            Output(message, GetConsoleColor("EventColor", ConsoleColor.Cyan), outputLevel, true, args);
+            Output(message, outputLevel == OutputLevel.Default ? GetConsoleColor("EventColor", ConsoleColor.Cyan) : GetConsoleColor(outputLevel), outputLevel, true, args);
         }
 
         public void OutputLine(string message, OutputLevel outputLevel, params object[] args)
