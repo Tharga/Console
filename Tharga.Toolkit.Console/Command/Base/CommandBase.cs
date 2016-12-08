@@ -40,7 +40,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected abstract ICommand GetHelpCommand(string paramList);
         public abstract bool CanExecute(out string reasonMesage);
 
-        protected virtual bool CanExecute()
+        public virtual bool CanExecute()
         {
             return true;
         }
