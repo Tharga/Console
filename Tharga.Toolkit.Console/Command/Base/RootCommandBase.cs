@@ -37,7 +37,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             RegisterCommand(new ExecuteCommand(Console, this));
         }
 
-        protected internal virtual void SetStopAction(Action stopAction)
+        public virtual void SetStopAction(Action stopAction)
         {
             var exitCommand = GetCommand("exit");
 
