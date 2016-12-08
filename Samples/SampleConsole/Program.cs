@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -29,7 +28,7 @@ namespace SampleConsole
             command.RegisterCommand(new MathContainerCommand());
             command.RegisterCommand(new StatusCommand());
             command.RegisterCommand(new ParametersCommand());
-            
+
             var commandEngine = new CommandEngine(command)
             {
                 SplashScreen = _splashscreen
@@ -49,13 +48,23 @@ namespace SampleConsole
             RegisterCommand(new SomeHugeItemCommand());
             RegisterCommand(new SomeStringItemCommand());
             RegisterCommand(new SomeTableCommand());
+            RegisterCommand(new SomeDisabledCommand());
+        }
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get
+            {
+                yield return new HelpLine("Here is some extra help for the some command.", ConsoleColor.DarkMagenta);
+                yield return new HelpLine("It can be placed on several lines.", ConsoleColor.DarkMagenta);
+            }
         }
     }
 
     internal class SomeItemCommand : ActionCommandBase
     {
         public SomeItemCommand()
-            : base("item", "Gets a single item")
+            : base("item", "Gets a single item.")
         {
         }
 
@@ -79,7 +88,7 @@ namespace SampleConsole
                 { Guid.NewGuid(), "D" },
                 { Guid.NewGuid(), "EEEEE" },
                 { Guid.NewGuid(), "F" },
-                { Guid.NewGuid(), "CCC" },
+                { Guid.NewGuid(), "CCC" }
             };
         }
     }
@@ -87,7 +96,7 @@ namespace SampleConsole
     internal class SomeHugeItemCommand : ActionCommandBase
     {
         public SomeHugeItemCommand()
-            : base("huge", "Gets a single huge item")
+            : base("huge", "Gets a single huge item.")
         {
         }
 
@@ -110,7 +119,7 @@ namespace SampleConsole
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "CCCCCCCCCC"),
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"),
                 new KeyValuePair<Guid, string>(Guid.NewGuid(), "EEEEEEEEEEEEEEEEEEEE"),
-                new KeyValuePair<Guid, string>(Guid.NewGuid(), "FFFFFFFFFF"),
+                new KeyValuePair<Guid, string>(Guid.NewGuid(), "FFFFFFFFFF")
             };
         }
     }
@@ -118,14 +127,14 @@ namespace SampleConsole
     internal class SomeStringItemCommand : ActionCommandBase
     {
         public SomeStringItemCommand()
-            : base("string", "Make some string input")
+            : base("string", "Make some string input.")
         {
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var id = QueryParam<string>("Some string", GetParam(paramList, index++), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
+            var id = QueryParam("Some string", GetParam(paramList, index++), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
 
             OutputInformation("Entered string was: {0}", id);
 
@@ -136,7 +145,7 @@ namespace SampleConsole
     internal class SomeListCommand : ActionCommandBase
     {
         public SomeListCommand()
-            : base("list", "Lists some information")
+            : base("list", "Lists some information.")
         {
         }
 
@@ -151,7 +160,7 @@ namespace SampleConsole
     internal class SomeTableCommand : ActionCommandBase
     {
         public SomeTableCommand()
-            : base("table", "Output information in a table")
+            : base("table", "Output information in a table.")
         {
         }
 
@@ -170,13 +179,32 @@ namespace SampleConsole
         }
     }
 
+    internal class SomeDisabledCommand : ActionCommandBase
+    {
+        public SomeDisabledCommand()
+            : base("disabled", "Command that is always disabled.")
+        {
+        }
+
+        public override bool CanExecute(out string reasonMesage)
+        {
+            reasonMesage = "Because it is disabled.";
+            return false;
+        }
+
+        public override Task<bool> InvokeAsync(string paramList)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class EngineContainerCommand : ContainerCommandBase
     {
         public EngineContainerCommand()
             : base("Engine")
         {
             RegisterCommand(new WorkingOutputCommand());
-            RegisterCommand(new FailingOutputCommand());
+            RegisterCommand(new ConsoleOutputCommand());
         }
     }
 
@@ -185,7 +213,7 @@ namespace SampleConsole
         private readonly Timer _timer;
 
         public WorkingOutputCommand()
-            : base("work", "An engine output example that works")
+            : base("work", "An engine output example that works.")
         {
             _timer = new Timer { Interval = 3000 };
             _timer.Elapsed += _timer_Elapsed;
@@ -227,12 +255,12 @@ namespace SampleConsole
         }
     }
 
-    public class FailingOutputCommand : ActionCommandBase
+    public class ConsoleOutputCommand : ActionCommandBase
     {
         private readonly Timer _timer;
 
-        public FailingOutputCommand()
-            : base("fail", "An engine output example that fails")
+        public ConsoleOutputCommand()
+            : base("console", "An engine output example that uses console.")
         {
             _timer = new Timer { Interval = 3000 };
             _timer.Elapsed += _timer_Elapsed;
@@ -267,7 +295,7 @@ namespace SampleConsole
     public class MathAddCommand : ActionCommandBase
     {
         public MathAddCommand()
-            : base("add", "Adds two values together")
+            : base("add", "Adds two values together.")
         {
         }
 
@@ -286,7 +314,7 @@ namespace SampleConsole
     public class MathAddMultipleCommand : ActionCommandBase
     {
         public MathAddMultipleCommand()
-            : base("addm", "Adds multiple values together")
+            : base("addm", "Adds multiple values together.")
         {
         }
 
@@ -323,12 +351,12 @@ namespace SampleConsole
 
     public class StatusSuccessCommand : ActionCommandBase
     {
-        public StatusSuccessCommand() 
+        public StatusSuccessCommand()
             : base("success", "An action that returns success.")
         {
         }
 
-        public async override Task<bool> InvokeAsync(string paramList)
+        public override async Task<bool> InvokeAsync(string paramList)
         {
             OutputInformation("This command worked.");
             return true;
@@ -342,7 +370,7 @@ namespace SampleConsole
         {
         }
 
-        public async override Task<bool> InvokeAsync(string paramList)
+        public override async Task<bool> InvokeAsync(string paramList)
         {
             OutputWarning("This command did not work.");
             return false;
@@ -356,7 +384,7 @@ namespace SampleConsole
         {
         }
 
-        public async override Task<bool> InvokeAsync(string paramList)
+        public override async Task<bool> InvokeAsync(string paramList)
         {
             var exception = new Exception("Some even deeper exception.");
             exception.Data.Add("A1", "B1");
@@ -387,11 +415,11 @@ namespace SampleConsole
     public class BuildParametersCommand : ActionCommandBase
     {
         public BuildParametersCommand()
-            : base("build", "Build command parameters")
+            : base("build", "Build command parameters.")
         {
         }
 
-        public async override Task<bool> InvokeAsync(string paramList)
+        public override async Task<bool> InvokeAsync(string paramList)
         {
             var parameters = CreateParameters(paramList);
             OutputInformation("Created parameters: {0}", parameters);
@@ -404,7 +432,7 @@ namespace SampleConsole
             var index = 0;
             var val1 = QueryParam<string>("First value", GetParam(paramList, index++));
             var val2 = QueryParam<string>("Second value", GetParam(paramList, index++));
-            var val3 = QueryParam<string>("Third value", GetParam(paramList, index++), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
+            var val3 = QueryParam("Third value", GetParam(paramList, index++), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
             var val4 = "some_constant";
             var val5 = DateTime.UtcNow.DayOfWeek;
 
@@ -418,12 +446,12 @@ namespace SampleConsole
         private readonly BuildParametersCommand _parametersCommand;
 
         public ExecuteParametersCommand(BuildParametersCommand parametersCommand)
-            : base("execute", "Execute a command")
+            : base("execute", "Execute a command.")
         {
             _parametersCommand = parametersCommand;
         }
 
-        public async override Task<bool> InvokeAsync(string paramList)
+        public override async Task<bool> InvokeAsync(string paramList)
         {
             var parameters = _parametersCommand.CreateParameters(paramList);
 

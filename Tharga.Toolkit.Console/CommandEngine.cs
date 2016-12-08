@@ -73,7 +73,7 @@ namespace Tharga.Toolkit.Console
         private void ShowAssemblyInfo()
         {
             var assembly = Assembly.GetEntryAssembly();
-            if (assembly != null) _rootCommand.OutputInformationLine(string.Format("{0} (Version {1})", assembly.GetName().Name, assembly.GetName().Version), _commandMode);
+            if (assembly != null) _rootCommand.OutputInformationLine($"{assembly.GetName().Name} (Version {assembly.GetName().Version})", _commandMode);
         }
 
         private static List<string> GetCommands(IEnumerable<string> args)

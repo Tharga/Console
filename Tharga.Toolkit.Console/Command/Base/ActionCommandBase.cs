@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
@@ -8,7 +9,7 @@ namespace Tharga.Toolkit.Console.Command.Base
     {
         private Func<bool> _canExecute;
 
-        public string HelpText { get; set; }
+        public override IEnumerable<HelpLine> HelpText { get { yield break; } }
 
         protected ActionCommandBase(string name, string description)
             : this(null, name, description, null)
@@ -33,25 +34,29 @@ namespace Tharga.Toolkit.Console.Command.Base
         private ActionCommandBase(IConsole console, string name, string description, string helpText)
             : base(console, name, description)
         {
-            HelpText = helpText ?? string.Format("There is no detailed help for command {0}.", name);
+            //HelpText = helpText ?? $"There is no detailed help for command {name}.";
         }
 
         private ActionCommandBase(IConsole console, string[] names, string description, string helpText)
             : base(console, names, description)
         {
-            HelpText = helpText ?? string.Format("There is no detailed help for command {0}.", names[0]);
+            //HelpText = helpText ?? $"There is no detailed help for command {names[0]}.";
         }
 
-        protected override ICommand GetHelpCommand()
+        protected override ICommand GetHelpCommand(string paramList)
         {
-            if (HelpCommand == null)
+            var helpCommand = new HelpCommand(Console);
+            if (HelpText.Any())
             {
-                HelpCommand = new HelpCommand(Console);
-                HelpCommand.AddLine(string.Format("Help for command {0}. {1}", Name, Description));
-                HelpCommand.AddLine(HelpText, CanExecute);
+                helpCommand.AddLine($"Help for command {Name}.", foreColor: ConsoleColor.DarkCyan);
+                foreach (var helpText in HelpText)
+                {
+                    helpCommand.AddLine(helpText.Text, foreColor: helpText.ForeColor);
+                }
+                helpCommand.AddLine(string.Empty);
             }
 
-            return HelpCommand;
+            return helpCommand;
         }
 
         public void SetCanExecute(Func<bool> canExecute)
@@ -59,9 +64,12 @@ namespace Tharga.Toolkit.Console.Command.Base
             _canExecute = canExecute;
         }
 
-        public override bool CanExecute()
+        public override bool CanExecute(out string reasonMessage)
         {
-            return _canExecute == null || _canExecute();
+            reasonMessage = "";
+            if (_canExecute == null)
+                return CanExecute();
+            return _canExecute();
         }
 
         protected static Func<List<KeyValuePair<string, string>>> SelectionTrueFalse()

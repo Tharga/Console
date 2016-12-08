@@ -15,12 +15,12 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         private readonly string _description;
         private readonly string[] _names;
-        private IConsole _console;
-        protected HelpCommand HelpCommand { get; set; }
+        protected IConsole _console;
         public string Name { get { return _names[0]; } }
         public IEnumerable<string> Names { get { return _names; } }
         public string Description { get { return _description; } }
         internal IConsole Console { get { return _console; } }
+        public abstract IEnumerable<HelpLine> HelpText { get; }
 
         internal CommandBase(IConsole console, string name, string description = null)
         {
@@ -37,19 +37,25 @@ namespace Tharga.Toolkit.Console.Command.Base
         }
 
         public abstract Task<bool> InvokeAsync(string paramList);
-        protected abstract ICommand GetHelpCommand();
-        public abstract bool CanExecute();
+        protected abstract ICommand GetHelpCommand(string paramList);
+        public abstract bool CanExecute(out string reasonMesage);
 
-        protected virtual string GetCanExecuteFailMessage()
+        protected virtual bool CanExecute()
         {
-            return string.Format("You cannot execute {0} command.", Name);
+            return true;
+        }
+
+        protected virtual string GetCanExecuteFailMessage(string reason)
+        {
+            return $"You cannot execute {Name} command." + (string.IsNullOrEmpty(reason) ? string.Empty : " " + reason);
         }
 
         public virtual async Task<bool> InvokeWithCanExecuteCheckAsync(string paramList)
         {
-            if (!CanExecute())
+            string reason;
+            if (!CanExecute(out reason))
             {
-                OutputWarning(GetCanExecuteFailMessage());
+                OutputWarning(GetCanExecuteFailMessage(reason));
                 return true;
             }
 
@@ -134,7 +140,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             List<KeyValuePair<T, string>> selection = null;
             if (selectionDelegate != null)
             {
-                OutputInformation("Loading data for " + paramName + "...");
+                OutputInformation($"Loading data for {paramName}...");
                 selection = (await selectionDelegate()).ToList();
             }
 

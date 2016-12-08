@@ -49,7 +49,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public sealed override async Task<bool> InvokeAsync(string paramList)
         {
-            return await GetHelpCommand().InvokeAsync(paramList);
+            return await GetHelpCommand(paramList).InvokeAsync(paramList);
         }
 
         public bool ExecuteCommand(string entry)
@@ -67,7 +67,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     success = task.Result;
                 }
                 else
-                    OutputError("Invalid command {0}", entry);
+                    OutputError("Invalid command {0}.", entry);
             }
             catch (SystemException exception)
             {

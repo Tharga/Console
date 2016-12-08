@@ -4,16 +4,22 @@ namespace Tharga.Toolkit.Console.Command
 {
     public class HelpLine
     {
-        private readonly string _text;
-        private readonly Func<bool> _canExecute;
+        public string Text { get; }
+        public Func<bool> CanExecute { get; }
+        public ConsoleColor ForeColor { get; }
 
-        public string Text { get { return _text; } }
-        public Func<bool> CanExecute { get { return _canExecute; } }
-
-        public HelpLine(string text, Func<bool> canExecute)
+        public HelpLine(string text, ConsoleColor foreColor = ConsoleColor.Gray)
         {
-            _text = text;
-            _canExecute = canExecute;
+            Text = text;
+            CanExecute = null;
+            ForeColor = foreColor;
+        }
+
+        public HelpLine(string text, Func<bool> canExecute, ConsoleColor foreColor)
+        {
+            Text = text;
+            CanExecute = canExecute;
+            ForeColor = foreColor;
         }
     }
 }

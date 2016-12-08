@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Exceptions;
 using Tharga.Toolkit.Console.Helper;
@@ -12,14 +13,16 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected readonly List<ICommand> SubCommands = new List<ICommand>();
 
         protected ContainerCommandBase(string name)
-            : base(null, name, string.Format("Command that manages {0}.", name))
+            : base(null, name, $"Command that manages {name}.")
         {
         }
 
         internal ContainerCommandBase(IConsole console, string name)
-            : base(console, name, string.Format("Command that manages {0}.", name))
+            : base(console, name, $"Command that manages {name}.")
         {
         }
+
+        public override IEnumerable<HelpLine> HelpText { get { yield break; } }
 
         protected virtual IEnumerable<string> CommandKeys
         {
@@ -29,7 +32,10 @@ namespace Tharga.Toolkit.Console.Command.Base
                 {
                     foreach (var name in sub.Names)
                     {
-                        if (this is RootCommand) yield return "help";
+                        if (this is RootCommand)
+                        {
+                            yield return "help";
+                        }
 
                         yield return name;
 
@@ -37,7 +43,10 @@ namespace Tharga.Toolkit.Console.Command.Base
                         if (subContainer == null) continue;
                         yield return name + " help";
                         var commandKeys = subContainer.CommandKeys;
-                        foreach (var key in commandKeys) yield return name + " " + key;
+                        foreach (var key in commandKeys)
+                        {
+                            yield return name + " " + key;
+                        }
                     }
                 }
             }
@@ -68,38 +77,165 @@ namespace Tharga.Toolkit.Console.Command.Base
             return SubCommands.FirstOrDefault(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0);
         }
 
-        protected override ICommand GetHelpCommand()
+        protected override ICommand GetHelpCommand(string paramList)
         {
-            if (HelpCommand == null)
-            {
-                HelpCommand = new HelpCommand(Console);
-                HelpCommand.AddLine(string.Format("Help for command {0}.", Name));
-                HelpCommand.AddLine(string.Empty);
+            var helpCommand = new HelpCommand(Console);
 
-                HelpCommand.AddLine(string.Format("Sub Commands for {0}:", Name));
-                foreach (var command in SubCommands) HelpCommand.AddLine(string.Format("{0} {1}", command.Name.PadString(10), command.Description), command.CanExecute);
+            var command = this as ICommand;
+            var subCommand = paramList?.Trim();
+            if (paramList != " details")
+            {
+                command = GetSubCommand(paramList, out subCommand);
             }
 
-            return HelpCommand;
+            if (command == null)
+            {
+                helpCommand.AddLine("No command named " + paramList + ".", foreColor: ConsoleColor.Red);
+                return helpCommand;
+            }
+
+            if (command.Name == "root")
+            {
+                var assembly = Assembly.GetEntryAssembly();
+                helpCommand.AddLine($"Application {assembly?.GetName().Name ?? "main"} help.", foreColor: ConsoleColor.DarkCyan);
+                helpCommand.AddLine($"Version {assembly?.GetName().Version}");
+            }
+            else
+            {
+                helpCommand.AddLine($"Help for command {command.Name}.", foreColor: ConsoleColor.DarkCyan);
+                helpCommand.AddLine(command.Description);
+            }
+
+            if (subCommand != null && subCommand.EndsWith("details"))
+            {
+                if (command.HelpText.Any())
+                {
+                    foreach (var helpText in command.HelpText)
+                    {
+                        helpCommand.AddLine(helpText.Text, foreColor: helpText.ForeColor);
+                    }
+                }
+                else
+                {
+                    string reasonMessage;
+                    if (!command.CanExecute(out reasonMessage))
+                    {
+                        helpCommand.AddLine(string.Empty);
+                        helpCommand.AddLine("This command can currently note be executed.", foreColor: ConsoleColor.DarkRed);
+                        helpCommand.AddLine(reasonMessage, foreColor: ConsoleColor.DarkRed);
+                    }
+                }
+
+                if (command.Name == "root")
+                {
+                    helpCommand.AddLine(string.Empty);
+                    helpCommand.AddLine("How to use help.", foreColor: ConsoleColor.DarkCyan);
+                    helpCommand.AddLine("Use the parameter -? at the end of any command to get more details.");
+                    helpCommand.AddLine("It is also possible to type 'help [command]' to get details.");
+
+                    //helpCommand.AddLine(string.Empty);
+                    //helpCommand.AddLine("Application parameters.", foreColor: ConsoleColor.DarkCyan);
+                    //helpCommand.AddLine("");
+
+                    //helpCommand.AddLine(string.Empty);
+                    //helpCommand.AddLine("More details.", foreColor: ConsoleColor.DarkCyan);
+                    //helpCommand.AddLine("Visit https://github.com/poxet/tharga-console.");
+                }
+            }
+            else if (command.HelpText.Any())
+            {
+                if (command.Name == "root")
+                {
+                    helpCommand.AddLine($"Type \"help\" for more information.", foreColor: ConsoleColor.DarkYellow);
+                }
+                else
+                {
+                    helpCommand.AddLine($"Type \"{command.Name} -?\" for more information.", foreColor: ConsoleColor.DarkYellow);
+                }
+            }
+
+            var containerCommand = command as ContainerCommandBase;
+            if (containerCommand != null)
+            {
+                ShowSubCommandHelp(containerCommand.SubCommands, helpCommand);
+            }
+
+            if (command.Names.Count() > 1)
+            {
+                helpCommand.AddLine(string.Empty);
+                helpCommand.AddLine("Alternative names:", foreColor: ConsoleColor.DarkCyan);
+                foreach (var name in command.Names)
+                {
+                    helpCommand.AddLine($"{name}");
+                }
+            }
+
+            return helpCommand;
         }
 
-        public override bool CanExecute()
+        private void ShowSubCommandHelp(List<ICommand> subCommands, HelpCommand helpCommand)
         {
-            return true;
+            var containerCommands = subCommands.Where(x => x is ContainerCommandBase).ToArray();
+            if (containerCommands.Any())
+            {
+                helpCommand.AddLine(string.Empty);
+                helpCommand.AddLine($"Sections for {Name}:", foreColor: ConsoleColor.DarkCyan);
+                foreach (var command in containerCommands)
+                {
+                    helpCommand.AddLine($"{command.Name.PadString(10)} {command.Description}", () =>
+                    {
+                        string reasonMessage;
+                        return command.CanExecute(out reasonMessage);
+                    });
+                }
+            }
+
+            var actionCommands = subCommands.Where(x => x is ActionCommandBase).ToArray();
+            if (actionCommands.Any())
+            {
+                helpCommand.AddLine(string.Empty);
+                helpCommand.AddLine($"Commands for {Name}:", foreColor: ConsoleColor.DarkCyan);
+                foreach (var command in actionCommands)
+                {
+                    helpCommand.AddLine($"{command.Name.PadString(10)} {command.Description}", () =>
+                    {
+                        string reasonMessage;
+                        return command.CanExecute(out reasonMessage);
+                    });
+                }
+            }
+        }
+
+        public override bool CanExecute(out string reasonMessage)
+        {
+            reasonMessage = null;
+            return CanExecute();
         }
 
         protected internal ICommand GetSubCommand(string entry, out string subCommand)
         {
             subCommand = null;
 
-            if (string.Compare("help", entry, StringComparison.CurrentCultureIgnoreCase) == 0) return GetHelpCommand();
-
-            if (string.IsNullOrEmpty(entry)) return this;
+            if (string.IsNullOrEmpty(entry))
+            {
+                return this;
+            }
 
             var arr = entry.Split(' ');
             if (arr.Length > 1) subCommand = entry.Substring(entry.IndexOf(' ') + 1);
-
             var name = arr[0].ToLower();
+
+            if (string.Compare("help", name, StringComparison.CurrentCultureIgnoreCase) == 0)
+            {
+                return GetHelpCommand(subCommand + " details");
+            }
+            else if (entry.EndsWith("-?") || entry.EndsWith("/?") || entry.EndsWith("--help"))
+            {
+                entry = entry.Replace("-?", string.Empty);
+                entry = entry.Replace("/?", string.Empty);
+                entry = entry.Replace("--help", string.Empty);
+                return GetHelpCommand(entry.Trim() + " details");
+            }
 
             //Look for a command registered in current list
             var command = SubCommands.FirstOrDefault(y => y.Names.Any(x => string.Compare(x, name, StringComparison.InvariantCultureIgnoreCase) == 0));
@@ -122,9 +258,12 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public override async Task<bool> InvokeAsync(string paramList)
         {
-            if (string.IsNullOrEmpty(paramList)) return await GetHelpCommand().InvokeAsync(paramList);
+            if (string.IsNullOrEmpty(paramList))
+            {
+                return await GetHelpCommand(paramList).InvokeAsync(paramList);
+            }
 
-            OutputWarning(string.Format("Unknown sub command {0}, for {1}.", paramList, Name));
+            OutputWarning($"Unknown sub command {paramList}, for {Name}.");
             return false;
         }
     }

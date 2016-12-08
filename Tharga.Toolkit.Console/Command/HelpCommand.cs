@@ -10,7 +10,7 @@ namespace Tharga.Toolkit.Console.Command
         private readonly List<HelpLine> _helpLines = new List<HelpLine>();
 
         internal HelpCommand(IConsole console)
-            : base(console, "help", "Displays helpt text")
+            : base(console, "help", "Displays helpt text.")
         {
         }
 
@@ -18,15 +18,15 @@ namespace Tharga.Toolkit.Console.Command
         {
             foreach (var helpLine in _helpLines)
             {
-                Output(helpLine.Text, (helpLine.CanExecute() ? ConsoleColor.Gray : ConsoleColor.DarkGray), OutputLevel.Default, true, null);
+                Output(helpLine.Text, (helpLine.CanExecute() ? helpLine.ForeColor : ConsoleColor.DarkGray), OutputLevel.Default, true, null);
             }
 
             return true;
         }
 
-        internal void AddLine(string text, Func<bool> canExecute = null)
+        internal void AddLine(string text, Func<bool> canExecute = null, ConsoleColor foreColor = ConsoleColor.Gray)
         {
-            _helpLines.Add(new HelpLine(text, canExecute ?? (() => true)));
+            _helpLines.Add(new HelpLine(text, canExecute ?? (() => true), foreColor));
         }
     }
 }
