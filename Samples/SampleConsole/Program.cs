@@ -22,7 +22,7 @@ namespace SampleConsole
             //var console = new VoiceConsole();
             //var console = new ServerConsole(string.Empty);
 
-            var command = new RootCommand(console);
+            var command = new MyRootCommand(console);
             command.RegisterCommand(new SomeContainerCommand());
             command.RegisterCommand(new EngineContainerCommand());
             command.RegisterCommand(new MathContainerCommand());
