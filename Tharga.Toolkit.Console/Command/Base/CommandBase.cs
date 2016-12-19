@@ -111,6 +111,29 @@ namespace Tharga.Toolkit.Console.Command.Base
             return QueryParam<string>("> ", null, null, false);
         }
 
+        protected string QueryPassword(string paramName, string autoProvideValue = null, string defaultValue = null)
+        {
+            string value;
+
+            if (!string.IsNullOrEmpty(autoProvideValue))
+            {
+                value = autoProvideValue;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(defaultValue))
+                {
+                    value = QueryParam(paramName, null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, true);
+                }
+                else
+                {
+                    value = QueryParam(paramName, null, (List<KeyValuePair<string, string>>)null, true);
+                }
+            }
+
+            return value;
+        }
+
         protected T QueryParam<T>(string paramName, string autoProvideValue = null, string defaultValue = null)
         {
             string value;
@@ -123,11 +146,11 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 if (!string.IsNullOrEmpty(defaultValue))
                 {
-                    value = QueryParam(paramName, null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) });
+                    value = QueryParam(paramName, null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, false);
                 }
                 else
                 {
-                    value = QueryParam(paramName, null, (List<KeyValuePair<string, string>>)null);
+                    value = QueryParam(paramName, null, (List<KeyValuePair<string, string>>)null, false);
                 }
             }
 
@@ -150,15 +173,15 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         protected T QueryParam<T>(string paramName, string autoProvideValue, IDictionary<T, string> selectionDelegate)
         {
-            return QueryParam(paramName, autoProvideValue, selectionDelegate, true);
+            return QueryParam(paramName, autoProvideValue, selectionDelegate, true, false);
         }
 
-        protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate)
+        protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
         {
-            return QueryParam(paramName, autoProvideValue, selectionDelegate, true);
+            return QueryParam(paramName, autoProvideValue, selectionDelegate, true, passwordEntry);
         }
 
-        private T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool allowEscape)
+        private T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool allowEscape, bool passwordEntry)
         {
             var selection = new List<KeyValuePair<T, string>>();
             if (selectionDelegate != null)
@@ -171,7 +194,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
             }
 
-            var inputManager = new InputManager(_console, this, paramName + (!selection.Any() ? "" : " [Tab]"));
+            var inputManager = new InputManager(_console, this, paramName + (!selection.Any() ? "" : " [Tab]"), passwordEntry);
             var response = inputManager.ReadLine(selection.ToArray(), allowEscape);
             return response;
         }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -11,6 +10,7 @@ namespace Tharga.Toolkit.Console.Command.Base
     {
         private readonly ICommandBase _commandBase;
         private readonly string _paramName;
+        private readonly bool _passwordEntry;
         private readonly IConsole _console;
         private static readonly Dictionary<string, List<string>> _commandHistory = new Dictionary<string, List<string>>();
         private int _commandHistoryIndex = -1;
@@ -24,13 +24,14 @@ namespace Tharga.Toolkit.Console.Command.Base
         public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
         public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
-        public InputManager(IConsole console, ICommandBase commandBase, string paramName)
+        public InputManager(IConsole console, ICommandBase commandBase, string paramName, bool passwordEntry = false)
         {
             if (console == null) throw new ArgumentNullException("console", "No console provided.");
 
             _commandBase = commandBase;
             _console = console;
             _paramName = paramName;
+            _passwordEntry = passwordEntry;
             _console.LinesInsertedEvent += LinesInsertedEvent;
             _startLocation = new Location(_console.CursorLeft, _console.CursorTop);
         }
@@ -40,13 +41,13 @@ namespace Tharga.Toolkit.Console.Command.Base
             _startLocation = new Location(_startLocation.Left, _startLocation.Top + e.LineCount);
         }
 
-        //TODO: Test this function        
+        //TODO: Write unit tests for this function
         public T ReadLine<T>(KeyValuePair<T, string>[] selection, bool allowEscape)
         {
             var inputBuffer = new InputBuffer();
             inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
 
-            _console.Write(string.Format("{0}{1}", _paramName, _paramName.Length > 2 ? ": " : string.Empty));
+            _console.Write($"{_paramName}{(_paramName.Length > 2 ? ": " : string.Empty)}");
             _startLocation = new Location(_console.CursorLeft, _console.CursorTop);
 
             while (true)
@@ -178,7 +179,6 @@ namespace Tharga.Toolkit.Console.Command.Base
                                     if (_tabIndex == -1)
                                     {
                                         var enumerable = selection.Select(x => x.Value).ToList();
-                                        //var firstHit = enumerable.FirstOrDefault(x => string.Compare(x, inputBuffer.ToString(), StringComparison.InvariantCultureIgnoreCase) == 0);
                                         var firstHit = enumerable.FirstOrDefault(x => x.StartsWith(inputBuffer.ToString(), StringComparison.InvariantCultureIgnoreCase));
                                         if (firstHit != null)
                                             _tabIndex = enumerable.IndexOf(firstHit) - 1;
@@ -281,7 +281,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 case ConsoleKey.F10:
                 case ConsoleKey.F11:
                 case ConsoleKey.F12:
-                case ConsoleKey.F13: 
+                case ConsoleKey.F13:
                     return false;
                 case ConsoleKey.Oem1: //This is the : key on an english keyboard
                     return true;
@@ -292,7 +292,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         private void RecallCommandHistory(ConsoleKeyInfo readKey, InputBuffer inputBuffer)
         {
-            if (_commandHistory.ContainsKey(_paramName))
+            if (_commandHistory.ContainsKey(_paramName) && !_passwordEntry)
             {
                 var chi = GetNextCommandHistoryIndex(readKey, _commandHistoryIndex);
 
@@ -437,7 +437,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
             else
             {
-                _console.Write(input.ToString());
+                _console.Write(_passwordEntry ? "*" : input.ToString());
             }
 
             inputBuffer.Insert(currentBufferPosition, input.ToString(CultureInfo.InvariantCulture));

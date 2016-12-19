@@ -49,6 +49,7 @@ namespace SampleConsole
             RegisterCommand(new SomeStringItemCommand());
             RegisterCommand(new SomeTableCommand());
             RegisterCommand(new SomeDisabledCommand());
+            RegisterCommand(new SomePasswordCommand());
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -195,6 +196,24 @@ namespace SampleConsole
         public override Task<bool> InvokeAsync(string paramList)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    internal class SomePasswordCommand : ActionCommandBase
+    {
+        public SomePasswordCommand()
+            : base("password", "Command with password entry.")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            var index = 0;
+            var password = QueryPassword("Some password", GetParam(paramList, index++));
+
+            OutputInformation("Entered password was: {0}", password);
+
+            return true;
         }
     }
 
