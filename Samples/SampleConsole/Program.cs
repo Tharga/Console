@@ -21,6 +21,8 @@ namespace SampleConsole
             var console = new ClientConsole();
             //var console = new VoiceConsole();
             //var console = new ServerConsole(string.Empty);
+            //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
+            //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
 
             var command = new MyRootCommand(console);
             command.RegisterCommand(new SomeContainerCommand());
@@ -35,6 +37,10 @@ namespace SampleConsole
             };
 
             commandEngine.Run(args);
+            //command.Execute("some list");
+            //command.Execute("some item");
+
+            console.Dispose();
         }
     }
 

@@ -65,7 +65,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             _subSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
         }
 
-        protected override void WriteLineEx(string value, OutputLevel outputLevel)
+        protected internal override void WriteLineEx(string value, OutputLevel outputLevel)
         {
             base.WriteLineEx(value, outputLevel);
 
@@ -90,7 +90,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 _inputMethod = InputMethod.Voice;
                 _input = e.Result.Text;
                 //System.Console.Write(_input);
-                _consoleWriter.Write(_input);
+                ConsoleWriter.Write(_input);
                 _autoResetEvent.Set();
             }
         }

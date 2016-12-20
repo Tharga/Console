@@ -64,12 +64,15 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Command\Base\ActionCommandBase.cs" />
+    <Compile Include="Command\Base\ActionConsole.cs" />
+    <Compile Include="Command\Base\AggregateConsole.cs" />
     <Compile Include="Command\Base\CommandBase.cs" />
     <Compile Include="Command\Base\CommandEscapeException.cs" />
     <Compile Include="Command\Base\ConsoleInterceptor.cs" />
     <Compile Include="Command\Base\ContainerCommandBase.cs" />
     <Compile Include="CommandEngine.cs" />
     <Compile Include="Command\Base\EntryException.cs" />
+    <Compile Include="Command\Base\IActionConsoleOutput.cs" />
     <Compile Include="Command\Base\ICommand.cs" />
     <Compile Include="Command\Base\ICommandBase.cs" />
     <Compile Include="Command\Base\IConsole.cs" />
@@ -77,6 +80,7 @@
     <Compile Include="Command\Base\InputBuffer.cs" />
     <Compile Include="Command\Base\InputBufferChangedEventArgs.cs" />
     <Compile Include="Command\Base\InputManager.cs" />
+    <Compile Include="Command\Base\IRootCommand.cs" />
     <Compile Include="Command\Base\KeyReadEventArgs.cs" />
     <Compile Include="Command\Base\LinesInsertedEventArgs.cs" />
     <Compile Include="Command\Base\LineWrittenEventArgs.cs" />

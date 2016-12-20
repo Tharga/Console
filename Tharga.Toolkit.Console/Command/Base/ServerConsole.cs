@@ -8,7 +8,7 @@ namespace Tharga.Toolkit.Console.Command.Base
     {
         private readonly string _eventLogSource;
 
-        public ServerConsole( string eventLogSource = null)
+        public ServerConsole(string eventLogSource = null)
             : base(System.Console.Out)
         {
             if (string.IsNullOrEmpty(eventLogSource))
@@ -17,7 +17,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 _eventLogSource = eventLogSource;
         }
 
-        protected override void WriteLineEx(string value, OutputLevel level)
+        protected internal override void WriteLineEx(string value, OutputLevel level)
         {
             var output = string.Format("{0} {1}: {2}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), value);
             if (!EventLog.SourceExists(_eventLogSource))

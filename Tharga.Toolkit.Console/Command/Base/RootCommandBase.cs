@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Threading.Tasks;
 
 namespace Tharga.Toolkit.Console.Command.Base
@@ -8,25 +7,20 @@ namespace Tharga.Toolkit.Console.Command.Base
     {
         public class ExceptionOccuredEventArgs : EventArgs
         {
-            private readonly Exception _exception;
-
             public ExceptionOccuredEventArgs(Exception exception)
             {
-                _exception = exception;
+                Exception = exception;
             }
 
-            public Exception Exception
-            {
-                get { return _exception; }
-            }
+            public Exception Exception { get; }
         }
 
         public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
 
-        protected virtual void InvokeExceptionOccuredEvent(ExceptionOccuredEventArgs e)
+        protected virtual void OnExceptionOccuredEvent(ExceptionOccuredEventArgs e)
         {
-            EventHandler<ExceptionOccuredEventArgs> handler = ExceptionOccuredEvent;
-            if (handler != null) handler(this, e);
+            var handler = ExceptionOccuredEvent;
+            handler?.Invoke(this, e);
         }
 
         protected RootCommandBase(IConsole console, Action stopAction)
@@ -44,7 +38,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             if (exitCommand is ExitCommand)
                 ((ExitCommand)GetCommand("exit")).SetStopAction(stopAction);
             else
-                throw new ArgumentOutOfRangeException(string.Format("Unknown type for exit command. {0}", exitCommand.GetType()));
+                throw new ArgumentOutOfRangeException($"Unknown type for exit command. {exitCommand.GetType()}");
         }
 
         public sealed override async Task<bool> InvokeAsync(string paramList)
@@ -52,7 +46,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             return await GetHelpCommand(paramList).InvokeAsync(paramList);
         }
 
-        public bool ExecuteCommand(string entry)
+        public bool Execute(string entry)
         {
             var success = false;
 
@@ -71,12 +65,12 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
             catch (SystemException exception)
             {
-                InvokeExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
+                OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
                 OutputError(exception);
             }
             catch (AggregateException exception)
             {
-                InvokeExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
+                OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
                 foreach (var exp in exception.InnerExceptions)
                 {
                     OutputError(exp);
@@ -84,7 +78,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
             catch (Exception exception)
             {
-                InvokeExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
+                OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
                 OutputError(exception);
                 OutputInformation("Terminating application...");
                 throw;
@@ -93,7 +87,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             return success;
         }
 
-        public void Initiate()
+        internal void Initiate()
         {
             Console.Initiate(CommandKeys);
         }

@@ -11,13 +11,13 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected virtual void InvokeInputBufferChangedEvent()
         {
             var handler = InputBufferChangedEvent;
-            if (handler != null) handler(this, new InputBufferChangedEventArgs());
+            handler?.Invoke(this, new InputBufferChangedEventArgs());
         }
 
         private readonly List<char> _inputBuffer = new List<char>();
 
-        public int Length { get { return _inputBuffer.Count; } }
-        public bool IsEmpty { get { return !_inputBuffer.Any(); } }
+        public int Length => _inputBuffer.Count;
+        public bool IsEmpty => !_inputBuffer.Any();
 
         public char? LastOrDefault()
         {

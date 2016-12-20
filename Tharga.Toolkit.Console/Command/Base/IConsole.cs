@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public interface IConsole
+    public interface IConsole : IDisposable
     {
         int CursorLeft { get; set; }
         int BufferWidth { get; set; }
@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         ConsoleColor BackgroundColor { get; set; }
         string ReadLine();
         ConsoleKeyInfo ReadKey();
-        ConsoleKeyInfo ReadKey(bool intercept);        
+        ConsoleKeyInfo ReadKey(bool intercept);
         void NewLine();
         void Write(string value);
         void WriteLine(string value, OutputLevel level, ConsoleColor? consoleColor = null);

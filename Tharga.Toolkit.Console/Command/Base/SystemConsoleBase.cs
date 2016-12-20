@@ -7,33 +7,18 @@ namespace Tharga.Toolkit.Console.Command.Base
     public abstract class SystemConsoleBase : IConsole
     {
         private static readonly object _syncRoot = new object();
-        protected readonly TextWriter _consoleWriter;
-
-        public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
-        public event EventHandler<KeyReadEventArgs> KeyReadEvent;
-        public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
+        protected internal readonly TextWriter ConsoleWriter;
+        private readonly ConsoleInterceptor _interceptor;
 
         protected SystemConsoleBase(TextWriter consoleWriter)
         {
-            _consoleWriter = consoleWriter;
-            new ConsoleInterceptor(_consoleWriter, this, _syncRoot); //This one intercepts common output.
+            ConsoleWriter = consoleWriter;
+            if(ConsoleWriter != null)
+                _interceptor = new ConsoleInterceptor(ConsoleWriter, this, _syncRoot); //This one intercepts common output.
         }
 
-        protected virtual void OnLinesInsertedEvent(int lineCount)
-        {
-            var handler = LinesInsertedEvent;
-            handler?.Invoke(this, new LinesInsertedEventArgs(lineCount));
-        }
-
-        protected virtual void OnLineWrittenEvent(LineWrittenEventArgs e)
-        {
-            LineWrittenEvent?.Invoke(this, e);
-        }
-
-        protected virtual void OnKeyReadEvent(KeyReadEventArgs e)
-        {
-            KeyReadEvent?.Invoke(this, e);
-        }
+        public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
+        public event EventHandler<KeyReadEventArgs> KeyReadEvent;
 
         public int CursorLeft
         {
@@ -65,7 +50,10 @@ namespace Tharga.Toolkit.Console.Command.Base
             set { System.Console.BackgroundColor = value; }
         }
 
-        public virtual string ReadLine() { return System.Console.ReadLine(); }
+        public virtual string ReadLine()
+        {
+            return System.Console.ReadLine();
+        }
 
         public virtual ConsoleKeyInfo ReadKey()
         {
@@ -81,11 +69,14 @@ namespace Tharga.Toolkit.Console.Command.Base
             return consoleKeyInfo;
         }
 
-        public void NewLine() { _consoleWriter.WriteLine(); }
+        public void NewLine()
+        {
+            ConsoleWriter?.WriteLine();
+        }
 
         public void Write(string value)
         {
-            _consoleWriter.Write(value);
+            ConsoleWriter?.Write(value);
         }
 
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
@@ -96,7 +87,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
             catch (ArgumentOutOfRangeException)
             {
-            }            
+            }
         }
 
         public void SetCursorPosition(int left, int top)
@@ -115,9 +106,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                 var defaultColor = ConsoleColor.White;
                 if (consoleColor == null)
-                {
                     consoleColor = CommandBase.GetConsoleColor(level);
-                }
 
                 if (consoleColor != null)
                 {
@@ -132,9 +121,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 finally
                 {
                     if (consoleColor != null)
-                    {
                         ForegroundColor = defaultColor;
-                    }
 
                     RestoreCursor(cursorLeft);
                     OnLinesInsertedEvent(linesToInsert);
@@ -143,9 +130,36 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        protected virtual void WriteLineEx(string value, OutputLevel level)
+        public void Clear()
         {
-            _consoleWriter.WriteLine(value);
+            System.Console.Clear();
+        }
+
+        public virtual void Initiate(IEnumerable<string> commandKeys)
+        {
+        }
+
+        public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
+
+        protected virtual void OnLinesInsertedEvent(int lineCount)
+        {
+            var handler = LinesInsertedEvent;
+            handler?.Invoke(this, new LinesInsertedEventArgs(lineCount));
+        }
+
+        protected virtual void OnLineWrittenEvent(LineWrittenEventArgs e)
+        {
+            LineWrittenEvent?.Invoke(this, e);
+        }
+
+        protected virtual void OnKeyReadEvent(KeyReadEventArgs e)
+        {
+            KeyReadEvent?.Invoke(this, e);
+        }
+
+        protected internal virtual void WriteLineEx(string value, OutputLevel level)
+        {
+            ConsoleWriter?.WriteLine(value);
             OnLineWrittenEvent(new LineWrittenEventArgs(value, level));
         }
 
@@ -186,10 +200,10 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 return 0;
             }
-			catch (DivideByZeroException) 
-			{
-				return 1;
-			}
+            catch (DivideByZeroException)
+            {
+                return 1;
+            }
         }
 
         private void RestoreCursor(int cursorLeft)
@@ -220,16 +234,13 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void Write(string value, object[] arg)
         {
-            _consoleWriter.Write(value, arg);
+            ConsoleWriter.Write(value, arg);
         }
 
-        public void Clear()
+        public void Dispose()
         {
-            System.Console.Clear();
-        }
-
-        public virtual void Initiate(IEnumerable<string> commandKeys)
-        {
+            _interceptor?.Dispose();
+            ConsoleWriter?.Dispose();
         }
     }
 }

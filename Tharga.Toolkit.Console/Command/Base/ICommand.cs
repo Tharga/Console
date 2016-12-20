@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,6 +14,5 @@ namespace Tharga.Toolkit.Console.Command.Base
         Task<bool> InvokeAsync(string paramList);
         Task<bool> InvokeWithCanExecuteCheckAsync(string paramList);
         IEnumerable<HelpLine> HelpText { get; }
-        //void SetStopAction(Action stopAction);
     }
 }

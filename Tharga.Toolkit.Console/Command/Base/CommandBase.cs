@@ -16,10 +16,10 @@ namespace Tharga.Toolkit.Console.Command.Base
         private readonly string _description;
         private readonly string[] _names;
         protected IConsole _console;
-        public string Name { get { return _names[0]; } }
-        public IEnumerable<string> Names { get { return _names; } }
-        public string Description { get { return _description; } }
-        internal IConsole Console { get { return _console; } }
+        public string Name => _names[0];
+        public IEnumerable<string> Names => _names;
+        public string Description => _description;
+        public IConsole Console => _console;
         public abstract IEnumerable<HelpLine> HelpText { get; }
 
         internal CommandBase(IConsole console, string name, string description = null)
@@ -167,7 +167,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 selection = (await selectionDelegate()).ToList();
             }
 
-            var response = QueryParam(paramName, autoProvideValue, selection, true);
+            var response = QueryParam(paramName, autoProvideValue, selection);
             return response;
         }
 

@@ -8,7 +8,7 @@ using Tharga.Toolkit.Console.Command.Base;
 
 namespace Tharga.Toolkit.Console
 {
-    public class CommandEngine
+    public class CommandEngine : ICommandEngine
     {
         private const string FlagContinueInConsoleMode = "c";
         private const string FlagContinueInConsoleModeIfError = "e";
@@ -28,6 +28,7 @@ namespace Tharga.Toolkit.Console
         }
 
         public string SplashScreen { get; set; }
+        public IConsole Console => _rootCommand.Console;
 
         public void Run(string[] args)
         {
@@ -47,7 +48,7 @@ namespace Tharga.Toolkit.Console
             while (_running)
             {
                 var entry = _commandMode ? GetCommandModeEntry(commands, ref commandIndex, flags) : _rootCommand.QueryRootParam();
-                if (!ExecuteCommand(entry))
+                if (!Execute(entry))
                 {
                     if (_commandMode && HasFlag(args, FlagContinueInConsoleModeIfError))
                     {
@@ -113,9 +114,9 @@ namespace Tharga.Toolkit.Console
             return entry;
         }
 
-        private bool ExecuteCommand(string entry)
+        private bool Execute(string entry)
         {
-            var success = _rootCommand.ExecuteCommand(entry);
+            var success = _rootCommand.Execute(entry);
 
             if (_commandMode && !success)
             {
