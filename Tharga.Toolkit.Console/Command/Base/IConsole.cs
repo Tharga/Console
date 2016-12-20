@@ -22,5 +22,14 @@ namespace Tharga.Toolkit.Console.Command.Base
         void Initiate(IEnumerable<string> commandKeys);
         event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         event EventHandler<KeyReadEventArgs> KeyReadEvent;
+        void OutputError(Exception exception);
+        void OutputError(string message);
+        void OutputWarning(string message);
+        void OutputInformation(string message);
+        void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Default);
+
+        //TODO: Try to hide theese from the interface
+        void Output(string message, ConsoleColor? color, OutputLevel outputLevel, bool line);
+        ConsoleColor? GetConsoleColor(OutputLevel outputLevel);
     }
 }

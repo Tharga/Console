@@ -57,14 +57,14 @@ namespace Tharga.Toolkit.Console.Command.Base
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
 
             SubCommands.Add(command);
-            command.CommandRegistered(Console);
+            command.AttachConsole(Console);
             return this;
         }
 
-        public override void CommandRegistered(IConsole console)
+        public override void AttachConsole(IConsole console)
         {
-            base.CommandRegistered(console);
-            SubCommands.ForEach(x => x.CommandRegistered(Console));
+            base.AttachConsole(console);
+            SubCommands.ForEach(x => x.AttachConsole(Console));
         }
 
         public void UnregisterCommand(string commandName)

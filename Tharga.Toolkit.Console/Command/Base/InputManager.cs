@@ -8,7 +8,6 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     internal class InputManager
     {
-        private readonly ICommandBase _commandBase;
         private readonly string _paramName;
         private readonly bool _passwordEntry;
         private readonly IConsole _console;
@@ -24,11 +23,10 @@ namespace Tharga.Toolkit.Console.Command.Base
         public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
         public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
-        public InputManager(IConsole console, ICommandBase commandBase, string paramName, bool passwordEntry = false)
+        public InputManager(IConsole console, string paramName, bool passwordEntry = false)
         {
-            if (console == null) throw new ArgumentNullException("console", "No console provided.");
+            if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
 
-            _commandBase = commandBase;
             _console = console;
             _paramName = paramName;
             _passwordEntry = passwordEntry;
@@ -240,7 +238,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
                 catch (Exception exception)
                 {
-                    _commandBase.OutputError(exception);
+                    _console.OutputError(exception);
                 }
             }
         }

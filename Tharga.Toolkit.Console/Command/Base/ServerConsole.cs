@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Security;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
@@ -19,17 +20,24 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         protected internal override void WriteLineEx(string value, OutputLevel level)
         {
-            var output = string.Format("{0} {1}: {2}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString(), value);
-            if (!EventLog.SourceExists(_eventLogSource))
+            var output = $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}: {value}";
+            try
             {
-                try
+                if (!EventLog.SourceExists(_eventLogSource))
                 {
-                    EventLog.CreateEventSource(_eventLogSource, "Application");
+                    try
+                    {
+                        EventLog.CreateEventSource(_eventLogSource, "Application");
+                    }
+                    catch (SecurityException)
+                    {
+                        base.WriteLineEx($"Unable to create event source named {_eventLogSource} in the event log.", OutputLevel.Error);
+                    }
                 }
-                catch (Exception)
-                {
-                    WriteLine(string.Format("Unable to create event source named {0} in the event log.", _eventLogSource), OutputLevel.Error, null);
-                }
+            }
+            catch (SecurityException exception)
+            {
+                base.WriteLineEx($"Unable to read event source named {_eventLogSource} in the event log.", OutputLevel.Error);
             }
 
             switch (level)

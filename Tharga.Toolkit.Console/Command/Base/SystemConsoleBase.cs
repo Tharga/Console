@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 
 namespace Tharga.Toolkit.Console.Command.Base
@@ -106,7 +108,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                 var defaultColor = ConsoleColor.White;
                 if (consoleColor == null)
-                    consoleColor = CommandBase.GetConsoleColor(level);
+                    consoleColor = GetConsoleColor(level);
 
                 if (consoleColor != null)
                 {
@@ -235,6 +237,112 @@ namespace Tharga.Toolkit.Console.Command.Base
         public void Write(string value, object[] arg)
         {
             ConsoleWriter.Write(value, arg);
+        }
+
+        public void OutputError(Exception exception)
+        {
+            OutputError(exception, 0);
+        }
+
+        private void OutputError(Exception exception, int indentationLevel)
+        {
+            var indentation = new string(' ', indentationLevel * 2);
+            OutputError($"{indentation}{exception.Message}");
+            foreach (DictionaryEntry data in exception.Data)
+            {
+                OutputError($"{indentation}{data.Key}: {data.Value}");
+            }
+
+            if (exception.InnerException != null)
+            {
+                OutputError(exception.InnerException, ++indentationLevel);
+            }
+        }
+
+        public void OutputError(string message)
+        {
+            OutputLine(message, OutputLevel.Error);
+        }
+
+        public void OutputWarning(string message)
+        {
+            OutputLine(message, OutputLevel.Warning);
+        }
+
+        public void OutputInformation(string message)
+        {
+            OutputLine(message, OutputLevel.Information);
+        }
+
+        public void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Default)
+        {
+            Output(message, outputLevel == OutputLevel.Default ? GetConsoleColor("EventColor", ConsoleColor.Cyan) : GetConsoleColor(outputLevel), outputLevel, true);
+        }
+
+        private void OutputLine(string message, OutputLevel outputLevel)
+        {
+            Output(message, GetConsoleColor(outputLevel), outputLevel, true);
+        }
+
+        public void Output(string message, ConsoleColor? color, OutputLevel outputLevel, bool line)
+        {
+            //if (_console == null) throw new InvalidOperationException("No console assigned. The command was probably not registered, use AttachConsole to do it manually.");
+
+            lock (_syncRoot)
+            {
+                if (line)
+                {
+                    //if (args == null || !args.Any())
+                    //{
+                        WriteLine(message, outputLevel, color);
+                    //}
+                    //else
+                    //{
+                    //    try
+                    //    {
+                    //        _console.WriteLine(string.Format(message, args), outputLevel, color);
+                    //    }
+                    //    catch (FormatException exception)
+                    //    {
+                    //        var exp = new FormatException(exception.Message + " Perhaps the parameters provided does not match the message.", exception);
+                    //        exp.Data.Add("Message", message);
+                    //        exp.Data.Add("Parameters", args.Count());
+                    //        throw exp;
+                    //    }
+                    //}
+                }
+                else
+                {
+                    Write(message);
+                }
+            }
+        }
+
+        public ConsoleColor? GetConsoleColor(OutputLevel outputLevel)
+        {
+            switch (outputLevel)
+            {
+                case OutputLevel.Information:
+                    return GetConsoleColor("Information", ConsoleColor.Green);
+                case OutputLevel.Warning:
+                    return GetConsoleColor("Warning", ConsoleColor.Yellow);
+                case OutputLevel.Error:
+                    return GetConsoleColor("Error", ConsoleColor.Red);
+                default:
+                    return null;
+            }
+        }
+
+        private static ConsoleColor GetConsoleColor(string name, ConsoleColor defaultColor)
+        {
+            var colorString = ConfigurationManager.AppSettings[name + "Color"];
+            ConsoleColor color;
+            if (!Enum.TryParse(colorString, out color))
+            {
+                color = defaultColor;
+            }
+
+            return color;
         }
 
         public void Dispose()

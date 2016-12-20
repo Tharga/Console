@@ -21,8 +21,7 @@ namespace Tharga.Toolkit.Console.Tests
             consoleMock.Setup(x => x.NewLine());
             consoleMock.Setup(x => x.ReadKey(true)).Returns(() => new ConsoleKeyInfo((char)13, ConsoleKey.Enter, false, false, false));
 
-            var commandBaseMock = new Mock<ICommandBase>(MockBehavior.Strict);
-            var inputManager = new InputManager(consoleMock.Object, commandBaseMock.Object, "> ");
+            var inputManager = new InputManager(consoleMock.Object, "> ");
 
             //Act
             var response = inputManager.ReadLine(new KeyValuePair<string, string>[] { }, false);

@@ -8,11 +8,13 @@ namespace Tharga.Toolkit.Console.Command.Base
         string Name { get; }
         IEnumerable<string> Names { get; }
         string Description { get; }
-        void CommandRegistered(IConsole console);
         bool CanExecute();
         bool CanExecute(out string reasonMessage);
+        IEnumerable<HelpLine> HelpText { get; }
+
+        //TODO: Try to hide theese from the interface
+        void AttachConsole(IConsole console);
         Task<bool> InvokeAsync(string paramList);
         Task<bool> InvokeWithCanExecuteCheckAsync(string paramList);
-        IEnumerable<HelpLine> HelpText { get; }
     }
 }

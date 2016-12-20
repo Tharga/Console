@@ -67,14 +67,25 @@ namespace Tharga.Toolkit.Console
             if(string.IsNullOrEmpty(SplashScreen))
                 return;
 
-            _rootCommand.OutputInformationLine(SplashScreen, _commandMode);
+            //_rootCommand.OutputInformationLine(SplashScreen, _commandMode);
+
+            if (!_commandMode)
+            {
+                //_rootCommand.OutputInformation(SplashScreen);
+                _rootCommand.Output(SplashScreen, OutputLevel.Default, true);
+            }
         }
 
         [ExcludeFromCodeCoverage]
         private void ShowAssemblyInfo()
         {
             var assembly = Assembly.GetEntryAssembly();
-            if (assembly != null) _rootCommand.OutputInformationLine($"{assembly.GetName().Name} (Version {assembly.GetName().Version})", _commandMode);
+            //if (assembly != null) _rootCommand.OutputInformationLine($"{assembly.GetName().Name} (Version {assembly.GetName().Version})", _commandMode);
+            if (!_commandMode && assembly != null)
+            {
+                //_rootCommand.OutputInformation($"{assembly.GetName().Name} (Version {assembly.GetName().Version})");
+                _rootCommand.Output($"{assembly.GetName().Name} (Version {assembly.GetName().Version})", OutputLevel.Default, true);
+            }
         }
 
         private static List<string> GetCommands(IEnumerable<string> args)

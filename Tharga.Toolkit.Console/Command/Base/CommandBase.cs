@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,11 +9,10 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     public abstract class CommandBase : ICommandBase
     {
-        private static readonly object _syncRoot = new object();
-
         private readonly string _description;
         private readonly string[] _names;
-        protected IConsole _console;
+        private IConsole _console;
+
         public string Name => _names[0];
         public IEnumerable<string> Names => _names;
         public string Description => _description;
@@ -36,6 +33,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             _description = description;
         }
 
+        //TODO: Make internal
         public abstract Task<bool> InvokeAsync(string paramList);
         protected abstract ICommand GetHelpCommand(string paramList);
         public abstract bool CanExecute(out string reasonMesage);
@@ -50,6 +48,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             return $"You cannot execute {Name} command." + (string.IsNullOrEmpty(reason) ? string.Empty : " " + reason);
         }
 
+        //TODO: Make internal
         public virtual async Task<bool> InvokeWithCanExecuteCheckAsync(string paramList)
         {
             string reason;
@@ -150,7 +149,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
                 else
                 {
-                    value = QueryParam(paramName, null, (List<KeyValuePair<string, string>>)null, false);
+                    value = QueryParam(paramName, null, (List<KeyValuePair<string, string>>)null);
                 }
             }
 
@@ -194,7 +193,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
             }
 
-            var inputManager = new InputManager(_console, this, paramName + (!selection.Any() ? "" : " [Tab]"), passwordEntry);
+            var inputManager = new InputManager(_console, paramName + (!selection.Any() ? "" : " [Tab]"), passwordEntry);
             var response = inputManager.ReadLine(selection.ToArray(), allowEscape);
             return response;
         }
@@ -229,41 +228,31 @@ namespace Tharga.Toolkit.Console.Command.Base
             return null;
         }
 
+        //TODO: Make protected
         public void OutputError(Exception exception)
         {
-            OutputError(exception, 0);
+            _console.OutputError(exception);
         }
 
-        private void OutputError(Exception exception, int indentationLevel)
-        {
-            var indentation = new string(' ', indentationLevel * 2);
-            OutputError("{0}{1}", indentation, exception.Message);
-            foreach (DictionaryEntry data in exception.Data)
-            {
-                OutputError("{0}{1}: {2}", indentation, data.Key, data.Value);
-            }
-
-            if (exception.InnerException != null)
-            {
-                OutputError(exception.InnerException, ++indentationLevel);
-            }
-        }
-
+        //TODO: Make protected
         public void OutputError(string message, params object[] args)
         {
-            OutputLine(message, OutputLevel.Error, args);
+            _console.OutputError(string.Format(message, args));
         }
 
+        //TODO: Make protected
         public void OutputWarning(string message, params object[] args)
         {
-            OutputLine(message, OutputLevel.Warning, args);
+            _console.OutputWarning(string.Format(message, args));
         }
 
+        //TODO: Make protected
         public void OutputInformation(string message, params object[] args)
         {
-            OutputLine(message, OutputLevel.Information, args);
+            _console.OutputInformation(string.Format(message, args));
         }
 
+        //TODO: Make protected
         public void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? color = null)
         {
             var table = new List<string[]> { title.ToArray() };
@@ -271,6 +260,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             OutputTable(table.ToArray(), color);
         }
 
+        //TODO: Make protected
         public void OutputTable(string[][] data, ConsoleColor? color = null)
         {
             var columnLength = GetColumnSizes(data);
@@ -311,101 +301,79 @@ namespace Tharga.Toolkit.Console.Command.Base
             return length.ToArray();
         }
 
+        [Obsolete("Use OutputEvent from the console.")]
         public void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Default, params object[] args)
         {
-            Output(message, outputLevel == OutputLevel.Default ? GetConsoleColor("EventColor", ConsoleColor.Cyan) : GetConsoleColor(outputLevel), outputLevel, true, args);
+            _console.OutputEvent(string.Format(message, args), outputLevel);
         }
 
+        [Obsolete("Use OutputEvent from the console.")]
         public void OutputLine(string message, OutputLevel outputLevel, params object[] args)
         {
-            Output(message, GetConsoleColor(outputLevel), outputLevel, true, args);
+            //_console.OutputLine(string.Format(message, args), outputLevel);
+            //Output(message, GetConsoleColor(outputLevel), outputLevel, true, args);
+            _console.Output(string.Format(message, args), _console.GetConsoleColor(outputLevel), outputLevel, true);
         }
 
+        [Obsolete("Use OutputEvent from the console.")]
         public void OutputLine(string message, ConsoleColor? color, OutputLevel outputLevel, params object[] args)
         {
-            Output(message, color ?? GetConsoleColor(outputLevel), outputLevel, true, args);
+            //_console.OutputLine(string.Format(message,args), color, outputLevel);
+            _console.Output(string.Format(message,args), color ?? _console.GetConsoleColor(outputLevel), outputLevel, true);
         }
 
+        [Obsolete("Use OutputEvent from the console.")]
         public void Output(string message, OutputLevel outputLevel, bool line, params object[] args)
         {
-            Output(message, GetConsoleColor(outputLevel), outputLevel, line, args);
+            _console.Output(string.Format(message, args), _console.GetConsoleColor(outputLevel), outputLevel, line);
+            //Output(message, GetConsoleColor(outputLevel), outputLevel, line, args);
         }
 
+        [Obsolete("Use OutputEvent from the console.")]
         public void Output(string message, ConsoleColor? color, OutputLevel outputLevel, bool line, params object[] args)
         {
-            if (_console == null) throw new InvalidOperationException("No console assigned. The command was probably not registered, use CommandRegistered to do it manually.");
+            _console.Output(FormatMessage(message, args), color, outputLevel, line);
+            //if (_console == null) throw new InvalidOperationException("No console assigned. The command was probably not registered, use AttachConsole to do it manually.");
 
-            lock (_syncRoot)
-            {
-                if (line)
-                {
-                    if (args == null || !args.Any())
-                    {
-                        _console.WriteLine(message, outputLevel, color);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            _console.WriteLine(string.Format(message, args), outputLevel, color);
-                        }
-                        catch (FormatException exception)
-                        {
-                            var exp = new FormatException(exception.Message + " Perhaps the parameters provided does not match the message.", exception);
-                            exp.Data.Add("Message", message);
-                            exp.Data.Add("Parameters", args.Count());
-                            throw exp;
-                        }
-                    }
-                }
-                else
-                {
-                    _console.Write(string.Format(message, args));
-                }
-            }
+            //lock (_syncRoot)
+            //{
+            //    if (line)
+            //    {
+            //        if (args == null || !args.Any())
+            //        {
+            //            _console.WriteLine(message, outputLevel, color);
+            //        }
+            //        else
+            //        {
+            //            try
+            //            {
+            //                _console.WriteLine(string.Format(message, args), outputLevel, color);
+            //            }
+            //            catch (FormatException exception)
+            //            {
+            //                var exp = new FormatException(exception.Message + " Perhaps the parameters provided does not match the message.", exception);
+            //                exp.Data.Add("Message", message);
+            //                exp.Data.Add("Parameters", args.Count());
+            //                throw exp;
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        _console.Write(string.Format(message, args));
+            //    }
+            //}
         }
 
-        internal void OutputInformationLine(string message, bool commandMode)
+        private static string FormatMessage(string message, object[] args)
         {
-            if (commandMode)
-            {
-                //By default, do not output information when in command mode
-                return;
-            }
-
-            Output(message, null, OutputLevel.Default, true, null);
+            return args == null ? message : string.Format(message, args);
         }
 
-        public virtual void CommandRegistered(IConsole console)
+        //TODO: Make internal
+        public virtual void AttachConsole(IConsole console)
         {
             _console = console;
-        }
-
-        internal static ConsoleColor? GetConsoleColor(OutputLevel outputLevel)
-        {
-            switch (outputLevel)
-            {
-                case OutputLevel.Information:
-                    return GetConsoleColor("Information", ConsoleColor.Green);
-                case OutputLevel.Warning:
-                    return GetConsoleColor("Warning", ConsoleColor.Yellow);
-                case OutputLevel.Error:
-                    return GetConsoleColor("Error", ConsoleColor.Red);
-                default:
-                    return null;
-            }
-        }
-
-        private static ConsoleColor GetConsoleColor(string name, ConsoleColor defaultColor)
-        {
-            var colorString = ConfigurationManager.AppSettings[name + "Color"];
-            ConsoleColor color;
-            if (!Enum.TryParse(colorString, out color))
-            {
-                color = defaultColor;
-            }
-
-            return color;
-        }
+        }        
     }
 }

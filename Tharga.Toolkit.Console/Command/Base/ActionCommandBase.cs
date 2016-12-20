@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public abstract class ActionCommandBase : CommandBase, ICommand
+    public abstract class ActionCommandBase : CommandBase //, ICommand
     {
         private Func<bool> _canExecute;
 
