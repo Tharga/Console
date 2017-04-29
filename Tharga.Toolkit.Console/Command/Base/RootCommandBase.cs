@@ -25,10 +25,11 @@ namespace Tharga.Toolkit.Console.Command.Base
         }
 
         protected RootCommandBase(IConsole console, Action stopAction)
-            : base(console, "root")
+            : base(console, new [] { "root" })
         {
             RegisterCommand(new ExitCommand(Console, stopAction));
             RegisterCommand(new ClearCommand(Console));
+            RegisterCommand(new ScreenCommand(Console));
             RegisterCommand(new ExecuteCommand(Console, this));
         }
 

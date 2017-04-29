@@ -13,12 +13,12 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected readonly List<ICommand> SubCommands = new List<ICommand>();
 
         protected ContainerCommandBase(string name, string description = null, bool hidden = false)
-            : this(null, name, description, hidden)
+            : this(null, new [] { name }, description, hidden)
         {
         }
 
-        internal ContainerCommandBase(IConsole console, string name, string description = null, bool hidden = false)
-            : base(console, new[] { name }, description, hidden)
+        internal ContainerCommandBase(IConsole console, string[] names, string description = null, bool hidden = false)
+            : base(console, names, description, hidden)
         {
         }
 
