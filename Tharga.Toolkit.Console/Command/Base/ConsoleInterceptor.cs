@@ -172,7 +172,9 @@ namespace Tharga.Toolkit.Console.Command.Base
                     var pos = new Location(System.Console.CursorLeft, System.Console.CursorTop);
 
                     while (_location.Left > System.Console.BufferWidth)
+                    {
                         _location = new Location(_location.Left - System.Console.BufferWidth, _location.Top + 1);
+                    }
 
                     System.Console.CursorTop = _location.Top;
                     System.Console.CursorLeft = _location.Left;

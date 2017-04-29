@@ -31,6 +31,7 @@ namespace SampleConsole
             command.RegisterCommand(new StatusCommand());
             command.RegisterCommand(new ParametersCommand());
             command.RegisterCommand(new SomeContainerWithDisabledSubs());
+            command.RegisterCommand(new LineFeedCommand());
 
             var commandEngine = new CommandEngine(command)
             {
@@ -42,6 +43,41 @@ namespace SampleConsole
             //command.Execute("some item");
 
             console.Dispose();
+        }
+    }
+
+    internal class LineFeedCommand : ActionCommandBase
+    {
+        public LineFeedCommand()
+            : base("Line", "Line output")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            //NOTE: This will trigger the line feed bug!
+            Task.Run(() =>
+            {
+                //System.Console.WriteLine("abc\nabc\n" + new string('X', 160) + "\ns\ns");
+                //System.Console.WriteLine("abc\nabc\n" + new string('X', 160) + "\naaa");
+                //System.Console.WriteLine("abc\n" + new string('X', 78));
+                //System.Console.WriteLine(new string('X', 80) + "\n\nx");
+                //System.Console.WriteLine(new string('X', 79));
+                //System.Console.WriteLine(new string('X', 80));
+                //System.Console.WriteLine(new string('X', 81));
+                //System.Console.WriteLine(new string('X', 160));
+
+                //System.Console.Write(new string('X', 20));
+                //System.Console.Write(new string('Y', 10));
+                //System.Console.Write(new string('Y', 50));
+                //System.Console.Write(new string('Y', 80));
+                System.Console.WriteLine(new string('Y', 80));
+
+                //System.Console.WriteLine(new string('X', 80) + "\n");
+                //System.Console.WriteLine(new string('X', 80) + "\n\n");
+                //System.Console.WriteLine("OK");
+            });
+            return true;
         }
     }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 
 namespace Tharga.Toolkit.Console.Command.Base
@@ -102,6 +103,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             lock (_syncRoot)
             {
                 var linesToInsert = GetLineCount(value);
+                //Debug.WriteLine("Lines: " + linesToInsert);
                 var inputBufferLines = InputManager.CurrentBufferLineCount;
                 var intCursorLineOffset = MoveCursorUp();
                 var cursorLeft = MoveInputBufferDown(linesToInsert, inputBufferLines);
@@ -116,9 +118,12 @@ namespace Tharga.Toolkit.Console.Command.Base
                     ForegroundColor = consoleColor.Value;
                 }
 
+                var corr = 0;
+                var t1 = CursorTop;
                 try
                 {
                     WriteLineEx(value, level);
+                    corr = CursorTop - t1 - linesToInsert;
                 }
                 finally
                 {
@@ -127,7 +132,8 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                     RestoreCursor(cursorLeft);
                     OnLinesInsertedEvent(linesToInsert);
-                    MoveCursorDown(intCursorLineOffset);
+                    //System.Diagnostics.Debug.WriteLine("Corr: " + corr);
+                    MoveCursorDown(intCursorLineOffset- corr);
                 }
             }
         }
@@ -161,7 +167,22 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         protected internal virtual void WriteLineEx(string value, OutputLevel level)
         {
-            ConsoleWriter?.WriteLine(value);
+            var lines = value.Split('\n');
+            foreach (var line in lines)
+            {
+                var r = line.Length % BufferWidth;
+                if (r == 0) // && !string.IsNullOrEmpty(line))
+                {
+                    if (string.IsNullOrEmpty(line))
+                        ConsoleWriter?.WriteLine(line);
+                    else
+                        ConsoleWriter?.Write(line);
+                }
+                else
+                {
+                    ConsoleWriter?.WriteLine(line);
+                }
+            }
             OnLineWrittenEvent(new LineWrittenEventArgs(value, level));
         }
 
@@ -196,7 +217,17 @@ namespace Tharga.Toolkit.Console.Command.Base
             {
                 if (string.IsNullOrEmpty(value))
                     return 1;
-                return (int)Math.Ceiling((decimal)value.Length / BufferWidth);
+
+                var lns = value.Split('\n');
+                var l = 0;
+                foreach (var ln in lns)
+                {
+                    l += (int)Math.Ceiling(((decimal)ln.Length + 1) / BufferWidth);
+                    if (ln.Length % BufferWidth == 0 && !string.IsNullOrEmpty(ln))
+                        l--;
+                }
+
+                return l;
             }
             catch (IOException)
             {

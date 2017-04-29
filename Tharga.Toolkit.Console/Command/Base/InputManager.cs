@@ -56,6 +56,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
                     var currentScreenLocation = new Location(_console.CursorLeft, _console.CursorTop); //This is where the cursor actually is on screen.
                     var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * _console.BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
+                    //System.Diagnostics.Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
 
                     if (IsOutputKey(readKey))
                     {
@@ -226,7 +227,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                                 break;
 
                             default:
-                                throw new ArgumentOutOfRangeException(string.Format("Key {0} is not handled ({1}).", readKey.Key, readKey.KeyChar));
+                                throw new ArgumentOutOfRangeException($"Key {readKey.Key} is not handled ({readKey.KeyChar}).");
                         }
                     }
 
