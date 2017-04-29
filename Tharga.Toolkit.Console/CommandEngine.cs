@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Tharga.Toolkit.Console.Command;
 using Tharga.Toolkit.Console.Command.Base;
 
@@ -10,36 +12,71 @@ namespace Tharga.Toolkit.Console
 {
     public class CommandEngine : ICommandEngine
     {
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
+
+        private const int HWND_TOPMOST = -1;
+        private const int SWP_NOMOVE = 0x0002;
+        private const int SWP_NOSIZE = 0x0001;
+        private const short SWP_NOZORDER = 0X4;
+        private const int SWP_SHOWWINDOW = 0x0040;
+
         private const string FlagContinueInConsoleMode = "c";
         private const string FlagContinueInConsoleModeIfError = "e";
         private readonly RootCommandBase _rootCommand;
         private bool _running = true;
         private bool _commandMode;
 
-        internal CommandEngine(IConsole console)
+        private CommandEngine()
+        {
+            ShowAssemblyInfo = true;
+            BackgroundColor = System.Console.BackgroundColor;
+            DefaultForegroundColor = System.Console.ForegroundColor;
+        }
+
+        internal CommandEngine(IConsole console)            
+            : this()
         {
             _rootCommand = new RootCommand(console, Stop);
         }
 
         public CommandEngine(RootCommandBase rootCommand)
+            : this()
         {
             rootCommand.SetStopAction(Stop);
             _rootCommand = rootCommand;
         }
 
+        public string Title { get; set; }
         public string SplashScreen { get; set; }
+        public bool ShowAssemblyInfo { get; set; }
+        public bool TopMost { get; set; }
+        public ConsoleColor BackgroundColor { get; set; }
+        public ConsoleColor DefaultForegroundColor { get; set; }
+
         public IConsole Console => _rootCommand.Console;
 
         public void Run(string[] args)
         {
+            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+            if (TopMost) SetWindowPos(hWnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
+            //TODO: Remember windoews location
+            //NOTE: Set specific window location
+            //SetWindowPos(hWnd, new IntPtr(0), 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+
+            //System.Console.Beep();
+
+            SetColor();
+            SetTitle();
+            ShowSplashScreen();
+            DoShowAssemblyInfo();
+
             _commandMode = args.Length > 0;
 
             var commands = GetCommands(args);
             var flags = GetFlags(args);
-
-            ShowSplashScreen();
-
-            ShowAssemblyInfo();
 
             var commandIndex = 0;
 
@@ -62,6 +99,20 @@ namespace Tharga.Toolkit.Console
             }
         }
 
+        private void SetColor()
+        {
+            if (System.Console.BackgroundColor == BackgroundColor && System.Console.ForegroundColor == DefaultForegroundColor) return;
+
+            System.Console.BackgroundColor = BackgroundColor;
+            System.Console.ForegroundColor = DefaultForegroundColor;
+            System.Console.Clear();
+        }
+
+        private void SetTitle()
+        {
+            System.Console.Title = Title ?? GetAssemblyInfo() ?? "Tharga Console";
+        }
+
         private void ShowSplashScreen()
         {
             if(string.IsNullOrEmpty(SplashScreen))
@@ -69,21 +120,28 @@ namespace Tharga.Toolkit.Console
 
             if (!_commandMode)
             {
-                //_rootCommand.OutputInformation(SplashScreen);
                 _rootCommand.Output(SplashScreen, OutputLevel.Default, true);
             }
         }
 
         [ExcludeFromCodeCoverage]
-        private void ShowAssemblyInfo()
+        private void DoShowAssemblyInfo()
+        {
+            if (!_commandMode && ShowAssemblyInfo)
+            {
+                var info = GetAssemblyInfo();
+                if (!string.IsNullOrEmpty(info))
+                {
+                    _rootCommand.Output(info, OutputLevel.Default, true);
+                }
+            }
+        }
+
+        private static string GetAssemblyInfo()
         {
             var assembly = Assembly.GetEntryAssembly();
-            //if (assembly != null) _rootCommand.OutputInformationLine($"{assembly.GetName().Name} (Version {assembly.GetName().Version})", _commandMode);
-            if (!_commandMode && assembly != null)
-            {
-                //_rootCommand.OutputInformation($"{assembly.GetName().Name} (Version {assembly.GetName().Version})");
-                _rootCommand.Output($"{assembly.GetName().Name} (Version {assembly.GetName().Version})", OutputLevel.Default, true);
-            }
+            if (assembly == null) return null;
+            return $"{assembly.GetName().Name} (Version {assembly.GetName().Version})";
         }
 
         private static List<string> GetCommands(IEnumerable<string> args)

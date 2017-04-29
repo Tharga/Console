@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -35,7 +36,12 @@ namespace SampleConsole
 
             var commandEngine = new CommandEngine(command)
             {
-                SplashScreen = _splashscreen
+                SplashScreen = _splashscreen,
+                Title = "Sample console",
+                //ShowAssemblyInfo = false,
+                //TopMost = true,
+                //BackgroundColor = ConsoleColor.DarkBlue,
+                //DefaultForegroundColor = ConsoleColor.White,
             };
 
             commandEngine.Run(args);

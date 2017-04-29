@@ -167,6 +167,11 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         protected internal virtual void WriteLineEx(string value, OutputLevel level)
         {
+            if (ForegroundColor == BackgroundColor)
+            {
+                ForegroundColor = ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
+            }
+
             var lines = value.Split('\n');
             foreach (var line in lines)
             {
