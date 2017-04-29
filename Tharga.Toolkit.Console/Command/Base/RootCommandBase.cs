@@ -30,6 +30,9 @@ namespace Tharga.Toolkit.Console.Command.Base
             RegisterCommand(new ExitCommand(Console, stopAction));
             RegisterCommand(new ClearCommand(Console));
             RegisterCommand(new ScreenCommand(Console));
+            RegisterCommand(new CmdCommand(Console));
+            RegisterCommand(new PoshCommand(Console));
+            RegisterCommand(new ExecuteProcessCommand(Console));
             RegisterCommand(new ExecuteCommand(Console, this));
         }
 

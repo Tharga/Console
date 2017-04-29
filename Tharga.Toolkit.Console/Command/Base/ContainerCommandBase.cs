@@ -190,7 +190,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     {
                         var hidden = command.Hidden ? "*" : "";
                         if (command.Hidden) anyHidden = true;
-                        helpCommand.AddLine($"{hidden}{command.Name.PadString(10)} {command.Description}", () =>
+                        helpCommand.AddLine($"{(hidden + command.Name).PadString(10)} {command.Description}", () =>
                         {
                             string reasonMessage;
                             var canExecute = command.CanExecute(out reasonMessage);
@@ -215,7 +215,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     {
                         var hidden = command.Hidden ? "*" : "";
                         if (command.Hidden) anyHidden = true;
-                        helpCommand.AddLine($"{hidden}{command.Name.PadString(10)} {command.Description}", () =>
+                        helpCommand.AddLine($"{(hidden + command.Name).PadString(10)} {command.Description}", () =>
                         {
                             string reasonMessage;
                             var canExecute = command.CanExecute(out reasonMessage);

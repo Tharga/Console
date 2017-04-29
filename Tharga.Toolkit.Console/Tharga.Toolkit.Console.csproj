@@ -63,6 +63,7 @@
     <Compile Include="..\Build\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Command\BackgroundColorCommand.cs" />
     <Compile Include="Command\Base\ActionCommandBase.cs" />
     <Compile Include="Command\Base\ActionConsole.cs" />
     <Compile Include="Command\Base\AggregateConsole.cs" />
@@ -92,12 +93,17 @@
     <Compile Include="Command\Base\VariableStore.cs" />
     <Compile Include="Command\Base\VoiceConsole.cs" />
     <Compile Include="Command\ClearCommand.cs" />
+    <Compile Include="Command\CmdCommand.cs" />
     <Compile Include="Command\ExecuteCommand.cs" />
     <Compile Include="Command\ExecuteFileCommand.cs" />
+    <Compile Include="Command\ExecuteProcessCommand.cs" />
     <Compile Include="Command\ExecuteSleepCommand.cs" />
     <Compile Include="Command\ExitCommand.cs" />
     <Compile Include="Command\Base\RootCommandBase.cs" />
+    <Compile Include="Command\ForegroundColorCommand.cs" />
     <Compile Include="Command\HelpLine.cs" />
+    <Compile Include="Command\PoshCommand.cs" />
+    <Compile Include="Command\ScreenCommand.cs" />
     <Compile Include="Exceptions\CommandAlreadyRegisteredException.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Command\HelpCommand.cs" />
