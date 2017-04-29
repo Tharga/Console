@@ -30,6 +30,7 @@ namespace SampleConsole
             command.RegisterCommand(new MathContainerCommand());
             command.RegisterCommand(new StatusCommand());
             command.RegisterCommand(new ParametersCommand());
+            command.RegisterCommand(new SomeContainerWithDisabledSubs());
 
             var commandEngine = new CommandEngine(command)
             {
@@ -42,6 +43,33 @@ namespace SampleConsole
 
             console.Dispose();
         }
+    }
+
+    internal class SomeContainerWithDisabledSubs : ContainerCommandBase
+    {
+        public SomeContainerWithDisabledSubs() 
+            : base ("Disabled")
+        {
+            RegisterCommand(new SomeDisabledCommand());
+            RegisterCommand(new SomeItemCommand());
+        }
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield return new HelpLine("This command contains sub-command that are all disabled. Therefore the group command is also disabled."); }
+        }
+
+        public override bool CanExecute(out string reasonMessage)
+        {
+            reasonMessage = "Because it is manually disabled."; //"This command and all sub-commands are disabled";
+            return false;
+        }
+
+        //public override bool CanExecute()
+        //{
+        //    //return false;
+        //    return base.CanExecute();
+        //}
     }
 
     internal class SomeContainerCommand : ContainerCommandBase
@@ -193,15 +221,20 @@ namespace SampleConsole
         {
         }
 
+        //public override bool CanExecute()
+        //{
+        //    return false;
+        //}
+
         public override bool CanExecute(out string reasonMesage)
         {
-            reasonMesage = "Because it is disabled.";
+            reasonMesage = "Because it is disabled. Always!";
             return false;
         }
 
         public override Task<bool> InvokeAsync(string paramList)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Should not be able to execute this!");
         }
     }
 

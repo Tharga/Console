@@ -61,7 +61,9 @@ namespace Tharga.Toolkit.Console.Command.Base
                     success = task.Result;
                 }
                 else
+                {
                     OutputError("Invalid command {0}.", entry);
+                }
             }
             catch (SystemException exception)
             {

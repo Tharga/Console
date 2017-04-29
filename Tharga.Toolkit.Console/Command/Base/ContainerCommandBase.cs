@@ -8,12 +8,12 @@ using Tharga.Toolkit.Console.Helper;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public abstract class ContainerCommandBase : CommandBase, ICommand
+    public abstract class ContainerCommandBase : CommandBase
     {
         protected readonly List<ICommand> SubCommands = new List<ICommand>();
 
-        protected ContainerCommandBase(string name)
-            : base(null, name, $"Command that manages {name}.")
+        protected ContainerCommandBase(string name, string description = null)
+            : base(null, name, description ?? $"Command that manages {name}.")
         {
         }
 
@@ -90,7 +90,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
             if (command == null)
             {
-                helpCommand.AddLine("No command named " + paramList + ".", foreColor: ConsoleColor.Red);
+                helpCommand.AddLine($"No command named {paramList}.", foreColor: ConsoleColor.Red);
                 return helpCommand;
             }
 
@@ -108,21 +108,19 @@ namespace Tharga.Toolkit.Console.Command.Base
 
             if (subCommand != null && subCommand.EndsWith("details"))
             {
+                string reasonMessage;
+                if (!command.CanExecute(out reasonMessage))
+                {
+                    helpCommand.AddLine(string.Empty);
+                    helpCommand.AddLine("This command can currently not be executed.", foreColor: ConsoleColor.Yellow);
+                    helpCommand.AddLine(reasonMessage, foreColor: ConsoleColor.Yellow);
+                }
+
                 if (command.HelpText.Any())
                 {
                     foreach (var helpText in command.HelpText)
                     {
                         helpCommand.AddLine(helpText.Text, foreColor: helpText.ForeColor);
-                    }
-                }
-                else
-                {
-                    string reasonMessage;
-                    if (!command.CanExecute(out reasonMessage))
-                    {
-                        helpCommand.AddLine(string.Empty);
-                        helpCommand.AddLine("This command can currently note be executed.", foreColor: ConsoleColor.DarkRed);
-                        helpCommand.AddLine(reasonMessage, foreColor: ConsoleColor.DarkRed);
                     }
                 }
 
@@ -186,6 +184,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     {
                         string reasonMessage;
                         return command.CanExecute(out reasonMessage);
+                        //return command.CanExecute();
                     });
                 }
             }
@@ -201,6 +200,7 @@ namespace Tharga.Toolkit.Console.Command.Base
                     {
                         string reasonMessage;
                         return command.CanExecute(out reasonMessage);
+                        //return command.CanExecute();
                     });
                 }
             }
@@ -208,9 +208,27 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public override bool CanExecute(out string reasonMessage)
         {
-            reasonMessage = null;
-            return CanExecute();
+            string dummy;
+            if (!SubCommands.Any(x => x.CanExecute(out dummy)))
+            {
+                reasonMessage = "There are no executable subcommands.";
+                return false;
+            }
+
+            return base.CanExecute(out reasonMessage);
         }
+
+        //public override bool CanExecute()
+        //{
+        //    throw new NotImplementedException();
+        //    ////TODO: If there are nu sub commands, then disable this command.
+        //    ////TODO: If all sub commands are disabled, then disable this command.
+        //    ////return true;
+
+        //    //reasonMessage = null;
+        //    ////return CanExecute();
+        //    //return true;
+        //}
 
         protected internal ICommand GetSubCommand(string entry, out string subCommand)
         {
@@ -258,6 +276,14 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public override async Task<bool> InvokeAsync(string paramList)
         {
+            string reasonMessage;
+            if (!CanExecute(out reasonMessage))
+            {
+                OutputWarning(GetCanExecuteFailMessage(reasonMessage));
+                await GetHelpCommand(paramList).InvokeAsync(paramList);
+                return false;
+            }
+
             if (string.IsNullOrEmpty(paramList))
             {
                 return await GetHelpCommand(paramList).InvokeAsync(paramList);

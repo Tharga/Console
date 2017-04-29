@@ -8,7 +8,7 @@ namespace Tharga.Toolkit.Console.Command
         public Func<bool> CanExecute { get; }
         public ConsoleColor ForeColor { get; }
 
-        public HelpLine(string text, ConsoleColor foreColor = ConsoleColor.Gray)
+        public HelpLine(string text, ConsoleColor foreColor = ConsoleColor.DarkMagenta)
         {
             Text = text;
             CanExecute = null;

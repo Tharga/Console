@@ -8,7 +8,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         string Name { get; }
         IEnumerable<string> Names { get; }
         string Description { get; }
-        bool CanExecute();
+        //bool CanExecute();
         bool CanExecute(out string reasonMessage);
         IEnumerable<HelpLine> HelpText { get; }
 

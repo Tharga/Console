@@ -64,13 +64,28 @@ namespace Tharga.Toolkit.Console.Command.Base
             _canExecute = canExecute;
         }
 
-        public override bool CanExecute(out string reasonMessage)
-        {
-            reasonMessage = "";
-            if (_canExecute == null)
-                return CanExecute();
-            return _canExecute();
-        }
+        //public override bool CanExecute(out string reasonMessage)
+        //{
+        //    return base.CanExecute(out reasonMessage);
+        //    //throw new NotImplementedException();
+        //    ////reasonMessage = "";
+        //    ////if (_canExecute == null)
+        //    ////{
+        //    ////    return CanExecute();
+        //    ////}
+        //    ////return _canExecute();
+        //}
+
+        //public override bool CanExecute()
+        //{
+        //    throw new NotImplementedException();
+        //    //reasonMessage = "";
+        //    //if (_canExecute == null)
+        //    //{
+        //    //    //return CanExecute();
+        //    //}
+        //    //return _canExecute();
+        //}
 
         protected static Func<List<KeyValuePair<string, string>>> SelectionTrueFalse()
         {

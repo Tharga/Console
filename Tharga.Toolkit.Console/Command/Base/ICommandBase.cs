@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Tharga.Toolkit.Console.Command.Base
 {
     internal interface ICommandBase : ICommand

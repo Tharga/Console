@@ -36,12 +36,18 @@ namespace Tharga.Toolkit.Console.Command.Base
         //TODO: Make internal
         public abstract Task<bool> InvokeAsync(string paramList);
         protected abstract ICommand GetHelpCommand(string paramList);
-        public abstract bool CanExecute(out string reasonMesage);
 
-        public virtual bool CanExecute()
+        public virtual bool CanExecute(out string reasonMesage)
         {
+            reasonMesage = string.Empty;
             return true;
         }
+
+        //public virtual bool CanExecute()
+        //{
+        //    string reasonMesage;
+        //    return CanExecute(out reasonMesage);
+        //}
 
         protected virtual string GetCanExecuteFailMessage(string reason)
         {
@@ -229,30 +235,35 @@ namespace Tharga.Toolkit.Console.Command.Base
         }
 
         //TODO: Make protected
+        [Obsolete("Use OutputError on the IConsole object.")]
         public void OutputError(Exception exception)
         {
             _console.OutputError(exception);
         }
 
         //TODO: Make protected
+        [Obsolete("Use OutputError on the IConsole object.")]
         public void OutputError(string message, params object[] args)
         {
             _console.OutputError(string.Format(message, args));
         }
 
         //TODO: Make protected
+        [Obsolete("Use OutputWarning on the IConsole object.")]
         public void OutputWarning(string message, params object[] args)
         {
             _console.OutputWarning(string.Format(message, args));
         }
 
         //TODO: Make protected
+        [Obsolete("Use OutputInformation on the IConsole object.")]
         public void OutputInformation(string message, params object[] args)
         {
             _console.OutputInformation(string.Format(message, args));
         }
 
         //TODO: Make protected
+        [Obsolete("Use OutputTable on the IConsole object.")]
         public void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? color = null)
         {
             var table = new List<string[]> { title.ToArray() };
@@ -261,7 +272,8 @@ namespace Tharga.Toolkit.Console.Command.Base
         }
 
         //TODO: Make protected
-        public void OutputTable(string[][] data, ConsoleColor? color = null)
+        [Obsolete("Use OutputTable on the IConsole object.")]
+        protected void OutputTable(string[][] data, ConsoleColor? color = null)
         {
             var columnLength = GetColumnSizes(data);
 
