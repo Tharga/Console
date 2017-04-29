@@ -19,7 +19,7 @@ namespace Tharga.Toolkit.Console.Command
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var type = QueryParam("Type", GetParam(paramList, index++), new Dictionary<string, string> { { "All", "All"}, { "Event", "Event" }, { "Information", "Information" }, { "Warning", "Warning" }, { "Error", "Error" } });
+            var type = QueryParam("Type", GetParam(paramList, index++), EnumUtil.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
 
             ((SystemConsoleBase)_console).Mute(type);
 
@@ -40,7 +40,7 @@ namespace Tharga.Toolkit.Console.Command
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
-            var type = QueryParam("Type", GetParam(paramList, index++), new Dictionary<string, string> { { "All", "All" }, { "Event", "Event" }, { "Information", "Information" }, { "Warning", "Warning" }, { "Error", "Error" } });
+            var type = QueryParam("Type", GetParam(paramList, index++), EnumUtil.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
 
             ((SystemConsoleBase)_console).Unmute(type);
 

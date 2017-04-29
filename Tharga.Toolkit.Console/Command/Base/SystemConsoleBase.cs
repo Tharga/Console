@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
@@ -12,7 +13,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         private static readonly object _syncRoot = new object();
         protected internal readonly TextWriter ConsoleWriter;
         private readonly ConsoleInterceptor _interceptor;
-        private readonly List<string> _mutedTypes = new List<string>();
+        private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
 
         protected SystemConsoleBase(TextWriter consoleWriter)
         {
@@ -99,7 +100,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             System.Console.SetCursorPosition(left, top);
         }
 
-        public void WriteLine(string value, OutputLevel level, ConsoleColor? consoleColor = null)
+        public void WriteLine(string value, OutputLevel level, ConsoleColor? textColor, ConsoleColor? textBackgroundColor)
         {
             lock (_syncRoot)
             {
@@ -110,13 +111,26 @@ namespace Tharga.Toolkit.Console.Command.Base
                 var cursorLeft = MoveInputBufferDown(linesToInsert, inputBufferLines);
 
                 var defaultColor = ConsoleColor.White;
-                if (consoleColor == null)
-                    consoleColor = GetConsoleColor(level);
+                var defaultBack = ConsoleColor.Black;
+                if (textColor == null || textBackgroundColor == null)
+                {
+                    var dk = GetConsoleColor(level);
+                    if (textColor == null)
+                        textColor = dk.Item1;
+                    if (textBackgroundColor == null)
+                        textBackgroundColor = dk.Item2;
+                }
 
-                if (consoleColor != null)
+                if (textColor != null)
                 {
                     defaultColor = ForegroundColor;
-                    ForegroundColor = consoleColor.Value;
+                    ForegroundColor = textColor.Value;
+                }
+
+                if (textBackgroundColor != null)
+                {
+                    defaultBack = BackgroundColor;
+                    BackgroundColor = textBackgroundColor.Value;
                 }
 
                 var corr = 0;
@@ -128,8 +142,14 @@ namespace Tharga.Toolkit.Console.Command.Base
                 }
                 finally
                 {
-                    if (consoleColor != null)
+                    if (textColor != null)
+                    {
                         ForegroundColor = defaultColor;
+                    }
+                    if (textBackgroundColor != null)
+                    {
+                        BackgroundColor = defaultBack;
+                    }
 
                     RestoreCursor(cursorLeft);
                     OnLinesInsertedEvent(linesToInsert);
@@ -147,6 +167,60 @@ namespace Tharga.Toolkit.Console.Command.Base
         public virtual void Initiate(IEnumerable<string> commandKeys)
         {
         }
+
+        public void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? consoleColor = null)
+        {
+            var table = new List<string[]> { title.ToArray() };
+            table.AddRange(data.Select(item => item.ToArray()));
+            OutputTable(table.ToArray(), consoleColor);
+        }
+
+        public void OutputTable(string[][] data, ConsoleColor? textColor = null)
+        {
+            var columnLength = GetColumnSizes(data);
+
+            foreach (var line in data)
+            {
+                var sb = new StringBuilder();
+                for (var i = 0; i < line.Length; i++)
+                {
+                    sb.AppendFormat("{0}{1}", line[i], new string(' ', columnLength[i] - line[i].Length + 1));
+                }
+
+                //OutputLine(sb.ToString(), color, OutputLevel.Information);
+                Output(sb.ToString(), OutputLevel.Information, textColor, null, false, true);
+            }
+
+            var lineCount = data.Length - 1;
+            if (lineCount < 0) lineCount = 0;
+            //OutputLine("{0} lines.", color, OutputLevel.Information, lineCount);
+            Output($"{lineCount} lines.", OutputLevel.Information, textColor, null, false, true);
+        }
+
+        private static int[] GetColumnSizes(string[][] data)
+        {
+            if (data.Length == 0)
+                return new int[] {};
+
+            var length = new int[data[0].Length];
+            foreach (var line in data)
+            {
+                for (var i = 0; i < line.Length; i++)
+                {
+                    if (line[i].Length > length[i])
+                    {
+                        length[i] = line[i].Length;
+                    }
+                }
+            }
+
+            return length.ToArray();
+        }
+
+        //private static string FormatMessage(string message, object[] args)
+        //{
+        //    return args == null ? message : string.Format(message, args);
+        //}
 
         public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
 
@@ -283,6 +357,8 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         private void OutputError(Exception exception, int indentationLevel)
         {
+            if (_mutedTypes.Contains(OutputLevel.Error)) return;
+
             var indentation = new string(' ', indentationLevel * 2);
             OutputError($"{indentation}{exception.Message}");
             foreach (DictionaryEntry data in exception.Data)
@@ -298,40 +374,64 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void OutputError(string message)
         {
-            if (_mutedTypes.Contains("error") || _mutedTypes.Contains("all")) return;
-            OutputLine(message, OutputLevel.Error);
+            Output(message, OutputLevel.Error);
         }
 
         public void OutputWarning(string message)
         {
-            if (_mutedTypes.Contains("warning") || _mutedTypes.Contains("all")) return;
-            OutputLine(message, OutputLevel.Warning);
+            Output(message, OutputLevel.Warning);
         }
 
         public void OutputInformation(string message)
         {
-            if (_mutedTypes.Contains("information") || _mutedTypes.Contains("all")) return;
-            OutputLine(message, OutputLevel.Information);
+            Output(message, OutputLevel.Information);
         }
 
-        public void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Default)
+        public void OutputEvent(string message)
         {
-            if (_mutedTypes.Contains("event") || _mutedTypes.Contains("all")) return;
-            Output(message, outputLevel == OutputLevel.Default ? GetConsoleColor("EventColor", ConsoleColor.Cyan) : GetConsoleColor(outputLevel), outputLevel, true);
+            Output(message, OutputLevel.Event);
         }
 
-        private void OutputLine(string message, OutputLevel outputLevel)
+        public void OutputHelp(string message)
         {
-            Output(message, GetConsoleColor(outputLevel), outputLevel, true);
+            Output(message, OutputLevel.Help);
         }
 
-        public void Output(string message, ConsoleColor? color, OutputLevel outputLevel, bool line)
+        public void Output(string message, OutputLevel outputLevel, bool trunkateSingleLine = false)
         {
+            Output(message, outputLevel, null, null, trunkateSingleLine, true);
+        }
+
+        //public void Output(string message, OutputLevel outputLevel, ConsoleColor? consoleColor, bool trunkateSingleLine, bool line)
+        //{
+        //    //Output(message, consoleColor ?? (outputLevel == OutputLevel.Default ? GetConsoleColor($"{outputLevel}Color", ConsoleColor.Cyan) : GetConsoleColor(outputLevel)), outputLevel, true);
+        //    OutputEx(message, outputLevel, consoleColor ?? GetConsoleColor(outputLevel), trunkateSingleLine, line);
+        //}
+
+        //public void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Default)
+        //{
+        //    if (_mutedTypes.Contains("event") || _mutedTypes.Contains("all")) return;
+        //    Output(message, outputLevel == OutputLevel.Default ? GetConsoleColor("EventColor", ConsoleColor.Cyan) : GetConsoleColor(outputLevel), outputLevel, true);
+        //}
+
+        //private void OutputLine(string message, OutputLevel outputLevel)
+        //{
+        //    Output(message, GetConsoleColor(outputLevel), outputLevel, true);
+        //}
+
+        public void Output(string message, OutputLevel outputLevel, ConsoleColor? textColor, ConsoleColor? textBackgroundColor, bool trunkateSingleLine, bool line)
+        {
+            if (_mutedTypes.Contains(outputLevel)) return;
+            if (trunkateSingleLine && message.Length > System.Console.BufferWidth)
+            {
+                message = message.Substring(System.Console.BufferWidth);
+            }
+
             lock (_syncRoot)
             {
                 if (line)
                 {
-                    WriteLine(message, outputLevel, color);
+                    WriteLine(message, outputLevel, textColor, textBackgroundColor);
                 }
                 else
                 {
@@ -340,31 +440,49 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
         }
 
-        public ConsoleColor? GetConsoleColor(OutputLevel outputLevel)
+        private Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(OutputLevel outputLevel)
         {
             switch (outputLevel)
             {
+                case OutputLevel.Default:
+                    return new Tuple<ConsoleColor?, ConsoleColor?>(null, null);
                 case OutputLevel.Information:
-                    return GetConsoleColor("Information", ConsoleColor.Green);
+                    return GetConsoleColor("Information", ConsoleColor.Green, null);
                 case OutputLevel.Warning:
-                    return GetConsoleColor("Warning", ConsoleColor.Yellow);
+                    return GetConsoleColor("Warning", ConsoleColor.Yellow, null);
                 case OutputLevel.Error:
-                    return GetConsoleColor("Error", ConsoleColor.Red);
+                    return GetConsoleColor("Error", ConsoleColor.Red, null);
+                case OutputLevel.Event:
+                    return GetConsoleColor("Event", ConsoleColor.Cyan, null);
+                case OutputLevel.Help:
+                    return GetConsoleColor("Help", ConsoleColor.Magenta, null);
                 default:
-                    return null;
+                    return new Tuple<ConsoleColor?, ConsoleColor?>(null, null);
+                    //throw new ArgumentOutOfRangeException($"Unknown output level {outputLevel}.");
             }
         }
 
-        private static ConsoleColor GetConsoleColor(string name, ConsoleColor defaultColor)
+        private static Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(string name, ConsoleColor defaultColor, ConsoleColor? defaultTextBackgroundColor)
         {
             var colorString = ConfigurationManager.AppSettings[name + "Color"];
+            var cols = colorString.Split(';');
             ConsoleColor color;
-            if (!Enum.TryParse(colorString, out color))
+            if (!Enum.TryParse(cols[0], out color))
             {
                 color = defaultColor;
             }
 
-            return color;
+            ConsoleColor? color3 = defaultTextBackgroundColor;
+            if (cols.Length > 1)
+            {
+                ConsoleColor color2;
+                if (Enum.TryParse(cols[1], out color2))
+                {
+                    color3 = color2;
+                }
+            }
+
+            return new Tuple<ConsoleColor?, ConsoleColor?>(color, color3);
         }
 
         public void Dispose()
@@ -373,18 +491,15 @@ namespace Tharga.Toolkit.Console.Command.Base
             ConsoleWriter?.Dispose();
         }
 
-        public void Mute(string type)
+        public void Mute(OutputLevel type)
         {
             OutputInformation($"{type}s are now muted. Type 'scr unmute {type}' to show messages.");
-            _mutedTypes.Add(type.ToLower());
+            _mutedTypes.Add(type);
         }
 
-        public void Unmute(string type)
+        public void Unmute(OutputLevel type)
         {
-            if (type.ToLower() == "all")
-                _mutedTypes.Clear();
-            else
-                _mutedTypes.Remove(type.ToLower());
+            _mutedTypes.Remove(type);
         }
     }
 }

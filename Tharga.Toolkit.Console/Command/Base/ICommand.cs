@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
@@ -14,8 +13,8 @@ namespace Tharga.Toolkit.Console.Command.Base
         bool Hidden { get; }
 
         //TODO: Try to hide theese from the interface
-        void AttachConsole(IConsole console);
-        Task<bool> InvokeAsync(string paramList);
-        Task<bool> InvokeWithCanExecuteCheckAsync(string paramList);
+        //void AttachConsole(IConsole console);
+        //Task<bool> InvokeAsync(string paramList);
+        //Task<bool> InvokeWithCanExecuteCheckAsync(string paramList);
     }
 }

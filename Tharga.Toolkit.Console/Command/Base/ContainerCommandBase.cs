@@ -57,14 +57,14 @@ namespace Tharga.Toolkit.Console.Command.Base
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
 
             SubCommands.Add(command);
-            command.AttachConsole(Console);
+            ((CommandBase)command).AttachConsole(Console);
             return this;
         }
 
-        public override void AttachConsole(IConsole console)
+        internal override void AttachConsole(IConsole console)
         {
             base.AttachConsole(console);
-            SubCommands.ForEach(x => x.AttachConsole(Console));
+            SubCommands.ForEach(x => ((CommandBase)x).AttachConsole(Console));
         }
 
         public void UnregisterCommand(string commandName)
@@ -320,13 +320,13 @@ namespace Tharga.Toolkit.Console.Command.Base
             if (!CanExecute(out reasonMessage))
             {
                 OutputWarning(GetCanExecuteFailMessage(reasonMessage));
-                await GetHelpCommand(paramList).InvokeAsync(paramList);
+                await ((CommandBase)GetHelpCommand(paramList)).InvokeAsync(paramList);
                 return false;
             }
 
             if (string.IsNullOrEmpty(paramList))
             {
-                return await GetHelpCommand(paramList).InvokeAsync(paramList);
+                return await ((CommandBase)GetHelpCommand(paramList)).InvokeAsync(paramList);
             }
 
             OutputWarning($"Unknown sub command {paramList}, for {Name}.");

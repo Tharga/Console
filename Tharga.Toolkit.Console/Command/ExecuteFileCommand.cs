@@ -33,18 +33,18 @@ namespace Tharga.Toolkit.Console.Command
 
             if (!System.IO.File.Exists(filename))
             {
-                OutputError("File {0} does not exist", filename);
+                OutputError($"File {filename} does not exist.");
                 return false;
             }
 
             var fileLines = System.IO.File.ReadAllLines(filename);
 
-            OutputInformation("There are {0} commands in file {1}.", fileLines.Length, filename);
+            OutputInformation($"There are {fileLines.Length} commands in file {filename}.");
 
             var index = 0;
             foreach (var line in fileLines)
             {
-                OutputInformation("Command {0}: {1}", ++index, line);
+                OutputInformation($"Command {++index}: {line}");
                 if (!line.StartsWith("#"))
                 {
                     var success = _rootCommand.Execute(line);

@@ -41,7 +41,7 @@ namespace Tharga.Toolkit.Console.Command
             cmd.StandardInput.Flush();
             cmd.StandardInput.Close();
             cmd.WaitForExit();
-            _console.WriteLine(cmd.StandardOutput.ReadToEnd(), OutputLevel.Default);
+            _console.WriteLine(cmd.StandardOutput.ReadToEnd(), OutputLevel.Default, null, null);
 
             return true;
         }

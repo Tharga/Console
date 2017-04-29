@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Command;
 using Tharga.Toolkit.Console.Command.Base;
 
@@ -156,7 +155,7 @@ namespace Tharga.Toolkit.Console
 
             if (!_commandMode)
             {
-                _rootCommand.Output(SplashScreen, OutputLevel.Default, true);
+                _rootCommand.Console.Output(SplashScreen, OutputLevel.Default, false);
             }
         }
 
@@ -168,7 +167,7 @@ namespace Tharga.Toolkit.Console
                 var info = GetAssemblyInfo();
                 if (!string.IsNullOrEmpty(info))
                 {
-                    _rootCommand.Output(info, OutputLevel.Default, true);
+                    _rootCommand.Console.Output(info, OutputLevel.Default, false);
                 }
             }
         }

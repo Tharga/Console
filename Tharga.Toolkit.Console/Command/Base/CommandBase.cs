@@ -56,7 +56,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             string reason;
             if (!CanExecute(out reason))
             {
-                OutputWarning(GetCanExecuteFailMessage(reason));
+                _console.OutputWarning(GetCanExecuteFailMessage(reason));
                 return true;
             }
 
@@ -234,108 +234,38 @@ namespace Tharga.Toolkit.Console.Command.Base
             _console.OutputError(exception);
         }
 
-        protected void OutputError(string message, params object[] args)
+        protected void OutputError(string message)
         {
-            _console.OutputError(string.Format(message, args));
+            _console.OutputError(message);
         }
 
-        protected void OutputWarning(string message, params object[] args)
+        protected void OutputWarning(string message)
         {
-            _console.OutputWarning(string.Format(message, args));
+            _console.OutputWarning(message);
         }
 
-        protected void OutputInformation(string message, params object[] args)
+        protected void OutputInformation(string message)
         {
-            _console.OutputInformation(string.Format(message, args));
+            _console.OutputInformation(message);
         }
 
+        //[Obsolete("Use console output instead.")]
         protected void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? color = null)
         {
-            var table = new List<string[]> { title.ToArray() };
-            table.AddRange(data.Select(item => item.ToArray()));
-            OutputTable(table.ToArray(), color);
+            _console.OutputTable(title, data, color);
         }
 
+        //[Obsolete("Use console output instead.")]
         protected void OutputTable(string[][] data, ConsoleColor? color = null)
         {
-            var columnLength = GetColumnSizes(data);
-
-            foreach (var line in data)
-            {
-                var sb = new StringBuilder();
-                for (var i = 0; i < line.Length; i++)
-                {
-                    sb.AppendFormat("{0}{1}", line[i], new string(' ', columnLength[i] - line[i].Length + 1));
-                }
-
-                OutputLine(sb.ToString(), color, OutputLevel.Information);
-            }
-
-            var lineCount = data.Length - 1;
-            if (lineCount < 0) lineCount = 0;
-            OutputLine("{0} lines.", color, OutputLevel.Information, lineCount);
-        }
-
-        private static int[] GetColumnSizes(string[][] data)
-        {
-            if (data.Length == 0)
-                return new int[] {};
-
-            var length = new int[data[0].Length];
-            foreach (var line in data)
-            {
-                for (var i = 0; i < line.Length; i++)
-                {
-                    if (line[i].Length > length[i])
-                    {
-                        length[i] = line[i].Length;
-                    }
-                }
-            }
-
-            return length.ToArray();
-        }
-
-        [Obsolete("Use OutputEvent from the console.")]
-        public void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Default, params object[] args)
-        {
-            _console.OutputEvent(string.Format(message, args), outputLevel);
-        }
-
-        [Obsolete("Use OutputLine from the console.")]
-        public void OutputLine(string message, OutputLevel outputLevel, params object[] args)
-        {
-            _console.Output(string.Format(message, args), _console.GetConsoleColor(outputLevel), outputLevel, true);
-        }
-
-        [Obsolete("Use OutputLine from the console.")]
-        public void OutputLine(string message, ConsoleColor? color, OutputLevel outputLevel, params object[] args)
-        {
-            _console.Output(string.Format(message,args), color ?? _console.GetConsoleColor(outputLevel), outputLevel, true);
-        }
-
-        [Obsolete("Use Output from the console.")]
-        public void Output(string message, OutputLevel outputLevel, bool line, params object[] args)
-        {
-            _console.Output(string.Format(message, args), _console.GetConsoleColor(outputLevel), outputLevel, line);
-        }
-
-        [Obsolete("Use Output from the console.")]
-        public void Output(string message, ConsoleColor? color, OutputLevel outputLevel, bool line, params object[] args)
-        {
-            _console.Output(FormatMessage(message, args), color, outputLevel, line);
-        }
-
-        private static string FormatMessage(string message, object[] args)
-        {
-            return args == null ? message : string.Format(message, args);
+            _console.OutputTable(data, color);
         }
 
         //TODO: Make internal
-        [Obsolete("This method is deprecated and will be removed.")]
-        public virtual void AttachConsole(IConsole console)
+        //[Obsolete("This method is deprecated and will be removed.")]
+        internal virtual void AttachConsole(IConsole console)
         {
             _console = console;
-        }        
+        }
     }
 }

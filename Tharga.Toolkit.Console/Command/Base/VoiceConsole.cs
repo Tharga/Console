@@ -52,7 +52,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
             catch (Exception exception)
             {
-                base.WriteLine(string.Format("Unable to set default input audio device. Error: {0}", exception.Message), OutputLevel.Error, null);
+                base.WriteLine($"Unable to set default input audio device. Error: {exception.Message}", OutputLevel.Error, null, null);
                 return;
             }
 

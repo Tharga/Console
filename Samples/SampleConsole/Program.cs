@@ -13,19 +13,20 @@ namespace SampleConsole
 {
     internal class Program
     {
+        public static ClientConsole _console;
         private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
 
         [STAThread]
         private static void Main(string[] args)
         {
-            using (var console = new ClientConsole())
+            using (_console = new ClientConsole())
             {
                 //var console = new VoiceConsole();
                 //var console = new ServerConsole(string.Empty);
                 //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
                 //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
 
-                var command = new MyRootCommand(console);
+                var command = new MyRootCommand(_console);
                 command.RegisterCommand(new SomeContainerCommand());
                 command.RegisterCommand(new EngineContainerCommand());
                 command.RegisterCommand(new MathContainerCommand());
@@ -84,7 +85,7 @@ namespace SampleConsole
             var index = 0;
             var id = await QueryParamAsync("Some Id", GetParam(paramList, index++), KeyNameList);
 
-            OutputInformation("Some data for {0}", id);
+            OutputInformation($"Some data for {id}");
 
             return true;
         }
@@ -116,7 +117,7 @@ namespace SampleConsole
             var index = 0;
             var id = QueryParam("Some Huge Id", GetParam(paramList, index++), HugeKeyNameList());
 
-            OutputInformation("Some data for {0}", id);
+            OutputInformation($"Some data for {id}");
 
             return true;
         }
@@ -147,7 +148,7 @@ namespace SampleConsole
             var index = 0;
             var id = QueryParam("Some string", GetParam(paramList, index++), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
 
-            OutputInformation("Entered string was: {0}", id);
+            OutputInformation($"Entered string was: {id}");
 
             return true;
         }
@@ -162,7 +163,7 @@ namespace SampleConsole
 
         public override async Task<bool> InvokeAsync(string paramList)
         {
-            for (var i = 0; i < 5; i++) OutputInformation("Some data {0}", i);
+            for (var i = 0; i < 5; i++) OutputInformation($"Some data {i}");
 
             return true;
         }
@@ -221,7 +222,7 @@ namespace SampleConsole
             var index = 0;
             var password = QueryPassword("Some password", GetParam(paramList, index++));
 
-            OutputInformation("Entered password was: {0}", password);
+            OutputInformation($"Entered password was: {password}");
 
             return true;
         }
@@ -259,19 +260,19 @@ namespace SampleConsole
             switch (rng.Next(4))
             {
                 case 0:
-                    OutputInformation(output);
+                    Program._console.OutputInformation(output);
                     break;
 
                 case 1:
-                    OutputWarning(output);
+                    Program._console.OutputWarning(output);
                     break;
 
                 case 2:
-                    OutputError(output);
+                    Program._console.OutputError(output);
                     break;
 
                 case 3:
-                    OutputEvent(output);
+                    Program._console.OutputEvent(output);
                     break;
             }
         }
@@ -334,7 +335,7 @@ namespace SampleConsole
             var val1 = QueryParam<int>("First value", GetParam(paramList, index++));
             var val2 = QueryParam<int>("Second value", GetParam(paramList, index++));
 
-            OutputInformation("{0} + {1} = {2}", val1, val2, val1 + val2);
+            OutputInformation($"{val1} + {val2} = {val1 + val2}");
 
             return true;
         }
@@ -361,7 +362,7 @@ namespace SampleConsole
                 vals.Add(val.Value);
             }
 
-            OutputInformation("{0}", vals.Sum());
+            OutputInformation($"{vals.Sum()}");
 
             return true;
         }
@@ -451,7 +452,7 @@ namespace SampleConsole
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var parameters = CreateParameters(paramList);
-            OutputInformation("Created parameters: {0}", parameters);
+            OutputInformation($"Created parameters: {parameters}");
 
             return true;
         }
@@ -485,7 +486,7 @@ namespace SampleConsole
             var parameters = _parametersCommand.CreateParameters(paramList);
 
             //TODO: Execute something using the parameters
-            OutputInformation("Execute somthing using the parameters: {0}", parameters);
+            OutputInformation($"Execute somthing using the parameters: {parameters}");
 
             return true;
         }

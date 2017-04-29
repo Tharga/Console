@@ -6,6 +6,8 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     public abstract class RootCommandBase : ContainerCommandBase
     {
+        private readonly IConsole _console;
+
         public class ExceptionOccuredEventArgs : EventArgs
         {
             public ExceptionOccuredEventArgs(Exception exception)
@@ -27,6 +29,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         protected RootCommandBase(IConsole console, Action stopAction)
             : base(console, new [] { "root" })
         {
+            _console = console;
             RegisterCommand(new ExitCommand(Console, stopAction));
             RegisterCommand(new ClearCommand(Console));
             RegisterCommand(new ScreenCommand(Console));
@@ -50,7 +53,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public sealed override async Task<bool> InvokeAsync(string paramList)
         {
-            return await GetHelpCommand(paramList).InvokeAsync(paramList);
+            return await ((CommandBase)GetHelpCommand(paramList)).InvokeAsync(paramList);
         }
 
         public bool Execute(string entry)
@@ -63,13 +66,13 @@ namespace Tharga.Toolkit.Console.Command.Base
                 var command = GetSubCommand(entry, out subCommand);
                 if (command != null)
                 {
-                    var task = command.InvokeWithCanExecuteCheckAsync(subCommand);
+                    var task = ((CommandBase)command).InvokeWithCanExecuteCheckAsync(subCommand);
                     task.Wait();
                     success = task.Result;
                 }
                 else
                 {
-                    OutputError("Invalid command {0}.", entry);
+                    _console.OutputError($"Invalid command {entry}.");
                 }
             }
             catch (SystemException exception)
@@ -98,7 +101,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         internal void Initiate()
         {
-            Console.Initiate(CommandKeys);
+            ((SystemConsoleBase)Console).Initiate(CommandKeys);
         }
     }
 }
