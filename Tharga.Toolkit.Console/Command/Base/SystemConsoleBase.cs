@@ -12,6 +12,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         private static readonly object _syncRoot = new object();
         protected internal readonly TextWriter ConsoleWriter;
         private readonly ConsoleInterceptor _interceptor;
+        private readonly List<string> _mutedTypes = new List<string>();
 
         protected SystemConsoleBase(TextWriter consoleWriter)
         {
@@ -297,21 +298,25 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void OutputError(string message)
         {
+            if (_mutedTypes.Contains("error") || _mutedTypes.Contains("all")) return;
             OutputLine(message, OutputLevel.Error);
         }
 
         public void OutputWarning(string message)
         {
+            if (_mutedTypes.Contains("warning") || _mutedTypes.Contains("all")) return;
             OutputLine(message, OutputLevel.Warning);
         }
 
         public void OutputInformation(string message)
         {
+            if (_mutedTypes.Contains("information") || _mutedTypes.Contains("all")) return;
             OutputLine(message, OutputLevel.Information);
         }
 
         public void OutputEvent(string message, OutputLevel outputLevel = OutputLevel.Default)
         {
+            if (_mutedTypes.Contains("event") || _mutedTypes.Contains("all")) return;
             Output(message, outputLevel == OutputLevel.Default ? GetConsoleColor("EventColor", ConsoleColor.Cyan) : GetConsoleColor(outputLevel), outputLevel, true);
         }
 
@@ -322,30 +327,11 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         public void Output(string message, ConsoleColor? color, OutputLevel outputLevel, bool line)
         {
-            //if (_console == null) throw new InvalidOperationException("No console assigned. The command was probably not registered, use AttachConsole to do it manually.");
-
             lock (_syncRoot)
             {
                 if (line)
                 {
-                    //if (args == null || !args.Any())
-                    //{
-                        WriteLine(message, outputLevel, color);
-                    //}
-                    //else
-                    //{
-                    //    try
-                    //    {
-                    //        _console.WriteLine(string.Format(message, args), outputLevel, color);
-                    //    }
-                    //    catch (FormatException exception)
-                    //    {
-                    //        var exp = new FormatException(exception.Message + " Perhaps the parameters provided does not match the message.", exception);
-                    //        exp.Data.Add("Message", message);
-                    //        exp.Data.Add("Parameters", args.Count());
-                    //        throw exp;
-                    //    }
-                    //}
+                    WriteLine(message, outputLevel, color);
                 }
                 else
                 {
@@ -385,6 +371,20 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             _interceptor?.Dispose();
             ConsoleWriter?.Dispose();
+        }
+
+        public void Mute(string type)
+        {
+            OutputInformation($"{type}s are now muted. Type 'scr unmute {type}' to show messages.");
+            _mutedTypes.Add(type.ToLower());
+        }
+
+        public void Unmute(string type)
+        {
+            if (type.ToLower() == "all")
+                _mutedTypes.Clear();
+            else
+                _mutedTypes.Remove(type.ToLower());
         }
     }
 }

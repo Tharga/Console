@@ -31,5 +31,6 @@ namespace Tharga.Toolkit.Console.Command.Base
         //TODO: Try to hide theese from the interface
         void Output(string message, ConsoleColor? color, OutputLevel outputLevel, bool line);
         ConsoleColor? GetConsoleColor(OutputLevel outputLevel);
+        //void Mute(string type, bool enabled);
     }
 }

@@ -6,6 +6,48 @@ using Tharga.Toolkit.Console.Command.Base;
 
 namespace Tharga.Toolkit.Console.Command
 {
+    internal class MuteCommand : ActionCommandBase
+    {
+        private readonly IConsole _console;
+
+        public MuteCommand(IConsole console)
+            : base(console, new [] { "mute"}, "Mute output.", false)
+        {
+            _console = console;
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            var index = 0;
+            var type = QueryParam("Type", GetParam(paramList, index++), new Dictionary<string, string> { { "All", "All"}, { "Event", "Event" }, { "Information", "Information" }, { "Warning", "Warning" }, { "Error", "Error" } });
+
+            ((SystemConsoleBase)_console).Mute(type);
+
+            return true;
+        }
+    }
+
+    internal class UnmuteCommand : ActionCommandBase
+    {
+        private readonly IConsole _console;
+
+        public UnmuteCommand(IConsole console)
+            : base(console, new[] { "unmute" }, "Unmute output.", false)
+        {
+            _console = console;
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            var index = 0;
+            var type = QueryParam("Type", GetParam(paramList, index++), new Dictionary<string, string> { { "All", "All" }, { "Event", "Event" }, { "Information", "Information" }, { "Warning", "Warning" }, { "Error", "Error" } });
+
+            ((SystemConsoleBase)_console).Unmute(type);
+
+            return true;
+        }
+    }
+
     internal class ForegroundColorCommand : ActionCommandBase
     {
         public ForegroundColorCommand(IConsole console)

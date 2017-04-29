@@ -10,6 +10,8 @@ namespace Tharga.Toolkit.Console.Command
             RegisterCommand(new ClearCommand(console));
             RegisterCommand(new BackgroundColorCommand(console));
             RegisterCommand(new ForegroundColorCommand(console));
+            RegisterCommand(new MuteCommand(console));
+            RegisterCommand(new UnmuteCommand(console));
         }
 
         //public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine(""); } }

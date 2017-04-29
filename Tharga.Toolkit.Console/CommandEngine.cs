@@ -5,42 +5,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Command;
 using Tharga.Toolkit.Console.Command.Base;
 
 namespace Tharga.Toolkit.Console
 {
-    public class Runner
-    {
-        private readonly Action<bool> _action;
-        private Task _task;
-        private CancellationToken _cancellationToken;
-        private bool _running = true;
-
-        public Runner(Action<bool> action)
-        {
-            _action = action;
-            _cancellationToken = new CancellationToken();
-        }
-
-        public void Start()
-        {
-            _task = Task.Run(() =>
-            {
-                _action(_running);
-            }, _cancellationToken);
-        }
-
-        public void Close()
-        {
-            _running = false;
-            //_cancellationToken.Register()
-            _task.Wait();
-        }
-    }
-
     public class CommandEngine : ICommandEngine
     {
         [DllImport("user32.dll", SetLastError = true)]
@@ -98,10 +68,7 @@ namespace Tharga.Toolkit.Console
         public bool TopMost { get; set; }
         public ConsoleColor BackgroundColor { get; set; }
         public ConsoleColor DefaultForegroundColor { get; set; }
-        //public Action<CancellationToken>[] Actions { get; set; }
-        //public Action Action { get; set; }
-        //public Task<CancellationToken> Task { get; set; }
-        public Runner Runner { get; set; }
+        public Runner[] Runners { get; set; }
 
         public IConsole Console => _rootCommand.Console;
 
@@ -135,15 +102,13 @@ namespace Tharga.Toolkit.Console
 
             _rootCommand.Initiate();
 
-            Runner.Start();
-            //Task.Start();
-            //Start provided tasks
-            //var cancellationToken = new CancellationToken();
-            //foreach (var action in Actions)
-            //{
-            //    //Task.Run(cancellationToken => action(cancellationToken), cancellationToken);
-            //    //Task<Action<CancellationToken>>.Run(x => x(cancellationToken), cancellationToken);
-            //}
+            if (Runners != null)
+            {
+                foreach (var runner in Runners)
+                {
+                    runner.Start();
+                }
+            }
 
             while (_running)
             {
@@ -161,8 +126,13 @@ namespace Tharga.Toolkit.Console
                 }
             }
 
-            //Task.Wait();
-            Runner.Close();
+            if (Runners != null)
+            {
+                foreach (var runner in Runners)
+                {
+                    runner.Close();
+                }
+            }
         }
 
         private void SetColor()

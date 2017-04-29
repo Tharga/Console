@@ -12,8 +12,11 @@ To get started you can download the prebuilt [NuGet package](https://www.nuget.o
 
 ## Engine, Command and Console
 
-Simplest core application
-´´´
+Tharga console has an engine that runs the program. The engine needs a root command and a console to run.
+Here are some basic examples on how to get started.
+
+#### Simplest core application
+```
     internal static class Program
     {
         [STAThread]
@@ -29,12 +32,74 @@ Simplest core application
     }
 ```
 
-Adding stuff that should start automatically
-´´´
+#### Adding stuff that should start automatically and run in background
+```
+    internal static class Program
+    {
+        [STAThread]
+        private static void Main(string[] args)
+        {
+            using (var console = new ClientConsole())
+            {
+                var command = new RootCommand(console);
+                var engine = new CommandEngine(command)
+                {
+                    Runners = new[]
+                    {
+                        new Runner(e => { console.OutputInformation("Type 'scr mute event' to stop showing event output."); }),
+                        MyRunner("A", console),
+                        MyRunner("B", console),
+                    }
+                };
+                engine.Run(args);
+            }
+        }
+
+        private static Runner MyRunner(string name, IConsole console)
+        {
+            return new Runner(token =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    console.OutputEvent($"Running {name}.");
+                    Thread.Sleep(3000);
+                }
+            });
+        }
+    }
 ```
 
-Adding custom Commands
-´´´
+
+#### Adding custom commands
+```
+    internal static class Program
+    {
+        [STAThread]
+        private static void Main(string[] args)
+        {
+            using (var console = new ClientConsole())
+            {
+                var command = new RootCommand(console);
+                command.RegisterCommand(new MyCommand());
+                var engine = new CommandEngine(command);
+                engine.Run(args);
+            }
+        }
+    }
+
+    internal class MyCommand : ActionCommandBase
+    {
+        public MyCommand()
+            : base("do")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            OutputInformation("Do stuff here");
+            return true;
+        }
+    }
 ```
 
 ## Sample
@@ -68,13 +133,15 @@ There are several different type of consoles that can be used.
 - ClientConsole - Regular console used for normal console applications.
 - VoiceConsole - With this client you can use voice commands to control the application.
 - ServerConsole - This console outputs time information and writes to the event log. Great when hosting services.
+- ActionConsole - Performs an action on output.
+- AggregateConsole - Merge serveral consoles together and use them all by using the aggregate console.
 
 ### ServerConsole
 The default behaviour is that output of type information, warnings and errors are written to the event log (not the default type).
 This can be configured by adding items with the key LogError, LogWarning, LogInformation and LogDefault to appSettings with a boolean value of true or false.
 
 ## Commands
-There are two types of commands; container commands and action commands. The container commands is used to group other commands together and the action commands to execute stuff.
+There are two types of command classes; container commands and action commands. The container commands is used to group other commands together and the action commands to execute stuff.
 When executing commands from the console the names are to be typed in one flow. Say for instance that you have a container command named "some" and an action command named "item".
 The command is executed by typing *some item*.
 
@@ -85,7 +152,7 @@ When executing the command by typing *some item*, the user will be queried for *
 
 You can also send the parameter directly by typing *some item A*. This will automatically send the parameter value A as the first parameter for the command. (The part *GetParam(paramList, 0)* will feed the *QueryParam<T>* function with the fist value provided)
 
-### Query users in different ways
+### Query input in different ways
 The simplest way of querying is just to use the generic *QueryParam<T>* function.
 Ex: *var id = QueryParam<string>("Some Id", GetParam(paramList, 0));*
 
@@ -93,6 +160,11 @@ If you want the user to have options to choose from you can provide a list of po
 Ex: *var answer = QueryParam<bool>("Are you sure?", GetParam(paramList, 0), new Dictionary<bool, string> { { true, "Yes" }, { false, "No" } });*
 
 There are also async versions that takes functions of possible selections.
+
+## Help texts
+Type your command followed by -? to get help. Or just use the keyword help.
+
+Override the command classes you crate with the property HelpText and write your own help text for each command you create.
 
 ## Color
 There are four types of output, the colors for theese can be configured using the appSettings part of the config file

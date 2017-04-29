@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -12,153 +11,41 @@ using Timer = System.Timers.Timer;
 
 namespace SampleConsole
 {
-    internal static class Program
+    internal class Program
     {
+        private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
+
         [STAThread]
         private static void Main(string[] args)
         {
             using (var console = new ClientConsole())
             {
-                var command = new RootCommand(console);
-                var engine = new CommandEngine(command)
-                {
-                    Runner = new Runner(running =>
-                    {
-                        while (running)
-                        {
-                            Console.WriteLine("AAA");
-                            Thread.Sleep(1000);
-                        }
-                    })
-                    //Task = new Task<CancellationToken>((e) =>
-                    //{
-                    //})
+                //var console = new VoiceConsole();
+                //var console = new ServerConsole(string.Empty);
+                //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
+                //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
 
-                    //Action = new Action(() =>
-                    //{
-                    //    while(true)
-                    //    {
-                    //            Console.WriteLine("AAA");
-                    //        Thread.Sleep(1000);
-                    //        };
-                    //})
-                        //Actions = new[]
-                        //{
-                        //    new Action<CancellationToken>(e =>
-                        //    {
-                        //        while (!e.IsCancellationRequested)
-                        //        {
-                        //            Console.WriteLine("AAA");
-                        //            Thread.Sleep(1000);
-                        //        }
-                        //    }),
-                        //}
-                    };
-                engine.Run(args);
+                var command = new MyRootCommand(console);
+                command.RegisterCommand(new SomeContainerCommand());
+                command.RegisterCommand(new EngineContainerCommand());
+                command.RegisterCommand(new MathContainerCommand());
+                command.RegisterCommand(new StatusCommand());
+                command.RegisterCommand(new ParametersCommand());
+                command.RegisterCommand(new SomeContainerWithDisabledSubs());
+
+                var commandEngine = new CommandEngine(command)
+                {
+                    SplashScreen = _splashscreen,
+                    Title = "Sample console",
+                    //ShowAssemblyInfo = false,
+                    //TopMost = true,
+                    //BackgroundColor = ConsoleColor.DarkBlue,
+                    //DefaultForegroundColor = ConsoleColor.White,
+                };
+
+                commandEngine.Run(args);
             }
         }
-    }
-
-    //internal class Program
-    //{
-    //    private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
-
-    //    [STAThread]
-    //    private static void Main(string[] args)
-    //    {
-    //        var console = new ClientConsole();
-    //        //var console = new VoiceConsole();
-    //        //var console = new ServerConsole(string.Empty);
-    //        //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
-    //        //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
-
-    //        var command = new MyRootCommand(console);
-    //        command.RegisterCommand(new SomeContainerCommand());
-    //        command.RegisterCommand(new EngineContainerCommand());
-    //        command.RegisterCommand(new MathContainerCommand());
-    //        command.RegisterCommand(new StatusCommand());
-    //        command.RegisterCommand(new ParametersCommand());
-    //        command.RegisterCommand(new SomeContainerWithDisabledSubs());
-    //        command.RegisterCommand(new LineFeedCommand());
-
-    //        var commandEngine = new CommandEngine(command)
-    //        {
-    //            SplashScreen = _splashscreen,
-    //            Title = "Sample console",
-    //            //ShowAssemblyInfo = false,
-    //            //TopMost = true,
-    //            //BackgroundColor = ConsoleColor.DarkBlue,
-    //            //DefaultForegroundColor = ConsoleColor.White,
-    //        };
-
-    //        commandEngine.Run(args);
-    //        //command.Execute("some list");
-    //        //command.Execute("some item");
-
-    //        console.Dispose();
-    //    }
-    //}
-
-    internal class LineFeedCommand : ActionCommandBase
-    {
-        public LineFeedCommand()
-            : base("Line", "Line output", true)
-        {
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            //NOTE: This will trigger the line feed bug!
-            Task.Run(() =>
-            {
-                //System.Console.WriteLine("abc\nabc\n" + new string('X', 160) + "\ns\ns");
-                //System.Console.WriteLine("abc\nabc\n" + new string('X', 160) + "\naaa");
-                //System.Console.WriteLine("abc\n" + new string('X', 78));
-                //System.Console.WriteLine(new string('X', 80) + "\n\nx");
-                //System.Console.WriteLine(new string('X', 79));
-                //System.Console.WriteLine(new string('X', 80));
-                //System.Console.WriteLine(new string('X', 81));
-                //System.Console.WriteLine(new string('X', 160));
-
-                //System.Console.Write(new string('X', 20));
-                //System.Console.Write(new string('Y', 10));
-                //System.Console.Write(new string('Y', 50));
-                //System.Console.Write(new string('Y', 80));
-                System.Console.WriteLine(new string('Y', 80));
-
-                //System.Console.WriteLine(new string('X', 80) + "\n");
-                //System.Console.WriteLine(new string('X', 80) + "\n\n");
-                //System.Console.WriteLine("OK");
-            });
-            return true;
-        }
-    }
-
-    internal class SomeContainerWithDisabledSubs : ContainerCommandBase
-    {
-        public SomeContainerWithDisabledSubs() 
-            : base ("Disabled")
-        {
-            RegisterCommand(new SomeDisabledCommand());
-            RegisterCommand(new SomeItemCommand());
-        }
-
-        public override IEnumerable<HelpLine> HelpText
-        {
-            get { yield return new HelpLine("This command contains sub-command that are all disabled. Therefore the group command is also disabled."); }
-        }
-
-        public override bool CanExecute(out string reasonMessage)
-        {
-            reasonMessage = "Because it is manually disabled.";
-            return false;
-        }
-
-        //public override bool CanExecute()
-        //{
-        //    //return false;
-        //    return base.CanExecute();
-        //}
     }
 
     internal class SomeContainerCommand : ContainerCommandBase
@@ -309,11 +196,6 @@ namespace SampleConsole
             : base("disabled", "Command that is always disabled.")
         {
         }
-
-        //public override bool CanExecute()
-        //{
-        //    return false;
-        //}
 
         public override bool CanExecute(out string reasonMesage)
         {
@@ -606,6 +488,27 @@ namespace SampleConsole
             OutputInformation("Execute somthing using the parameters: {0}", parameters);
 
             return true;
+        }
+    }
+
+    internal class SomeContainerWithDisabledSubs : ContainerCommandBase
+    {
+        public SomeContainerWithDisabledSubs()
+            : base("Disabled")
+        {
+            RegisterCommand(new SomeDisabledCommand());
+            RegisterCommand(new SomeItemCommand());
+        }
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield return new HelpLine("This command contains sub-command that are all disabled. Therefore the group command is also disabled."); }
+        }
+
+        public override bool CanExecute(out string reasonMessage)
+        {
+            reasonMessage = "Because it is manually disabled.";
+            return false;
         }
     }
 }
