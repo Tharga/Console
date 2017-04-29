@@ -106,10 +106,12 @@ namespace Tharga.Toolkit.Console.Command.Base
                 helpCommand.AddLine(command.Description);
             }
 
+            string reasonMessage;
+            command.CanExecute(out reasonMessage);
+
             if (subCommand != null && subCommand.EndsWith("details"))
             {
-                string reasonMessage;
-                if (!command.CanExecute(out reasonMessage))
+                if (!string.IsNullOrEmpty(reasonMessage))
                 {
                     helpCommand.AddLine(string.Empty);
                     helpCommand.AddLine("This command can currently not be executed.", foreColor: ConsoleColor.Yellow);
@@ -155,7 +157,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             var containerCommand = command as ContainerCommandBase;
             if (containerCommand != null)
             {
-                ShowSubCommandHelp(containerCommand.SubCommands, helpCommand);
+                ShowSubCommandHelp(containerCommand.SubCommands, helpCommand, reasonMessage);
             }
 
             if (command.Names.Count() > 1)
@@ -171,7 +173,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             return helpCommand;
         }
 
-        private void ShowSubCommandHelp(List<ICommand> subCommands, HelpCommand helpCommand)
+        private void ShowSubCommandHelp(List<ICommand> subCommands, HelpCommand helpCommand, string parentReasonMesage)
         {
             var containerCommands = subCommands.Where(x => x is ContainerCommandBase).ToArray();
             if (containerCommands.Any())
@@ -183,8 +185,13 @@ namespace Tharga.Toolkit.Console.Command.Base
                     helpCommand.AddLine($"{command.Name.PadString(10)} {command.Description}", () =>
                     {
                         string reasonMessage;
-                        return command.CanExecute(out reasonMessage);
-                        //return command.CanExecute();
+                        var canExecute = command.CanExecute(out reasonMessage);
+                        if (canExecute && !string.IsNullOrEmpty(parentReasonMesage))
+                        {
+                            reasonMessage = parentReasonMesage;
+                            return false;
+                        }
+                        return canExecute;
                     });
                 }
             }
@@ -199,8 +206,13 @@ namespace Tharga.Toolkit.Console.Command.Base
                     helpCommand.AddLine($"{command.Name.PadString(10)} {command.Description}", () =>
                     {
                         string reasonMessage;
-                        return command.CanExecute(out reasonMessage);
-                        //return command.CanExecute();
+                        var canExecute = command.CanExecute(out reasonMessage);
+                        if (canExecute && !string.IsNullOrEmpty(parentReasonMesage))
+                        {
+                            reasonMessage = parentReasonMesage;
+                            return false;
+                        }
+                        return canExecute;
                     });
                 }
             }
@@ -266,6 +278,16 @@ namespace Tharga.Toolkit.Console.Command.Base
             var x1 = ((ContainerCommandBase)command).GetSubCommand(subCommand, out nextSub);
             if (x1 == null) return command; //If there is no sub-command, return the command found
             subCommand = nextSub;
+            if (x1 is ActionCommandBase)
+            {
+                string reasonMessage;
+                var a = x1.CanExecute(out reasonMessage);
+                var b = command.CanExecute(out reasonMessage);
+                if (a && !b)
+                {
+                    ((ActionCommandBase)x1).SetCanExecute(() => $"{reasonMessage} Inherited by parent.");
+                }
+            }
             return x1;
         }
 

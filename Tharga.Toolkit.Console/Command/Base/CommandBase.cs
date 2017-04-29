@@ -234,45 +234,33 @@ namespace Tharga.Toolkit.Console.Command.Base
             return null;
         }
 
-        //TODO: Make protected
-        [Obsolete("Use OutputError on the IConsole object.")]
-        public void OutputError(Exception exception)
+        protected void OutputError(Exception exception)
         {
             _console.OutputError(exception);
         }
 
-        //TODO: Make protected
-        [Obsolete("Use OutputError on the IConsole object.")]
-        public void OutputError(string message, params object[] args)
+        protected void OutputError(string message, params object[] args)
         {
             _console.OutputError(string.Format(message, args));
         }
 
-        //TODO: Make protected
-        [Obsolete("Use OutputWarning on the IConsole object.")]
-        public void OutputWarning(string message, params object[] args)
+        protected void OutputWarning(string message, params object[] args)
         {
             _console.OutputWarning(string.Format(message, args));
         }
 
-        //TODO: Make protected
-        [Obsolete("Use OutputInformation on the IConsole object.")]
-        public void OutputInformation(string message, params object[] args)
+        protected void OutputInformation(string message, params object[] args)
         {
             _console.OutputInformation(string.Format(message, args));
         }
 
-        //TODO: Make protected
-        [Obsolete("Use OutputTable on the IConsole object.")]
-        public void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? color = null)
+        protected void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? color = null)
         {
             var table = new List<string[]> { title.ToArray() };
             table.AddRange(data.Select(item => item.ToArray()));
             OutputTable(table.ToArray(), color);
         }
 
-        //TODO: Make protected
-        [Obsolete("Use OutputTable on the IConsole object.")]
         protected void OutputTable(string[][] data, ConsoleColor? color = null)
         {
             var columnLength = GetColumnSizes(data);
@@ -319,62 +307,28 @@ namespace Tharga.Toolkit.Console.Command.Base
             _console.OutputEvent(string.Format(message, args), outputLevel);
         }
 
-        [Obsolete("Use OutputEvent from the console.")]
+        [Obsolete("Use OutputLine from the console.")]
         public void OutputLine(string message, OutputLevel outputLevel, params object[] args)
         {
-            //_console.OutputLine(string.Format(message, args), outputLevel);
-            //Output(message, GetConsoleColor(outputLevel), outputLevel, true, args);
             _console.Output(string.Format(message, args), _console.GetConsoleColor(outputLevel), outputLevel, true);
         }
 
-        [Obsolete("Use OutputEvent from the console.")]
+        [Obsolete("Use OutputLine from the console.")]
         public void OutputLine(string message, ConsoleColor? color, OutputLevel outputLevel, params object[] args)
         {
-            //_console.OutputLine(string.Format(message,args), color, outputLevel);
             _console.Output(string.Format(message,args), color ?? _console.GetConsoleColor(outputLevel), outputLevel, true);
         }
 
-        [Obsolete("Use OutputEvent from the console.")]
+        [Obsolete("Use Output from the console.")]
         public void Output(string message, OutputLevel outputLevel, bool line, params object[] args)
         {
             _console.Output(string.Format(message, args), _console.GetConsoleColor(outputLevel), outputLevel, line);
-            //Output(message, GetConsoleColor(outputLevel), outputLevel, line, args);
         }
 
-        [Obsolete("Use OutputEvent from the console.")]
+        [Obsolete("Use Output from the console.")]
         public void Output(string message, ConsoleColor? color, OutputLevel outputLevel, bool line, params object[] args)
         {
             _console.Output(FormatMessage(message, args), color, outputLevel, line);
-            //if (_console == null) throw new InvalidOperationException("No console assigned. The command was probably not registered, use AttachConsole to do it manually.");
-
-            //lock (_syncRoot)
-            //{
-            //    if (line)
-            //    {
-            //        if (args == null || !args.Any())
-            //        {
-            //            _console.WriteLine(message, outputLevel, color);
-            //        }
-            //        else
-            //        {
-            //            try
-            //            {
-            //                _console.WriteLine(string.Format(message, args), outputLevel, color);
-            //            }
-            //            catch (FormatException exception)
-            //            {
-            //                var exp = new FormatException(exception.Message + " Perhaps the parameters provided does not match the message.", exception);
-            //                exp.Data.Add("Message", message);
-            //                exp.Data.Add("Parameters", args.Count());
-            //                throw exp;
-            //            }
-            //        }
-            //    }
-            //    else
-            //    {
-            //        _console.Write(string.Format(message, args));
-            //    }
-            //}
         }
 
         private static string FormatMessage(string message, object[] args)
@@ -383,6 +337,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         }
 
         //TODO: Make internal
+        [Obsolete("This method is deprecated and will be removed.")]
         public virtual void AttachConsole(IConsole console)
         {
             _console = console;

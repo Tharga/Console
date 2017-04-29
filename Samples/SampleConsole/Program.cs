@@ -61,7 +61,7 @@ namespace SampleConsole
 
         public override bool CanExecute(out string reasonMessage)
         {
-            reasonMessage = "Because it is manually disabled."; //"This command and all sub-commands are disabled";
+            reasonMessage = "Because it is manually disabled.";
             return false;
         }
 

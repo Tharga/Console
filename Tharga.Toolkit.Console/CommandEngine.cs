@@ -67,8 +67,6 @@ namespace Tharga.Toolkit.Console
             if(string.IsNullOrEmpty(SplashScreen))
                 return;
 
-            //_rootCommand.OutputInformationLine(SplashScreen, _commandMode);
-
             if (!_commandMode)
             {
                 //_rootCommand.OutputInformation(SplashScreen);
@@ -120,7 +118,8 @@ namespace Tharga.Toolkit.Console
                 }
             }
 
-            _rootCommand.OutputInformation("Command {0}: {1}", commandIndex, entry);
+            
+            _rootCommand.Console.OutputInformation($"Command {commandIndex}: {entry}");
 
             return entry;
         }
@@ -131,7 +130,7 @@ namespace Tharga.Toolkit.Console
 
             if (_commandMode && !success)
             {
-                _rootCommand.OutputError("Terminating command chain.");
+                _rootCommand.Console.OutputError("Terminating command chain.");
                 return false;
             }
 

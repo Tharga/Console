@@ -7,7 +7,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 {
     public abstract class ActionCommandBase : CommandBase //, ICommand
     {
-        private Func<bool> _canExecute;
+        private Func<string> _canExecute;
 
         public override IEnumerable<HelpLine> HelpText { get { yield break; } }
 
@@ -59,22 +59,21 @@ namespace Tharga.Toolkit.Console.Command.Base
             return helpCommand;
         }
 
-        public void SetCanExecute(Func<bool> canExecute)
+        public void SetCanExecute(Func<string> canExecute)
         {
             _canExecute = canExecute;
         }
 
-        //public override bool CanExecute(out string reasonMessage)
-        //{
-        //    return base.CanExecute(out reasonMessage);
-        //    //throw new NotImplementedException();
-        //    ////reasonMessage = "";
-        //    ////if (_canExecute == null)
-        //    ////{
-        //    ////    return CanExecute();
-        //    ////}
-        //    ////return _canExecute();
-        //}
+        public override bool CanExecute(out string reasonMessage)
+        {
+            if (_canExecute != null)
+            {
+                reasonMessage = _canExecute();
+                return string.IsNullOrEmpty(reasonMessage);
+            }
+
+            return base.CanExecute(out reasonMessage);
+        }
 
         //public override bool CanExecute()
         //{
