@@ -5,42 +5,25 @@ using System.Linq;
 
 namespace Tharga.Toolkit.Console.Command.Base
 {
-    public abstract class ActionCommandBase : CommandBase //, ICommand
+    public abstract class ActionCommandBase : CommandBase
     {
         private Func<string> _canExecute;
 
         public override IEnumerable<HelpLine> HelpText { get { yield break; } }
 
-        protected ActionCommandBase(string name, string description)
-            : this(null, name, description, null)
+        protected ActionCommandBase(string name, string description = null, bool hidden = false)
+            : this(null, new [] { name }, description, hidden)
         {
         }
 
-        protected ActionCommandBase(string[] names, string description)
-           : this(null, names, description, null)
+        protected ActionCommandBase(string[] names, string description = null, bool hidden = false)
+           : this(null, names, description, hidden)
         {
         }
 
-        internal ActionCommandBase(IConsole console, string name, string description)
-            : this(console, name, description, null)
+        internal ActionCommandBase(IConsole console, string[] names, string description, bool hidden)
+            : base(console, names, description, hidden)
         {
-        }
-
-        internal ActionCommandBase(IConsole console, string[] names, string description)
-            : this(console, names, description, null)
-        {
-        }
-
-        private ActionCommandBase(IConsole console, string name, string description, string helpText)
-            : base(console, name, description)
-        {
-            //HelpText = helpText ?? $"There is no detailed help for command {name}.";
-        }
-
-        private ActionCommandBase(IConsole console, string[] names, string description, string helpText)
-            : base(console, names, description)
-        {
-            //HelpText = helpText ?? $"There is no detailed help for command {names[0]}.";
         }
 
         protected override ICommand GetHelpCommand(string paramList)

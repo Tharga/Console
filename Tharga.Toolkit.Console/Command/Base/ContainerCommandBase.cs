@@ -12,13 +12,13 @@ namespace Tharga.Toolkit.Console.Command.Base
     {
         protected readonly List<ICommand> SubCommands = new List<ICommand>();
 
-        protected ContainerCommandBase(string name, string description = null)
-            : base(null, name, description ?? $"Command that manages {name}.")
+        protected ContainerCommandBase(string name, string description = null, bool hidden = false)
+            : this(null, name, description, hidden)
         {
         }
 
-        internal ContainerCommandBase(IConsole console, string name)
-            : base(console, name, $"Command that manages {name}.")
+        internal ContainerCommandBase(IConsole console, string name, string description = null, bool hidden = false)
+            : base(console, new[] { name }, description, hidden)
         {
         }
 
@@ -81,10 +81,12 @@ namespace Tharga.Toolkit.Console.Command.Base
         {
             var helpCommand = new HelpCommand(Console);
 
+            var showHidden = true;
             var command = this as ICommand;
             var subCommand = paramList?.Trim();
             if (paramList != " details")
             {
+                showHidden = false;
                 command = GetSubCommand(paramList, out subCommand);
             }
 
@@ -157,7 +159,7 @@ namespace Tharga.Toolkit.Console.Command.Base
             var containerCommand = command as ContainerCommandBase;
             if (containerCommand != null)
             {
-                ShowSubCommandHelp(containerCommand.SubCommands, helpCommand, reasonMessage);
+                ShowSubCommandHelp(containerCommand.SubCommands, helpCommand, reasonMessage, showHidden);
             }
 
             if (command.Names.Count() > 1)
@@ -173,8 +175,10 @@ namespace Tharga.Toolkit.Console.Command.Base
             return helpCommand;
         }
 
-        private void ShowSubCommandHelp(List<ICommand> subCommands, HelpCommand helpCommand, string parentReasonMesage)
+        private void ShowSubCommandHelp(List<ICommand> subCommands, HelpCommand helpCommand, string parentReasonMesage, bool showHidden)
         {
+            var anyHidden = false;
+
             var containerCommands = subCommands.Where(x => x is ContainerCommandBase).ToArray();
             if (containerCommands.Any())
             {
@@ -182,17 +186,21 @@ namespace Tharga.Toolkit.Console.Command.Base
                 helpCommand.AddLine($"Sections for {Name}:", foreColor: ConsoleColor.DarkCyan);
                 foreach (var command in containerCommands)
                 {
-                    helpCommand.AddLine($"{command.Name.PadString(10)} {command.Description}", () =>
+                    if (!command.Hidden || showHidden)
                     {
-                        string reasonMessage;
-                        var canExecute = command.CanExecute(out reasonMessage);
-                        if (canExecute && !string.IsNullOrEmpty(parentReasonMesage))
+                        var hidden = command.Hidden ? "*" : "";
+                        if (command.Hidden) anyHidden = true;
+                        helpCommand.AddLine($"{hidden}{command.Name.PadString(10)} {command.Description}", () =>
                         {
-                            reasonMessage = parentReasonMesage;
-                            return false;
-                        }
-                        return canExecute;
-                    });
+                            string reasonMessage;
+                            var canExecute = command.CanExecute(out reasonMessage);
+                            if (canExecute && !string.IsNullOrEmpty(parentReasonMesage))
+                            {
+                                return false;
+                            }
+                            return canExecute;
+                        });
+                    }
                 }
             }
 
@@ -203,18 +211,28 @@ namespace Tharga.Toolkit.Console.Command.Base
                 helpCommand.AddLine($"Commands for {Name}:", foreColor: ConsoleColor.DarkCyan);
                 foreach (var command in actionCommands)
                 {
-                    helpCommand.AddLine($"{command.Name.PadString(10)} {command.Description}", () =>
+                    if (!command.Hidden || showHidden)
                     {
-                        string reasonMessage;
-                        var canExecute = command.CanExecute(out reasonMessage);
-                        if (canExecute && !string.IsNullOrEmpty(parentReasonMesage))
+                        var hidden = command.Hidden ? "*" : "";
+                        if (command.Hidden) anyHidden = true;
+                        helpCommand.AddLine($"{hidden}{command.Name.PadString(10)} {command.Description}", () =>
                         {
-                            reasonMessage = parentReasonMesage;
-                            return false;
-                        }
-                        return canExecute;
-                    });
+                            string reasonMessage;
+                            var canExecute = command.CanExecute(out reasonMessage);
+                            if (canExecute && !string.IsNullOrEmpty(parentReasonMesage))
+                            {
+                                return false;
+                            }
+                            return canExecute;
+                        });
+                    }
                 }
+            }
+
+            if (anyHidden)
+            {
+                helpCommand.AddLine(string.Empty);
+                helpCommand.AddLine($"* = Hidden command");
             }
         }
 

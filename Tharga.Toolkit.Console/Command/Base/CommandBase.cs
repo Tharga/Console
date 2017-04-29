@@ -12,25 +12,21 @@ namespace Tharga.Toolkit.Console.Command.Base
         private readonly string _description;
         private readonly string[] _names;
         private IConsole _console;
+        private bool _hidden;
 
         public string Name => _names[0];
         public IEnumerable<string> Names => _names;
         public string Description => _description;
+        public bool Hidden => _hidden;
         public IConsole Console => _console;
         public abstract IEnumerable<HelpLine> HelpText { get; }
 
-        internal CommandBase(IConsole console, string name, string description = null)
+        internal CommandBase(IConsole console, IEnumerable<string> names, string description, bool hidden)
         {
-            _console = console;
-            _names = new[] { name.ToLower() };
-            _description = description;
-        }
-
-        internal CommandBase(IConsole console, IEnumerable<string> names, string description = null)
-        {
+            _hidden = hidden;
             _console = console;
             _names = names.Select(x => x.ToLower()).ToArray();
-            _description = description;
+            _description = description ?? $"Command that manages {_names[0]}.";
         }
 
         //TODO: Make internal

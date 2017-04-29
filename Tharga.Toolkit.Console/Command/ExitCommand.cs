@@ -10,15 +10,12 @@ namespace Tharga.Toolkit.Console.Command
         private Action _stopAction;
 
         internal ExitCommand(IConsole console, Action stopAction)
-            : base(console, "exit", "Exit from the console.")
+            : base(console, new [] { "exit" }, "Exit from the console.", false)
         {
             _stopAction = stopAction;
         }
 
-        public override IEnumerable<HelpLine> HelpText
-        {
-            get { yield return new HelpLine("This command terminates the application."); }
-        }
+        public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("This command terminates the application."); } }
 
         public override async Task<bool> InvokeAsync(string paramList)
         {

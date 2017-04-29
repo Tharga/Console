@@ -9,7 +9,7 @@ namespace Tharga.Toolkit.Console.Command
         private readonly RootCommandBase _rootCommand;
 
         internal ExecuteFileCommand(IConsole console, RootCommandBase rootCommand)
-            : base(console, "file", "Execute script file.")
+            : base(console, new []{ "file" }, "Execute script file.", false)
         {
             _rootCommand = rootCommand;
         }

@@ -55,7 +55,7 @@ namespace SampleConsole
     internal class LineFeedCommand : ActionCommandBase
     {
         public LineFeedCommand()
-            : base("Line", "Line output")
+            : base("Line", "Line output", true)
         {
         }
 

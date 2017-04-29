@@ -11,6 +11,7 @@ namespace Tharga.Toolkit.Console.Command.Base
         //bool CanExecute();
         bool CanExecute(out string reasonMessage);
         IEnumerable<HelpLine> HelpText { get; }
+        bool Hidden { get; }
 
         //TODO: Try to hide theese from the interface
         void AttachConsole(IConsole console);

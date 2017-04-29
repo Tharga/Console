@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Tharga.Toolkit.Console.Command.Base
@@ -30,6 +31,8 @@ namespace Tharga.Toolkit.Console.Command.Base
             RegisterCommand(new ClearCommand(Console));
             RegisterCommand(new ExecuteCommand(Console, this));
         }
+
+        public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("Root command."); } }
 
         public virtual void SetStopAction(Action stopAction)
         {

@@ -10,7 +10,7 @@ namespace Tharga.Toolkit.Console.Command
         private readonly List<HelpLine> _helpLines = new List<HelpLine>();
 
         internal HelpCommand(IConsole console)
-            : base(console, "help", "Displays helpt text.")
+            : base(console, new [] { "help" }, "Displays helpt text.", false)
         {
         }
 
