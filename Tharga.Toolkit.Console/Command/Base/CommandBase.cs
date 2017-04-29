@@ -70,7 +70,6 @@ namespace Tharga.Toolkit.Console.Command.Base
             }
             catch (CommandEscapeException)
             {
-                //TODO: This is used to exit an ongoing command. Is there another way, that does not use exceptions?
                 return false;
             }
         }
@@ -113,7 +112,7 @@ namespace Tharga.Toolkit.Console.Command.Base
 
         internal string QueryRootParam()
         {
-            return QueryParam<string>("> ", null, null, false);
+            return QueryParam<string>("> ", null, null, false, false);
         }
 
         protected string QueryPassword(string paramName, string autoProvideValue = null, string defaultValue = null)

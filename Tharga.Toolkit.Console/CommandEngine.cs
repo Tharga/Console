@@ -117,7 +117,6 @@ namespace Tharga.Toolkit.Console
                     _running = false;
                 }
             }
-
             
             _rootCommand.Console.OutputInformation($"Command {commandIndex}: {entry}");
 
