@@ -16,6 +16,19 @@ namespace Tharga.Toolkit.Console
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;        // x position of upper-left corner
+            public int Top;         // y position of upper-left corner
+            public int Right;       // x position of lower-right corner
+            public int Bottom;      // y position of lower-right corner
+        }
+
         private const int HWND_TOPMOST = -1;
         private const int SWP_NOMOVE = 0x0002;
         private const int SWP_NOSIZE = 0x0001;
@@ -65,6 +78,11 @@ namespace Tharga.Toolkit.Console
             //TODO: Remember windoews location
             //NOTE: Set specific window location
             //SetWindowPos(hWnd, new IntPtr(0), 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+
+            //TODO: Get the current windows position
+            //RECT rct;
+            //GetWindowRect(hWnd, out rct);
+            //Console.WriteLine(rct.Left.ToString(), OutputLevel.Warning);
 
             //System.Console.Beep();
 
