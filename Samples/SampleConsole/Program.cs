@@ -12,45 +12,92 @@ using Timer = System.Timers.Timer;
 
 namespace SampleConsole
 {
-    internal class Program
+    internal static class Program
     {
-        private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
-
         [STAThread]
         private static void Main(string[] args)
         {
-            var console = new ClientConsole();
-            //var console = new VoiceConsole();
-            //var console = new ServerConsole(string.Empty);
-            //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
-            //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
-
-            var command = new MyRootCommand(console);
-            command.RegisterCommand(new SomeContainerCommand());
-            command.RegisterCommand(new EngineContainerCommand());
-            command.RegisterCommand(new MathContainerCommand());
-            command.RegisterCommand(new StatusCommand());
-            command.RegisterCommand(new ParametersCommand());
-            command.RegisterCommand(new SomeContainerWithDisabledSubs());
-            command.RegisterCommand(new LineFeedCommand());
-
-            var commandEngine = new CommandEngine(command)
+            using (var console = new ClientConsole())
             {
-                SplashScreen = _splashscreen,
-                Title = "Sample console",
-                //ShowAssemblyInfo = false,
-                //TopMost = true,
-                //BackgroundColor = ConsoleColor.DarkBlue,
-                //DefaultForegroundColor = ConsoleColor.White,
-            };
+                var command = new RootCommand(console);
+                var engine = new CommandEngine(command)
+                {
+                    Runner = new Runner(running =>
+                    {
+                        while (running)
+                        {
+                            Console.WriteLine("AAA");
+                            Thread.Sleep(1000);
+                        }
+                    })
+                    //Task = new Task<CancellationToken>((e) =>
+                    //{
+                    //})
 
-            commandEngine.Run(args);
-            //command.Execute("some list");
-            //command.Execute("some item");
-
-            console.Dispose();
+                    //Action = new Action(() =>
+                    //{
+                    //    while(true)
+                    //    {
+                    //            Console.WriteLine("AAA");
+                    //        Thread.Sleep(1000);
+                    //        };
+                    //})
+                        //Actions = new[]
+                        //{
+                        //    new Action<CancellationToken>(e =>
+                        //    {
+                        //        while (!e.IsCancellationRequested)
+                        //        {
+                        //            Console.WriteLine("AAA");
+                        //            Thread.Sleep(1000);
+                        //        }
+                        //    }),
+                        //}
+                    };
+                engine.Run(args);
+            }
         }
     }
+
+    //internal class Program
+    //{
+    //    private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
+
+    //    [STAThread]
+    //    private static void Main(string[] args)
+    //    {
+    //        var console = new ClientConsole();
+    //        //var console = new VoiceConsole();
+    //        //var console = new ServerConsole(string.Empty);
+    //        //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
+    //        //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
+
+    //        var command = new MyRootCommand(console);
+    //        command.RegisterCommand(new SomeContainerCommand());
+    //        command.RegisterCommand(new EngineContainerCommand());
+    //        command.RegisterCommand(new MathContainerCommand());
+    //        command.RegisterCommand(new StatusCommand());
+    //        command.RegisterCommand(new ParametersCommand());
+    //        command.RegisterCommand(new SomeContainerWithDisabledSubs());
+    //        command.RegisterCommand(new LineFeedCommand());
+
+    //        var commandEngine = new CommandEngine(command)
+    //        {
+    //            SplashScreen = _splashscreen,
+    //            Title = "Sample console",
+    //            //ShowAssemblyInfo = false,
+    //            //TopMost = true,
+    //            //BackgroundColor = ConsoleColor.DarkBlue,
+    //            //DefaultForegroundColor = ConsoleColor.White,
+    //        };
+
+    //        commandEngine.Run(args);
+    //        //command.Execute("some list");
+    //        //command.Execute("some item");
+
+    //        console.Dispose();
+    //    }
+    //}
 
     internal class LineFeedCommand : ActionCommandBase
     {
