@@ -1,11 +1,25 @@
-namespace Tharga.Toolkit.Console.Helper
+namespace Tharga.Toolkit.Console
 {
-    internal static class StringExtensions
+    public static class StringExtensions
     {
-        internal static string PadString(this string value, int length)
+        public static string PadStringAfter(this string value, int totalMinLength, char padValue = ' ')
         {
-            if (length - value.Length < 0) return value;
-            return string.Format("{0}{1}", value, new string(' ', length - value.Length));
+            if (totalMinLength - value.Length < 0) return value;
+            return $"{value}{new string(padValue, totalMinLength - value.Length)}";
+        }
+
+        public static string PadStringBefore(this string value, int totalMinLength, char padValue = ' ')
+        {
+            if (totalMinLength - value.Length < 0) return value;
+            return $"{new string(padValue, totalMinLength - value.Length)}{value}";
+        }
+
+        public static string Truncate(this string value)
+        {
+            var maxLength = System.Console.BufferWidth;
+            if (value.Length > maxLength)
+                value = value.Substring(0, maxLength);
+            return value;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tharga.Toolkit.Console.Exceptions
+namespace Tharga.Toolkit.Console
 {
     internal sealed class CommandAlreadyRegisteredException : SystemException
     {

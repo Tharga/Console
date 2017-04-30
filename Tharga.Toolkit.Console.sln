@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Toolkit.Console", "Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj", "{B8BD1635-042F-4EB3-8018-5CEB7302C31B}"
 EndProject
@@ -10,13 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleConsole", "Samples\SampleConsole\SampleConsole.csproj", "{49F7E0AC-7856-415A-B760-300A37BC9889}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Toolkit.Console.Tests", "Tharga.Toolkit.Console.Tests\Tharga.Toolkit.Console.Tests.csproj", "{A397CA7F-616B-43F9-8AEF-60C6ADA59270}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E2A4A964-C699-415B-821E-EB98C87306C3}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{ACE8284E-D920-4FFA-96D1-0C340A02A935}"
 	ProjectSection(SolutionItems) = preProject

@@ -5,8 +5,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Tharga.Toolkit.Console.Command;
-using Tharga.Toolkit.Console.Command.Base;
+using Tharga.Toolkit.Console.Commands;
+using Tharga.Toolkit.Console.Commands.Base;
+using Tharga.Toolkit.Console.Commands.Entities;
+using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console
 {
@@ -37,7 +39,7 @@ namespace Tharga.Toolkit.Console
 
         private const string FlagContinueInConsoleMode = "c";
         private const string FlagContinueInConsoleModeIfError = "e";
-        private readonly RootCommandBase _rootCommand;
+        private readonly IRootCommand _rootCommand;
         private bool _running = true;
         private bool _commandMode;
 
@@ -54,7 +56,7 @@ namespace Tharga.Toolkit.Console
             _rootCommand = new RootCommand(console, Stop);
         }
 
-        public CommandEngine(RootCommandBase rootCommand)
+        public CommandEngine(IRootCommand rootCommand)
             : this()
         {
             rootCommand.SetStopAction(Stop);
@@ -99,7 +101,8 @@ namespace Tharga.Toolkit.Console
 
             var commandIndex = 0;
 
-            _rootCommand.Initiate();
+            //TODO: This is only used by the voice console. Solve that some other way!
+            //_rootCommand.Initiate();
 
             if (Runners != null)
             {

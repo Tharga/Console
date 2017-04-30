@@ -5,49 +5,64 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Tharga.Toolkit.Console;
-using Tharga.Toolkit.Console.Command;
-using Tharga.Toolkit.Console.Command.Base;
+using Tharga.Toolkit.Console.Commands;
+using Tharga.Toolkit.Console.Commands.Base;
+using Tharga.Toolkit.Console.Commands.Entities;
+using Tharga.Toolkit.Console.Consoles;
 using Timer = System.Timers.Timer;
 
 namespace SampleConsole
 {
-    internal class Program
+    internal static class Program
     {
-        public static ClientConsole _console;
-        private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
-
         [STAThread]
         private static void Main(string[] args)
         {
-            using (_console = new ClientConsole())
+            using (var console = new ClientConsole())
             {
-                //var console = new VoiceConsole();
-                //var console = new ServerConsole(string.Empty);
-                //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
-                //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
-
-                var command = new MyRootCommand(_console);
-                command.RegisterCommand(new SomeContainerCommand());
-                command.RegisterCommand(new EngineContainerCommand());
-                command.RegisterCommand(new MathContainerCommand());
-                command.RegisterCommand(new StatusCommand());
-                command.RegisterCommand(new ParametersCommand());
-                command.RegisterCommand(new SomeContainerWithDisabledSubs());
-
-                var commandEngine = new CommandEngine(command)
-                {
-                    SplashScreen = _splashscreen,
-                    Title = "Sample console",
-                    //ShowAssemblyInfo = false,
-                    //TopMost = true,
-                    //BackgroundColor = ConsoleColor.DarkBlue,
-                    //DefaultForegroundColor = ConsoleColor.White,
-                };
-
-                commandEngine.Run(args);
+                var command = new RootCommand(console, null);
+                var engine = new CommandEngine(command);
+                engine.Run(args);
             }
         }
     }
+
+    //internal class Program
+    //{
+    //    private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
+
+    //    [STAThread]
+    //    private static void Main(string[] args)
+    //    {
+    //        var console = new ClientConsole();
+    //        //var console = new VoiceConsole();
+    //        //var console = new ServerConsole(string.Empty);
+    //        //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
+    //        //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
+
+    //        var command = new CustomRootCommand(console);
+    //        command.RegisterCommand(new SomeContainerCommand());
+    //        command.RegisterCommand(new EngineContainerCommand());
+    //        command.RegisterCommand(new MathContainerCommand());
+    //        command.RegisterCommand(new StatusCommand());
+    //        command.RegisterCommand(new ParametersCommand());
+    //        command.RegisterCommand(new SomeContainerWithDisabledSubs());
+
+    //        var commandEngine = new CommandEngine(command)
+    //        {
+    //            SplashScreen = _splashscreen,
+    //            Title = "Sample console",
+    //            //ShowAssemblyInfo = false,
+    //            //TopMost = true,
+    //            //BackgroundColor = ConsoleColor.DarkBlue,
+    //            //DefaultForegroundColor = ConsoleColor.White,
+    //        };
+
+    //        commandEngine.Run(args);
+
+    //        console.Dispose();
+    //    }
+    //}
 
     internal class SomeContainerCommand : ContainerCommandBase
     {
@@ -257,23 +272,31 @@ namespace SampleConsole
 
             //OutputEvent(output);
 
-            switch (rng.Next(4))
+            switch (rng.Next(5))
             {
                 case 0:
-                    Program._console.OutputInformation(output);
+                    OutputInformation(output);
                     break;
 
                 case 1:
-                    Program._console.OutputWarning(output);
+                    OutputWarning(output);
                     break;
 
                 case 2:
-                    Program._console.OutputError(output);
+                    OutputError(output);
                     break;
 
                 case 3:
-                    Program._console.OutputEvent(output);
+                    OutputEvent(output);
                     break;
+
+                case 4:
+                    OutputDefault(output);
+                    break;
+
+                //case 5:
+                //    OutputHelp(output);
+                //    break;
             }
         }
 

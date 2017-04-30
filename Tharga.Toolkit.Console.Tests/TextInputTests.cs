@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
-using Tharga.Toolkit.Console.Command.Base;
+using Tharga.Toolkit.Console.Commands.Base;
+using Tharga.Toolkit.Console.Commands.Helpers;
+using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Tests
 {
