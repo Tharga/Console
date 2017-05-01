@@ -207,7 +207,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                                 if (_inputBuffer.IsEmpty && allowEscape)
                                 {
                                     //_console.NewLine();
-                                    _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
+                                    _console.Output(new WriteEventArgs(null, OutputLevel.Default));
                                     throw new CommandEscapeException();
                                 }
 
@@ -430,7 +430,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                     if (_tabIndex != -1)
                     {
                         //_console.NewLine();
-                        _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
+                        _console.Output(new WriteEventArgs(null, OutputLevel.Default));
                         response = selection[_tabIndex].Key;
                     }
                     else
@@ -442,7 +442,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                             {
                                 response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
                                 //_console.NewLine();
-                                _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
+                                _console.Output(new WriteEventArgs(null, OutputLevel.Default));
                             }
                             catch (FormatException exception)
                             {
@@ -457,7 +457,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                             }
 
                             //_console.NewLine();
-                            _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
+                            _console.Output(new WriteEventArgs(null, OutputLevel.Default));
                             response = items.Single().Key;
                         }
                     }
@@ -466,7 +466,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                 {
                     response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
                     //_console.NewLine();
-                    _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
+                    _console.Output(new WriteEventArgs(null, OutputLevel.Default));
                 }
 
                 return response;

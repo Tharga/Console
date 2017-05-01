@@ -99,11 +99,6 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             return consoleKeyInfo;
         }
 
-        //public void NewLine()
-        //{
-        //    ConsoleWriter?.WriteLine();
-        //}
-
         public void Write(string value)
         {
             ConsoleWriter?.Write(value);

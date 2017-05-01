@@ -88,7 +88,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 }
                 else
                 {
-                    Console.OutputError($"Invalid command {entry}.");
+                    //Console.OutputError($"Invalid command {entry}.");
+                    Console.Output(new WriteEventArgs($"Invalid command {entry}.", OutputLevel.Error));
                 }
             }
             catch (SystemException exception)

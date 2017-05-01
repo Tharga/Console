@@ -242,7 +242,8 @@ namespace Tharga.Toolkit.Console
                 }
             }
 
-            _rootCommand.Console.OutputInformation($"Command {commandIndex}: {entry}");
+            //_rootCommand.Console.OutputInformation($"Command {commandIndex}: {entry}");
+            _rootCommand.Console.Output(new WriteEventArgs($"Command {commandIndex}: {entry}", OutputLevel.Information));
 
             return entry;
         }
@@ -253,7 +254,8 @@ namespace Tharga.Toolkit.Console
 
             if (_commandMode && !success)
             {
-                _rootCommand.Console.OutputError("Terminating command chain.");
+                //_rootCommand.Console.OutputError("Terminating command chain.");
+                _rootCommand.Console.Output(new WriteEventArgs("Terminating command chain.", OutputLevel.Error));
                 return false;
             }
 
