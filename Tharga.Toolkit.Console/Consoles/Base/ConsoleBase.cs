@@ -135,7 +135,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             lock (_syncRoot)
             {
                 var linesToInsert = GetLineCount(value);
-                var inputBufferLines = BufferInfo.Instance.CurrentBufferLineCount;
+                var inputBufferLines = InputInstance.CurrentBufferLineCount;
                 var intCursorLineOffset = MoveCursorUp();
                 var cursorLeft = MoveInputBufferDown(linesToInsert, inputBufferLines);
 
@@ -255,7 +255,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
             try
             {
-                var intCursorLineOffset = BufferInfo.Instance.CursorLineOffset;
+                var intCursorLineOffset = InputInstance.CursorLineOffset;
                 CursorTop = CursorTop - intCursorLineOffset;
                 return intCursorLineOffset;
             }

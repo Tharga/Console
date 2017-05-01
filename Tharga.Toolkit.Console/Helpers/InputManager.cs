@@ -18,10 +18,10 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
         public T ReadLine<T>(string paramName, KeyValuePair<T, string>[] selection, bool allowEscape, CancellationToken cancellationToken, char? passwordChar, int? timeoutMilliseconds)
         {
             Task<T> task = null;
-            InputInstance<T> inputInstance = null;
+            InputInstance inputInstance = null;
             try
             {
-                inputInstance = new InputInstance<T>(_console, paramName, passwordChar, cancellationToken);
+                inputInstance = new InputInstance(_console, paramName, passwordChar, cancellationToken);
                 task = new Task<T>(() => inputInstance.ReadLine(selection, allowEscape));
                 task.Start();
 

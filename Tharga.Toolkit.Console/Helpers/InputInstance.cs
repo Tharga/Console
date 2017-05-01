@@ -9,7 +9,7 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Helpers
 {
-    internal class InputInstance<T> : IDisposable
+    internal class InputInstance : IDisposable
     {
         private bool _finished;
         private readonly string _paramName;
@@ -25,14 +25,14 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
         //TODO: Theese two properties are the uggliest thing. What can I do to remove them?
         private static int _currentBufferLineCount;
         private static int _cursorLineOffset;
-        private KeyValuePair<T, string>[] _selection;
+        //private KeyValuePair<T, string>[] _selection;
         private InputBuffer _inputBuffer;
         //private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly CancellationToken _cancellationToken;
 
         //TODO: Theese values should be read from the instance, not as a static value!
-        //public int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
-        //public int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
+        public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
+        public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
         public InputInstance(IConsole console, string paramName, char? passwordChar, CancellationToken cancellationToken)
         {
@@ -69,9 +69,9 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
             _startLocation = new Location(_startLocation.Left, _startLocation.Top + e.LineCount);
         }
 
-        public T ReadLine(KeyValuePair<T, string>[] selection, bool allowEscape)
+        public T ReadLine<T>(KeyValuePair<T, string>[] selection, bool allowEscape)
         {
-            _selection = selection;
+            //_selection = selection;
             _inputBuffer = new InputBuffer();
             _inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
 
@@ -189,7 +189,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                                 if (currentBufferPosition == _inputBuffer.Length) continue;
                                 MoveBufferLeft(new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top), _inputBuffer, _startLocation);
                                 _inputBuffer.RemoveAt(currentBufferPosition);
-                                BufferInfo.Instance.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                 break;
 
                             case ConsoleKey.Backspace:
@@ -197,7 +197,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                                 MoveBufferLeft(currentScreenLocation, _inputBuffer, _startLocation);
                                 _inputBuffer.RemoveAt(currentBufferPosition - 1);
                                 MoveCursorLeft();
-                                BufferInfo.Instance.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                 break;
 
                             case ConsoleKey.Escape:
@@ -233,7 +233,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                                     _console.Write(selection[tabIndex].Value);
                                     _inputBuffer.Add(selection[tabIndex].Value);
                                     _tabIndex = tabIndex;
-                                    BufferInfo.Instance.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                    CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                 }
                                 else
                                 {
@@ -270,7 +270,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                         }
                     }
 
-                    BufferInfo.Instance.CursorLineOffset = CursorTop - _startLocation.Top;
+                    CursorLineOffset = CursorTop - _startLocation.Top;
                 }
                 catch (OperationCanceledException exception)
                 {
@@ -288,7 +288,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
             }
         }
 
-        private T Enter(KeyValuePair<T, string>[] selection)
+        private T Enter<T>(KeyValuePair<T, string>[] selection)
         {
             var response = GetResponse(selection, _inputBuffer);
             RememberCommandHistory(_inputBuffer);
@@ -411,7 +411,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
             _console.Write(new string(' ', inputBuffer.Length));
             MoveCursorToStart(_startLocation);
             inputBuffer.Clear();
-            BufferInfo.Instance.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
         }
 
         private T GetResponse<T>(KeyValuePair<T, string>[] selection, InputBuffer inputBuffer)
@@ -502,7 +502,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
             }
 
             inputBuffer.Insert(currentBufferPosition, input.ToString(CultureInfo.InvariantCulture));
-            BufferInfo.Instance.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
         }
 
         private void MoveBufferLeft(Location currentScreenLocation, InputBuffer inputBuffer, Location startLocation)
