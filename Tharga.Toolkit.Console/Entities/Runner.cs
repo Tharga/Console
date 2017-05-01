@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Tharga.Toolkit.Console
+namespace Tharga.Toolkit.Console.Entities
 {
     public class Runner
     {

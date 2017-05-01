@@ -46,7 +46,7 @@ namespace Tharga.Toolkit.Console
 
         private readonly CancellationTokenSource _cancellationTokenSource;
         private bool _commandMode;
-        
+
         public CommandEngine(IRootCommand rootCommand)
         {
             if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No root command provided.");

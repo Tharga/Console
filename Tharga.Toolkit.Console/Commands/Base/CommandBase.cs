@@ -25,7 +25,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public event EventHandler<WriteEventArgs> WriteEvent;
 
-        internal CommandBase(IEnumerable<string> names, string description, bool hidden)
+        internal CommandBase(IEnumerable<string> names, string description = null, bool hidden = false)
         {
             _hidden = hidden;
             _names = names.Select(x => x.ToLower()).ToArray();

@@ -125,7 +125,7 @@
     <Compile Include="Interfaces\IOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\RootCommand.cs" />
-    <Compile Include="Runner.cs" />
+    <Compile Include="Entities\Runner.cs" />
     <Compile Include="Entities\WriteEventArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

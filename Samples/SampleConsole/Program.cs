@@ -18,49 +18,36 @@ namespace SampleConsole
         [STAThread]
         private static void Main(string[] args)
         {
-            var consoleConfiguration = new ConsoleConfiguration
-            {
-                SplashScreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n",
-                //TopMost = true,
-                //Title = "Yeee",
-                //ShowAssemblyInfo = true,
-                //BackgroundColor = ConsoleColor.DarkYellow,
-                //DefaultTextColor = ConsoleColor.DarkRed,
-            };
-
-            using (var console = new ClientConsole(consoleConfiguration))
+            using (var console = new ClientConsole())
             {
                 var command = new RootCommand(console);
-
-                command.RegisterCommand(new SomeContainerCommand()); //NOTE: Registering commands
-
-                var engine = new CommandEngine(command)
-                {
-                    //Runners = new[]
-                    //{
-                    //    new Runner(e =>
-                    //    {
-                    //        var t = new Timer();
-                    //        t.Interval = 2000;
-                    //        t.Elapsed += (sender2, e2) =>
-                    //        {
-                    //            console.WriteLine("Runner A");
-                    //        };
-                    //        t.Start();
-                    //    }),
-                    //    new Runner(e =>
-                    //    {
-                    //        while (!e.IsCancellationRequested)
-                    //        {
-                    //            console.WriteLine("Runner B");
-                    //            Thread.Sleep(3000);
-                    //        }
-                    //    }),
-                    //},
-                };
-
+                command.RegisterCommand(new FooCommand());
+                var engine = new CommandEngine(command);
                 engine.Run(args);
             }
+        }
+    }
+
+    public class FooCommand : ContainerCommandBase
+    {
+        public FooCommand()
+            : base("Foo")
+        {
+            RegisterCommand(new BarCommand());
+        }
+    }
+
+    public class BarCommand : ActionCommandBase
+    {
+        public BarCommand()
+            : base("Bar")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            OutputInformation("Executed Foo Bar command.");
+            return true;
         }
     }
 

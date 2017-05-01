@@ -120,12 +120,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             System.Console.SetCursorPosition(left, top);
         }
 
-        public void WriteLine(string value)
-        {
-            WriteLine(value, OutputLevel.Default, null, null);
-        }
-
-        public void WriteLine(string value, OutputLevel level, ConsoleColor? textColor, ConsoleColor? textBackgroundColor)
+        public void WriteLine(string value, OutputLevel level = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
         {
             lock (_syncRoot)
             {

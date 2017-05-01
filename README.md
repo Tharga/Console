@@ -46,25 +46,19 @@ Here are some basic examples on how to get started.
                 {
                     Runners = new[]
                     {
-                        new Runner(e => { console.OutputInformation("Type 'scr mute event' to stop showing event output."); }),
-                        MyRunner("A", console),
-                        MyRunner("B", console),
-                    }
+                        new Runner(e =>
+                        {
+                            while (!e.IsCancellationRequested)
+                            {
+                                console.WriteLine("Running...", OutputLevel.Information);
+                                Thread.Sleep(3000);
+                            }
+                        }),
+                    },
                 };
+
                 engine.Run(args);
             }
-        }
-
-        private static Runner MyRunner(string name, IConsole console)
-        {
-            return new Runner(token =>
-            {
-                while (!token.IsCancellationRequested)
-                {
-                    console.OutputEvent($"Running {name}.");
-                    Thread.Sleep(3000);
-                }
-            });
         }
     }
 ```
@@ -80,23 +74,32 @@ Here are some basic examples on how to get started.
             using (var console = new ClientConsole())
             {
                 var command = new RootCommand(console);
-                command.RegisterCommand(new MyCommand());
+                command.RegisterCommand(new FooCommand());
                 var engine = new CommandEngine(command);
                 engine.Run(args);
             }
         }
     }
 
-    internal class MyCommand : ActionCommandBase
+    public class FooCommand : ContainerCommandBase
     {
-        public MyCommand()
-            : base("do")
+        public FooCommand()
+            : base("Foo")
+        {
+            RegisterCommand(new BarCommand());
+        }
+    }
+
+    public class BarCommand : ActionCommandBase
+    {
+        public BarCommand()
+            : base("Bar")
         {
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
         {
-            OutputInformation("Do stuff here");
+            OutputInformation("Foo Bar command executed successfully.");
             return true;
         }
     }
