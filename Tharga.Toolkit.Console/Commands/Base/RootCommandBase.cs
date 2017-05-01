@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Tharga.Toolkit.Console.Commands.Entities;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
+using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base
 {
     public abstract class RootCommandBase : ContainerCommandBase, IRootCommand
     {
-        public IConsole Console { get; }
+        public IInteractConsole Console { get; }
 
         public event EventHandler<EventArgs> RequestCloseEvent;
         public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
 
-        protected RootCommandBase(IConsole console)
+        protected RootCommandBase(IInteractConsole console)
             : base(new[] { "root" })
         {
             if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
@@ -88,7 +88,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 }
                 else
                 {
-                    //Console.OutputError($"Invalid command {entry}.");
                     Console.Output(new WriteEventArgs($"Invalid command {entry}.", OutputLevel.Error));
                 }
             }

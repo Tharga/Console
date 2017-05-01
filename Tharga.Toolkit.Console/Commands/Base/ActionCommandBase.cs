@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Tharga.Toolkit.Console.Commands.Entities;
-using Tharga.Toolkit.Console.Commands.Helpers;
+using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base

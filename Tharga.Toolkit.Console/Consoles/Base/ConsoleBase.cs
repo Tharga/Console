@@ -5,13 +5,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Tharga.Toolkit.Console.Commands.Entities;
-using Tharga.Toolkit.Console.Commands.Helpers;
+using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Consoles.Base
 {
-    public abstract class ConsoleBase : IConsole
+    public abstract class ConsoleBase : IInteractConsole
     {
         private static readonly object _syncRoot = new object();
         protected internal readonly TextWriter ConsoleWriter;
@@ -197,7 +197,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
         }
 
-        public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
+        internal event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
 
         protected virtual void OnLinesInsertedEvent(int lineCount)
         {
@@ -205,7 +205,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             handler?.Invoke(this, new LinesInsertedEventArgs(lineCount));
         }
 
-        protected virtual void OnLineWrittenEvent(LineWrittenEventArgs e)
+        internal virtual void OnLineWrittenEvent(LineWrittenEventArgs e)
         {
             LineWrittenEvent?.Invoke(this, e);
         }

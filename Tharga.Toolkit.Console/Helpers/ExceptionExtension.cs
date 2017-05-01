@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 
-namespace Tharga.Toolkit.Console.Commands.Helpers
+namespace Tharga.Toolkit.Console.Helpers
 {
     internal static class ExceptionExtension
     {

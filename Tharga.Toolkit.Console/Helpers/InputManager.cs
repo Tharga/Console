@@ -4,13 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.Helpers
+namespace Tharga.Toolkit.Console.Helpers
 {
     internal class InputManager : IInputManager
     {
-        private readonly IConsole _console;
+        private readonly IInteractConsole _console;
 
-        public InputManager(IConsole console)
+        public InputManager(IInteractConsole console)
         {
             _console = console;
         }

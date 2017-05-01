@@ -3,19 +3,19 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Tharga.Toolkit.Console.Commands.Entities;
+using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.Helpers
+namespace Tharga.Toolkit.Console.Helpers
 {
     internal class ConsoleInterceptor : TextWriter
     {
         private readonly TextWriter _consoleWriter;
-        private readonly IConsole _console;
+        private readonly IInteractConsole _console;
         private readonly object _syncRoot;
         private Location _location;
 
-        public ConsoleInterceptor(TextWriter consoleWriter, IConsole console, object syncRoot)
+        public ConsoleInterceptor(TextWriter consoleWriter, IInteractConsole console, object syncRoot)
         {
             _consoleWriter = consoleWriter;
             _console = console;

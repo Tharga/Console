@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
-using Tharga.Toolkit.Console.Commands.Entities;
-using Tharga.Toolkit.Console.Commands.Helpers;
+using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console
@@ -46,29 +41,6 @@ namespace Tharga.Toolkit.Console
             }
         }
 
-        //[DllImport("user32.dll", SetLastError = true)]
-        //[return: MarshalAs(UnmanagedType.Bool)]
-        //private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
-        {
-            public int Left; // x position of upper-left corner
-            public int Top; // y position of upper-left corner
-            public int Right; // x position of lower-right corner
-            public int Bottom; // y position of lower-right corner
-        }
-
-        private const int HWND_TOPMOST = -1;
-        private const int SWP_NOMOVE = 0x0002;
-        private const int SWP_NOSIZE = 0x0001;
-        private const short SWP_NOZORDER = 0X4;
-        private const int SWP_SHOWWINDOW = 0x0040;
-
         private const string FlagContinueInConsoleMode = "c";
         private const string FlagContinueInConsoleModeIfError = "e";
 
@@ -80,47 +52,16 @@ namespace Tharga.Toolkit.Console
             if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No root command provided.");
 
             _cancellationTokenSource = new CancellationTokenSource();
-
             _inputManager = new InputManager(rootCommand.Console);
             _rootCommand = rootCommand;
             _cancellationToken = _cancellationTokenSource.Token;
-
             _rootCommand.RequestCloseEvent += (sender, e) => { Stop(); };
-
-            ShowAssemblyInfo = true;
-            BackgroundColor = System.Console.BackgroundColor;
-            DefaultForegroundColor = System.Console.ForegroundColor;
         }
 
-        //public string Title { get; set; }
-        public string SplashScreen { get; set; }
-        public bool ShowAssemblyInfo { get; set; }
-        //public bool TopMost { get; set; }
-        public ConsoleColor BackgroundColor { get; set; }
-        public ConsoleColor DefaultForegroundColor { get; set; }
         public Runner[] Runners { get; set; }
 
         public void Run(string[] args)
         {
-            //var hWnd = Process.GetCurrentProcess().MainWindowHandle;
-            //if (TopMost) SetWindowPos(hWnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-
-            //TODO: Remember windoews location
-            //NOTE: Set specific window location
-            //SetWindowPos(hWnd, new IntPtr(0), 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
-
-            //TODO: Get the current windows position
-            //RECT rct;
-            //GetWindowRect(hWnd, out rct);
-            //Console.WriteLine(rct.Left.ToString(), OutputLevel.Warning);
-
-            //System.Console.Beep();
-
-            SetColor();
-            //SetTitle();
-            ShowSplashScreen();
-            DoShowAssemblyInfo();
-
             _commandMode = args.Length > 0;
 
             var commands = GetCommands(args);
@@ -148,8 +89,6 @@ namespace Tharga.Toolkit.Console
                 }
                 else
                 {
-                    //NOTE: This is where the program is waiting for an input.
-                    //When stop is triggered, this should be released and continue with no input somehow.
                     entry = RootCommand.QueryRootParam();
                 }
 
@@ -173,39 +112,6 @@ namespace Tharga.Toolkit.Console
                 foreach (var runner in Runners)
                 {
                     runner.Close();
-                }
-            }
-        }
-
-        private void SetColor()
-        {
-            if (System.Console.BackgroundColor == BackgroundColor && System.Console.ForegroundColor == DefaultForegroundColor) return;
-
-            System.Console.BackgroundColor = BackgroundColor;
-            System.Console.ForegroundColor = DefaultForegroundColor;
-            System.Console.Clear();
-        }
-
-        private void ShowSplashScreen()
-        {
-            if(string.IsNullOrEmpty(SplashScreen))
-                return;
-
-            if (!_commandMode)
-            {
-                RootCommand.Console.Output(new WriteEventArgs(SplashScreen, OutputLevel.Default));
-            }
-        }
-
-        [ExcludeFromCodeCoverage]
-        private void DoShowAssemblyInfo()
-        {
-            if (!_commandMode && ShowAssemblyInfo)
-            {
-                var info = AssemblyHelper.GetAssemblyInfo();
-                if (!string.IsNullOrEmpty(info))
-                {
-                    _rootCommand.Console.Output(new WriteEventArgs(info, OutputLevel.Default));
                 }
             }
         }
@@ -242,7 +148,6 @@ namespace Tharga.Toolkit.Console
                 }
             }
 
-            //_rootCommand.Console.OutputInformation($"Command {commandIndex}: {entry}");
             _rootCommand.Console.Output(new WriteEventArgs($"Command {commandIndex}: {entry}", OutputLevel.Information));
 
             return entry;
@@ -254,7 +159,6 @@ namespace Tharga.Toolkit.Console
 
             if (_commandMode && !success)
             {
-                //_rootCommand.Console.OutputError("Terminating command chain.");
                 _rootCommand.Console.Output(new WriteEventArgs("Terminating command chain.", OutputLevel.Error));
                 return false;
             }

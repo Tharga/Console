@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Commands.Entities;
+using Tharga.Toolkit.Console.Entities;
 
 namespace Tharga.Toolkit.Console.Commands
 {

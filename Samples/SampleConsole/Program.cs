@@ -7,8 +7,8 @@ using System.Timers;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Commands.Entities;
 using Tharga.Toolkit.Console.Consoles;
+using Tharga.Toolkit.Console.Entities;
 using Timer = System.Timers.Timer;
 
 namespace SampleConsole
@@ -18,11 +18,17 @@ namespace SampleConsole
         [STAThread]
         private static void Main(string[] args)
         {
-            using (var console = new ClientConsole
+            var consoleConfiguration = new ConsoleConfiguration
             {
-                TopMost = true,
-                Title = "Yeee"
-            })
+                SplashScreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n",
+                //TopMost = true,
+                //Title = "Yeee",
+                //ShowAssemblyInfo = true,
+                //BackgroundColor = ConsoleColor.DarkYellow,
+                //DefaultTextColor = ConsoleColor.DarkRed,
+            };
+
+            using (var console = new ClientConsole(consoleConfiguration))
             {
                 var command = new RootCommand(console);
 
@@ -30,26 +36,28 @@ namespace SampleConsole
 
                 var engine = new CommandEngine(command)
                 {
-                    //BackgroundColor = ConsoleColor.DarkGreen, //TODO: This is a console property!
-                    //DefaultForegroundColor = ConsoleColor.White, //TODO: This is a console property!
-                    //REMOVED! Console = { },
-                    //TopMost = true, //TODO: This is a console property!
-                    ShowAssemblyInfo = false, //TODO: This is a console property!
-                    //Title = "AAA", //TODO: This is a console property!
-                    Runners = new[] { new Runner(e => { }), },
-                    SplashScreen = "ABC" //TODO: This is a console property!
+                    Runners = new[]
+                    {
+                        new Runner(e =>
+                        {
+                            var t = new Timer();
+                            t.Interval = 2000;
+                            t.Elapsed += (sender2, e2) =>
+                            {
+                                console.WriteLine("Runner A");
+                            };
+                            t.Start();
+                        }),
+                        new Runner(e =>
+                        {
+                            while (!e.IsCancellationRequested)
+                            {
+                                console.WriteLine("Runner B");
+                                Thread.Sleep(3000);
+                            }
+                        }),
+                    },
                 };
-
-                var t = new Timer();
-                t.Interval = 5000;
-                t.Elapsed += (sender, e) =>
-                {
-                    console.TopMost = !console.TopMost;
-                    console.WriteLine(console.TopMost.ToString());
-                    //Console.WriteLine("Exiting...");
-                    //engine.Stop();
-                };
-                t.Start();
 
                 engine.Run(args);
             }

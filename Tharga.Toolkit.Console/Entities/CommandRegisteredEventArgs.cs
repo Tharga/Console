@@ -1,6 +1,6 @@
 using Tharga.Toolkit.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.Entities
+namespace Tharga.Toolkit.Console.Entities
 {
     public class CommandRegisteredEventArgs
     {

@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Tharga.Toolkit.Console.Commands.Helpers
+namespace Tharga.Toolkit.Console.Helpers
 {
     internal class KeyInputEngine
     {

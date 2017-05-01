@@ -7,8 +7,8 @@ using System.Speech.Recognition;
 using System.Threading;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Commands.Entities;
 using Tharga.Toolkit.Console.Consoles.Base;
+using Tharga.Toolkit.Console.Entities;
 
 namespace Tharga.Toolkit.Console.Consoles
 {

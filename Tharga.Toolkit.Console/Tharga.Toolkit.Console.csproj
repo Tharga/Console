@@ -63,11 +63,13 @@
     <Compile Include="..\Build\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Entities\ConsoleConfiguration.cs" />
+    <Compile Include="Interfaces\IConsoleConfiguration.cs" />
+    <Compile Include="Helpers\AssemblyHelper.cs" />
     <Compile Include="Helpers\ExceptionExtension.cs" />
     <Compile Include="Helpers\InputInstance.cs" />
     <Compile Include="Helpers\KeyInputEngine.cs" />
     <Compile Include="Entities\ExceptionOccuredEventArgs.cs" />
-    <Compile Include="Helpers\BufferInfo.cs" />
     <Compile Include="Helpers\TableExcension.cs" />
     <Compile Include="Commands\ScreenCommands\BackgroundColorCommand.cs" />
     <Compile Include="Commands\Base\ActionCommandBase.cs" />
@@ -85,9 +87,9 @@
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Entities\CommandRegisteredEventArgs.cs" />
     <Compile Include="Interfaces\IActionCommand.cs" />
-    <Compile Include="Interfaces\IActionConsoleOutput.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\IConsole.cs" />
+    <Compile Include="Interfaces\IInteractConsole.cs" />
     <Compile Include="Consoles\ClientConsole.cs" />
     <Compile Include="Helpers\InputBuffer.cs" />
     <Compile Include="Entities\InputBufferChangedEventArgs.cs" />

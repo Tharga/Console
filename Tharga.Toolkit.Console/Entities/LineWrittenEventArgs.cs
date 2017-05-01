@@ -1,8 +1,8 @@
 using System;
 
-namespace Tharga.Toolkit.Console.Commands.Entities
+namespace Tharga.Toolkit.Console.Entities
 {
-    public class LineWrittenEventArgs : EventArgs
+    internal class LineWrittenEventArgs : EventArgs
     {
         public LineWrittenEventArgs(string value, OutputLevel level)
         {
