@@ -9,6 +9,9 @@
     <projectUrl>https://github.com/poxet/tharga-console</projectUrl>
     <iconUrl>http://www.thargelion.se/Images/Logotype/Thargelion-White-Icon-48.png</iconUrl>
     <language>en-US</language>
-    <tags>console poc</tags>
+    <tags>console poc posh powershell</tags>
   </metadata>
+  <files>
+    <file src="bin\$configuration$\*.*" target="lib\net45\" />
+  </files>
 </package>
