@@ -4,10 +4,11 @@ using System.Reflection;
 using System.Security;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Commands.Entities;
+using Tharga.Toolkit.Console.Consoles.Base;
 
 namespace Tharga.Toolkit.Console.Consoles
 {
-    public class ServerConsole : SystemConsoleBase
+    public class ServerConsole : ConsoleBase
     {
         private readonly string _eventLogSource;
 

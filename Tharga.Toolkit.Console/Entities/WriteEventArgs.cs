@@ -3,7 +3,7 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Entities
 {
-    public class WriteTextEventArgs : EventArgs, ITextOutput
+    public class WriteEventArgs : EventArgs, IOutput
     {
         public string Message { get; }
         public OutputLevel OutputLevel { get; }
@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Commands.Entities
         public bool TrunkateSingleLine { get; }
         public bool LineFeed { get; }
 
-        public WriteTextEventArgs(string message, OutputLevel outputLevel, ConsoleColor? textColor, ConsoleColor? textBackgroundColor, bool trunkateSingleLine, bool lineFeed)
+        public WriteEventArgs(string message, OutputLevel outputLevel, ConsoleColor? textColor, ConsoleColor? textBackgroundColor, bool trunkateSingleLine, bool lineFeed)
         {
             Message = message;
             OutputLevel = outputLevel;
@@ -22,7 +22,7 @@ namespace Tharga.Toolkit.Console.Commands.Entities
             LineFeed = lineFeed;
         }
 
-        public WriteTextEventArgs(string message, OutputLevel outputLevel)
+        public WriteEventArgs(string message, OutputLevel outputLevel)
             : this(message, outputLevel, null, null, false, true)
         {
         }

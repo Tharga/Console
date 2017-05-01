@@ -4,14 +4,15 @@ using System.Linq;
 using System.Threading;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Commands.Entities;
+using Tharga.Toolkit.Console.Consoles.Base;
 
 namespace Tharga.Toolkit.Console.Consoles
 {
-    public class AggregateConsole : SystemConsoleBase
+    public class AggregateConsole : ConsoleBase
     {
-        private readonly SystemConsoleBase[] _consoles;
+        private readonly ConsoleBase[] _consoles;
 
-        public AggregateConsole(params SystemConsoleBase[] consoles)
+        public AggregateConsole(params ConsoleBase[] consoles)
             : base(consoles.First().ConsoleWriter)
         {
             _consoles = consoles;

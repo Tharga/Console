@@ -9,16 +9,16 @@ using Tharga.Toolkit.Console.Commands.Entities;
 using Tharga.Toolkit.Console.Commands.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.Base
+namespace Tharga.Toolkit.Console.Consoles.Base
 {
-    public abstract class SystemConsoleBase : IConsole
+    public abstract class ConsoleBase : IConsole
     {
         private static readonly object _syncRoot = new object();
         protected internal readonly TextWriter ConsoleWriter;
         private readonly ConsoleInterceptor _interceptor;
         private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
 
-        protected SystemConsoleBase(TextWriter consoleWriter)
+        protected ConsoleBase(TextWriter consoleWriter)
         {
             ConsoleWriter = consoleWriter;
             if (ConsoleWriter != null)
@@ -32,8 +32,19 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public int CursorLeft
         {
-            get { return System.Console.CursorLeft; }
-            set { System.Console.CursorLeft = value; }
+            get
+            {
+                try
+                {
+                    return System.Console.CursorLeft;
+                }
+                catch (IOException exception)
+                {
+                    Trace.TraceError($"Cannot get console cursor left. Using 0 as default. {exception.Message}");
+                    return 0;
+                }
+            }
+            private set { System.Console.CursorLeft = value; }
         }
 
         public int BufferWidth
@@ -50,7 +61,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     return 80;
                 }
             }
-            //set { System.Console.BufferWidth = value; }
         }
 
         public int CursorTop
@@ -67,7 +77,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     return 0;
                 }
             }
-            set { System.Console.CursorTop = value; }
+            private set { System.Console.CursorTop = value; }
         }
 
         private ConsoleColor ForegroundColor
@@ -82,7 +92,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             set { System.Console.BackgroundColor = value; }
         }
 
-        public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken) //bool intercept)
+        public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
             var consoleKeyInfo = KeyInputEngine.Instance.ReadKey(cancellationToken);
             OnKeyReadEvent(new KeyReadEventArgs(consoleKeyInfo));
@@ -115,12 +125,16 @@ namespace Tharga.Toolkit.Console.Commands.Base
             System.Console.SetCursorPosition(left, top);
         }
 
+        public void WriteLine(string value)
+        {
+            WriteLine(value, OutputLevel.Default, null, null);
+        }
+
         public void WriteLine(string value, OutputLevel level, ConsoleColor? textColor, ConsoleColor? textBackgroundColor)
         {
             lock (_syncRoot)
             {
                 var linesToInsert = GetLineCount(value);
-                //Debug.WriteLine("Lines: " + linesToInsert);
                 var inputBufferLines = BufferInfo.Instance.CurrentBufferLineCount;
                 var intCursorLineOffset = MoveCursorUp();
                 var cursorLeft = MoveInputBufferDown(linesToInsert, inputBufferLines);
@@ -168,7 +182,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     RestoreCursor(cursorLeft);
                     OnLinesInsertedEvent(linesToInsert);
-                    //System.Diagnostics.Debug.WriteLine("Corr: " + corr);
                     MoveCursorDown(intCursorLineOffset- corr);
                 }
             }
@@ -308,35 +321,35 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public void OutputError(string message)
         {
-            Output(new WriteTextEventArgs(message, OutputLevel.Error));
+            Output(new WriteEventArgs(message, OutputLevel.Error));
         }
 
         public void OutputDefault(string message)
         {
-            Output(new WriteTextEventArgs(message, OutputLevel.Default));
+            Output(new WriteEventArgs(message, OutputLevel.Default));
         }
 
         public void OutputWarning(string message)
         {
-            Output(new WriteTextEventArgs(message, OutputLevel.Warning));
+            Output(new WriteEventArgs(message, OutputLevel.Warning));
         }
 
         public void OutputInformation(string message)
         {
-            Output(new WriteTextEventArgs(message, OutputLevel.Information));
+            Output(new WriteEventArgs(message, OutputLevel.Information));
         }
 
         public void OutputEvent(string message)
         {
-            Output(new WriteTextEventArgs(message, OutputLevel.Event));
+            Output(new WriteEventArgs(message, OutputLevel.Event));
         }
 
         public void OutputHelp(string message)
         {
-            Output(new WriteTextEventArgs(message, OutputLevel.Help));
+            Output(new WriteEventArgs(message, OutputLevel.Help));
         }
 
-        public void Output(ITextOutput output)
+        public void Output(IOutput output)
         {
             if (_mutedTypes.Contains(output.OutputLevel)) return;
 

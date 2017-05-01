@@ -46,9 +46,9 @@ namespace Tharga.Toolkit.Console
             }
         }
 
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
+        //[DllImport("user32.dll", SetLastError = true)]
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        //private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -95,15 +95,15 @@ namespace Tharga.Toolkit.Console
         public string Title { get; set; }
         public string SplashScreen { get; set; }
         public bool ShowAssemblyInfo { get; set; }
-        public bool TopMost { get; set; }
+        //public bool TopMost { get; set; }
         public ConsoleColor BackgroundColor { get; set; }
         public ConsoleColor DefaultForegroundColor { get; set; }
         public Runner[] Runners { get; set; }
 
         public void Run(string[] args)
         {
-            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
-            if (TopMost) SetWindowPos(hWnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            //var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+            //if (TopMost) SetWindowPos(hWnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
             //TODO: Remember windoews location
             //NOTE: Set specific window location
@@ -205,7 +205,7 @@ namespace Tharga.Toolkit.Console
 
             if (!_commandMode)
             {
-                RootCommand.Console.Output(new WriteTextEventArgs(SplashScreen, OutputLevel.Default));
+                RootCommand.Console.Output(new WriteEventArgs(SplashScreen, OutputLevel.Default));
             }
         }
 
@@ -217,7 +217,7 @@ namespace Tharga.Toolkit.Console
                 var info = GetAssemblyInfo();
                 if (!string.IsNullOrEmpty(info))
                 {
-                    _rootCommand.Console.Output(new WriteTextEventArgs(info, OutputLevel.Default));
+                    _rootCommand.Console.Output(new WriteEventArgs(info, OutputLevel.Default));
                 }
             }
         }

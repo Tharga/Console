@@ -32,14 +32,14 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public new void RegisterCommand(ICommand command)
         {
-            command.WriteTextEvent += OnOutputEvent;
+            command.WriteEvent += OnOutputEvent;
 
             var containerCommand = command as IContainerCommand;
             if (containerCommand != null)
             {
                 containerCommand.CommandRegisteredEvent += (sender, e) =>
                 {
-                    e.Command.WriteTextEvent += OnOutputEvent;
+                    e.Command.WriteEvent += OnOutputEvent;
                 };
             }
 
@@ -49,12 +49,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
             {
                 foreach (var c in containerCommand.SubCommands)
                 {
-                    c.WriteTextEvent += OnOutputEvent;
+                    c.WriteEvent += OnOutputEvent;
                 }
             }
         }
 
-        private void OnOutputEvent(object sender, WriteTextEventArgs e)
+        private void OnOutputEvent(object sender, WriteEventArgs e)
         {
             Console.Output(e); 
         }

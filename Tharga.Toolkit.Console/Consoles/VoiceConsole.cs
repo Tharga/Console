@@ -8,10 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Commands.Entities;
+using Tharga.Toolkit.Console.Consoles.Base;
 
 namespace Tharga.Toolkit.Console.Consoles
 {
-    public class VoiceConsole : SystemConsoleBase
+    public class VoiceConsole : ConsoleBase
     {
         [DllImport("User32.Dll", EntryPoint = "PostMessageA")]
         private static extern bool PostMessage(IntPtr hwnd, uint msg, int wparam, int lparam);

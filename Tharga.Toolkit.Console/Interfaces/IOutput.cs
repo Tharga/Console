@@ -3,7 +3,7 @@ using Tharga.Toolkit.Console.Commands.Entities;
 
 namespace Tharga.Toolkit.Console.Interfaces
 {
-    public interface ITextOutput
+    public interface IOutput
     {
         string Message { get; }
         OutputLevel OutputLevel { get; }

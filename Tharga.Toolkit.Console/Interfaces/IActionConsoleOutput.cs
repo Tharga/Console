@@ -1,10 +1,10 @@
-using Tharga.Toolkit.Console.Commands.Entities;
+//using Tharga.Toolkit.Console.Commands.Entities;
 
-namespace Tharga.Toolkit.Console.Interfaces
-{
-    public interface IActionConsoleOutput
-    {
-        string Value { get; }
-        OutputLevel Level { get; }
-    }
-}
+//namespace Tharga.Toolkit.Console.Interfaces
+//{
+//    public interface IActionConsoleOutput
+//    {
+//        string Value { get; }
+//        OutputLevel Level { get; }
+//    }
+//}

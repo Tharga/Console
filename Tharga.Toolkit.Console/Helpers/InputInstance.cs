@@ -55,9 +55,14 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
         //    _startLocation = new Location(CursorLeft, CursorTop);
         //}
 
-        private int CursorTop { get { return _console.CursorTop; } set { _console.CursorTop = value; } }
+        private int CursorTop { get { return _console.CursorTop; } } //set { _console.CursorTop = value; } }
         private int BufferWidth { get { return _console.BufferWidth; } }
-        private int CursorLeft { get { return _console.CursorLeft; } set { _console.CursorLeft = value; } }
+        private int CursorLeft { get { return _console.CursorLeft; } } //set { _console.CursorLeft = value; } }
+
+        private void SetCursorPosition(int left, int top)
+        {
+            _console.SetCursorPosition(left, top);
+        }
 
         private void LinesInsertedEvent(object sender, LinesInsertedEventArgs e)
         {
@@ -122,9 +127,9 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                                     var leftOfCursor = _inputBuffer.ToString().Substring(0, currentBufferPosition).TrimEnd(' ');
                                     var last = leftOfCursor.LastIndexOf(' ');
                                     if (last != -1)
-                                        CursorLeft = last + _startLocation.Left + 1;
+                                        SetCursorPosition(last + _startLocation.Left + 1, CursorTop);
                                     else
-                                        CursorLeft = _startLocation.Left;
+                                        SetCursorPosition(_startLocation.Left, CursorTop);
                                 }
 
                                 break;
@@ -136,10 +141,12 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                                 {
                                     while (_inputBuffer.ToString().Length > l2 + 1 && _inputBuffer.ToString()[l2 + 1] == ' ')
                                         l2++;
-                                    CursorLeft = l2 + _startLocation.Left + 1;
+                                    SetCursorPosition(l2 + _startLocation.Left + 1, CursorTop);
                                 }
                                 else
-                                    CursorLeft = _inputBuffer.ToString().Length + _startLocation.Left;
+                                {
+                                    SetCursorPosition(_inputBuffer.ToString().Length + _startLocation.Left, CursorTop);
+                                }
 
                                 break;
 
@@ -516,8 +523,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
 
         private void MoveCursorToStart(Location startLocation)
         {
-            CursorLeft = startLocation.Left;
-            CursorTop = startLocation.Top;
+            SetCursorPosition(startLocation.Left, startLocation.Top);
         }
 
         private void MoveCursorToEnd(Location startLocation, InputBuffer inputBuffer)
@@ -530,20 +536,18 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                 pos -= BufferWidth;
             }
 
-            CursorLeft = pos;
-            CursorTop = startLocation.Top + ln;
+            SetCursorPosition(pos, startLocation.Top + ln);
         }
 
         private void MoveCursorRight()
         {
             if (CursorLeft == BufferWidth - 1)
             {
-                CursorTop++;
-                CursorLeft = 0;
+                SetCursorPosition(0, CursorTop + 1);
             }
             else
             {
-                CursorLeft++;
+                SetCursorPosition(CursorLeft + 1, CursorTop);
             }
         }
 
@@ -551,12 +555,11 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
         {
             if (CursorLeft == 0)
             {
-                CursorTop--;
-                CursorLeft = BufferWidth - 1;
+                SetCursorPosition(BufferWidth - 1, CursorTop - 1);
             }
             else
             {
-                CursorLeft--;
+                SetCursorPosition(CursorLeft - 1, CursorTop);
             }
         }
 

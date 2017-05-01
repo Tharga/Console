@@ -20,18 +20,10 @@ namespace SampleConsole
         {
             using (var console = new ClientConsole
             {
-                //BufferWidth = 80, //TODO: This should not be here!!!! (Or, just as a getter)
-                CursorTop = 0, //TODO: This should not be here!!!! (Or, just as a getter)
-                CursorLeft = 0, //TODO: This should not be here!!!! (Or, just as a getter)                
+                TopMost = true
             })
             {
-                var command = new RootCommand(console) //TOOD: Figure out how to use and describe Stop action
-                {
-                    //TODO: Perhaps set stop action in runtime? Should not stop action be an engine parameter?
-                    Console = { },
-                    HelpText = { },
-                    Names = { },
-                };
+                var command = new RootCommand(console);
 
                 command.RegisterCommand(new SomeContainerCommand()); //NOTE: Registering commands
 
@@ -40,23 +32,24 @@ namespace SampleConsole
                     //BackgroundColor = ConsoleColor.DarkGreen, //TODO: This is a console property!
                     //DefaultForegroundColor = ConsoleColor.White, //TODO: This is a console property!
                     //REMOVED! Console = { },
-                    TopMost = true, //TODO: This is a console property!
+                    //TopMost = true, //TODO: This is a console property!
                     ShowAssemblyInfo = false, //TODO: This is a console property!
                     Title = "AAA", //TODO: This is a console property!
                     Runners = new[] { new Runner(e => { }), },
                     SplashScreen = "ABC" //TODO: This is a console property!
                 };
 
-                //var t = new Timer();
-                //t.Interval = 5000;
-                //t.Elapsed += (sender, e) =>
-                //{
-                //    Console.WriteLine("Exiting...");
-                //    engine.Stop();
-                //};
-                //t.Start();
+                var t = new Timer();
+                t.Interval = 5000;
+                t.Elapsed += (sender, e) =>
+                {
+                    console.TopMost = !console.TopMost;
+                    console.WriteLine(console.TopMost.ToString());
+                    //Console.WriteLine("Exiting...");
+                    //engine.Stop();
+                };
+                t.Start();
 
-                //TODO: This sould not be here!!!! engine.Console.CursorTop = 10;
                 engine.Run(args);
             }
         }

@@ -22,7 +22,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public abstract IEnumerable<HelpLine> HelpText { get; }
 
-        public event EventHandler<WriteTextEventArgs> WriteTextEvent;
+        public event EventHandler<WriteEventArgs> WriteEvent;
 
         internal CommandBase(IEnumerable<string> names, string description, bool hidden)
         {
@@ -232,32 +232,32 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected void OutputError(string message)
         {
-            WriteTextEvent?.Invoke(this, new WriteTextEventArgs(message, OutputLevel.Error));
+            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Error));
         }
 
         protected void OutputWarning(string message)
         {
-            WriteTextEvent?.Invoke(this, new WriteTextEventArgs(message, OutputLevel.Warning));
+            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Warning));
         }
 
         protected void OutputInformation(string message)
         {
-            WriteTextEvent?.Invoke(this, new WriteTextEventArgs(message, OutputLevel.Information));
+            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Information));
         }
 
         protected void OutputEvent(string message)
         {
-            WriteTextEvent?.Invoke(this, new WriteTextEventArgs(message, OutputLevel.Event));
+            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Event));
         }
 
         protected void OutputDefault(string message)
         {
-            WriteTextEvent?.Invoke(this, new WriteTextEventArgs(message, OutputLevel.Default));
+            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Default));
         }
 
         protected void OutputHelp(string message)
         {
-            WriteTextEvent?.Invoke(this, new WriteTextEventArgs(message, OutputLevel.Help));
+            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Help));
         }
 
         protected void OutputTable(IEnumerable<IEnumerable<string>> data)

@@ -7,7 +7,7 @@ namespace Tharga.Toolkit.Console.Interfaces
 {
     public interface ICommand
     {
-        event EventHandler<WriteTextEventArgs> WriteTextEvent;
+        event EventHandler<WriteEventArgs> WriteEvent;
 
         string Name { get; }
         IEnumerable<string> Names { get; }
