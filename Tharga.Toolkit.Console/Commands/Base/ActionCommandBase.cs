@@ -8,32 +8,28 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base
 {
-    public abstract class ActionCommandBase : CommandBase
+    public abstract class ActionCommandBase : CommandBase, IActionCommand
     {
         private Func<string> _canExecute;
 
         public override IEnumerable<HelpLine> HelpText { get { yield break; } }
 
-        protected ActionCommandBase(string name, string description = null, bool hidden = false)
-            : this(null, new [] { name }, description, hidden)
-        {
-        }
-
         protected ActionCommandBase(string[] names, string description = null, bool hidden = false)
-           : this(null, names, description, hidden)
+           : base(names, description, hidden)
         {
         }
 
-        internal ActionCommandBase(IConsole console, string[] names, string description, bool hidden)
-            : base(console, names, description, hidden)
+        protected ActionCommandBase(string name, string description = null, bool hidden = false)
+            : this(new [] { name }, description, hidden)
         {
         }
 
         protected override ICommand GetHelpCommand(string paramList)
         {
-            var helpCommand = new HelpCommand(Console);
+            var helpCommand = new HelpCommand();
             if (HelpText.Any())
             {
+                //TODO: Get the help color
                 //var c = ((SystemConsoleBase)((CommandBase)this).Console).GetConsoleColor(OutputLevel.Title);
                 //var col = ((SystemConsoleBase)Console).GetConsoleColor(OutputLevel.Title);
                 helpCommand.AddLine($"Help for command {Name}.", foreColor: ConsoleColor.DarkCyan);

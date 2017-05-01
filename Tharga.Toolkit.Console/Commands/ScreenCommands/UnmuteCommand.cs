@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
@@ -8,12 +9,9 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
     internal class UnmuteCommand : ActionCommandBase
     {
-        private readonly IConsole _console;
-
-        public UnmuteCommand(IConsole console)
-            : base(console, new[] { "unmute" }, "Unmute output.", false)
+        public UnmuteCommand()
+            : base(new[] { "unmute" }, "Unmute output.", false)
         {
-            _console = console;
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -21,7 +19,8 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
             var index = 0;
             var type = QueryParam("Type", GetParam(paramList, index++), EnumExtensions.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
 
-            ((SystemConsoleBase)_console).Unmute(type);
+            throw new NotImplementedException("Fire event that unmutes the console.");
+            //((SystemConsoleBase)_console).Unmute(type);
 
             return true;
         }

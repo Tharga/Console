@@ -7,14 +7,14 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
     internal class ScreenCommand : ContainerCommandBase
     {
-        public ScreenCommand(IConsole console)
-            : base(console, new[] { "screen", "scr" }, null, true)
+        public ScreenCommand()
+            : base(new[] { "screen", "scr" }, null, true)
         {
-            RegisterCommand(new ClearCommand(console));
-            RegisterCommand(new BackgroundColorCommand(console));
-            RegisterCommand(new ForegroundColorCommand(console));
-            RegisterCommand(new MuteCommand(console));
-            RegisterCommand(new UnmuteCommand(console));
+            RegisterCommand(new ClearCommand());
+            RegisterCommand(new BackgroundColorCommand());
+            RegisterCommand(new ForegroundColorCommand());
+            RegisterCommand(new MuteCommand());
+            RegisterCommand(new UnmuteCommand());
         }
 
         public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("Commands to manage the screen."); } }

@@ -5,20 +5,20 @@ using Tharga.Toolkit.Console.Commands.Entities;
 
 namespace Tharga.Toolkit.Console.Commands.Helpers
 {
-    internal class InputBuffer
+    internal class InputBuffer : IDisposable
     {
         public event EventHandler<InputBufferChangedEventArgs> InputBufferChangedEvent;
+
+        private readonly List<char> _inputBuffer = new List<char>();
+
+        public int Length => _inputBuffer.Count;
+        public bool IsEmpty => !_inputBuffer.Any();
 
         protected virtual void InvokeInputBufferChangedEvent()
         {
             var handler = InputBufferChangedEvent;
             handler?.Invoke(this, new InputBufferChangedEventArgs());
         }
-
-        private readonly List<char> _inputBuffer = new List<char>();
-
-        public int Length => _inputBuffer.Count;
-        public bool IsEmpty => !_inputBuffer.Any();
 
         public char? LastOrDefault()
         {
@@ -60,6 +60,11 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
         public override string ToString()
         {
             return new string(_inputBuffer.ToArray());
+        }
+
+        public void Dispose()
+        {
+            _inputBuffer.Clear();
         }
     }
 }

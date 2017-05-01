@@ -9,19 +9,31 @@ namespace Tharga.Toolkit.Console.Commands.Base
 {
     public abstract class RootCommandBase : ContainerCommandBase, IRootCommand
     {
-        private readonly IConsole _console;
+        public IConsole Console { get; }
 
-        public class ExceptionOccuredEventArgs : EventArgs
+        public event EventHandler<EventArgs> RequestCloseEvent;
+        public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
+
+        protected RootCommandBase(IConsole console)
+            : base(new[] { "root" })
         {
-            public ExceptionOccuredEventArgs(Exception exception)
-            {
-                Exception = exception;
-            }
+            if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
 
-            public Exception Exception { get; }
+            Console = console;
+
+            RegisterCommand(new ExitCommand(() => { RequestCloseEvent?.Invoke(this, new EventArgs()); }));
+            RegisterCommand(new ClearCommand());
+            RegisterCommand(new ScreenCommand());
+            RegisterCommand(new CmdCommand());
+            RegisterCommand(new PoshCommand());
+            RegisterCommand(new ExecuteProcessCommand());
+            RegisterCommand(new ExecuteCommand(this));
         }
 
-        public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
+        public new void RegisterCommand(ICommand command)
+        {
+            base.RegisterCommand(command);
+        }
 
         protected virtual void OnExceptionOccuredEvent(ExceptionOccuredEventArgs e)
         {
@@ -29,30 +41,17 @@ namespace Tharga.Toolkit.Console.Commands.Base
             handler?.Invoke(this, e);
         }
 
-        protected RootCommandBase(IConsole console, Action stopAction)
-            : base(console, new [] { "root" })
-        {
-            _console = console;
-            RegisterCommand(new ExitCommand(Console, stopAction));
-            RegisterCommand(new ClearCommand(Console));
-            RegisterCommand(new ScreenCommand(Console));
-            RegisterCommand(new CmdCommand(Console));
-            RegisterCommand(new PoshCommand(Console));
-            RegisterCommand(new ExecuteProcessCommand(Console));
-            RegisterCommand(new ExecuteCommand(Console, this));
-        }
-
         public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("Root command."); } }
 
-        public virtual void SetStopAction(Action stopAction)
-        {
-            var exitCommand = GetCommand("exit");
+        //public virtual void SetStopAction(Action stopAction)
+        //{
+        //    var exitCommand = GetCommand("exit");
 
-            if (exitCommand is ExitCommand)
-                ((ExitCommand)GetCommand("exit")).SetStopAction(stopAction);
-            else
-                throw new ArgumentOutOfRangeException($"Unknown type for exit command. {exitCommand.GetType()}");
-        }
+        //    if (exitCommand is ExitCommand)
+        //        ((ExitCommand)GetCommand("exit")).SetStopAction(stopAction);
+        //    else
+        //        throw new ArgumentOutOfRangeException($"Unknown type for exit command. {exitCommand.GetType()}");
+        //}
 
         public sealed override async Task<bool> InvokeAsync(string paramList)
         {
@@ -75,7 +74,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 }
                 else
                 {
-                    _console.OutputError($"Invalid command {entry}.");
+                    Console.OutputError($"Invalid command {entry}.");
                 }
             }
             catch (SystemException exception)
@@ -95,7 +94,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             {
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
                 OutputError(exception);
-                OutputInformation("Terminating application...");
+                OutputWarning("Terminating application...");
                 throw;
             }
 

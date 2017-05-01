@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Commands.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
     internal class ClearCommand : ActionCommandBase
     {
-        internal ClearCommand(IConsole console)
-            : base(console, new[] { "cls", "clear" }, "Clears the display.", false)
+        internal ClearCommand()
+            : base(new[] { "cls", "clear" }, "Clears the display.", false)
         {
         }
 
@@ -20,7 +19,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 
         public override async Task<bool> InvokeAsync(string paramList)
         {
-            Console.Clear();
+            CommandEngine.RootCommand.Console.Clear();
             return true;
         }
     }

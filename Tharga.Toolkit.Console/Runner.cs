@@ -7,26 +7,26 @@ namespace Tharga.Toolkit.Console
     public class Runner
     {
         private readonly Action<CancellationToken> _action;
-        private readonly CancellationTokenSource _cancellationTokenS;
+        private readonly CancellationTokenSource _cancellationToken;
         private Task _task;
 
         public Runner(Action<CancellationToken> action)
         {
             _action = action;
-            _cancellationTokenS = new CancellationTokenSource();
+            _cancellationToken = new CancellationTokenSource();
         }
 
         public void Start()
         {
             _task = Task.Run(() =>
             {
-                _action(_cancellationTokenS.Token);
-            }, _cancellationTokenS.Token);
+                _action(_cancellationToken.Token);
+            }, _cancellationToken.Token);
         }
 
         public void Close()
         {
-            _cancellationTokenS.Cancel();
+            _cancellationToken.Cancel();
             _task.Wait();
         }
     }

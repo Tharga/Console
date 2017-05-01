@@ -20,14 +20,14 @@ namespace SampleConsole
         {
             using (var console = new ClientConsole
             {
-                BackgroundColor = ConsoleColor.DarkRed, //NOTE: This is overwritten by the engine, if only set here it will not reset the screen. (Perhaps have here only as a setter)
-                ForegroundColor = ConsoleColor.Blue, //NOTE: This is overwritten by the engine, if only set here it will not reset the screen. (Perhaps have here only as a setter)
+                //BackgroundColor = ConsoleColor.DarkRed, //NOTE: This is overwritten by the engine, if only set here it will not reset the screen. (Perhaps have here only as a setter)
+                //ForegroundColor = ConsoleColor.Blue, //NOTE: This is overwritten by the engine, if only set here it will not reset the screen. (Perhaps have here only as a setter)
                 BufferWidth = 80, //TODO: This should not be here!!!! (Or, just as a getter)
                 CursorTop = 0, //TODO: This should not be here!!!! (Or, just as a getter)
                 CursorLeft = 0, //TODO: This should not be here!!!! (Or, just as a getter)
             })
             {
-                var command = new RootCommand(console, null) //TOOD: Figure out how to use and describe Stop action
+                var command = new RootCommand(console) //TOOD: Figure out how to use and describe Stop action
                 {
                     //TODO: Perhaps set stop action in runtime? Should not stop action be an engine parameter?
                     Console = { },
@@ -39,15 +39,25 @@ namespace SampleConsole
 
                 var engine = new CommandEngine(command)
                 {
-                    BackgroundColor = ConsoleColor.DarkGreen, //TODO: This is a console property!
-                    DefaultForegroundColor = ConsoleColor.White, //TODO: This is a console property!
-                    Console = { },
+                    //BackgroundColor = ConsoleColor.DarkGreen, //TODO: This is a console property!
+                    //DefaultForegroundColor = ConsoleColor.White, //TODO: This is a console property!
+                    //REMOVED! Console = { },
                     TopMost = true, //TODO: This is a console property!
                     ShowAssemblyInfo = false, //TODO: This is a console property!
                     Title = "AAA", //TODO: This is a console property!
                     Runners = new[] { new Runner(e => { }), },
                     SplashScreen = "ABC" //TODO: This is a console property!
                 };
+
+                //var t = new Timer();
+                //t.Interval = 5000;
+                //t.Elapsed += (sender, e) =>
+                //{
+                //    Console.WriteLine("Exiting...");
+                //    engine.Stop();
+                //};
+                //t.Start();
+
                 //TODO: This sould not be here!!!! engine.Console.CursorTop = 10;
                 engine.Run(args);
             }

@@ -63,6 +63,10 @@
     <Compile Include="..\Build\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\Helpers\InputInstance.cs" />
+    <Compile Include="Commands\Helpers\KeyInputEngine.cs" />
+    <Compile Include="Commands\Entities\ExceptionOccuredEventArgs.cs" />
+    <Compile Include="Commands\Helpers\BufferInfo.cs" />
     <Compile Include="Commands\ScreenCommands\BackgroundColorCommand.cs" />
     <Compile Include="Commands\Base\ActionCommandBase.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />

@@ -8,17 +8,42 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base
 {
-    public abstract class ContainerCommandBase : CommandBase
-    {
-        protected readonly List<ICommand> SubCommands = new List<ICommand>();
+    //internal class CommandWrapper : ICommand
+    //{
+    //    private readonly ICommand _command;
 
-        protected ContainerCommandBase(string name, string description = null, bool hidden = false)
-            : this(null, new [] { name }, description, hidden)
+    //    public CommandWrapper(ICommand command)
+    //    {
+    //        _command = command;
+    //    }
+
+    //    public string Name => _command.Name;
+    //    public IEnumerable<string> Names => _command.Names;
+    //    public string Description => _command.Description;
+    //    public bool CanExecute(out string reasonMessage)
+    //    {
+    //        return _command.CanExecute(out reasonMessage);
+    //    }
+
+    //    public IEnumerable<HelpLine> HelpText => _command.HelpText;
+    //    public bool IsHidden => _command.IsHidden;
+    //    public Task<bool> InvokeAsync(string paramList)
+    //    {
+    //        return _command.InvokeAsync(paramList);
+    //    }
+    //}
+
+    public abstract class ContainerCommandBase : CommandBase, IContainerCommand
+    {
+        private readonly List<ICommand> SubCommands = new List<ICommand>();
+
+        internal ContainerCommandBase(string[] names, string description = null, bool hidden = false)
+            : base(names, description, hidden)
         {
         }
 
-        internal ContainerCommandBase(IConsole console, string[] names, string description = null, bool hidden = false)
-            : base(console, names, description, hidden)
+        protected ContainerCommandBase(string name, string description = null, bool hidden = false)
+            : this(new [] { name }, description, hidden)
         {
         }
 
@@ -40,36 +65,39 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                         yield return name;
 
-                        var subContainer = sub as ContainerCommandBase;
-                        if (subContainer == null) continue;
-                        yield return name + " help";
-                        var commandKeys = subContainer.CommandKeys;
-                        foreach (var key in commandKeys)
-                        {
-                            yield return name + " " + key;
-                        }
+                        throw new NotImplementedException();
+                        //var subContainer = sub as ContainerCommandBase;
+                        //if (subContainer == null) continue;
+                        //yield return name + " help";
+                        //var commandKeys = subContainer.CommandKeys;
+                        //foreach (var key in commandKeys)
+                        //{
+                        //    yield return name + " " + key;
+                        //}
                     }
                 }
             }
         }
 
-        public ContainerCommandBase RegisterCommand(ICommand command)
+        protected ContainerCommandBase RegisterCommand(ICommand command)
         {
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
 
+            //TODO: Find an input manager from the root command
+
             SubCommands.Add(command);
 
-            var c = command as CommandBase;
-            c?.AttachConsole(Console);
+            //var c = command as CommandBase;
+            //c?.AttachConsole(Console);
 
             return this;
         }
 
-        internal override void AttachConsole(IConsole console)
-        {
-            base.AttachConsole(console);
-            SubCommands.ForEach(x => ((CommandBase)x).AttachConsole(Console));
-        }
+        //internal override void AttachConsole(IConsole console)
+        //{
+        //    base.AttachConsole(console);
+        //    SubCommands.ForEach(x => ((CommandBase)x).AttachConsole(Console));
+        //}
 
         public void UnregisterCommand(string commandName)
         {
@@ -83,7 +111,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected override ICommand GetHelpCommand(string paramList)
         {
-            var helpCommand = new HelpCommand(Console);
+            var helpCommand = new HelpCommand();
 
             var showHidden = true;
             var command = this as ICommand;
@@ -179,25 +207,26 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return helpCommand;
         }
 
-        private void ShowSubCommandHelp(List<ICommand> subCommands, HelpCommand helpCommand, string parentReasonMesage, bool showHidden)
+        private void ShowSubCommandHelp(IEnumerable<ICommand> subCommands, HelpCommand helpCommand, string parentReasonMesage, bool showHidden)
         {
             var anyHidden = false;
+            var arr = subCommands as ICommand[] ?? subCommands.ToArray();
 
-            var actionCommands = subCommands.Where(x => x is ActionCommandBase).ToArray();
-            var containerCommands = subCommands.Where(x => x is ContainerCommandBase).ToArray();
+            var actionCommands = arr.Where(x => x is ActionCommandBase).ToArray();
+            var containerCommands = arr.Where(x => x is ContainerCommandBase).ToArray();
 
             var padLength = containerCommands.Max(x => x.Name.Length, 0).Max(actionCommands.Max(x => x.Name.Length, 0));
 
-            if (containerCommands.Any(x => !x.Hidden || showHidden))
+            if (containerCommands.Any(x => !x.IsHidden || showHidden))
             {
                 helpCommand.AddLine(string.Empty);
                 helpCommand.AddLine($"Sections for {Name}:", foreColor: ConsoleColor.DarkCyan);
                 foreach (var command in containerCommands)
                 {
-                    if (!command.Hidden || showHidden)
+                    if (!command.IsHidden || showHidden)
                     {
-                        var hidden = command.Hidden ? "*" : "";
-                        if (command.Hidden) anyHidden = true;
+                        var hidden = command.IsHidden ? "*" : "";
+                        if (command.IsHidden) anyHidden = true;
                         helpCommand.AddLine($"{(hidden + command.Name).PadStringAfter(padLength)} {command.Description}", () =>
                         {
                             string reasonMessage;
@@ -212,16 +241,16 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 }
             }
 
-            if (actionCommands.Any(x => !x.Hidden || showHidden))
+            if (actionCommands.Any(x => !x.IsHidden || showHidden))
             {
                 helpCommand.AddLine(string.Empty);
                 helpCommand.AddLine($"Commands for {Name}:", foreColor: ConsoleColor.DarkCyan);
                 foreach (var command in actionCommands)
                 {
-                    if (!command.Hidden || showHidden)
+                    if (!command.IsHidden || showHidden)
                     {
-                        var hidden = command.Hidden ? "*" : "";
-                        if (command.Hidden) anyHidden = true;
+                        var hidden = command.IsHidden ? "*" : "";
+                        if (command.IsHidden) anyHidden = true;
                         helpCommand.AddLine($"{(hidden + command.Name).PadStringAfter(padLength)} {command.Description}", () =>
                         {
                             string reasonMessage;

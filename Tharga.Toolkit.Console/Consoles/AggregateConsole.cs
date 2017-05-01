@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Commands.Entities;
 
@@ -16,19 +17,9 @@ namespace Tharga.Toolkit.Console.Consoles
             _consoles = consoles;
         }
 
-        public override string ReadLine()
+        public override ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
-            return _consoles.First().ReadLine();
-        }
-
-        public override ConsoleKeyInfo ReadKey()
-        {
-            return _consoles.First().ReadKey();
-        }
-
-        public override ConsoleKeyInfo ReadKey(bool intercept)
-        {
-            return _consoles.First().ReadKey(intercept);
+            return _consoles.First().ReadKey(cancellationToken);
         }
 
         public override void Initiate(IEnumerable<string> commandKeys)

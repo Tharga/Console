@@ -3,14 +3,13 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Commands.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands
 {
     internal class ExecuteProcessCommand : ActionCommandBase
     {
-        public ExecuteProcessCommand(IConsole console)
-            : base(console, new [] { "run", "exe", "execute" }, "Execute command.", true)
+        public ExecuteProcessCommand()
+            : base(new [] { "run", "exe", "execute" }, "Execute command.", true)
         {
         }
 

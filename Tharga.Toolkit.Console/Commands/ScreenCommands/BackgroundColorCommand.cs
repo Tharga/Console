@@ -10,8 +10,8 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
     internal class BackgroundColorCommand : ActionCommandBase
     {
-        public BackgroundColorCommand(IConsole console)
-            : base(console, new [] { "background", "bg"}, "Sets the background color.", false)
+        public BackgroundColorCommand()
+            : base(new [] { "background", "bg"}, "Sets the background color.", false)
         {
         }
 
@@ -35,6 +35,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
             var index = 0;
             var color = QueryParam("Color", GetParam(paramList, index++), EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
 
+            throw new NotImplementedException("Fire event that changes background on the console.");
             System.Console.BackgroundColor = color;
             System.Console.Clear();
 

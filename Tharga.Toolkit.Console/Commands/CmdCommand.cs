@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -9,12 +10,9 @@ namespace Tharga.Toolkit.Console.Commands
 {
     internal class CmdCommand : ActionCommandBase
     {
-        private readonly IConsole _console;
-
-        public CmdCommand(IConsole console)
-            : base(console, new [] {"cmd", "command"}, "Command shell commands.", true)
+        public CmdCommand()
+            : base(new [] {"cmd", "command"}, "Command shell commands.", true)
         {
-            _console = console;
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -43,7 +41,8 @@ namespace Tharga.Toolkit.Console.Commands
             cmd.StandardInput.Flush();
             cmd.StandardInput.Close();
             cmd.WaitForExit();
-            _console.WriteLine(cmd.StandardOutput.ReadToEnd(), OutputLevel.Default, null, null);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.WriteLine(cmd.StandardOutput.ReadToEnd(), OutputLevel.Default, null, null);
 
             return true;
         }

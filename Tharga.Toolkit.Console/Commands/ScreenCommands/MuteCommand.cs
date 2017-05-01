@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
@@ -10,10 +11,9 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
     {
         private readonly IConsole _console;
 
-        public MuteCommand(IConsole console)
-            : base(console, new [] { "mute"}, "Mute output.", false)
+        public MuteCommand()
+            : base(new [] { "mute"}, "Mute output.", false)
         {
-            _console = console;
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -21,6 +21,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
             var index = 0;
             var type = QueryParam("Type", GetParam(paramList, index++), EnumExtensions.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
 
+            throw new NotImplementedException("Fire event that mutes the console.");
             ((SystemConsoleBase)_console).Mute(type);
 
             return true;

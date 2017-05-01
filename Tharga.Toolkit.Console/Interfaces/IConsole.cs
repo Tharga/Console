@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Tharga.Toolkit.Console.Commands.Entities;
 
 namespace Tharga.Toolkit.Console.Interfaces
@@ -17,7 +18,7 @@ namespace Tharga.Toolkit.Console.Interfaces
         event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         event EventHandler<KeyReadEventArgs> KeyReadEvent;
 
-        ConsoleKeyInfo ReadKey(bool intercept);
+        ConsoleKeyInfo ReadKey(CancellationToken cancellationToken); //bool intercept);
 
         void Clear();
         void OutputDefault(string message);

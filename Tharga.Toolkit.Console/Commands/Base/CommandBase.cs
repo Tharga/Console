@@ -4,36 +4,35 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Entities;
-using Tharga.Toolkit.Console.Commands.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base
 {
-    public abstract class CommandBase : ICommandBase
+    public abstract class CommandBase : ICommand
     {
         private readonly string _description;
         private readonly string[] _names;
         private readonly bool _hidden;
 
-        private IConsole _console;
+        //private IConsole _console;
 
         public string Name => _names[0];
         public IEnumerable<string> Names => _names;
         public string Description => _description;
-        public bool Hidden => _hidden;
-        public IConsole Console => _console;
+        public bool IsHidden => _hidden;
+        //public IConsole Console => _console;
 
         public abstract IEnumerable<HelpLine> HelpText { get; }
 
-        internal CommandBase(IConsole console, IEnumerable<string> names, string description, bool hidden)
+        internal CommandBase(IEnumerable<string> names, string description, bool hidden)
         {
             _hidden = hidden;
-            _console = console;
+            //_console = console;
             _names = names.Select(x => x.ToLower()).ToArray();
             _description = description ?? $"Command that manages {_names[0]}.";
         }
 
-        //TODO: Make internal
+        //public abstract Task InvokeAsync(params string[] input); //TODO: Try to make this command happen! and replace the old style Invoke action
         public abstract Task<bool> InvokeAsync(string paramList);
         protected abstract ICommand GetHelpCommand(string paramList);
 
@@ -53,7 +52,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
             string reason;
             if (!CanExecute(out reason))
             {
-                _console.OutputWarning(GetCanExecuteFailMessage(reason));
+                throw new NotImplementedException("Fire event that outputs a warning in the console.");
+                //_console.OutputWarning(GetCanExecuteFailMessage(reason));
                 return true;
             }
 
@@ -103,7 +103,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return verbs;
         }
 
-        //TODO: Make internal?
+        //TODO: This is strictly a root command function
         public string QueryRootParam()
         {
             return QueryParam<string>("> ", null, null, false, false);
@@ -179,8 +179,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return QueryParam(paramName, autoProvideValue, selectionDelegate, true, passwordEntry);
         }
 
+        //NOTE: This is the master parameter query function
         private T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool allowEscape, bool passwordEntry)
         {
+            //TODO: Fire an input request event
+
             var selection = new List<KeyValuePair<T, string>>();
             if (selectionDelegate != null)
             {
@@ -192,8 +195,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 }
             }
 
-            var inputManager = new InputManager(_console, paramName + (!selection.Any() ? "" : " [Tab]"), passwordEntry);
-            var response = inputManager.ReadLine(selection.ToArray(), allowEscape);
+            var inputManager = CommandEngine.InputManager;
+            //var inputManager = new InputManager(_console, , passwordEntry);
+            //var timeoutMilliseconds = 3000;            
+            var response = inputManager.ReadLine(paramName + (!selection.Any() ? "" : " [Tab]"), selection.ToArray(), allowEscape, CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null);
             return response;
         }
 
@@ -229,52 +234,62 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected void OutputError(Exception exception)
         {
-            _console.OutputError(exception);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.OutputError(exception);
         }
 
         protected void OutputError(string message)
         {
-            _console.OutputError(message);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.OutputError(message);
         }
 
         protected void OutputWarning(string message)
         {
-            _console.OutputWarning(message);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.OutputWarning(message);
         }
 
         protected void OutputInformation(string message)
         {
-            _console.OutputInformation(message);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.OutputInformation(message);
         }
 
         protected void OutputEvent(string message)
         {
-            _console.OutputEvent(message);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.OutputEvent(message);
         }
 
         protected void OutputDefault(string message)
         {
-            _console.OutputDefault(message);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.OutputDefault(message);
         }
 
-        //protected void OutputHelp(string message)
-        //{
-        //    _console.OutputHelp(message);
-        //}
+        protected void OutputHelp(string message)
+        {
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.OutputHelp(message);
+        }
 
         protected void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? color = null)
         {
-            _console.OutputTable(title, data, color);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.OutputTable(title, data, color);
         }
 
         protected void OutputTable(string[][] data, ConsoleColor? color = null)
         {
-            _console.OutputTable(data, color);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.OutputTable(data, color);
         }
 
-        internal virtual void AttachConsole(IConsole console)
-        {
-            _console = console;
-        }
+        //internal virtual void AttachConsole(IConsole console)
+        //{
+        //    throw new NotImplementedException("Fire event that outputs text in the console.");
+        //    //_console = console;
+        //}
     }
 }

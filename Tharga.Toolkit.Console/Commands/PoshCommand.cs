@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -9,12 +10,9 @@ namespace Tharga.Toolkit.Console.Commands
 {
     internal class PoshCommand : ActionCommandBase
     {
-        private readonly IConsole _console;
-
-        public PoshCommand(IConsole console)
-            : base(console, new [] {"posh", "ps"}, "Powershell commands.", true)
+        public PoshCommand()
+            : base(new [] {"posh", "ps"}, "Powershell commands.", true)
         {
-            _console = console;
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -43,7 +41,8 @@ namespace Tharga.Toolkit.Console.Commands
             cmd.StandardInput.Flush();
             cmd.StandardInput.Close();
             cmd.WaitForExit();
-            _console.WriteLine(cmd.StandardOutput.ReadToEnd(), OutputLevel.Default, null, null);
+            throw new NotImplementedException("Fire event that outputs text in the console.");
+            //_console.WriteLine(cmd.StandardOutput.ReadToEnd(), OutputLevel.Default, null, null);
 
             return true;
         }

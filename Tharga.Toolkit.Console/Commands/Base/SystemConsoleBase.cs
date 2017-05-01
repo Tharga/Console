@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Tharga.Toolkit.Console.Commands.Entities;
 using Tharga.Toolkit.Console.Commands.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
@@ -23,7 +24,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             ConsoleWriter = consoleWriter;
             if (ConsoleWriter != null)
+            {
                 _interceptor = new ConsoleInterceptor(ConsoleWriter, this, _syncRoot); //This one intercepts common output.
+            }
         }
 
         public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
@@ -81,21 +84,23 @@ namespace Tharga.Toolkit.Console.Commands.Base
             set { System.Console.BackgroundColor = value; }
         }
 
-        public virtual string ReadLine()
-        {
-            return System.Console.ReadLine();
-        }
+        //public virtual string ReadLine()
+        //{
+        //    throw new NotImplementedException();
+        //    //return System.Console.ReadLine();
+        //}
 
-        public virtual ConsoleKeyInfo ReadKey()
-        {
-            var consoleKeyInfo = System.Console.ReadKey();
-            OnKeyReadEvent(new KeyReadEventArgs(consoleKeyInfo));
-            return consoleKeyInfo;
-        }
+        //public virtual ConsoleKeyInfo ReadKey()
+        //{
+        //    throw new NotImplementedException();
+        //    //var consoleKeyInfo = System.Console.ReadKey();
+        //    //OnKeyReadEvent(new KeyReadEventArgs(consoleKeyInfo));
+        //    //return consoleKeyInfo;
+        //}
 
-        public virtual ConsoleKeyInfo ReadKey(bool intercept)
+        public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken) //bool intercept)
         {
-            var consoleKeyInfo = System.Console.ReadKey(intercept);
+            var consoleKeyInfo = KeyInputEngine.Instance.ReadKey(cancellationToken);
             OnKeyReadEvent(new KeyReadEventArgs(consoleKeyInfo));
             return consoleKeyInfo;
         }
@@ -132,7 +137,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             {
                 var linesToInsert = GetLineCount(value);
                 //Debug.WriteLine("Lines: " + linesToInsert);
-                var inputBufferLines = InputManager.CurrentBufferLineCount;
+                var inputBufferLines = BufferInfo.Instance.CurrentBufferLineCount;
                 var intCursorLineOffset = MoveCursorUp();
                 var cursorLeft = MoveInputBufferDown(linesToInsert, inputBufferLines);
 
@@ -300,7 +305,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             try
             {
-                var intCursorLineOffset = InputManager.CursorLineOffset;
+                var intCursorLineOffset = BufferInfo.Instance.CursorLineOffset;
                 CursorTop = CursorTop - intCursorLineOffset;
                 return intCursorLineOffset;
             }

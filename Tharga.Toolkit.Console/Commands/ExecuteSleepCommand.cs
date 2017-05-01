@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Commands.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands
 {
     internal class ExecuteSleepCommand : ActionCommandBase
     {
-        internal ExecuteSleepCommand(IConsole console)
-            : base(console, new [] { "sleep" }, "Sleep a number of milliseconds.", false)
+        internal ExecuteSleepCommand()
+            : base(new [] { "sleep" }, "Sleep a number of milliseconds.", false)
         {
         }
 

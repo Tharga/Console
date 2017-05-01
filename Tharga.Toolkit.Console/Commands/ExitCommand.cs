@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Commands.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands
 {
     internal class ExitCommand : ActionCommandBase
     {
-        private Action _stopAction;
+        private readonly Action _stopAction;
 
-        internal ExitCommand(IConsole console, Action stopAction)
-            : base(console, new [] { "exit" }, "Exit from the console.", false)
+        internal ExitCommand(Action stopAction)
+            : base(new [] { "exit" }, "Exit from the console.")
         {
             _stopAction = stopAction;
         }
@@ -23,11 +22,6 @@ namespace Tharga.Toolkit.Console.Commands
         {
             _stopAction();
             return true;
-        }
-
-        protected internal void SetStopAction(Action stopAction)
-        {
-            _stopAction = stopAction;
         }
     }
 }

@@ -118,76 +118,76 @@ namespace Tharga.Toolkit.Console.Consoles
             }
         }
 
-        public override string ReadLine()
-        {
-            _inputMethod = InputMethod.Unknown;
+        //public override string ReadLine()
+        //{
+        //    _inputMethod = InputMethod.Unknown;
 
-            var task = Task.Factory.StartNew(() =>
-            {
-                var s = System.Console.ReadLine();
-                _inputMethod = InputMethod.Keyboard;
-                if (!_reading) return;
-                _input = s;
-                _autoResetEvent.Set();
-            });
+        //    var task = Task.Factory.StartNew(() =>
+        //    {
+        //        var s = System.Console.ReadLine();
+        //        _inputMethod = InputMethod.Keyboard;
+        //        if (!_reading) return;
+        //        _input = s;
+        //        _autoResetEvent.Set();
+        //    });
 
-            _mainSpeechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
+        //    _mainSpeechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
 
-            _reading = true;
-            _autoResetEvent.WaitOne();
-            _reading = false;
+        //    _reading = true;
+        //    _autoResetEvent.WaitOne();
+        //    _reading = false;
 
-            _mainSpeechRecognitionEngine.RecognizeAsyncCancel();
+        //    _mainSpeechRecognitionEngine.RecognizeAsyncCancel();
 
-            if (_inputMethod == InputMethod.Voice)
-            {
-                var hwnd = Process.GetCurrentProcess().MainWindowHandle;
-                PostMessage(hwnd, Keydown, Retrun, 0);
-            }
+        //    if (_inputMethod == InputMethod.Voice)
+        //    {
+        //        var hwnd = Process.GetCurrentProcess().MainWindowHandle;
+        //        PostMessage(hwnd, Keydown, Retrun, 0);
+        //    }
 
-            task.Wait();
-            task.Dispose();
+        //    task.Wait();
+        //    task.Dispose();
 
-            return _input;
-        }
+        //    return _input;
+        //}
 
-        public override ConsoleKeyInfo ReadKey()
-        {
-            _inputMethod = InputMethod.Unknown;
+        //public override ConsoleKeyInfo ReadKey()
+        //{
+        //    _inputMethod = InputMethod.Unknown;
 
-            var task = Task.Factory.StartNew(() =>
-            {
-                var s = System.Console.ReadKey();
-                //var s = _consoleReader.ReadKey();
-                _inputMethod = InputMethod.Keyboard;
-                if (!_reading) return;
-                _keyInput = s;
-                _autoResetEvent.Set();
-            });
+        //    var task = Task.Factory.StartNew(() =>
+        //    {
+        //        var s = System.Console.ReadKey();
+        //        //var s = _consoleReader.ReadKey();
+        //        _inputMethod = InputMethod.Keyboard;
+        //        if (!_reading) return;
+        //        _keyInput = s;
+        //        _autoResetEvent.Set();
+        //    });
 
-            _subSpeechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
+        //    _subSpeechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
 
-            _reading = true;
-            _autoResetEvent.WaitOne();
-            _reading = false;
+        //    _reading = true;
+        //    _autoResetEvent.WaitOne();
+        //    _reading = false;
 
-            _subSpeechRecognitionEngine.RecognizeAsyncCancel();
+        //    _subSpeechRecognitionEngine.RecognizeAsyncCancel();
 
-            ////if (_inputMethod == InputMethod.Voice)
-            ////{
-            ////    if (_input == "tab")
-            ////        _keyInput = new ConsoleKeyInfo((char)10, ConsoleKey.Tab, false, false, false);
+        //    ////if (_inputMethod == InputMethod.Voice)
+        //    ////{
+        //    ////    if (_input == "tab")
+        //    ////        _keyInput = new ConsoleKeyInfo((char)10, ConsoleKey.Tab, false, false, false);
 
-            ////    var hWnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
-            ////    PostMessage(hWnd, WM_KEYDOWN, _keyInput.KeyChar, 0);
-            ////}
+        //    ////    var hWnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+        //    ////    PostMessage(hWnd, WM_KEYDOWN, _keyInput.KeyChar, 0);
+        //    ////}
 
-            task.Wait();
-            task.Dispose();
+        //    task.Wait();
+        //    task.Dispose();
 
-            //return _keyInput;
-            _reading = false;
-            return _keyInput;
-        }
+        //    //return _keyInput;
+        //    _reading = false;
+        //    return _keyInput;
+        //}
     }
 }
