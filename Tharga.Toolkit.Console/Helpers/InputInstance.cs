@@ -87,17 +87,6 @@ namespace Tharga.Toolkit.Console.Helpers
                 try
                 {
                     var readKey = _console.ReadKey(_cancellationToken);
-                    //ConsoleKeyInfo readKey;
-                    //try
-                    //{
-                    //    readKey = _console.ReadKey(_cancellationTokenSource.Token);
-                    //}
-                    //catch (OperationCanceledException e)
-                    //{
-                    //    System.Console.WriteLine(e);
-                    //    throw;
-                    //}
-
                     var currentScreenLocation = new Location(CursorLeft, CursorTop); //This is where the cursor actually is on screen.
                     var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
                     //System.Diagnostics.Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
@@ -297,7 +286,7 @@ namespace Tharga.Toolkit.Console.Helpers
         private T Enter<T>(KeyValuePair<T, string>[] selection)
         {
             var response = GetResponse(selection, _inputBuffer);
-            RememberCommandHistory(_inputBuffer);
+            RememberCommandHistory(_inputBuffer); //_inputBuffer);
             return response;
         }
 
@@ -424,8 +413,8 @@ namespace Tharga.Toolkit.Console.Helpers
 
         private T GetResponse<T>(KeyValuePair<T, string>[] selection, InputBuffer inputBuffer)
         {
-            try
-            {
+            //try
+            //{
                 if (_finished) throw new InvalidOperationException("Cannot get response more than once from a single input manager.");
                 _finished = true;
                 T response;
@@ -474,11 +463,11 @@ namespace Tharga.Toolkit.Console.Helpers
                 }
 
                 return response;
-            }
-            finally
-            {
-                inputBuffer.Dispose();
-            }
+            //}
+            //finally
+            //{
+            //    inputBuffer.Dispose();
+            //}
         }
 
         private void InputBufferChangedEvent(object sender, InputBufferChangedEventArgs e)
@@ -586,7 +575,7 @@ namespace Tharga.Toolkit.Console.Helpers
         public void Dispose()
         {
             _console?.Dispose();
-            _inputBuffer?.Dispose();
+            //_inputBuffer?.Dispose();
         }
     }
 }

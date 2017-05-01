@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -58,6 +59,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
             try
             {
                 return await InvokeAsync(paramList);
+            }
+            catch (AggregateException exception)
+            {
+                if (exception.InnerException is CommandEscapeException)
+                    return false;
+                throw;
             }
             catch (CommandEscapeException)
             {

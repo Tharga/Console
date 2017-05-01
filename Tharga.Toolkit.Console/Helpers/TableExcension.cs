@@ -25,7 +25,7 @@ namespace Tharga.Toolkit.Console.Helpers
 
             var lineCount = arr.Length - 1;
             if (lineCount < 0) lineCount = 0;
-            sbO.AppendLine($"{lineCount} lines.");
+            sbO.Append($"{lineCount} lines.");
 
             return sbO.ToString();
         }

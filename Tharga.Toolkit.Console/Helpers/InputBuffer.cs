@@ -5,7 +5,7 @@ using Tharga.Toolkit.Console.Entities;
 
 namespace Tharga.Toolkit.Console.Helpers
 {
-    internal class InputBuffer : IDisposable
+    internal class InputBuffer //: IDisposable
     {
         public event EventHandler<InputBufferChangedEventArgs> InputBufferChangedEvent;
 
@@ -62,9 +62,9 @@ namespace Tharga.Toolkit.Console.Helpers
             return new string(_inputBuffer.ToArray());
         }
 
-        public void Dispose()
-        {
-            _inputBuffer.Clear();
-        }
+        //public void Dispose()
+        //{
+        //    _inputBuffer.Clear();
+        //}
     }
 }

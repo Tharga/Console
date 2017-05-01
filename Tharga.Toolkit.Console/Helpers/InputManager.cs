@@ -36,11 +36,6 @@ namespace Tharga.Toolkit.Console.Helpers
 
                 return task.Result;
             }
-            catch (Exception e)
-            {
-                System.Console.WriteLine(e);
-                throw;
-            }
             finally
             {
                 task?.Dispose();

@@ -36,27 +36,27 @@ namespace SampleConsole
 
                 var engine = new CommandEngine(command)
                 {
-                    Runners = new[]
-                    {
-                        new Runner(e =>
-                        {
-                            var t = new Timer();
-                            t.Interval = 2000;
-                            t.Elapsed += (sender2, e2) =>
-                            {
-                                console.WriteLine("Runner A");
-                            };
-                            t.Start();
-                        }),
-                        new Runner(e =>
-                        {
-                            while (!e.IsCancellationRequested)
-                            {
-                                console.WriteLine("Runner B");
-                                Thread.Sleep(3000);
-                            }
-                        }),
-                    },
+                    //Runners = new[]
+                    //{
+                    //    new Runner(e =>
+                    //    {
+                    //        var t = new Timer();
+                    //        t.Interval = 2000;
+                    //        t.Elapsed += (sender2, e2) =>
+                    //        {
+                    //            console.WriteLine("Runner A");
+                    //        };
+                    //        t.Start();
+                    //    }),
+                    //    new Runner(e =>
+                    //    {
+                    //        while (!e.IsCancellationRequested)
+                    //        {
+                    //            console.WriteLine("Runner B");
+                    //            Thread.Sleep(3000);
+                    //        }
+                    //    }),
+                    //},
                 };
 
                 engine.Run(args);
