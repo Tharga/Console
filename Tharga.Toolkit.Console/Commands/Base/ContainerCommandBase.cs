@@ -58,7 +58,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
 
             SubCommands.Add(command);
-            ((CommandBase)command).AttachConsole(Console);
+
+            var c = command as CommandBase;
+            c?.AttachConsole(Console);
+
             return this;
         }
 

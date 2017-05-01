@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -25,10 +26,10 @@ namespace Tharga.Toolkit.Console
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
-            public int Left;        // x position of upper-left corner
-            public int Top;         // y position of upper-left corner
-            public int Right;       // x position of lower-right corner
-            public int Bottom;      // y position of lower-right corner
+            public int Left; // x position of upper-left corner
+            public int Top; // y position of upper-left corner
+            public int Right; // x position of lower-right corner
+            public int Bottom; // y position of lower-right corner
         }
 
         private const int HWND_TOPMOST = -1;
@@ -148,7 +149,14 @@ namespace Tharga.Toolkit.Console
 
         private void SetTitle()
         {
-            System.Console.Title = Title ?? GetAssemblyInfo() ?? "Tharga Console";
+            try
+            {
+                System.Console.Title = Title ?? GetAssemblyInfo() ?? "Tharga Console";
+            }
+            catch(IOException exception)
+            {
+                Trace.TraceError($"Cannot set console title. {exception.Message}");
+            }
         }
 
         private void ShowSplashScreen()
@@ -177,9 +185,16 @@ namespace Tharga.Toolkit.Console
 
         private static string GetAssemblyInfo()
         {
-            var assembly = Assembly.GetEntryAssembly();
-            if (assembly == null) return null;
-            return $"{assembly.GetName().Name} (Version {assembly.GetName().Version})";
+            try
+            {
+                var assembly = Assembly.GetEntryAssembly();
+                if (assembly == null) return null;
+                return $"{assembly.GetName().Name} (Version {assembly.GetName().Version})";
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private static List<string> GetCommands(IEnumerable<string> args)

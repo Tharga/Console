@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected SystemConsoleBase(TextWriter consoleWriter)
         {
             ConsoleWriter = consoleWriter;
-            if(ConsoleWriter != null)
+            if (ConsoleWriter != null)
                 _interceptor = new ConsoleInterceptor(ConsoleWriter, this, _syncRoot); //This one intercepts common output.
         }
 
@@ -36,13 +37,35 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public int BufferWidth
         {
-            get { return System.Console.BufferWidth; }
+            get
+            {
+                try
+                {
+                    return System.Console.BufferWidth;
+                }
+                catch (IOException exception)
+                {
+                    Trace.TraceError($"Cannot get console buffer width. Using 80 as default. {exception.Message}");
+                    return 80;
+                }
+            }
             set { System.Console.BufferWidth = value; }
         }
 
         public int CursorTop
         {
-            get { return System.Console.CursorTop; }
+            get
+            {
+                try
+                {
+                    return System.Console.CursorTop;
+                }
+                catch (IOException exception)
+                {
+                    Trace.TraceError($"Cannot get console cursor top. Using 0 as default. {exception.Message}");
+                    return 0;
+                }
+            }
             set { System.Console.CursorTop = value; }
         }
 
@@ -452,6 +475,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         private static Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(string name, ConsoleColor defaultColor, ConsoleColor? defaultTextBackgroundColor)
         {
             var colorString = ConfigurationManager.AppSettings[name + "Color"];
+            if (string.IsNullOrEmpty(colorString)) return new Tuple<ConsoleColor?, ConsoleColor?>(defaultColor, defaultTextBackgroundColor);
             var cols = colorString.Split(';');
             ConsoleColor color;
             if (!Enum.TryParse(cols[0], out color))
