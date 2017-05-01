@@ -5,16 +5,16 @@ using Tharga.Toolkit.Console.Commands.Entities;
 
 namespace Tharga.Toolkit.Console.Interfaces
 {
-    //public interface IOutputConsole : IConsole
-    //{
-    //}
-
-    //public interface IInteractableConsole : IConsole
-    //{
-    //}
-
     public interface IConsole : IDisposable
     {
+        void Output(ITextOutput outputEventArgs);
+
+        void OutputError(Exception exception);
+
+        void OutputTable(IEnumerable<IEnumerable<string>> data);
+        void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data);
+
+        //TODO: Revisit
         event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         event EventHandler<KeyReadEventArgs> KeyReadEvent;
 
@@ -26,13 +26,10 @@ namespace Tharga.Toolkit.Console.Interfaces
         void OutputEvent(string message);
         void OutputHelp(string message);
         void OutputWarning(string message);
-        void OutputError(Exception exception);
         void OutputError(string message);
 
-        void Output(string message, OutputLevel outputLevel, bool trunkateSingleLine = false);
-        void Output(string message, OutputLevel outputLevel, ConsoleColor? textColor, ConsoleColor? textBackgroundColor, bool trunkateSingleLine, bool line);
-        void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? consoleColor = null);
-        void OutputTable(string[][] data, ConsoleColor? textColor = null);
+        //void Output(string message, OutputLevel outputLevel, bool trunkateSingleLine = false);
+        //void Output(string message, OutputLevel outputLevel, ConsoleColor? textColor, ConsoleColor? textBackgroundColor, bool trunkateSingleLine, bool line);
 
         void NewLine();
         void WriteLine(string value, OutputLevel level, ConsoleColor? consoleColor, ConsoleColor? textBackgroundColor);
@@ -41,7 +38,7 @@ namespace Tharga.Toolkit.Console.Interfaces
         //Technical
         int CursorLeft { get; set; }
         int CursorTop { get; set; }
-        int BufferWidth { get; set; }
+        int BufferWidth { get; }
         void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop);
     }
 }

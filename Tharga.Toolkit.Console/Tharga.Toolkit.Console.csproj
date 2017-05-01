@@ -63,10 +63,12 @@
     <Compile Include="..\Build\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\Helpers\ExceptionExtension.cs" />
     <Compile Include="Commands\Helpers\InputInstance.cs" />
     <Compile Include="Commands\Helpers\KeyInputEngine.cs" />
     <Compile Include="Commands\Entities\ExceptionOccuredEventArgs.cs" />
     <Compile Include="Commands\Helpers\BufferInfo.cs" />
+    <Compile Include="Commands\Helpers\TableExcension.cs" />
     <Compile Include="Commands\ScreenCommands\BackgroundColorCommand.cs" />
     <Compile Include="Commands\Base\ActionCommandBase.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
@@ -81,6 +83,8 @@
     <Compile Include="CommandEngine.cs" />
     <Compile Include="Exceptions\EntryException.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
+    <Compile Include="Commands\Entities\CommandRegisteredEventArgs.cs" />
+    <Compile Include="Interfaces\IActionCommand.cs" />
     <Compile Include="Interfaces\IActionConsoleOutput.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\IConsole.cs" />
@@ -88,6 +92,8 @@
     <Compile Include="Commands\Helpers\InputBuffer.cs" />
     <Compile Include="Commands\Entities\InputBufferChangedEventArgs.cs" />
     <Compile Include="Commands\Helpers\InputManager.cs" />
+    <Compile Include="Interfaces\IContainerCommand.cs" />
+    <Compile Include="Interfaces\IInputManager.cs" />
     <Compile Include="Interfaces\IRootCommand.cs" />
     <Compile Include="Commands\Entities\KeyReadEventArgs.cs" />
     <Compile Include="Commands\Entities\LinesInsertedEventArgs.cs" />
@@ -114,9 +120,11 @@
     <Compile Include="Exceptions\CommandAlreadyRegisteredException.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
+    <Compile Include="Interfaces\ITextOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\RootCommand.cs" />
     <Compile Include="Runner.cs" />
+    <Compile Include="Commands\Entities\WriteTextEventArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,25 +1,14 @@
-using System.Collections.Generic;
-using System.Threading;
+using System;
 
 namespace Tharga.Toolkit.Console.Interfaces
 {
-    public interface IInputManager
+    public interface IRootCommand : ICommand
     {
-        T ReadLine<T>(string paramName, KeyValuePair<T, string>[] selection, bool allowEscape, CancellationToken cancellationToken, char? passwordChar, int? timeoutMilliseconds);
+        event EventHandler<EventArgs> RequestCloseEvent;
+
+        IConsole Console { get; }
+        string QueryRootParam(); //TODO: Rename to "QueryInput"
+        void RegisterCommand(ICommand command);
+        bool Execute(string entry);
     }
-
-    //public interface ICommandEngine
-    //{
-    //    string Title { get; }
-    //    string SplashScreen { get; }
-    //    bool ShowAssemblyInfo { get; }
-    //    bool TopMost { get; }
-    //    ConsoleColor BackgroundColor { get; }
-    //    ConsoleColor DefaultForegroundColor { get; }
-    //    Runner[] Runners { get; }
-    //    //IConsole Console { get; }
-
-    //    void Run(string[] args);
-    //    void Stop();
-    //}
 }

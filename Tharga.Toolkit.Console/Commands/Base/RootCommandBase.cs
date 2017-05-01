@@ -32,7 +32,31 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public new void RegisterCommand(ICommand command)
         {
+            command.WriteTextEvent += OnOutputEvent;
+
+            var containerCommand = command as IContainerCommand;
+            if (containerCommand != null)
+            {
+                containerCommand.CommandRegisteredEvent += (sender, e) =>
+                {
+                    e.Command.WriteTextEvent += OnOutputEvent;
+                };
+            }
+
             base.RegisterCommand(command);
+
+            if (containerCommand != null)
+            {
+                foreach (var c in containerCommand.SubCommands)
+                {
+                    c.WriteTextEvent += OnOutputEvent;
+                }
+            }
+        }
+
+        private void OnOutputEvent(object sender, WriteTextEventArgs e)
+        {
+            Console.Output(e); 
         }
 
         protected virtual void OnExceptionOccuredEvent(ExceptionOccuredEventArgs e)
@@ -42,16 +66,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
         }
 
         public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("Root command."); } }
-
-        //public virtual void SetStopAction(Action stopAction)
-        //{
-        //    var exitCommand = GetCommand("exit");
-
-        //    if (exitCommand is ExitCommand)
-        //        ((ExitCommand)GetCommand("exit")).SetStopAction(stopAction);
-        //    else
-        //        throw new ArgumentOutOfRangeException($"Unknown type for exit command. {exitCommand.GetType()}");
-        //}
 
         public sealed override async Task<bool> InvokeAsync(string paramList)
         {
@@ -100,11 +114,5 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
             return success;
         }
-
-        ////TODO: Make internal?
-        //public void Initiate()
-        //{
-        //    ((SystemConsoleBase)Console).Initiate(CommandKeys);
-        //}
     }
 }

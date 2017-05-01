@@ -56,7 +56,7 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
         //}
 
         private int CursorTop { get { return _console.CursorTop; } set { _console.CursorTop = value; } }
-        private int BufferWidth { get { return _console.BufferWidth; } set { _console.BufferWidth = value; } }
+        private int BufferWidth { get { return _console.BufferWidth; } }
         private int CursorLeft { get { return _console.CursorLeft; } set { _console.CursorLeft = value; } }
 
         private void LinesInsertedEvent(object sender, LinesInsertedEventArgs e)

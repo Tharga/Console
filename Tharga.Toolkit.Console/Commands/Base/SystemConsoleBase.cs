@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using Tharga.Toolkit.Console.Commands.Entities;
 using Tharga.Toolkit.Console.Commands.Helpers;
@@ -52,7 +50,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     return 80;
                 }
             }
-            set { System.Console.BufferWidth = value; }
+            //set { System.Console.BufferWidth = value; }
         }
 
         public int CursorTop
@@ -72,31 +70,17 @@ namespace Tharga.Toolkit.Console.Commands.Base
             set { System.Console.CursorTop = value; }
         }
 
-        public ConsoleColor ForegroundColor
+        private ConsoleColor ForegroundColor
         {
             get { return System.Console.ForegroundColor; }
             set { System.Console.ForegroundColor = value; }
         }
 
-        public ConsoleColor BackgroundColor
+        private ConsoleColor BackgroundColor
         {
             get { return System.Console.BackgroundColor; }
             set { System.Console.BackgroundColor = value; }
         }
-
-        //public virtual string ReadLine()
-        //{
-        //    throw new NotImplementedException();
-        //    //return System.Console.ReadLine();
-        //}
-
-        //public virtual ConsoleKeyInfo ReadKey()
-        //{
-        //    throw new NotImplementedException();
-        //    //var consoleKeyInfo = System.Console.ReadKey();
-        //    //OnKeyReadEvent(new KeyReadEventArgs(consoleKeyInfo));
-        //    //return consoleKeyInfo;
-        //}
 
         public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken) //bool intercept)
         {
@@ -197,53 +181,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public virtual void Initiate(IEnumerable<string> commandKeys)
         {
-        }
-
-        public void OutputTable(IEnumerable<string> title, IEnumerable<string[]> data, ConsoleColor? consoleColor = null)
-        {
-            var table = new List<string[]> { title.ToArray() };
-            table.AddRange(data.Select(item => item.ToArray()));
-            OutputTable(table.ToArray(), consoleColor);
-        }
-
-        public void OutputTable(string[][] data, ConsoleColor? textColor = null)
-        {
-            var columnLength = GetColumnSizes(data);
-
-            foreach (var line in data)
-            {
-                var sb = new StringBuilder();
-                for (var i = 0; i < line.Length; i++)
-                {
-                    sb.AppendFormat("{0}{1}", line[i], new string(' ', columnLength[i] - line[i].Length + 1));
-                }
-
-                Output(sb.ToString(), OutputLevel.Information, textColor, null, false, true);
-            }
-
-            var lineCount = data.Length - 1;
-            if (lineCount < 0) lineCount = 0;
-            Output($"{lineCount} lines.", OutputLevel.Information, textColor, null, false, true);
-        }
-
-        private static int[] GetColumnSizes(string[][] data)
-        {
-            if (data.Length == 0)
-                return new int[] {};
-
-            var length = new int[data[0].Length];
-            foreach (var line in data)
-            {
-                for (var i = 0; i < line.Length; i++)
-                {
-                    if (line[i].Length > length[i])
-                    {
-                        length[i] = line[i].Length;
-                    }
-                }
-            }
-
-            return length.ToArray();
         }
 
         public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
@@ -369,88 +306,68 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
         }
 
-        public void Write(string value, object[] arg)
-        {
-            ConsoleWriter.Write(value, arg);
-        }
-
-        public void OutputError(Exception exception)
-        {
-            OutputError(exception, 0);
-        }
-
-        private void OutputError(Exception exception, int indentationLevel)
-        {
-            if (_mutedTypes.Contains(OutputLevel.Error)) return;
-
-            var indentation = new string(' ', indentationLevel * 2);
-            OutputError($"{indentation}{exception.Message}");
-            foreach (DictionaryEntry data in exception.Data)
-            {
-                OutputError($"{indentation}{data.Key}: {data.Value}");
-            }
-
-            if (exception.InnerException != null)
-            {
-                OutputError(exception.InnerException, ++indentationLevel);
-            }
-        }
-
         public void OutputError(string message)
         {
-            Output(message, OutputLevel.Error);
+            Output(new WriteTextEventArgs(message, OutputLevel.Error));
         }
 
         public void OutputDefault(string message)
         {
-            Output(message, OutputLevel.Default);
+            Output(new WriteTextEventArgs(message, OutputLevel.Default));
         }
 
         public void OutputWarning(string message)
         {
-            Output(message, OutputLevel.Warning);
+            Output(new WriteTextEventArgs(message, OutputLevel.Warning));
         }
 
         public void OutputInformation(string message)
         {
-            Output(message, OutputLevel.Information);
+            Output(new WriteTextEventArgs(message, OutputLevel.Information));
         }
 
         public void OutputEvent(string message)
         {
-            Output(message, OutputLevel.Event);
+            Output(new WriteTextEventArgs(message, OutputLevel.Event));
         }
 
         public void OutputHelp(string message)
         {
-            Output(message, OutputLevel.Help);
+            Output(new WriteTextEventArgs(message, OutputLevel.Help));
         }
 
-        public void Output(string message, OutputLevel outputLevel, bool trunkateSingleLine = false)
+        public void Output(ITextOutput output)
         {
-            Output(message, outputLevel, null, null, trunkateSingleLine, true);
-        }
+            if (_mutedTypes.Contains(output.OutputLevel)) return;
 
-        public void Output(string message, OutputLevel outputLevel, ConsoleColor? textColor, ConsoleColor? textBackgroundColor, bool trunkateSingleLine, bool line)
-        {
-            if (_mutedTypes.Contains(outputLevel)) return;
-
-            if (trunkateSingleLine)
-            {
-                message = message.Truncate();
-            }
+            var message = output.TrunkateSingleLine ? output.Message.Truncate() : output.Message;
 
             lock (_syncRoot)
             {
-                if (line)
+                if (output.LineFeed)
                 {
-                    WriteLine(message, outputLevel, textColor, textBackgroundColor);
+                    WriteLine(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
                 }
                 else
                 {
                     Write(message);
                 }
             }
+        }
+
+        public void OutputError(Exception exception)
+        {
+            OutputError(exception.ToFormattedString());
+        }
+
+        public void OutputTable(IEnumerable<IEnumerable<string>> data)
+        {
+            OutputInformation(data.ToFormattedString());
+        }
+
+        public void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data)
+        {
+            OutputTable(new[] { title }.Union(data));
         }
 
         protected internal Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(OutputLevel outputLevel)

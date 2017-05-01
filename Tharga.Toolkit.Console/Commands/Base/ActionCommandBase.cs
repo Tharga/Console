@@ -59,17 +59,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return base.CanExecute(out reasonMessage);
         }
 
-        //public override bool CanExecute()
-        //{
-        //    throw new NotImplementedException();
-        //    //reasonMessage = "";
-        //    //if (_canExecute == null)
-        //    //{
-        //    //    //return CanExecute();
-        //    //}
-        //    //return _canExecute();
-        //}
-
         protected static Func<List<KeyValuePair<string, string>>> SelectionTrueFalse()
         {
             return () => new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(true.ToString(CultureInfo.InvariantCulture), true.ToString(CultureInfo.InvariantCulture)), new KeyValuePair<string, string>(false.ToString(CultureInfo.InvariantCulture), false.ToString(CultureInfo.InvariantCulture)) };

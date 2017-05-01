@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Entities;
 using Tharga.Toolkit.Console.Interfaces;
@@ -35,7 +36,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
     public abstract class ContainerCommandBase : CommandBase, IContainerCommand
     {
-        private readonly List<ICommand> SubCommands = new List<ICommand>();
+        private readonly List<ICommand> _subCommands = new List<ICommand>();
+
+        public IEnumerable<ICommand> SubCommands => _subCommands;
+
+        public event EventHandler<CommandRegisteredEventArgs> CommandRegisteredEvent;
 
         internal ContainerCommandBase(string[] names, string description = null, bool hidden = false)
             : base(names, description, hidden)
@@ -53,7 +58,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             get
             {
-                foreach (var sub in SubCommands)
+                foreach (var sub in _subCommands)
                 {
                     foreach (var name in sub.Names)
                     {
@@ -65,48 +70,34 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                         yield return name;
 
-                        throw new NotImplementedException();
-                        //var subContainer = sub as ContainerCommandBase;
-                        //if (subContainer == null) continue;
-                        //yield return name + " help";
-                        //var commandKeys = subContainer.CommandKeys;
-                        //foreach (var key in commandKeys)
-                        //{
-                        //    yield return name + " " + key;
-                        //}
+                        var subContainer = sub as ContainerCommandBase;
+                        if (subContainer == null) continue;
+                        yield return name + " help";
+                        var commandKeys = subContainer.CommandKeys;
+                        foreach (var key in commandKeys)
+                        {
+                            yield return name + " " + key;
+                        }
                     }
                 }
             }
         }
 
-        protected ContainerCommandBase RegisterCommand(ICommand command)
+        protected void RegisterCommand(ICommand command)
         {
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
-
-            //TODO: Find an input manager from the root command
-
-            SubCommands.Add(command);
-
-            //var c = command as CommandBase;
-            //c?.AttachConsole(Console);
-
-            return this;
+            _subCommands.Add(command);
+            CommandRegisteredEvent?.Invoke(this, new CommandRegisteredEventArgs(command));
         }
 
-        //internal override void AttachConsole(IConsole console)
-        //{
-        //    base.AttachConsole(console);
-        //    SubCommands.ForEach(x => ((CommandBase)x).AttachConsole(Console));
-        //}
-
-        public void UnregisterCommand(string commandName)
+        protected void UnregisterCommand(string commandName)
         {
-            SubCommands.RemoveAll(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0);
+            _subCommands.RemoveAll(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0);
         }
 
-        public ICommand GetCommand(string commandName)
+        protected ICommand GetCommand(string commandName)
         {
-            return SubCommands.FirstOrDefault(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0);
+            return _subCommands.FirstOrDefault(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0);
         }
 
         protected override ICommand GetHelpCommand(string paramList)
@@ -191,7 +182,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             var containerCommand = command as ContainerCommandBase;
             if (containerCommand != null)
             {
-                ShowSubCommandHelp(containerCommand.SubCommands, helpCommand, reasonMessage, showHidden);
+                ShowSubCommandHelp(containerCommand._subCommands, helpCommand, reasonMessage, showHidden);
             }
 
             if (command.Names.Count() > 1)
@@ -275,7 +266,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         public override bool CanExecute(out string reasonMessage)
         {
             string dummy;
-            if (!SubCommands.Any(x => x.CanExecute(out dummy)))
+            if (!_subCommands.Any(x => x.CanExecute(out dummy)))
             {
                 reasonMessage = "There are no executable subcommands.";
                 return false;
@@ -310,7 +301,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
 
             //Look for a command registered in current list
-            var command = SubCommands.FirstOrDefault(y => y.Names.Any(x => string.Compare(x, name, StringComparison.InvariantCultureIgnoreCase) == 0));
+            var command = _subCommands.FirstOrDefault(y => y.Names.Any(x => string.Compare(x, name, StringComparison.InvariantCultureIgnoreCase) == 0));
             if (command == null) return null;
 
             if (!(command is ContainerCommandBase)) return command;

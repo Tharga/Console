@@ -20,11 +20,9 @@ namespace SampleConsole
         {
             using (var console = new ClientConsole
             {
-                //BackgroundColor = ConsoleColor.DarkRed, //NOTE: This is overwritten by the engine, if only set here it will not reset the screen. (Perhaps have here only as a setter)
-                //ForegroundColor = ConsoleColor.Blue, //NOTE: This is overwritten by the engine, if only set here it will not reset the screen. (Perhaps have here only as a setter)
-                BufferWidth = 80, //TODO: This should not be here!!!! (Or, just as a getter)
+                //BufferWidth = 80, //TODO: This should not be here!!!! (Or, just as a getter)
                 CursorTop = 0, //TODO: This should not be here!!!! (Or, just as a getter)
-                CursorLeft = 0, //TODO: This should not be here!!!! (Or, just as a getter)
+                CursorLeft = 0, //TODO: This should not be here!!!! (Or, just as a getter)                
             })
             {
                 var command = new RootCommand(console) //TOOD: Figure out how to use and describe Stop action
@@ -309,7 +307,7 @@ namespace SampleConsole
 
             //OutputEvent(output);
 
-            switch (rng.Next(5))
+            switch (rng.Next(3))
             {
                 case 0:
                     OutputInformation(output);
@@ -323,13 +321,13 @@ namespace SampleConsole
                     OutputError(output);
                     break;
 
-                case 3:
-                    OutputEvent(output);
-                    break;
+                //case 3:
+                //    OutputEvent(output);
+                //    break;
 
-                case 4:
-                    OutputDefault(output);
-                    break;
+                //case 4:
+                //    OutputDefault(output);
+                //    break;
 
                 //case 5:
                 //    OutputHelp(output);

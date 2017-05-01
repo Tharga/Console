@@ -41,8 +41,8 @@ namespace Tharga.Toolkit.Console.Commands
             cmd.StandardInput.Flush();
             cmd.StandardInput.Close();
             cmd.WaitForExit();
-            throw new NotImplementedException("Fire event that outputs text in the console.");
-            //_console.WriteLine(cmd.StandardOutput.ReadToEnd(), OutputLevel.Default, null, null);
+
+            OutputDefault(cmd.StandardOutput.ReadToEnd());
 
             return true;
         }

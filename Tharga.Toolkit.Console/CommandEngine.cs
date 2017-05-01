@@ -13,17 +13,7 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console
 {
-    public class OutputEventArgs : EventArgs
-    {
-        public string Message { get; }
-
-        public OutputEventArgs(string message)
-        {
-            Message = message;
-        }
-    }
-
-    public sealed class CommandEngine //: ICommandEngine
+    public sealed class CommandEngine
     {
         private static IInputManager _inputManager;
         private static IRootCommand _rootCommand;
@@ -56,8 +46,6 @@ namespace Tharga.Toolkit.Console
             }
         }
 
-        //internal event EventHandler<OutputEventArgs> Output;
-
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
@@ -83,24 +71,10 @@ namespace Tharga.Toolkit.Console
 
         private const string FlagContinueInConsoleMode = "c";
         private const string FlagContinueInConsoleModeIfError = "e";
-        //private readonly IRootCommand _rootCommand;
-        //private bool _running = true;
+
         private readonly CancellationTokenSource _cancellationTokenSource;
         private bool _commandMode;
-
-        //private CommandEngine()
-        //{
-        //    ShowAssemblyInfo = true;
-        //    BackgroundColor = System.Console.BackgroundColor;
-        //    DefaultForegroundColor = System.Console.ForegroundColor;
-        //}
-
-        //internal CommandEngine(IConsole console)
-        //    : this()
-        //{
-        //    _rootCommand = new RootCommand(console, Stop);
-        //}
-
+        
         public CommandEngine(IRootCommand rootCommand)
         {
             if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No root command provided.");
@@ -112,7 +86,6 @@ namespace Tharga.Toolkit.Console
             _cancellationToken = _cancellationTokenSource.Token;
 
             _rootCommand.RequestCloseEvent += (sender, e) => { Stop(); };
-            //rootCommand.SetStopAction(Stop);
 
             ShowAssemblyInfo = true;
             BackgroundColor = System.Console.BackgroundColor;
@@ -126,8 +99,6 @@ namespace Tharga.Toolkit.Console
         public ConsoleColor BackgroundColor { get; set; }
         public ConsoleColor DefaultForegroundColor { get; set; }
         public Runner[] Runners { get; set; }
-
-        //public IConsole Console => _rootCommand.Console;
 
         public void Run(string[] args)
         {
@@ -189,7 +160,6 @@ namespace Tharga.Toolkit.Console
                         if (_commandMode && HasFlag(args, FlagContinueInConsoleModeIfError))
                         {
                             _commandMode = false;
-                            //_running = true;
                             continue;
                         }
 
@@ -235,7 +205,7 @@ namespace Tharga.Toolkit.Console
 
             if (!_commandMode)
             {
-                RootCommand.Console.Output(SplashScreen, OutputLevel.Default);
+                RootCommand.Console.Output(new WriteTextEventArgs(SplashScreen, OutputLevel.Default));
             }
         }
 
@@ -247,8 +217,7 @@ namespace Tharga.Toolkit.Console
                 var info = GetAssemblyInfo();
                 if (!string.IsNullOrEmpty(info))
                 {
-                    throw new NotImplementedException("Fire event that outpust text in the console!");
-                    //_rootCommand.Console.Output(info, OutputLevel.Default, false);
+                    _rootCommand.Console.Output(new WriteTextEventArgs(info, OutputLevel.Default));
                 }
             }
         }
@@ -296,12 +265,10 @@ namespace Tharga.Toolkit.Console
                 else
                 {
                     _cancellationTokenSource.Cancel();
-                    //_running = false;
                 }
             }
 
-            throw new NotImplementedException("Fire event that outpust text in the console!");
-            //_rootCommand.Console.OutputInformation($"Command {commandIndex}: {entry}");
+            _rootCommand.Console.OutputInformation($"Command {commandIndex}: {entry}");
 
             return entry;
         }
@@ -312,8 +279,7 @@ namespace Tharga.Toolkit.Console
 
             if (_commandMode && !success)
             {
-                throw new NotImplementedException("Fire event that outpust text in the console!");
-                //_rootCommand.Console.OutputError("Terminating command chain.");
+                _rootCommand.Console.OutputError("Terminating command chain.");
                 return false;
             }
 
