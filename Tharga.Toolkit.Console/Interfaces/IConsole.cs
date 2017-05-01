@@ -18,7 +18,7 @@ namespace Tharga.Toolkit.Console.Interfaces
 
 
         //TODO: Revisit
-        //event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
+        event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         //event EventHandler<KeyReadEventArgs> KeyReadEvent;
 
         void Clear();

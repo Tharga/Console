@@ -42,6 +42,9 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
             _paramName = paramName;
             _passwordChar = passwordChar;
             _cancellationToken = cancellationToken;
+
+            _console.LinesInsertedEvent += LinesInsertedEvent;
+            _startLocation = new Location(CursorLeft, CursorTop);
         }
 
         //public InputManager(IConsole console, string paramName, bool passwordEntry = false)
