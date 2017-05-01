@@ -7,6 +7,8 @@ namespace Tharga.Toolkit.Console.Interfaces
 {
     public interface IConsole : IDisposable
     {
+        event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
+
         ConsoleKeyInfo ReadKey(CancellationToken cancellationToken);
 
         void Output(IOutput outputEventArgs);
@@ -18,7 +20,6 @@ namespace Tharga.Toolkit.Console.Interfaces
 
 
         //TODO: Revisit
-        event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         //event EventHandler<KeyReadEventArgs> KeyReadEvent;
 
         void Clear();
@@ -32,7 +33,7 @@ namespace Tharga.Toolkit.Console.Interfaces
         //void Output(string message, OutputLevel outputLevel, bool trunkateSingleLine = false);
         //void Output(string message, OutputLevel outputLevel, ConsoleColor? textColor, ConsoleColor? textBackgroundColor, bool trunkateSingleLine, bool line);
 
-        void NewLine();
+        //void NewLine();
         void WriteLine(string value, OutputLevel level, ConsoleColor? consoleColor, ConsoleColor? textBackgroundColor);
         void Write(string value);
 

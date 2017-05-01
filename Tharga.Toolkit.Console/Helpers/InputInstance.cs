@@ -206,7 +206,8 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                             case ConsoleKey.Escape:
                                 if (_inputBuffer.IsEmpty && allowEscape)
                                 {
-                                    _console.NewLine();
+                                    //_console.NewLine();
+                                    _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
                                     throw new CommandEscapeException();
                                 }
 
@@ -428,7 +429,8 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                 {
                     if (_tabIndex != -1)
                     {
-                        _console.NewLine();
+                        //_console.NewLine();
+                        _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
                         response = selection[_tabIndex].Key;
                     }
                     else
@@ -439,7 +441,8 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                             try
                             {
                                 response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
-                                _console.NewLine();
+                                //_console.NewLine();
+                                _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
                             }
                             catch (FormatException exception)
                             {
@@ -453,7 +456,8 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                                 throw new EntryException("There are several matches to the entry.");
                             }
 
-                            _console.NewLine();
+                            //_console.NewLine();
+                            _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
                             response = items.Single().Key;
                         }
                     }
@@ -461,7 +465,8 @@ namespace Tharga.Toolkit.Console.Commands.Helpers
                 else
                 {
                     response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
-                    _console.NewLine();
+                    //_console.NewLine();
+                    _console.WriteLine(string.Empty, OutputLevel.Default, null, null);
                 }
 
                 return response;

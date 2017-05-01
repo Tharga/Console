@@ -99,10 +99,10 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             return consoleKeyInfo;
         }
 
-        public void NewLine()
-        {
-            ConsoleWriter?.WriteLine();
-        }
+        //public void NewLine()
+        //{
+        //    ConsoleWriter?.WriteLine();
+        //}
 
         public void Write(string value)
         {
@@ -134,6 +134,12 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
             lock (_syncRoot)
             {
+                if (string.IsNullOrEmpty(value))
+                {
+                    ConsoleWriter?.WriteLine();
+                    return;
+                }
+
                 var linesToInsert = GetLineCount(value);
                 var inputBufferLines = InputInstance.CurrentBufferLineCount;
                 var intCursorLineOffset = MoveCursorUp();
