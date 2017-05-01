@@ -88,8 +88,8 @@
     <Compile Include="Entities\CommandRegisteredEventArgs.cs" />
     <Compile Include="Interfaces\IActionCommand.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
+    <Compile Include="Interfaces\IOutputConsole.cs" />
     <Compile Include="Interfaces\IConsole.cs" />
-    <Compile Include="Interfaces\IInteractConsole.cs" />
     <Compile Include="Consoles\ClientConsole.cs" />
     <Compile Include="Helpers\InputBuffer.cs" />
     <Compile Include="Entities\InputBufferChangedEventArgs.cs" />

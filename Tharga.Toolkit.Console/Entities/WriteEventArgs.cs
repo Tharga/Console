@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Entities
         public bool TrunkateSingleLine { get; }
         public bool LineFeed { get; }
 
-        public WriteEventArgs(string message, OutputLevel outputLevel, ConsoleColor? textColor, ConsoleColor? textBackgroundColor, bool trunkateSingleLine, bool lineFeed)
+        public WriteEventArgs(string message, OutputLevel outputLevel, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null, bool trunkateSingleLine = false, bool lineFeed = true)
         {
             Message = message;
             OutputLevel = outputLevel;
@@ -20,11 +20,6 @@ namespace Tharga.Toolkit.Console.Entities
             TextBackgroundColor = textBackgroundColor;
             TrunkateSingleLine = trunkateSingleLine;
             LineFeed = lineFeed;
-        }
-
-        public WriteEventArgs(string message, OutputLevel outputLevel)
-            : this(message, outputLevel, null, null, false, true)
-        {
         }
     }
 }

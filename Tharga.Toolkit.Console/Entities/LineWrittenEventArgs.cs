@@ -2,9 +2,9 @@ using System;
 
 namespace Tharga.Toolkit.Console.Entities
 {
-    internal class LineWrittenEventArgs : EventArgs
+    public class LineWrittenEventArgs : EventArgs
     {
-        public LineWrittenEventArgs(string value, OutputLevel level)
+        internal LineWrittenEventArgs(string value, OutputLevel level)
         {
             Value = value;
             Level = level;

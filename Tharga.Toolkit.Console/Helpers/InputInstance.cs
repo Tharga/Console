@@ -16,7 +16,7 @@ namespace Tharga.Toolkit.Console.Helpers
         //private readonly bool _passwordEntry;
         private readonly char? _passwordChar;
 
-        private readonly IInteractConsole _console;
+        private readonly IConsole _console;
         private static readonly Dictionary<string, List<string>> _commandHistory = new Dictionary<string, List<string>>();
         private int _commandHistoryIndex = -1;
         private Location _startLocation;
@@ -34,7 +34,7 @@ namespace Tharga.Toolkit.Console.Helpers
         public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
         public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
-        public InputInstance(IInteractConsole console, string paramName, char? passwordChar, CancellationToken cancellationToken)
+        public InputInstance(IConsole console, string paramName, char? passwordChar, CancellationToken cancellationToken)
         {
             if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
 

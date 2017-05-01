@@ -8,9 +8,9 @@ namespace Tharga.Toolkit.Console.Helpers
 {
     internal class InputManager : IInputManager
     {
-        private readonly IInteractConsole _console;
+        private readonly IConsole _console;
 
-        public InputManager(IInteractConsole console)
+        public InputManager(IConsole console)
         {
             _console = console;
         }

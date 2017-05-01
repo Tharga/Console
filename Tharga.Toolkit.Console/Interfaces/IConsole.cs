@@ -1,14 +1,17 @@
 using System;
-using System.Collections.Generic;
+using System.Threading;
+using Tharga.Toolkit.Console.Entities;
 
 namespace Tharga.Toolkit.Console.Interfaces
 {
-    public interface IConsole : IDisposable
+    public interface IConsole : IOutputConsole
     {
-        int BufferWidth { get; }
-        void Output(IOutput outputEventArgs);
-        void OutputError(Exception exception);
-        void OutputTable(IEnumerable<IEnumerable<string>> data);
-        void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data);
+        event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
+        int CursorLeft { get; }
+        int CursorTop { get; }
+        ConsoleKeyInfo ReadKey(CancellationToken cancellationToken);
+        void Clear();
+        void SetCursorPosition(int left, int top);
+        void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop);
     }
 }

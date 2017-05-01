@@ -11,7 +11,7 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Consoles.Base
 {
-    public abstract class ConsoleBase : IInteractConsole
+    public abstract class ConsoleBase : IConsole
     {
         private static readonly object _syncRoot = new object();
         protected internal readonly TextWriter ConsoleWriter;
@@ -197,7 +197,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
         }
 
-        internal event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
+        public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
 
         protected virtual void OnLinesInsertedEvent(int lineCount)
         {

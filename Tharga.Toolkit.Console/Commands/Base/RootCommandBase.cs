@@ -9,12 +9,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
 {
     public abstract class RootCommandBase : ContainerCommandBase, IRootCommand
     {
-        public IInteractConsole Console { get; }
+        public IConsole Console { get; }
 
         public event EventHandler<EventArgs> RequestCloseEvent;
         public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
 
-        protected RootCommandBase(IInteractConsole console)
+        protected RootCommandBase(IConsole console)
             : base(new[] { "root" })
         {
             if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");

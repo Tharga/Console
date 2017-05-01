@@ -5,7 +5,7 @@ namespace Tharga.Toolkit.Console.Commands
 {
     public sealed class RootCommand : RootCommandBase
     {
-        public RootCommand(IInteractConsole console)
+        public RootCommand(IConsole console)
             : base(console)
         {
         }

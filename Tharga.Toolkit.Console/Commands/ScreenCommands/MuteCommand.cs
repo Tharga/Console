@@ -10,7 +10,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
     internal class MuteCommand : ActionCommandBase
     {
-        private readonly IInteractConsole _console;
+        private readonly IConsole _console;
 
         public MuteCommand()
             : base(new [] { "mute"}, "Mute output.", false)

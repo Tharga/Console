@@ -6,7 +6,7 @@ namespace Tharga.Toolkit.Console.Interfaces
     {
         event EventHandler<EventArgs> RequestCloseEvent;
 
-        IInteractConsole Console { get; }
+        IConsole Console { get; }
         string QueryRootParam(); //TODO: Rename to "QueryInput"
         void RegisterCommand(ICommand command);
         bool Execute(string entry);
