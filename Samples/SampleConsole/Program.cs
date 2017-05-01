@@ -18,10 +18,37 @@ namespace SampleConsole
         [STAThread]
         private static void Main(string[] args)
         {
-            using (var console = new ClientConsole())
+            using (var console = new ClientConsole
             {
-                var command = new RootCommand(console, null);
-                var engine = new CommandEngine(command);
+                BackgroundColor = ConsoleColor.DarkRed, //NOTE: This is overwritten by the engine, if only set here it will not reset the screen. (Perhaps have here only as a setter)
+                ForegroundColor = ConsoleColor.Blue, //NOTE: This is overwritten by the engine, if only set here it will not reset the screen. (Perhaps have here only as a setter)
+                BufferWidth = 80, //TODO: This should not be here!!!! (Or, just as a getter)
+                CursorTop = 0, //TODO: This should not be here!!!! (Or, just as a getter)
+                CursorLeft = 0, //TODO: This should not be here!!!! (Or, just as a getter)
+            })
+            {
+                var command = new RootCommand(console, null) //TOOD: Figure out how to use and describe Stop action
+                {
+                    //TODO: Perhaps set stop action in runtime? Should not stop action be an engine parameter?
+                    Console = { },
+                    HelpText = { },
+                    Names = { },
+                };
+
+                command.RegisterCommand(new SomeContainerCommand()); //NOTE: Registering commands
+
+                var engine = new CommandEngine(command)
+                {
+                    BackgroundColor = ConsoleColor.DarkGreen, //TODO: This is a console property!
+                    DefaultForegroundColor = ConsoleColor.White, //TODO: This is a console property!
+                    Console = { },
+                    TopMost = true, //TODO: This is a console property!
+                    ShowAssemblyInfo = false, //TODO: This is a console property!
+                    Title = "AAA", //TODO: This is a console property!
+                    Runners = new[] { new Runner(e => { }), },
+                    SplashScreen = "ABC" //TODO: This is a console property!
+                };
+                //TODO: This sould not be here!!!! engine.Console.CursorTop = 10;
                 engine.Run(args);
             }
         }
