@@ -99,10 +99,10 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             return consoleKeyInfo;
         }
 
-        public void Write(string value)
-        {
-            ConsoleWriter?.Write(value);
-        }
+        //public void Write(string value)
+        //{
+        //    ConsoleWriter?.Write(value);
+        //}
 
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
@@ -364,7 +364,8 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 }
                 else
                 {
-                    Write(message);
+                    //Write(message);
+                    ConsoleWriter?.Write(message);
                 }
             }
         }

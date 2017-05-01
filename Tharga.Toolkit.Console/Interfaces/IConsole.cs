@@ -24,9 +24,5 @@ namespace Tharga.Toolkit.Console.Interfaces
         int BufferWidth { get; }
         void SetCursorPosition(int left, int top);
         void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop);
-
-
-        //TODO: Revisit
-        void Write(string value);
     }
 }
