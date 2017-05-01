@@ -1,15 +1,19 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
+using Tharga.Toolkit.Console.Commands.Helpers;
 using Tharga.Toolkit.Console.Consoles.Base;
 
 namespace Tharga.Toolkit.Console.Consoles
 {
     public class ClientConsole : ConsoleBase
     {
+        private bool _topMost;
+        private string _title;
+
         #region User32
 
-        private bool _topMost;
         private const int HWND_TOPMOST = -1;
         static readonly int HWND_NOTOPMOST = -2;
         private const int SWP_NOMOVE = 0x0002;
@@ -30,6 +34,33 @@ namespace Tharga.Toolkit.Console.Consoles
                 _topMost = value;
             }
         }
+        public string Title
+        {
+            get { return _title; }
+            set
+            {
+                _title = value;
+                System.Console.Title = value;
+            }
+        }
+
+        public ClientConsole()
+            : base(System.Console.Out)
+        {
+            SetTitle();
+        }
+
+        private void SetTitle()
+        {
+            try
+            {
+                System.Console.Title = Title ?? AssemblyHelper.GetAssemblyInfo() ?? "Tharga Console";
+            }
+            catch (IOException exception)
+            {
+                Trace.TraceError($"Cannot set console title. {exception.Message}");
+            }
+        }
 
         private void SetTopMost(bool value)
         {
@@ -42,11 +73,6 @@ namespace Tharga.Toolkit.Console.Consoles
             {
                 SetWindowPos(hWnd, new IntPtr(HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             }
-        }
-
-        public ClientConsole()
-            : base(System.Console.Out)
-        {
         }
     }
 }

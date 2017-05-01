@@ -20,7 +20,8 @@ namespace SampleConsole
         {
             using (var console = new ClientConsole
             {
-                TopMost = true
+                TopMost = true,
+                Title = "Yeee"
             })
             {
                 var command = new RootCommand(console);
@@ -34,7 +35,7 @@ namespace SampleConsole
                     //REMOVED! Console = { },
                     //TopMost = true, //TODO: This is a console property!
                     ShowAssemblyInfo = false, //TODO: This is a console property!
-                    Title = "AAA", //TODO: This is a console property!
+                    //Title = "AAA", //TODO: This is a console property!
                     Runners = new[] { new Runner(e => { }), },
                     SplashScreen = "ABC" //TODO: This is a console property!
                 };

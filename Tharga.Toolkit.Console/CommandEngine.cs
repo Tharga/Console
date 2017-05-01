@@ -92,7 +92,7 @@ namespace Tharga.Toolkit.Console
             DefaultForegroundColor = System.Console.ForegroundColor;
         }
 
-        public string Title { get; set; }
+        //public string Title { get; set; }
         public string SplashScreen { get; set; }
         public bool ShowAssemblyInfo { get; set; }
         //public bool TopMost { get; set; }
@@ -117,7 +117,7 @@ namespace Tharga.Toolkit.Console
             //System.Console.Beep();
 
             SetColor();
-            SetTitle();
+            //SetTitle();
             ShowSplashScreen();
             DoShowAssemblyInfo();
 
@@ -186,18 +186,6 @@ namespace Tharga.Toolkit.Console
             System.Console.Clear();
         }
 
-        private void SetTitle()
-        {
-            try
-            {
-                System.Console.Title = Title ?? GetAssemblyInfo() ?? "Tharga Console";
-            }
-            catch(IOException exception)
-            {
-                Trace.TraceError($"Cannot set console title. {exception.Message}");
-            }
-        }
-
         private void ShowSplashScreen()
         {
             if(string.IsNullOrEmpty(SplashScreen))
@@ -214,25 +202,11 @@ namespace Tharga.Toolkit.Console
         {
             if (!_commandMode && ShowAssemblyInfo)
             {
-                var info = GetAssemblyInfo();
+                var info = AssemblyHelper.GetAssemblyInfo();
                 if (!string.IsNullOrEmpty(info))
                 {
                     _rootCommand.Console.Output(new WriteEventArgs(info, OutputLevel.Default));
                 }
-            }
-        }
-
-        private static string GetAssemblyInfo()
-        {
-            try
-            {
-                var assembly = Assembly.GetEntryAssembly();
-                if (assembly == null) return null;
-                return $"{assembly.GetName().Name} (Version {assembly.GetName().Version})";
-            }
-            catch (Exception)
-            {
-                return null;
             }
         }
 

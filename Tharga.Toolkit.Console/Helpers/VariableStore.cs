@@ -2,10 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using Tharga.Toolkit.Console.Commands.Entities;
 
 namespace Tharga.Toolkit.Console.Commands.Helpers
 {
+    internal class AssemblyHelper
+    {
+        public static string GetAssemblyInfo()
+        {
+            try
+            {
+                var assembly = Assembly.GetEntryAssembly();
+                if (assembly == null) return null;
+                return $"{assembly.GetName().Name} (Version {assembly.GetName().Version})";
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+    }
+
     internal class VariableStore
     {
         private static readonly Lazy<VariableStore> InstanceLoader = new Lazy<VariableStore>(() => new VariableStore());
