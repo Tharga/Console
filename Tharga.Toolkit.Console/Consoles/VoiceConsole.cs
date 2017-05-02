@@ -88,14 +88,15 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private void _mainSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            if (_reading)
-            {
-                _inputMethod = InputMethod.Voice;
-                _input = e.Result.Text;
-                //System.Console.Write(_input);
-                ConsoleWriter.Write(_input);
-                _autoResetEvent.Set();
-            }
+            throw new NotImplementedException();
+            //if (_reading)
+            //{
+            //    _inputMethod = InputMethod.Voice;
+            //    _input = e.Result.Text;
+            //    //System.Console.Write(_input);
+            //    ConsoleWriter.Write(_input);
+            //    _autoResetEvent.Set();
+            //}
         }
 
         private void _subSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)

@@ -9,84 +9,96 @@ using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Consoles;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Interfaces;
 using Timer = System.Timers.Timer;
 
 namespace SampleConsole
 {
-    internal static class Program
+    internal class Program
     {
+        private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
+
         [STAThread]
         private static void Main(string[] args)
         {
-            using (var console = new ClientConsole())
+            var console = new ClientConsole(new ConsoleConfiguration
             {
-                var command = new RootCommand(console);
-                command.RegisterCommand(new FooCommand());
-                var engine = new CommandEngine(command);
-                engine.Run(args);
-            }
+                SplashScreen = _splashscreen,
+            });
+            //var console = new VoiceConsole();
+            //var console = new ServerConsole(string.Empty);
+            //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
+            //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
+
+            var command = new RootCommand(console);
+            command.RegisterCommand(new SomeContainerCommand());
+            command.RegisterCommand(new EngineContainerCommand());
+            command.RegisterCommand(new MathContainerCommand());
+            command.RegisterCommand(new StatusCommand());
+            command.RegisterCommand(new ParametersCommand());
+            command.RegisterCommand(new SomeContainerWithDisabledSubs());
+            command.RegisterCommand(new LineFeedCommand(console));
+
+            var commandEngine = new CommandEngine(command)
+            {
+                Runners = new []{ new Runner(e =>
+                {
+                    while (!e.IsCancellationRequested)
+                    {
+                        //console.WriteLine(new string('.', Console.BufferWidth));
+                        Console.WriteLine(new string('.', Console.BufferWidth));
+                        Thread.Sleep(10);
+                    }
+                }), }
+            };
+
+            commandEngine.Run(args);
+
+            console.Dispose();
         }
     }
 
-    public class FooCommand : ContainerCommandBase
+    internal class LineFeedCommand : ActionCommandBase
     {
-        public FooCommand()
-            : base("Foo")
-        {
-            RegisterCommand(new BarCommand());
-        }
-    }
+        private readonly IConsole _console;
 
-    public class BarCommand : ActionCommandBase
-    {
-        public BarCommand()
-            : base("Bar")
+        public LineFeedCommand(IConsole console)
+            : base("Line", "Line output", true)
         {
+            _console = console;
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
         {
-            OutputInformation("Executed Foo Bar command.");
+            //NOTE: This will trigger the line feed bug!
+            await Task.Run(() =>
+            {
+                _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth-1), OutputLevel.Default));
+                _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth), OutputLevel.Default));
+                _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth+1), OutputLevel.Default));
+
+                System.Console.WriteLine("abc\nabc\n" + new string('X', Console.BufferWidth * 2) + "\ns\ns");
+                System.Console.WriteLine("abc\nabc\n" + new string('X', Console.BufferWidth * 2) + "\naaa");
+                System.Console.WriteLine("abc\n" + new string('X', Console.BufferWidth - 2));
+                System.Console.WriteLine(new string('X', Console.BufferWidth) + "\n\nx");
+                System.Console.WriteLine(new string('X', Console.BufferWidth - 1));
+                System.Console.WriteLine(new string('X', Console.BufferWidth));
+                System.Console.WriteLine(new string('X', Console.BufferWidth + 1));
+                System.Console.WriteLine(new string('X', Console.BufferWidth * 2));
+
+                System.Console.Write(new string('X', 20));
+                System.Console.Write(new string('Y', 10));
+                System.Console.Write(new string('Y', Console.BufferWidth - 30));
+                System.Console.Write(new string('Y', Console.BufferWidth));
+                System.Console.WriteLine(new string('Y', Console.BufferWidth));
+
+                System.Console.WriteLine(new string('X', Console.BufferWidth) + "\n");
+                System.Console.WriteLine(new string('X', Console.BufferWidth) + "\n\n");
+                System.Console.WriteLine("OK");
+            });
             return true;
         }
     }
-
-    //internal class Program
-    //{
-    //    private const string _splashscreen = "___________ __                                 \n\\__    ___/|  |__ _____ _______  _________     \n  |    |   |  |  \\\\__  \\\\_  __ \\/ ___\\__  \\    \n  |    |   |   Y  \\/ __ \\|  | \\/ /_/  > __ \\_  \n  |____|   |___|  (____  /__|  \\___  (____  /  \n                \\/     \\/     /_____/     \\/   \n";
-
-    //    [STAThread]
-    //    private static void Main(string[] args)
-    //    {
-    //        var console = new ClientConsole();
-    //        //var console = new VoiceConsole();
-    //        //var console = new ServerConsole(string.Empty);
-    //        //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
-    //        //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
-
-    //        var command = new CustomRootCommand(console);
-    //        command.RegisterCommand(new SomeContainerCommand());
-    //        command.RegisterCommand(new EngineContainerCommand());
-    //        command.RegisterCommand(new MathContainerCommand());
-    //        command.RegisterCommand(new StatusCommand());
-    //        command.RegisterCommand(new ParametersCommand());
-    //        command.RegisterCommand(new SomeContainerWithDisabledSubs());
-
-    //        var commandEngine = new CommandEngine(command)
-    //        {
-    //            SplashScreen = _splashscreen,
-    //            Title = "Sample console",
-    //            //ShowAssemblyInfo = false,
-    //            //TopMost = true,
-    //            //BackgroundColor = ConsoleColor.DarkBlue,
-    //            //DefaultForegroundColor = ConsoleColor.White,
-    //        };
-
-    //        commandEngine.Run(args);
-
-    //        console.Dispose();
-    //    }
-    //}
 
     internal class SomeContainerCommand : ContainerCommandBase
     {

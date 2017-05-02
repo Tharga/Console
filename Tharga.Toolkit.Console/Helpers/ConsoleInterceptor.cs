@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Entities;
@@ -8,6 +9,25 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Helpers
 {
+    internal class Interceptor2 : IDisposable
+    {
+        private StringWriter _sr;
+
+        public Interceptor2(TextWriter consoleWriter, IConsole console, object syncRoot)
+        {
+            _sr = new StringWriter();
+            //_consoleWriter = consoleWriter;
+            //_console = console;
+            //_syncRoot = syncRoot;
+            System.Console.SetOut(_sr);
+        }
+
+        public void Dispose()
+        {
+            _sr?.Dispose();
+        }
+    }
+
     internal class ConsoleInterceptor : TextWriter
     {
         private readonly TextWriter _consoleWriter;
@@ -23,11 +43,283 @@ namespace Tharga.Toolkit.Console.Helpers
             System.Console.SetOut(this);
         }
 
+        //protected TextWriter(IFormatProvider formatProvider);
+
         public override Encoding Encoding => _consoleWriter.Encoding;
 
+        //public override void WriteLine()
+        //{
+        //    WriteStuff(string.Empty, true);
+        //}
+
+        //public override void WriteLine(string value)
+        //{
+        //    WriteStuff(value, true);
+        //}
+
+        //public override void WriteLine(char value)
+        //{
+        //    WriteStuff(value.ToString(), true);
+        //}
+
+        //public override void WriteLine(char[] buffer)
+        //{
+        //    WriteStuff(new string(buffer), true);
+        //}
+
+        //public override void WriteLine(bool value)
+        //{
+        //    WriteStuff(value.ToString(), true);
+        //}
+
+        //public override void WriteLine(char[] buffer, int index, int count)
+        //{
+        //    WriteStuff(new string(buffer, index, count), true);
+        //}
+
+        //public override void WriteLine(int value)
+        //{
+        //    WriteStuff(value.ToString(), true);
+        //}
+
+        //public override void WriteLine(uint value)
+        //{
+        //    WriteStuff(value.ToString(), true);
+        //}
+
+        //public override void WriteLine(long value)
+        //{
+        //    WriteStuff(value.ToString(), true);
+        //}
+
+        //public override void WriteLine(ulong value)
+        //{
+        //    WriteStuff(value.ToString(), true);
+        //}
+
+        //public override void WriteLine(float value)
+        //{
+        //    WriteStuff(value.ToString(CultureInfo.InvariantCulture), true);
+        //}
+
+        //public override void WriteLine(double value)
+        //{
+        //    WriteStuff(value.ToString(CultureInfo.InvariantCulture), true);
+        //}
+
+        //public override void WriteLine(decimal value)
+        //{
+        //    WriteStuff(value.ToString(CultureInfo.InvariantCulture), true);
+        //}
+
+        //public override void WriteLine(object value)
+        //{
+        //    WriteStuff(value.ToString(), true);
+        //}
+
+        //public override void WriteLine(string format, object arg0)
+        //{
+        //    WriteStuff(string.Format(format, arg0), true);
+        //}
+
+        //public override void WriteLine(string format, object arg0, object arg1)
+        //{
+        //    WriteStuff(string.Format(format, arg0, arg1), true);
+        //}
+
+        //public override void WriteLine(string format, object arg0, object arg1, object arg2)
+        //{
+        //    WriteStuff(string.Format(format, arg0, arg1, arg2), true);
+        //}
+
+        //public override void WriteLine(string format, params object[] arg)
+        //{
+        //    WriteStuff(string.Format(format, arg), true);
+        //}
+
+        //public override async Task WriteLineAsync()
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public override async Task WriteLineAsync(char value)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public override async Task WriteLineAsync(string value)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public override async Task WriteLineAsync(char[] buffer, int index, int count)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public override async Task WriteAsync(char value)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public override async Task WriteAsync(string value)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public override async Task WriteAsync(char[] buffer, int index, int count)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public override void Write(string value)
+        //{
+        //    WriteStuff(value, false);
+        //}
+
+        ///////////////////////////////////////////////////////////////////////////
+        public static readonly TextWriter Null;
+        protected char[] CoreNewLine;
+        public override IFormatProvider FormatProvider { get; }
+        public override string NewLine { get; set; }
+
+        public static TextWriter Synchronized(TextWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Close()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Flush()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task FlushAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(decimal value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(double value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(float value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(uint value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(bool value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(ulong value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(char[] buffer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(char value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(string format, object arg0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(string format, params object[] arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(string format, object arg0, object arg1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(char[] buffer, int index, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(string format, object arg0, object arg1, object arg2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task WriteAsync(char value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task WriteAsync(char[] buffer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task WriteAsync(string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task WriteAsync(char[] buffer, int index, int count)
+        {
+            throw new NotImplementedException();
+        }
         public override void WriteLine()
         {
-            WriteStuff(string.Empty, true);
+            throw new NotImplementedException();
+        }
+
+        public override void WriteLine(object value)
+        {
+            throw new NotImplementedException();
         }
 
         public override void WriteLine(string value)
@@ -35,124 +327,104 @@ namespace Tharga.Toolkit.Console.Helpers
             WriteStuff(value, true);
         }
 
-        public override void WriteLine(char value)
+        public override void WriteLine(decimal value)
         {
-            WriteStuff(value.ToString(), true);
-        }
-
-        public override void WriteLine(char[] buffer)
-        {
-            WriteStuff(new string(buffer), true);
-        }
-
-        public override void WriteLine(bool value)
-        {
-            WriteStuff(value.ToString(), true);
-        }
-
-        public override void WriteLine(char[] buffer, int index, int count)
-        {
-            WriteStuff(new string(buffer, index, count), true);
+            throw new NotImplementedException();
         }
 
         public override void WriteLine(int value)
         {
-            WriteStuff(value.ToString(), true);
-        }
-
-        public override void WriteLine(uint value)
-        {
-            WriteStuff(value.ToString(), true);
-        }
-
-        public override void WriteLine(long value)
-        {
-            WriteStuff(value.ToString(), true);
-        }
-
-        public override void WriteLine(ulong value)
-        {
-            WriteStuff(value.ToString(), true);
+            throw new NotImplementedException();
         }
 
         public override void WriteLine(float value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), true);
+            throw new NotImplementedException();
+        }
+
+        public override void WriteLine(char value)
+        {
+            throw new NotImplementedException();
         }
 
         public override void WriteLine(double value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), true);
+            throw new NotImplementedException();
         }
 
-        public override void WriteLine(decimal value)
+        public override void WriteLine(bool value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), true);
+            throw new NotImplementedException();
         }
-
-        public override void WriteLine(object value)
+        public override void WriteLine(uint value)
         {
-            WriteStuff(value.ToString(), true);
+            throw new NotImplementedException();
+        }
+        public override void WriteLine(long value)
+        {
+            throw new NotImplementedException();
         }
 
+        public override void WriteLine(char[] buffer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void WriteLine(ulong value)
+        {
+            throw new NotImplementedException();
+        }
         public override void WriteLine(string format, object arg0)
         {
-            WriteStuff(string.Format(format, arg0), true);
+            throw new NotImplementedException();
         }
-
+        public override void WriteLine(string format, params object[] arg)
+        {
+            throw new NotImplementedException();
+        }
         public override void WriteLine(string format, object arg0, object arg1)
         {
-            WriteStuff(string.Format(format, arg0, arg1), true);
+            throw new NotImplementedException();
+        }
+
+        public override void WriteLine(char[] buffer, int index, int count)
+        {
+            throw new NotImplementedException();
         }
 
         public override void WriteLine(string format, object arg0, object arg1, object arg2)
         {
-            WriteStuff(string.Format(format, arg0, arg1, arg2), true);
+            throw new NotImplementedException();
         }
 
-        public override void WriteLine(string format, params object[] arg)
-        {
-            WriteStuff(string.Format(format, arg), true);
-        }
-
-        public override async Task WriteLineAsync()
+        public override Task WriteLineAsync()
         {
             throw new NotImplementedException();
         }
 
-        public override async Task WriteLineAsync(char value)
+        public override Task WriteLineAsync(char value)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task WriteLineAsync(string value)
+        public override Task WriteLineAsync(string value)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task WriteLineAsync(char[] buffer, int index, int count)
+        public Task WriteLineAsync(char[] buffer)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task WriteAsync(char value)
+        public override Task WriteLineAsync(char[] buffer, int index, int count)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task WriteAsync(string value)
+        protected override void Dispose(bool disposing)
         {
             throw new NotImplementedException();
-        }
-
-        public override async Task WriteAsync(char[] buffer, int index, int count)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Write(string value)
-        {
-            WriteStuff(value, false);
         }
 
         private void WriteStuff(string value, bool lineFeed)
@@ -180,7 +452,7 @@ namespace Tharga.Toolkit.Console.Helpers
 
                     System.Console.CursorTop = _location.Top;
                     System.Console.CursorLeft = _location.Left;
-    
+
                     _consoleWriter.Write(value);
 
                     _location = new Location(System.Console.CursorLeft, System.Console.CursorTop);

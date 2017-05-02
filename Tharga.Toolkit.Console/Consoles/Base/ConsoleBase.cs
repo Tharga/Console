@@ -24,6 +24,15 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             if (ConsoleWriter != null)
             {
                 _interceptor = new ConsoleInterceptor(ConsoleWriter, this, _syncRoot); //This one intercepts common output.
+                //_interceptor = new Interceptor2(ConsoleWriter, this, _syncRoot);
+                //System.Console.SetOut(_interceptor);
+                //System.Console.SetError(_interceptor);
+                //if (ReferenceEquals(System.Console.Out, _interceptor))
+                //{
+                //}
+                //else
+                //{
+                //}
             }
         }
 
