@@ -1,7 +1,5 @@
 using System;
-using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Entities;
@@ -9,37 +7,18 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Helpers
 {
-    internal class Interceptor2 : IDisposable
-    {
-        private StringWriter _sr;
-
-        public Interceptor2(TextWriter consoleWriter, IConsole console, object syncRoot)
-        {
-            _sr = new StringWriter();
-            //_consoleWriter = consoleWriter;
-            //_console = console;
-            //_syncRoot = syncRoot;
-            System.Console.SetOut(_sr);
-        }
-
-        public void Dispose()
-        {
-            _sr?.Dispose();
-        }
-    }
-
     internal class ConsoleInterceptor : TextWriter
     {
         private readonly TextWriter _consoleWriter;
         private readonly IConsole _console;
-        private readonly object _syncRoot;
-        private Location _location;
+//        private readonly object _syncRoot;
+        //private Location _location;
 
-        public ConsoleInterceptor(TextWriter consoleWriter, IConsole console, object syncRoot)
+        public ConsoleInterceptor(TextWriter consoleWriter, IConsole console) //, object syncRoot)
         {
             _consoleWriter = consoleWriter;
             _console = console;
-            _syncRoot = syncRoot;
+//            _syncRoot = syncRoot;
             System.Console.SetOut(this);
         }
 
@@ -195,7 +174,6 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public override void Flush()
@@ -431,53 +409,53 @@ namespace Tharga.Toolkit.Console.Helpers
         {
             var outputLevel = OutputLevel.Default;
 
-            if (_location != null)
-            {
-                lock (_syncRoot)
-                {
-                    //Continue to write on a known position
-                    var lns = 0;
-                    while ((lns * -System.Console.BufferWidth) + _location.Left + value.Length >= System.Console.BufferWidth)
-                    {
-                        lns++;
-                        _console.Output(new WriteEventArgs(string.Empty, outputLevel));
-                    }
+            //if (_location != null)
+            //{
+            //    lock (_syncRoot)
+            //    {
+            //        //Continue to write on a known position
+            //        var lns = 0;
+            //        while ((lns * -System.Console.BufferWidth) + _location.Left + value.Length >= System.Console.BufferWidth)
+            //        {
+            //            lns++;
+            //            _console.Output(new WriteEventArgs(string.Empty, outputLevel));
+            //        }
 
-                    var pos = new Location(System.Console.CursorLeft, System.Console.CursorTop);
+            //        var pos = new Location(System.Console.CursorLeft, System.Console.CursorTop);
 
-                    while (_location.Left > System.Console.BufferWidth)
-                    {
-                        _location = new Location(_location.Left - System.Console.BufferWidth, _location.Top + 1);
-                    }
+            //        while (_location.Left > System.Console.BufferWidth)
+            //        {
+            //            _location = new Location(_location.Left - System.Console.BufferWidth, _location.Top + 1);
+            //        }
 
-                    System.Console.CursorTop = _location.Top;
-                    System.Console.CursorLeft = _location.Left;
+            //        System.Console.CursorTop = _location.Top;
+            //        System.Console.CursorLeft = _location.Left;
 
-                    _consoleWriter.Write(value);
+            //        _consoleWriter.Write(value);
 
-                    _location = new Location(System.Console.CursorLeft, System.Console.CursorTop);
+            //        _location = new Location(System.Console.CursorLeft, System.Console.CursorTop);
 
-                    System.Console.CursorTop = pos.Top;
-                    System.Console.CursorLeft = pos.Left;
-                }
+            //        System.Console.CursorTop = pos.Top;
+            //        System.Console.CursorLeft = pos.Left;
+            //    }
 
-                if (lineFeed)
-                    _location = null;
-            }
-            else if (!lineFeed)
-            {
-                if (_location == null)
-                {
-                    //First time a write arrives. assign a new line and remember position
-                    _location = new Location(value.Length, System.Console.CursorTop);
-                    _console.Output(new WriteEventArgs(value, outputLevel));
-                }
-            }
-            else
-            {
+            //    if (lineFeed)
+            //        _location = null;
+            //}
+            //else if (!lineFeed)
+            //{
+            //    if (_location == null)
+            //    {
+            //        //First time a write arrives. assign a new line and remember position
+            //        _location = new Location(value.Length, System.Console.CursorTop);
+            //        _console.Output(new WriteEventArgs(value, outputLevel));
+            //    }
+            //}
+            //else
+            //{
                 //There is no previous location, and there is linefeed. This is a normal write line action.
                 _console.Output(new WriteEventArgs(value, outputLevel));
-            }
+            //}
         }
     }
 }

@@ -2,38 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base
 {
-    //internal class CommandWrapper : ICommand
-    //{
-    //    private readonly ICommand _command;
-
-    //    public CommandWrapper(ICommand command)
-    //    {
-    //        _command = command;
-    //    }
-
-    //    public string Name => _command.Name;
-    //    public IEnumerable<string> Names => _command.Names;
-    //    public string Description => _command.Description;
-    //    public bool CanExecute(out string reasonMessage)
-    //    {
-    //        return _command.CanExecute(out reasonMessage);
-    //    }
-
-    //    public IEnumerable<HelpLine> HelpText => _command.HelpText;
-    //    public bool IsHidden => _command.IsHidden;
-    //    public Task<bool> InvokeAsync(string paramList)
-    //    {
-    //        return _command.InvokeAsync(paramList);
-    //    }
-    //}
-
     public abstract class ContainerCommandBase : CommandBase, IContainerCommand
     {
         private readonly List<ICommand> _subCommands = new List<ICommand>();

@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Entities
         public bool TrunkateSingleLine { get; }
         public bool LineFeed { get; }
 
-        public WriteEventArgs(string message, OutputLevel outputLevel, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null, bool trunkateSingleLine = false, bool lineFeed = true)
+        public WriteEventArgs(string message, OutputLevel outputLevel = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null, bool trunkateSingleLine = false, bool lineFeed = true)
         {
             Message = message;
             OutputLevel = outputLevel;

@@ -55,7 +55,15 @@ namespace Tharga.Toolkit.Console.Consoles
             }
             catch (Exception exception)
             {
-                base.WriteLine($"Unable to set default input audio device. Error: {exception.Message}", OutputLevel.Error, null, null);
+                try
+                {
+                    throw new InvalidOperationException("Unable to set default input audio device", exception);
+                }
+                catch (Exception e)
+                {
+                    OutputError(e);
+                }
+                //base.WriteLine($"Unable to set default input audio device. Error: {exception.Message}", OutputLevel.Error, null, null);
                 return;
             }
 

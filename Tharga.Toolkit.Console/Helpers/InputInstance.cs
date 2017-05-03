@@ -477,35 +477,38 @@ namespace Tharga.Toolkit.Console.Helpers
 
         private void InsertText(Location currentScreenLocation, char input, InputBuffer inputBuffer, int currentBufferPosition, Location startLocation)
         {
-            if (BufferWidth <= 1) throw new ArgumentException("BufferWidth needs to be larger than 1.");
+            //lock (CommandEngine.SyncRoot)
+            //{
+                if (BufferWidth <= 1) throw new ArgumentException("BufferWidth needs to be larger than 1.");
 
-            //Check if the text to the right is on more than one line
-            var charsToTheRight = inputBuffer.Length - currentBufferPosition;
-            var bufferToTheRight = BufferWidth - currentScreenLocation.Left - startLocation.Left + 1;
-            if (charsToTheRight > bufferToTheRight)
-            {
-                var lines = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + startLocation.Left + 1) / BufferWidth);
-                for (var i = lines; i > 0; i--)
+                //Check if the text to the right is on more than one line
+                var charsToTheRight = inputBuffer.Length - currentBufferPosition;
+                var bufferToTheRight = BufferWidth - currentScreenLocation.Left - startLocation.Left + 1;
+                if (charsToTheRight > bufferToTheRight)
                 {
-                    _console.MoveBufferArea(0, currentScreenLocation.Top + i - 1 + 1, BufferWidth - 1, 1, 1, currentScreenLocation.Top + i - 1 + 1);
-                    _console.MoveBufferArea(BufferWidth - 1, currentScreenLocation.Top + i - 1, 1, 1, 0, currentScreenLocation.Top + i - 1 + 1);
+                    var lines = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + startLocation.Left + 1) / BufferWidth);
+                    for (var i = lines; i > 0; i--)
+                    {
+                        _console.MoveBufferArea(0, currentScreenLocation.Top + i - 1 + 1, BufferWidth - 1, 1, 1, currentScreenLocation.Top + i - 1 + 1);
+                        _console.MoveBufferArea(BufferWidth - 1, currentScreenLocation.Top + i - 1, 1, 1, 0, currentScreenLocation.Top + i - 1 + 1);
+                    }
                 }
-            }
 
-            _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + 1, currentScreenLocation.Top);
-            if (input == 9)
-            {
-                //_console.Write(((char)26).ToString(CultureInfo.InvariantCulture));
-                _console.Output(new WriteEventArgs(((char)26).ToString(CultureInfo.InvariantCulture), OutputLevel.Default, null, null, false, false));
-            }
-            else
-            {
-                //_console.Write(_passwordChar?.ToString() ?? input.ToString());
-                _console.Output(new WriteEventArgs(_passwordChar?.ToString() ?? input.ToString(), OutputLevel.Default, null, null, false, false));
-            }
+                _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + 1, currentScreenLocation.Top);
+                if (input == 9)
+                {
+                    //_console.Write(((char)26).ToString(CultureInfo.InvariantCulture));
+                    _console.Output(new WriteEventArgs(((char)26).ToString(CultureInfo.InvariantCulture), OutputLevel.Default, null, null, false, false));
+                }
+                else
+                {
+                    //_console.Write(_passwordChar?.ToString() ?? input.ToString());
+                    _console.Output(new WriteEventArgs(_passwordChar?.ToString() ?? input.ToString(), OutputLevel.Default, null, null, false, false));
+                }
 
-            inputBuffer.Insert(currentBufferPosition, input.ToString(CultureInfo.InvariantCulture));
-            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                inputBuffer.Insert(currentBufferPosition, input.ToString(CultureInfo.InvariantCulture));
+                CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+            //}
         }
 
         private void MoveBufferLeft(Location currentScreenLocation, InputBuffer inputBuffer, Location startLocation)

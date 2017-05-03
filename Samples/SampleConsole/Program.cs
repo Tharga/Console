@@ -21,6 +21,8 @@ namespace SampleConsole
         [STAThread]
         private static void Main(string[] args)
         {
+            System.Console.SetBufferSize(System.Console.BufferWidth, 300);
+
             var console = new ClientConsole(new ConsoleConfiguration
             {
                 SplashScreen = _splashscreen,
@@ -43,10 +45,11 @@ namespace SampleConsole
             {
                 Runners = new []{ new Runner(e =>
                 {
+                    var i = 0;
                     while (!e.IsCancellationRequested)
                     {
-                        //console.WriteLine(new string('.', Console.BufferWidth));
-                        Console.WriteLine(new string('.', Console.BufferWidth));
+                        var si = i++.ToString();
+                        console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
                         Thread.Sleep(10);
                     }
                 }), }

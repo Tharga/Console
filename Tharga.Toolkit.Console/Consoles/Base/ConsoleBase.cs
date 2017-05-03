@@ -13,7 +13,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 {
     public abstract class ConsoleBase : IConsole
     {
-        private static readonly object _syncRoot = new object();
+        //private static readonly object _syncRoot = new object();
         protected internal readonly TextWriter ConsoleWriter;
         private readonly ConsoleInterceptor _interceptor;
         private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
@@ -23,16 +23,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             ConsoleWriter = consoleWriter;
             if (ConsoleWriter != null)
             {
-                _interceptor = new ConsoleInterceptor(ConsoleWriter, this, _syncRoot); //This one intercepts common output.
-                //_interceptor = new Interceptor2(ConsoleWriter, this, _syncRoot);
-                //System.Console.SetOut(_interceptor);
-                //System.Console.SetError(_interceptor);
-                //if (ReferenceEquals(System.Console.Out, _interceptor))
-                //{
-                //}
-                //else
-                //{
-                //}
+                _interceptor = new ConsoleInterceptor(ConsoleWriter, this); //, _syncRoot);
             }
         }
 
@@ -86,7 +77,14 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                     return 0;
                 }
             }
-            private set { System.Console.CursorTop = value; }
+            private set
+            {
+                if (value >= System.Console.BufferHeight)
+                {
+                    //Cannot set the cursor to a position outside the buffer. Need to move the buffer first
+                }
+                System.Console.CursorTop = value;
+            }
         }
 
         private ConsoleColor ForegroundColor
@@ -119,20 +117,32 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             {
                 System.Console.MoveBufferArea(sourceLeft, sourceTop, sourceWidth, sourceHeight, targetLeft, targetTop);
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
+                Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
             }
         }
 
         public void SetCursorPosition(int left, int top)
         {
+            if (top >= System.Console.BufferHeight)
+            {
+                //top = System.Console.BufferHeight - 1; //TODO: This is not okey. fix the problem!
+            }
             System.Console.SetCursorPosition(left, top);
         }
 
-        public void WriteLine(string value, OutputLevel level = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
+        //TODO: Merge Write and WriteLine to be the same method
+        private void Write(string value, OutputLevel level = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
         {
-            lock (_syncRoot)
-            {
+            //TODO: Missing stuff, look at WriteLine, there is more stuff going on there!
+            WriteEx(value);
+        }
+
+        private void WriteLine(string value, OutputLevel level = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
+        {
+            //lock (CommandEngine.SyncRoot)
+            //{
                 if (string.IsNullOrEmpty(value))
                 {
                     ConsoleWriter?.WriteLine();
@@ -142,7 +152,10 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 var linesToInsert = GetLineCount(value);
                 var inputBufferLines = InputInstance.CurrentBufferLineCount;
                 var intCursorLineOffset = MoveCursorUp();
-                var cursorLeft = MoveInputBufferDown(linesToInsert, inputBufferLines);
+                var cursorLocation = MoveInputBufferDown(linesToInsert, inputBufferLines); //TODO: If this is located at the end of the buffer, then the buffer should be pushed...
+
+            //NOTE: At this point, the buffer is moved down. The cursor is ready to output the 'value' to be written.
+            //When done the buffer (ie '> ') should still be visible, and the cursor should be moved in position
 
                 var defaultColor = ConsoleColor.White;
                 var defaultBack = ConsoleColor.Black;
@@ -168,7 +181,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 }
 
                 var corr = 0;
-                var t1 = CursorTop;
+                var t1 = CursorTop; //NOTE: The actual cursor location after insert... should normally be one line above the input buffer location, but if the output is exactly the sise of the width, then the buffer would have beend moved down one line too low. In this case the buffer should not moved vertically. This is calculated by the corr value.
                 try
                 {
                     WriteLineEx(value, level);
@@ -185,11 +198,11 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                         BackgroundColor = defaultBack;
                     }
 
-                    RestoreCursor(cursorLeft);
+                    RestoreCursor(cursorLocation.Left, intCursorLineOffset - corr);
+                    //MoveCursorDown(intCursorLineOffset - corr);
                     OnLinesInsertedEvent(linesToInsert);
-                    MoveCursorDown(intCursorLineOffset- corr);
                 }
-            }
+            //}
         }
 
         public void Clear()
@@ -219,6 +232,18 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             KeyReadEvent?.Invoke(this, e);
         }
 
+        private void WriteEx(string value) //, OutputLevel level = OutputLevel.Default) //, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
+        {
+            //TODO: Duplicated code here and in WriteLineEx
+            if (ForegroundColor == BackgroundColor)
+            {
+                ForegroundColor = ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
+            }
+
+            ConsoleWriter?.Write(value);
+        }
+
+        //TODO: All outputs should go via this method! (Entry to this method is from different methods, should only be one, or)
         protected internal virtual void WriteLineEx(string value, OutputLevel level)
         {
             if (ForegroundColor == BackgroundColor)
@@ -233,9 +258,13 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 if (r == 0) // && !string.IsNullOrEmpty(line))
                 {
                     if (string.IsNullOrEmpty(line))
+                    {
                         ConsoleWriter?.WriteLine(line);
+                    }
                     else
+                    {
                         ConsoleWriter?.Write(line);
+                    }
                 }
                 else
                 {
@@ -245,16 +274,17 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             OnLineWrittenEvent(new LineWrittenEventArgs(value, level));
         }
 
-        private void MoveCursorDown(int intCursorLineOffset)
-        {
-            try
-            {
-                CursorTop = CursorTop + intCursorLineOffset;
-            }
-            catch (IOException)
-            {
-            }
-        }
+        //private void MoveCursorDown(int intCursorLineOffset)
+        //{
+        //    try
+        //    {
+        //        CursorTop = CursorTop + intCursorLineOffset;
+        //    }
+        //    catch (IOException exception)
+        //    {
+        //        Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
+        //    }
+        //}
 
         private int MoveCursorUp()
         {
@@ -264,8 +294,9 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 CursorTop = CursorTop - intCursorLineOffset;
                 return intCursorLineOffset;
             }
-            catch (IOException)
+            catch (IOException exception)
             {
+                Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
                 return 0;
             }
         }
@@ -288,39 +319,56 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
                 return l;
             }
-            catch (IOException)
+            catch (IOException exception)
             {
+                Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
                 return 0;
             }
-            catch (DivideByZeroException)
+            catch (DivideByZeroException exception)
             {
+                Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
                 return 1;
             }
         }
 
-        private void RestoreCursor(int cursorLeft)
+        private void RestoreCursor(int cursorLeft, int intCursorLineOffset)
         {
             try
             {
-                CursorLeft = cursorLeft;
+                SetCursorPosition(cursorLeft, CursorTop + intCursorLineOffset);
+                //CursorLeft = cursorLeft;
+                //CursorTop = CursorTop + intCursorLineOffset;
             }
-            catch (IOException)
+            catch (IOException exception)
             {
+                Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
             }
         }
 
-        private int MoveInputBufferDown(int linesToInsert, int inputBufferLines)
+        private Location MoveInputBufferDown(int linesToInsert, int inputBufferLines)
         {
             try
             {
-                MoveBufferArea(0, CursorTop, BufferWidth, inputBufferLines, 0, CursorTop + linesToInsert);
                 var cursorLeft = CursorLeft;
-                CursorLeft = 0;
-                return cursorLeft;
+                var cursorTop = CursorTop;
+
+                if (inputBufferLines + CursorTop + linesToInsert > System.Console.BufferHeight)
+                {
+                    MoveBufferArea(0, linesToInsert, BufferWidth, CursorTop - linesToInsert, 0, 0);
+                    SetCursorPosition(0, cursorTop - linesToInsert);
+                }
+                else
+                {
+                    MoveBufferArea(0, CursorTop, BufferWidth, inputBufferLines, 0, CursorTop + linesToInsert);
+                    CursorLeft = 0;
+                }
+
+                return new Location(cursorLeft, cursorTop);
             }
-            catch (IOException)
+            catch (IOException exception)
             {
-                return 0;
+                Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
+                return new Location(0, 0);
             }
         }
 
@@ -360,18 +408,17 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
             var message = output.TrunkateSingleLine ? output.Message.Truncate() : output.Message;
 
-            lock (_syncRoot)
-            {
+            //lock (CommandEngine.SyncRoot)
+            //{
                 if (output.LineFeed)
                 {
                     WriteLine(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
                 }
                 else
                 {
-                    //Write(message);
-                    ConsoleWriter?.Write(message);
+                    Write(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
                 }
-            }
+            //}
         }
 
         public void OutputError(Exception exception)
