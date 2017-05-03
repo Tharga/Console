@@ -61,7 +61,7 @@ namespace Tharga.Toolkit.Console.Consoles
         #endregion
 
         public ClientConsole(IConsoleConfiguration consoleConfiguration = null)
-            : base(System.Console.Out)
+            : base(System.Console.Out, System.Console.In)
         {
             _consoleConfiguration = consoleConfiguration ?? new ConsoleConfiguration();
 
@@ -81,6 +81,7 @@ namespace Tharga.Toolkit.Console.Consoles
             ShowAssemblyInfo();
         }
 
+        //TODO: Move to Console Manager 
         private void SetColor()
         {
             if (System.Console.BackgroundColor == _consoleConfiguration.BackgroundColor && System.Console.ForegroundColor == _consoleConfiguration.DefaultTextColor) return;
@@ -90,6 +91,7 @@ namespace Tharga.Toolkit.Console.Consoles
             System.Console.Clear();
         }
 
+        //TODO: Move to Console Manager 
         private void UpdateTitle()
         {
             try

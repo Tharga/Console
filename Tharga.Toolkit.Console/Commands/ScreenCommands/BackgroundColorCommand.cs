@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
@@ -36,10 +35,10 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
             var color = QueryParam("Color", GetParam(paramList, index++), EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
 
             throw new NotImplementedException("Fire event that changes background on the console.");
-            System.Console.BackgroundColor = color;
-            System.Console.Clear();
+            //System.Console.BackgroundColor = color;
+            //System.Console.Clear();
 
-            return true;
+            //return true;
         }
     }
 }

@@ -13,91 +13,29 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 {
     public abstract class ConsoleBase : IConsole
     {
-        //private static readonly object _syncRoot = new object();
-        protected internal readonly TextWriter ConsoleWriter;
-        private readonly ConsoleInterceptor _interceptor;
+        private readonly IConsoleManager _consoleManager;
+        private readonly TextWriterInterceptor _textWriterInterceptor;
+        private readonly TextReaderInterceptor _textReaderInterceptor;
+        private readonly TextWriterInterceptor _errorInterceptor;
         private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
 
-        protected ConsoleBase(TextWriter consoleWriter)
+        protected ConsoleBase(TextWriter originalTextWriter, TextReader originalTextReader)
         {
-            ConsoleWriter = consoleWriter;
-            if (ConsoleWriter != null)
+            _consoleManager = new ConsoleManager(originalTextWriter, originalTextReader);
+            if (_consoleManager != null)
             {
-                _interceptor = new ConsoleInterceptor(ConsoleWriter, this); //, _syncRoot);
+                _textWriterInterceptor = new TextWriterInterceptor(_consoleManager, this);
+                _textReaderInterceptor = new TextReaderInterceptor(_consoleManager, this);
+                _errorInterceptor = new TextWriterInterceptor(_consoleManager, this);
             }
         }
 
         public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         public event EventHandler<KeyReadEventArgs> KeyReadEvent;
 
-        public int CursorLeft
-        {
-            get
-            {
-                try
-                {
-                    return System.Console.CursorLeft;
-                }
-                catch (IOException exception)
-                {
-                    Trace.TraceError($"Cannot get console cursor left. Using 0 as default. {exception.Message}");
-                    return 0;
-                }
-            }
-            private set { System.Console.CursorLeft = value; }
-        }
-
-        public int BufferWidth
-        {
-            get
-            {
-                try
-                {
-                    return System.Console.BufferWidth;
-                }
-                catch (IOException exception)
-                {
-                    Trace.TraceError($"Cannot get console buffer width. Using 80 as default. {exception.Message}");
-                    return 80;
-                }
-            }
-        }
-
-        public int CursorTop
-        {
-            get
-            {
-                try
-                {
-                    return System.Console.CursorTop;
-                }
-                catch (IOException exception)
-                {
-                    Trace.TraceError($"Cannot get console cursor top. Using 0 as default. {exception.Message}");
-                    return 0;
-                }
-            }
-            private set
-            {
-                if (value >= System.Console.BufferHeight)
-                {
-                    //Cannot set the cursor to a position outside the buffer. Need to move the buffer first
-                }
-                System.Console.CursorTop = value;
-            }
-        }
-
-        private ConsoleColor ForegroundColor
-        {
-            get { return System.Console.ForegroundColor; }
-            set { System.Console.ForegroundColor = value; }
-        }
-
-        private ConsoleColor BackgroundColor
-        {
-            get { return System.Console.BackgroundColor; }
-            set { System.Console.BackgroundColor = value; }
-        }
+        public int CursorLeft => _consoleManager.CursorLeft;
+        public int BufferWidth => _consoleManager.BufferWidth;
+        public int CursorTop => _consoleManager.CursorTop;
 
         public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
@@ -106,30 +44,18 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             return consoleKeyInfo;
         }
 
-        //public void Write(string value)
-        //{
-        //    ConsoleWriter?.Write(value);
-        //}
-
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
-            try
-            {
-                System.Console.MoveBufferArea(sourceLeft, sourceTop, sourceWidth, sourceHeight, targetLeft, targetTop);
-            }
-            catch (ArgumentOutOfRangeException exception)
-            {
-                Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
-            }
+            _consoleManager.MoveBufferArea(sourceLeft, sourceTop, sourceWidth, sourceHeight, targetLeft, targetTop);
         }
 
         public void SetCursorPosition(int left, int top)
         {
-            if (top >= System.Console.BufferHeight)
+            if (top >= _consoleManager.BufferHeight)
             {
                 //top = System.Console.BufferHeight - 1; //TODO: This is not okey. fix the problem!
             }
-            System.Console.SetCursorPosition(left, top);
+            _consoleManager.SetCursorPosition(left, top);
         }
 
         //TODO: Merge Write and WriteLine to be the same method
@@ -145,7 +71,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             //{
                 if (string.IsNullOrEmpty(value))
                 {
-                    ConsoleWriter?.WriteLine();
+                    _consoleManager?.WriteLine(null);
                     return;
                 }
 
@@ -170,14 +96,14 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
                 if (textColor != null)
                 {
-                    defaultColor = ForegroundColor;
-                    ForegroundColor = textColor.Value;
+                    defaultColor = _consoleManager.ForegroundColor;
+                    _consoleManager.ForegroundColor = textColor.Value;
                 }
 
                 if (textBackgroundColor != null)
                 {
-                    defaultBack = BackgroundColor;
-                    BackgroundColor = textBackgroundColor.Value;
+                    defaultBack = _consoleManager.BackgroundColor;
+                    _consoleManager.BackgroundColor = textBackgroundColor.Value;
                 }
 
                 var corr = 0;
@@ -191,11 +117,11 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 {
                     if (textColor != null)
                     {
-                        ForegroundColor = defaultColor;
+                        _consoleManager.ForegroundColor = defaultColor;
                     }
                     if (textBackgroundColor != null)
                     {
-                        BackgroundColor = defaultBack;
+                        _consoleManager.BackgroundColor = defaultBack;
                     }
 
                     RestoreCursor(cursorLocation.Left, intCursorLineOffset - corr);
@@ -207,7 +133,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public void Clear()
         {
-            System.Console.Clear();
+            _consoleManager.Clear();            
         }
 
         public virtual void Initiate(IEnumerable<string> commandKeys)
@@ -235,20 +161,21 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         private void WriteEx(string value) //, OutputLevel level = OutputLevel.Default) //, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
         {
             //TODO: Duplicated code here and in WriteLineEx
-            if (ForegroundColor == BackgroundColor)
+            if (_consoleManager.ForegroundColor == _consoleManager.BackgroundColor)
             {
-                ForegroundColor = ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
+                _consoleManager.ForegroundColor = _consoleManager.ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
             }
 
-            ConsoleWriter?.Write(value);
+            _consoleManager?.Write(value);
         }
 
         //TODO: All outputs should go via this method! (Entry to this method is from different methods, should only be one, or)
-        protected internal virtual void WriteLineEx(string value, OutputLevel level)
+        //protected internal virtual void WriteLineEx(string value, OutputLevel level)
+        protected virtual void WriteLineEx(string value, OutputLevel level)
         {
-            if (ForegroundColor == BackgroundColor)
+            if (_consoleManager.ForegroundColor == _consoleManager.BackgroundColor)
             {
-                ForegroundColor = ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
+                _consoleManager.ForegroundColor = _consoleManager.ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
             }
 
             var lines = value.Split('\n');
@@ -259,16 +186,16 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 {
                     if (string.IsNullOrEmpty(line))
                     {
-                        ConsoleWriter?.WriteLine(line);
+                        _consoleManager?.WriteLine(line);
                     }
                     else
                     {
-                        ConsoleWriter?.Write(line);
+                        _consoleManager?.Write(line);
                     }
                 }
                 else
                 {
-                    ConsoleWriter?.WriteLine(line);
+                    _consoleManager?.WriteLine(line);
                 }
             }
             OnLineWrittenEvent(new LineWrittenEventArgs(value, level));
@@ -291,7 +218,8 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             try
             {
                 var intCursorLineOffset = InputInstance.CursorLineOffset;
-                CursorTop = CursorTop - intCursorLineOffset;
+                //CursorTop = CursorTop - intCursorLineOffset;
+                SetCursorPosition(CursorLeft, CursorTop - intCursorLineOffset);
                 return intCursorLineOffset;
             }
             catch (IOException exception)
@@ -352,15 +280,17 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 var cursorLeft = CursorLeft;
                 var cursorTop = CursorTop;
 
-                if (inputBufferLines + CursorTop + linesToInsert > System.Console.BufferHeight)
+                if (inputBufferLines + CursorTop + linesToInsert > _consoleManager.BufferHeight)
                 {
+                    //System.Diagnostics.Debug.WriteLine("push");
                     MoveBufferArea(0, linesToInsert, BufferWidth, CursorTop - linesToInsert, 0, 0);
                     SetCursorPosition(0, cursorTop - linesToInsert);
+                    OnLinesInsertedEvent(linesToInsert * -1);
                 }
                 else
                 {
                     MoveBufferArea(0, CursorTop, BufferWidth, inputBufferLines, 0, CursorTop + linesToInsert);
-                    CursorLeft = 0;
+                    SetCursorPosition(0, CursorTop);
                 }
 
                 return new Location(cursorLeft, cursorTop);
@@ -408,8 +338,8 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
             var message = output.TrunkateSingleLine ? output.Message.Truncate() : output.Message;
 
-            //lock (CommandEngine.SyncRoot)
-            //{
+            lock (CommandEngine.SyncRoot)
+            {
                 if (output.LineFeed)
                 {
                     WriteLine(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
@@ -418,7 +348,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 {
                     Write(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
                 }
-            //}
+            }
         }
 
         public void OutputError(Exception exception)
@@ -486,8 +416,10 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public void Dispose()
         {
-            _interceptor?.Dispose();
-            ConsoleWriter?.Dispose();
+            _textWriterInterceptor?.Dispose();
+            _consoleManager?.Dispose();
+            _errorInterceptor?.Dispose();
+            _textReaderInterceptor?.Dispose();
         }
 
         public void Mute(OutputLevel type)

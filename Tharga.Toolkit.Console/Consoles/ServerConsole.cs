@@ -13,7 +13,7 @@ namespace Tharga.Toolkit.Console.Consoles
         private readonly string _eventLogSource;
 
         public ServerConsole(string eventLogSource = null)
-            : base(System.Console.Out)
+            : base(System.Console.Out, System.Console.In)
         {
             if (string.IsNullOrEmpty(eventLogSource))
                 _eventLogSource = Assembly.GetExecutingAssembly().GetName().Name;
@@ -21,7 +21,7 @@ namespace Tharga.Toolkit.Console.Consoles
                 _eventLogSource = eventLogSource;
         }
 
-        protected internal override void WriteLineEx(string value, OutputLevel level)
+        protected override void WriteLineEx(string value, OutputLevel level)
         {
             var output = $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}: {value}";
             try

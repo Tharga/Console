@@ -63,7 +63,10 @@
     <Compile Include="..\Build\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Helpers\ConsoleManager.cs" />
+    <Compile Include="Interfaces\IConsoleManager.cs" />
     <Compile Include="Entities\ConsoleConfiguration.cs" />
+    <Compile Include="Helpers\TextReaderInterceptor.cs" />
     <Compile Include="Interfaces\IConsoleConfiguration.cs" />
     <Compile Include="Helpers\AssemblyHelper.cs" />
     <Compile Include="Helpers\ExceptionExtension.cs" />
@@ -80,7 +83,7 @@
     <Compile Include="Consoles\AggregateConsole.cs" />
     <Compile Include="Commands\Base\CommandBase.cs" />
     <Compile Include="Exceptions\CommandEscapeException.cs" />
-    <Compile Include="Helpers\ConsoleInterceptor.cs" />
+    <Compile Include="Helpers\TextWriterInterceptor.cs" />
     <Compile Include="Commands\Base\ContainerCommandBase.cs" />
     <Compile Include="CommandEngine.cs" />
     <Compile Include="Exceptions\EntryException.cs" />

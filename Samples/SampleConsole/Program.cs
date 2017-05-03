@@ -49,7 +49,8 @@ namespace SampleConsole
                     while (!e.IsCancellationRequested)
                     {
                         var si = i++.ToString();
-                        console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
+                        //console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
+                        System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0));
                         Thread.Sleep(10);
                     }
                 }), }

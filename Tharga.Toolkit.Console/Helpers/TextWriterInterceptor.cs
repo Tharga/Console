@@ -2,23 +2,21 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Helpers
 {
-    internal class ConsoleInterceptor : TextWriter
+    internal class TextWriterInterceptor : TextWriter
     {
-        private readonly TextWriter _consoleWriter;
+        private readonly IConsoleManager _consoleWriter;
         private readonly IConsole _console;
-//        private readonly object _syncRoot;
-        //private Location _location;
 
-        public ConsoleInterceptor(TextWriter consoleWriter, IConsole console) //, object syncRoot)
+        public TextWriterInterceptor(IConsoleManager consoleWriter, IConsole console)
         {
             _consoleWriter = consoleWriter;
             _console = console;
-//            _syncRoot = syncRoot;
             System.Console.SetOut(this);
         }
 
@@ -157,10 +155,25 @@ namespace Tharga.Toolkit.Console.Helpers
         //}
 
         ///////////////////////////////////////////////////////////////////////////
-        public static readonly TextWriter Null;
-        protected char[] CoreNewLine;
-        public override IFormatProvider FormatProvider { get; }
-        public override string NewLine { get; set; }
+        public new static readonly TextWriter Null;
+        protected new char[] CoreNewLine;
+
+        //public override IFormatProvider FormatProvider
+        //{
+        //    get { return _consoleWriter.FormatProvider; }
+        //}
+
+        public override string NewLine
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public static TextWriter Synchronized(TextWriter writer)
         {

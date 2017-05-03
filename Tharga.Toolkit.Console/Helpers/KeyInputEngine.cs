@@ -17,8 +17,7 @@ namespace Tharga.Toolkit.Console.Helpers
             {
                 while (true)
                 {
-                    var keyPressed = System.Console.ReadKey(true);
-                    //Debug.WriteLine("Key " + keyPressed);
+                    var keyPressed = System.Console.ReadKey(true); //TODO: Access through Console Manager. Important!!!
                     _buffer.Add(keyPressed);
                 }
             });

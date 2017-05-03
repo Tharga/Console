@@ -87,185 +87,188 @@ namespace Tharga.Toolkit.Console.Helpers
                 try
                 {
                     var readKey = _console.ReadKey(_cancellationToken);
-                    var currentScreenLocation = new Location(CursorLeft, CursorTop); //This is where the cursor actually is on screen.
-                    var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
-                    //System.Diagnostics.Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
+                    lock (CommandEngine.SyncRoot)
+                    {
+                        var currentScreenLocation = new Location(CursorLeft, CursorTop); //This is where the cursor actually is on screen.
+                        var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
+                        System.Diagnostics.Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
 
-                    if (IsOutputKey(readKey))
-                    {
-                        var input = readKey.KeyChar;
-                        InsertText(currentScreenLocation, input, _inputBuffer, currentBufferPosition, _startLocation);
-                    }
-                    else if (readKey.Modifiers == ConsoleModifiers.Control)
-                    {
-                        switch (readKey.Key)
+                        if (IsOutputKey(readKey))
                         {
-                            case ConsoleKey.V:
-                                var input = System.Windows.Clipboard.GetText().ToArray();
-                                foreach (var chr in input)
-                                {
-                                    InsertText(currentScreenLocation, chr, _inputBuffer, currentBufferPosition, _startLocation);
-                                    if (currentScreenLocation.Left == BufferWidth - 1)
-                                        currentScreenLocation = new Location(0, currentScreenLocation.Top + 1);
-                                    else
-                                        currentScreenLocation = new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top);
-                                    currentBufferPosition++;
-                                }
-
-                                break;
-
-                            case ConsoleKey.LeftArrow:
-                                if (currentBufferPosition > 0)
-                                {
-                                    var leftOfCursor = _inputBuffer.ToString().Substring(0, currentBufferPosition).TrimEnd(' ');
-                                    var last = leftOfCursor.LastIndexOf(' ');
-                                    if (last != -1)
-                                        SetCursorPosition(last + _startLocation.Left + 1, CursorTop);
-                                    else
-                                        SetCursorPosition(_startLocation.Left, CursorTop);
-                                }
-
-                                break;
-
-                            case ConsoleKey.RightArrow:
-
-                                var l2 = _inputBuffer.ToString().IndexOf(' ', currentBufferPosition);
-                                if (l2 != -1)
-                                {
-                                    while (_inputBuffer.ToString().Length > l2 + 1 && _inputBuffer.ToString()[l2 + 1] == ' ')
-                                        l2++;
-                                    SetCursorPosition(l2 + _startLocation.Left + 1, CursorTop);
-                                }
-                                else
-                                {
-                                    SetCursorPosition(_inputBuffer.ToString().Length + _startLocation.Left, CursorTop);
-                                }
-
-                                break;
-
-                            default:
-                                System.Diagnostics.Debug.WriteLine("No action for ctrl-" + readKey.Key);
-                                break;
+                            var input = readKey.KeyChar;
+                            InsertText(currentScreenLocation, input, _inputBuffer, currentBufferPosition, _startLocation);
                         }
-                    }
-                    else
-                    {
-                        switch (readKey.Key)
+                        else if (readKey.Modifiers == ConsoleModifiers.Control)
                         {
-                            case ConsoleKey.Enter:
-                                return Enter(selection);
-
-                            case ConsoleKey.LeftArrow:
-                                if (currentBufferPosition == 0) continue;
-                                MoveCursorLeft();
-                                break;
-
-                            case ConsoleKey.RightArrow:
-                                if (currentBufferPosition == _inputBuffer.Length) continue;
-                                MoveCursorRight();
-                                break;
-
-                            case ConsoleKey.Home:
-                                MoveCursorToStart(_startLocation);
-                                break;
-
-                            case ConsoleKey.End:
-                                MoveCursorToEnd(_startLocation, _inputBuffer);
-                                break;
-
-                            case ConsoleKey.DownArrow:
-                            case ConsoleKey.UpArrow:
-                                RecallCommandHistory(readKey, _inputBuffer);
-                                break;
-
-                            case ConsoleKey.Delete:
-                                if (currentBufferPosition == _inputBuffer.Length) continue;
-                                MoveBufferLeft(new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top), _inputBuffer, _startLocation);
-                                _inputBuffer.RemoveAt(currentBufferPosition);
-                                CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
-                                break;
-
-                            case ConsoleKey.Backspace:
-                                if (currentBufferPosition == 0) continue;
-                                MoveBufferLeft(currentScreenLocation, _inputBuffer, _startLocation);
-                                _inputBuffer.RemoveAt(currentBufferPosition - 1);
-                                MoveCursorLeft();
-                                CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
-                                break;
-
-                            case ConsoleKey.Escape:
-                                if (_inputBuffer.IsEmpty && allowEscape)
-                                {
-                                    //_console.NewLine();
-                                    _console.Output(new WriteEventArgs(null, OutputLevel.Default));
-                                    throw new CommandEscapeException();
-                                }
-
-                                Clear(_inputBuffer);
-                                break;
-
-                            case ConsoleKey.Tab:
-                                if (selection.Any())
-                                {
-                                    //Go to the next item by using the input buffer
-                                    if (_tabIndex == -1)
+                            switch (readKey.Key)
+                            {
+                                case ConsoleKey.V:
+                                    var input = System.Windows.Clipboard.GetText().ToArray();
+                                    foreach (var chr in input)
                                     {
-                                        var enumerable = selection.Select(x => x.Value).ToList();
-                                        var firstHit = enumerable.FirstOrDefault(x => x.StartsWith(_inputBuffer.ToString(), StringComparison.InvariantCultureIgnoreCase));
-                                        if (firstHit != null)
-                                            _tabIndex = enumerable.IndexOf(firstHit) - 1;
+                                        InsertText(currentScreenLocation, chr, _inputBuffer, currentBufferPosition, _startLocation);
+                                        if (currentScreenLocation.Left == BufferWidth - 1)
+                                            currentScreenLocation = new Location(0, currentScreenLocation.Top + 1);
+                                        else
+                                            currentScreenLocation = new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top);
+                                        currentBufferPosition++;
                                     }
 
-                                    var step = 1;
-                                    if (readKey.Modifiers == ConsoleModifiers.Shift)
-                                        step = -1;
+                                    break;
 
-                                    var tabIndex = _tabIndex + step;
-                                    if (tabIndex == selection.Length) tabIndex = 0;
-                                    if (tabIndex <= -1) tabIndex = selection.Length - 1;
-                                    Clear(_inputBuffer);
-                                    //_console.Write(selection[tabIndex].Value);
-                                    _console.Output(new WriteEventArgs(selection[tabIndex].Value, OutputLevel.Default, null, null, false, false));
-                                    _inputBuffer.Add(selection[tabIndex].Value);
-                                    _tabIndex = tabIndex;
-                                    CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
-                                }
-                                else
-                                {
-                                    InsertText(currentScreenLocation, (char)9, _inputBuffer, currentBufferPosition, _startLocation);
-                                }
+                                case ConsoleKey.LeftArrow:
+                                    if (currentBufferPosition > 0)
+                                    {
+                                        var leftOfCursor = _inputBuffer.ToString().Substring(0, currentBufferPosition).TrimEnd(' ');
+                                        var last = leftOfCursor.LastIndexOf(' ');
+                                        if (last != -1)
+                                            SetCursorPosition(last + _startLocation.Left + 1, CursorTop);
+                                        else
+                                            SetCursorPosition(_startLocation.Left, CursorTop);
+                                    }
 
-                                break;
+                                    break;
 
-                            case ConsoleKey.PageUp:
-                            case ConsoleKey.PageDown:
-                            case ConsoleKey.LeftWindows:
-                            case ConsoleKey.RightWindows:
-                            case ConsoleKey.Applications:
-                            case ConsoleKey.Insert:
-                            case ConsoleKey.F1:
-                            case ConsoleKey.F2:
-                            case ConsoleKey.F3:
-                            case ConsoleKey.F4:
-                            case ConsoleKey.F5:
-                            case ConsoleKey.F6:
-                            case ConsoleKey.F7:
-                            case ConsoleKey.F8:
-                            case ConsoleKey.F9:
-                            case ConsoleKey.F10:
-                            case ConsoleKey.F11:
-                            case ConsoleKey.F12:
-                            case ConsoleKey.F13:
-                            case ConsoleKey.Oem1:
-                                //Ignore
-                                break;
+                                case ConsoleKey.RightArrow:
 
-                            default:
-                                throw new ArgumentOutOfRangeException($"Key {readKey.Key} is not handled ({readKey.KeyChar}).");
+                                    var l2 = _inputBuffer.ToString().IndexOf(' ', currentBufferPosition);
+                                    if (l2 != -1)
+                                    {
+                                        while (_inputBuffer.ToString().Length > l2 + 1 && _inputBuffer.ToString()[l2 + 1] == ' ')
+                                            l2++;
+                                        SetCursorPosition(l2 + _startLocation.Left + 1, CursorTop);
+                                    }
+                                    else
+                                    {
+                                        SetCursorPosition(_inputBuffer.ToString().Length + _startLocation.Left, CursorTop);
+                                    }
+
+                                    break;
+
+                                default:
+                                    System.Diagnostics.Debug.WriteLine("No action for ctrl-" + readKey.Key);
+                                    break;
+                            }
                         }
-                    }
+                        else
+                        {
+                            switch (readKey.Key)
+                            {
+                                case ConsoleKey.Enter:
+                                    return Enter(selection);
 
-                    CursorLineOffset = CursorTop - _startLocation.Top;
+                                case ConsoleKey.LeftArrow:
+                                    if (currentBufferPosition == 0) continue;
+                                    MoveCursorLeft();
+                                    break;
+
+                                case ConsoleKey.RightArrow:
+                                    if (currentBufferPosition == _inputBuffer.Length) continue;
+                                    MoveCursorRight();
+                                    break;
+
+                                case ConsoleKey.Home:
+                                    MoveCursorToStart(_startLocation);
+                                    break;
+
+                                case ConsoleKey.End:
+                                    MoveCursorToEnd(_startLocation, _inputBuffer);
+                                    break;
+
+                                case ConsoleKey.DownArrow:
+                                case ConsoleKey.UpArrow:
+                                    RecallCommandHistory(readKey, _inputBuffer);
+                                    break;
+
+                                case ConsoleKey.Delete:
+                                    if (currentBufferPosition == _inputBuffer.Length) continue;
+                                    MoveBufferLeft(new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top), _inputBuffer, _startLocation);
+                                    _inputBuffer.RemoveAt(currentBufferPosition);
+                                    CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                    break;
+
+                                case ConsoleKey.Backspace:
+                                    if (currentBufferPosition == 0) continue;
+                                    MoveBufferLeft(currentScreenLocation, _inputBuffer, _startLocation);
+                                    _inputBuffer.RemoveAt(currentBufferPosition - 1);
+                                    MoveCursorLeft();
+                                    CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                    break;
+
+                                case ConsoleKey.Escape:
+                                    if (_inputBuffer.IsEmpty && allowEscape)
+                                    {
+                                        //_console.NewLine();
+                                        _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+                                        throw new CommandEscapeException();
+                                    }
+
+                                    Clear(_inputBuffer);
+                                    break;
+
+                                case ConsoleKey.Tab:
+                                    if (selection.Any())
+                                    {
+                                        //Go to the next item by using the input buffer
+                                        if (_tabIndex == -1)
+                                        {
+                                            var enumerable = selection.Select(x => x.Value).ToList();
+                                            var firstHit = enumerable.FirstOrDefault(x => x.StartsWith(_inputBuffer.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                                            if (firstHit != null)
+                                                _tabIndex = enumerable.IndexOf(firstHit) - 1;
+                                        }
+
+                                        var step = 1;
+                                        if (readKey.Modifiers == ConsoleModifiers.Shift)
+                                            step = -1;
+
+                                        var tabIndex = _tabIndex + step;
+                                        if (tabIndex == selection.Length) tabIndex = 0;
+                                        if (tabIndex <= -1) tabIndex = selection.Length - 1;
+                                        Clear(_inputBuffer);
+                                        //_console.Write(selection[tabIndex].Value);
+                                        _console.Output(new WriteEventArgs(selection[tabIndex].Value, OutputLevel.Default, null, null, false, false));
+                                        _inputBuffer.Add(selection[tabIndex].Value);
+                                        _tabIndex = tabIndex;
+                                        CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                    }
+                                    else
+                                    {
+                                        InsertText(currentScreenLocation, (char)9, _inputBuffer, currentBufferPosition, _startLocation);
+                                    }
+
+                                    break;
+
+                                case ConsoleKey.PageUp:
+                                case ConsoleKey.PageDown:
+                                case ConsoleKey.LeftWindows:
+                                case ConsoleKey.RightWindows:
+                                case ConsoleKey.Applications:
+                                case ConsoleKey.Insert:
+                                case ConsoleKey.F1:
+                                case ConsoleKey.F2:
+                                case ConsoleKey.F3:
+                                case ConsoleKey.F4:
+                                case ConsoleKey.F5:
+                                case ConsoleKey.F6:
+                                case ConsoleKey.F7:
+                                case ConsoleKey.F8:
+                                case ConsoleKey.F9:
+                                case ConsoleKey.F10:
+                                case ConsoleKey.F11:
+                                case ConsoleKey.F12:
+                                case ConsoleKey.F13:
+                                case ConsoleKey.Oem1:
+                                    //Ignore
+                                    break;
+
+                                default:
+                                    throw new ArgumentOutOfRangeException($"Key {readKey.Key} is not handled ({readKey.KeyChar}).");
+                            }
+                        }
+
+                        CursorLineOffset = CursorTop - _startLocation.Top;
+                    }
                 }
                 catch (OperationCanceledException exception)
                 {

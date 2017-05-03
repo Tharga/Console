@@ -41,7 +41,7 @@ namespace Tharga.Toolkit.Console
             }
         }
 
-        //internal static object SyncRoot = new object();
+        internal static object SyncRoot = new object();
 
         private const string FlagContinueInConsoleMode = "c";
         private const string FlagContinueInConsoleModeIfError = "e";

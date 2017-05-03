@@ -36,7 +36,7 @@ namespace Tharga.Toolkit.Console.Consoles
         private ConsoleKeyInfo _keyInput;
 
         public VoiceConsole()
-            : base(System.Console.Out)
+            : base(System.Console.Out, System.Console.In)
         {
         }
 
@@ -76,7 +76,7 @@ namespace Tharga.Toolkit.Console.Consoles
             _subSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
         }
 
-        protected internal override void WriteLineEx(string value, OutputLevel outputLevel)
+        protected override void WriteLineEx(string value, OutputLevel outputLevel)
         {
             base.WriteLineEx(value, outputLevel);
 
