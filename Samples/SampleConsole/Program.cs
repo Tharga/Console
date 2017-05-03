@@ -43,17 +43,17 @@ namespace SampleConsole
 
             var commandEngine = new CommandEngine(command)
             {
-                Runners = new []{ new Runner(e =>
-                {
-                    var i = 0;
-                    while (!e.IsCancellationRequested)
-                    {
-                        var si = i++.ToString();
-                        //console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
-                        System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0));
-                        Thread.Sleep(10);
-                    }
-                }), }
+                //Runners = new []{ new Runner(e =>
+                //{
+                //    var i = 0;
+                //    while (!e.IsCancellationRequested)
+                //    {
+                //        var si = i++.ToString();
+                //        //console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
+                //        System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0));
+                //        Thread.Sleep(10);
+                //    }
+                //}), }
             };
 
             commandEngine.Run(args);

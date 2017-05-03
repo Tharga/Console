@@ -30,7 +30,6 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public int Peek()
