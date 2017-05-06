@@ -2,10 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Consoles.Base
+namespace Tharga.Toolkit.Console.Helpers
 {
     class ConsoleManager : IConsoleManager
     {
@@ -13,6 +12,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         private TextWriterInterceptor _textWriterInterceptor;
         private TextReaderInterceptor _textReaderInterceptor;
         private TextWriterInterceptor _errorInterceptor;
+        private IKeyInputEngine _keyInputEngine;
 
         public ConsoleManager(TextWriter textWriter, TextReader textReader)
         {
@@ -27,6 +27,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         }
 
         public Encoding Encoding => _textWriter.Encoding;
+        public IKeyInputEngine KeyInputEngine => _keyInputEngine ?? (_keyInputEngine = new KeyInputEngine());
 
         public void WriteLine(string value)
         {

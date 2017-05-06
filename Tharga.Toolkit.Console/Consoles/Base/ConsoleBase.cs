@@ -38,7 +38,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
-            var consoleKeyInfo = KeyInputEngine.Instance.ReadKey(cancellationToken);
+            var consoleKeyInfo = _consoleManager.KeyInputEngine.ReadKey(cancellationToken);
             OnKeyReadEvent(new KeyReadEventArgs(consoleKeyInfo));
             return consoleKeyInfo;
         }
@@ -50,10 +50,6 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public void SetCursorPosition(int left, int top)
         {
-            //if (top >= _consoleManager.BufferHeight)
-            //{
-            //    //top = System.Console.BufferHeight - 1; //TODO: This is not okey. fix the problem!
-            //}
             _consoleManager.SetCursorPosition(left, top);
         }
 
@@ -415,10 +411,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public void Dispose()
         {
-            //_textWriterInterceptor?.Dispose();
             _consoleManager?.Dispose();
-            //_errorInterceptor?.Dispose();
-            //_textReaderInterceptor?.Dispose();
         }
 
         public void Mute(OutputLevel type)

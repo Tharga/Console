@@ -32,11 +32,9 @@ namespace Tharga.Toolkit.Console.Tests
             var cmd1 = new Mock<ICommand>(MockBehavior.Strict);
             cmd1.Setup(x => x.Name).Returns("A");
             cmd1.Setup(x => x.Names).Returns(new string[]{});
-            //cmd1.Setup(x => ((CommandBase)x).AttachConsole(console));
             var cmd2 = new Mock<ICommand>(MockBehavior.Strict);
             cmd2.Setup(x => x.Name).Returns("A");
             cmd2.Setup(x => x.Names).Returns(new[] { "A" });
-            //cmd2.Setup(x => ((CommandBase)x).AttachConsole(console));
             command.RegisterCommand(cmd1.Object);
             Exception exceptionThrown = null;
 

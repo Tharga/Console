@@ -1,9 +1,14 @@
 using System;
 using System.Text;
-using Tharga.Toolkit.Console.Consoles.Base;
+using System.Threading;
 
 namespace Tharga.Toolkit.Console.Interfaces
 {
+    public interface IKeyInputEngine
+    {
+        ConsoleKeyInfo ReadKey(CancellationToken cancellationToken);
+    }
+
     public interface IConsoleManager : IDisposable
     {
         Encoding Encoding { get; }
@@ -15,6 +20,7 @@ namespace Tharga.Toolkit.Console.Interfaces
         void Write(string value);
         ConsoleColor ForegroundColor { get; set; }
         ConsoleColor BackgroundColor { get; set; }
+        IKeyInputEngine KeyInputEngine { get; }
         void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop);
         void SetCursorPosition(int left, int top);
         void Clear();

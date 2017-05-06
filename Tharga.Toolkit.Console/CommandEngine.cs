@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -50,12 +51,17 @@ namespace Tharga.Toolkit.Console
         private bool _commandMode;
 
         public CommandEngine(IRootCommand rootCommand)
+            : this(rootCommand, new InputManager(rootCommand.Console))
+        {            
+        }
+
+        internal CommandEngine(IRootCommand rootCommand, IInputManager inputManager)
         {
             if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No root command provided.");
 
-            _cancellationTokenSource = new CancellationTokenSource();
-            _inputManager = new InputManager(rootCommand.Console);
+            _inputManager = inputManager;
             _rootCommand = rootCommand;
+            _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
             _rootCommand.RequestCloseEvent += (sender, e) => { Stop(); };
         }

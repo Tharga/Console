@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
+using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Tests
@@ -12,6 +12,12 @@ namespace Tharga.Toolkit.Console.Tests
 
         public string[] LineOutput = new string[_bufferHeight];
         private int _cursorTop;
+        private readonly IKeyInputEngine _keyInputEngine;
+
+        public FakeConsoleManager(IKeyInputEngine keyInputEngine = null)
+        {
+            _keyInputEngine = keyInputEngine ?? new KeyInputEngine();
+        }
 
         public void Dispose()
         {            
@@ -42,14 +48,30 @@ namespace Tharga.Toolkit.Console.Tests
 
         public int BufferWidth => _bufferWidth;
         public int BufferHeight => _bufferHeight;
+
         public void WriteLine(string value)
         {
-            //RawOutput.Add(value ?? string.Empty);
+            DoWriteLine(value, true);
+        }
 
+        public void Write(string value)
+        {
+            DoWriteLine(value, false);
+        }
+
+        private void DoWriteLine(string value, bool lineFeed)
+        {
             if (string.IsNullOrEmpty(value))
             {
-                LineOutput[CursorTop] = string.Empty;
-                CursorTop++;
+                if (CursorLeft == 0)
+                {
+                    LineOutput[CursorTop] = string.Empty;
+                    CursorTop++;
+                }
+                else
+                {
+                    CursorTop++;
+                }
             }
             else
             {
@@ -65,7 +87,6 @@ namespace Tharga.Toolkit.Console.Tests
                             break;
                         if (left > BufferWidth) left = BufferWidth;
                         var input = value.Substring(i * BufferWidth, left);
-                        //LineOutput.Add(input);
                         LineOutput[CursorTop] = input;
                         CursorTop++;
                     }
@@ -73,19 +94,17 @@ namespace Tharga.Toolkit.Console.Tests
                 else
                 {
                     LineOutput[CursorTop] = value;
-                    CursorTop++;
+                    if (lineFeed)
+                    {
+                        CursorTop++;
+                        CursorLeft = 0;
+                    }
+                    else
+                    {
+                        CursorLeft = LineOutput[CursorTop].Length;
+                    }
                 }
             }
-
-            //while (LineOutput.Count >= BufferHeight)
-            //{
-            //    LineOutput.RemoveAt(0);
-            //}
-        }
-
-        public void Write(string value)
-        {
-            WriteLine(value);
         }
 
         public ConsoleColor ForegroundColor { get; set; }
@@ -93,6 +112,13 @@ namespace Tharga.Toolkit.Console.Tests
 
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
+            if (sourceLeft != 0) throw new NotImplementedException();
+            if (sourceWidth != BufferWidth) throw new NotImplementedException();
+            if (targetLeft != 0) throw new NotImplementedException();
+            if (sourceHeight != 1) throw new NotImplementedException();
+
+            LineOutput[targetTop] = LineOutput[sourceTop];
+            LineOutput[sourceTop] = null;
         }
 
         public void SetCursorPosition(int left, int top)
@@ -115,6 +141,15 @@ namespace Tharga.Toolkit.Console.Tests
 
         public void Intercept(IConsole console)
         {
+        }
+
+        public IKeyInputEngine KeyInputEngine
+        {
+            get
+            {
+                //throw new NotImplementedException();
+                return _keyInputEngine;
+            }
         }
     }
 }

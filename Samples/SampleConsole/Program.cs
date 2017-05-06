@@ -75,9 +75,9 @@ namespace SampleConsole
                     while (!e.IsCancellationRequested)
                     {
                         var si = i++.ToString();
-                        //System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)); //v1
+                        System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)); //v1
                         //System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 1)); //v2 !!!LOST CURSOR PROMPT
-                        System.Console.WriteLine(si + new string('.', 2 * Console.BufferWidth - si.Length + 0)); //v3 !!!LOST CURSOR PROMPT
+                        //System.Console.WriteLine(si + new string('.', 2 * Console.BufferWidth - si.Length + 0)); //v3 !!!LOST CURSOR PROMPT
 
                         //console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
                         //Instance.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0), OutputLevel.Information);
@@ -85,6 +85,8 @@ namespace SampleConsole
                     }
                 }), }
             };
+
+            //Task.Run(() => { command.QueryRootParam(); }).Wait(1000);
 
             commandEngine.Run(args);
 

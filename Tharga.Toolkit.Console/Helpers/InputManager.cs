@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,6 +41,11 @@ namespace Tharga.Toolkit.Console.Helpers
                 task?.Dispose();
                 inputInstance?.Dispose();
             }
+        }
+
+        public ConsoleKeyInfo ReadKey()
+        {
+            return System.Console.ReadKey(true);
         }
     }
 }

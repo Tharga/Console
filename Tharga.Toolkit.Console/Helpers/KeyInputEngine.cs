@@ -2,22 +2,21 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Helpers
 {
-    internal class KeyInputEngine
+    internal class KeyInputEngine : IKeyInputEngine
     {
-        public static KeyInputEngine Instance { get; } = new KeyInputEngine();
-
         private readonly BlockingCollection<ConsoleKeyInfo> _buffer = new BlockingCollection<ConsoleKeyInfo>();
 
-        private KeyInputEngine()
+        public KeyInputEngine()
         {
             Task.Run(() =>
             {
                 while (true)
                 {
-                    var keyPressed = System.Console.ReadKey(true); //TODO: Access through Console Manager class. Important!!!
+                    var keyPressed = System.Console.ReadKey(true);
                     _buffer.Add(keyPressed);
                 }
             });
