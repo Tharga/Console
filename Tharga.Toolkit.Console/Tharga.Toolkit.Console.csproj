@@ -64,6 +64,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\ConsoleManager.cs" />
+    <Compile Include="Instance.cs" />
     <Compile Include="Interfaces\IConsoleManager.cs" />
     <Compile Include="Entities\ConsoleConfiguration.cs" />
     <Compile Include="Helpers\TextReaderInterceptor.cs" />
