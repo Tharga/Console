@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -13,7 +14,6 @@ namespace Tharga.Toolkit.Console.Helpers
     {
         private bool _finished;
         private readonly string _paramName;
-        //private readonly bool _passwordEntry;
         private readonly char? _passwordChar;
 
         private readonly IConsole _console;
@@ -22,12 +22,9 @@ namespace Tharga.Toolkit.Console.Helpers
         private Location _startLocation;
         private int _tabIndex = -1;
 
-        //TODO: Theese two properties are the uggliest thing. What can I do to remove them?
         private static int _currentBufferLineCount;
         private static int _cursorLineOffset;
-        //private KeyValuePair<T, string>[] _selection;
         private InputBuffer _inputBuffer;
-        //private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly CancellationToken _cancellationToken;
 
         //TODO: Theese values should be read from the instance, not as a static value!
@@ -43,28 +40,36 @@ namespace Tharga.Toolkit.Console.Helpers
             _passwordChar = passwordChar;
             _cancellationToken = cancellationToken;
 
+            _console.PushBufferDownEvent += PushBufferDownEvent;
             _console.LinesInsertedEvent += LinesInsertedEvent;
             _startLocation = new Location(CursorLeft, CursorTop);
         }
 
-        //public InputManager(IConsole console, string paramName, bool passwordEntry = false)
-        //{
-        //    if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
-
-        //    _console = console;
-        //    _paramName = paramName;
-        //    _passwordEntry = passwordEntry;
-        //    _console.LinesInsertedEvent += LinesInsertedEvent;
-        //    _startLocation = new Location(CursorLeft, CursorTop);
-        //}
-
-        private int CursorTop { get { return _console.CursorTop; } } //set { _console.CursorTop = value; } }
-        private int BufferWidth { get { return _console.BufferWidth; } }
-        private int CursorLeft { get { return _console.CursorLeft; } } //set { _console.CursorLeft = value; } }
+        private int CursorTop => _console.CursorTop;
+        private int BufferWidth => _console.BufferWidth;
+        private int CursorLeft => _console.CursorLeft;
 
         private void SetCursorPosition(int left, int top)
         {
             _console.SetCursorPosition(left, top);
+        }
+
+        private void PushBufferDownEvent(object sender, PushBufferDownEventArgs e)
+        {
+            //TODO: Create e.LineCount free extra lines after the current buffer and move the cursor where it was before.
+
+            //Step1: Remember cursor position
+            var location = new Location(CursorLeft, CursorTop);
+
+            //Step2: move the cursor to the end of the input buffer,
+            //TODO: (Test by having text after the buffer, in one or several lines
+
+            //Step3: Insert lines
+            for (var i = 0; i < e.LineCount; i++)
+                System.Console.WriteLine(string.Empty);
+
+            //Step4: Move cursor back to position
+            SetCursorPosition(location.Left, location.Top - 1);
         }
 
         private void LinesInsertedEvent(object sender, LinesInsertedEventArgs e)
@@ -74,11 +79,9 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public T ReadLine<T>(KeyValuePair<T, string>[] selection, bool allowEscape)
         {
-            //_selection = selection;
             _inputBuffer = new InputBuffer();
             _inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
 
-            //_console.Write($"{_paramName}{(_paramName.Length > 2 ? ": " : string.Empty)}");
             _console.Output(new WriteEventArgs($"{_paramName}{(_paramName.Length > 2 ? ": " : string.Empty)}", OutputLevel.Default, null, null, false, false));
             _startLocation = new Location(CursorLeft, CursorTop);
 
@@ -91,7 +94,7 @@ namespace Tharga.Toolkit.Console.Helpers
                     {
                         var currentScreenLocation = new Location(CursorLeft, CursorTop); //This is where the cursor actually is on screen.
                         var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
-                        System.Diagnostics.Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
+                        Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
 
                         if (IsOutputKey(readKey))
                         {
@@ -130,7 +133,6 @@ namespace Tharga.Toolkit.Console.Helpers
                                     break;
 
                                 case ConsoleKey.RightArrow:
-
                                     var l2 = _inputBuffer.ToString().IndexOf(' ', currentBufferPosition);
                                     if (l2 != -1)
                                     {
@@ -146,7 +148,8 @@ namespace Tharga.Toolkit.Console.Helpers
                                     break;
 
                                 default:
-                                    System.Diagnostics.Debug.WriteLine("No action for ctrl-" + readKey.Key);
+                                    Trace.TraceWarning("No action for ctrl-" + readKey.Key);
+                                    Debug.WriteLine("No action for ctrl-" + readKey.Key);
                                     break;
                             }
                         }
@@ -198,8 +201,7 @@ namespace Tharga.Toolkit.Console.Helpers
                                 case ConsoleKey.Escape:
                                     if (_inputBuffer.IsEmpty && allowEscape)
                                     {
-                                        //_console.NewLine();
-                                        _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+                                        _console.Output(new WriteEventArgs(null));
                                         throw new CommandEscapeException();
                                     }
 
@@ -226,7 +228,6 @@ namespace Tharga.Toolkit.Console.Helpers
                                         if (tabIndex == selection.Length) tabIndex = 0;
                                         if (tabIndex <= -1) tabIndex = selection.Length - 1;
                                         Clear(_inputBuffer);
-                                        //_console.Write(selection[tabIndex].Value);
                                         _console.Output(new WriteEventArgs(selection[tabIndex].Value, OutputLevel.Default, null, null, false, false));
                                         _inputBuffer.Add(selection[tabIndex].Value);
                                         _tabIndex = tabIndex;
@@ -272,6 +273,7 @@ namespace Tharga.Toolkit.Console.Helpers
                 }
                 catch (OperationCanceledException exception)
                 {
+                    Trace.TraceWarning(exception.Message);
                     //NOTE: Operation was cancelled, causing what ever is in the buffer to be returned, or, should an empty selection be returned?
                     return Enter(selection);
                 }
@@ -281,6 +283,7 @@ namespace Tharga.Toolkit.Console.Helpers
                 }
                 catch (Exception exception)
                 {
+                    Trace.TraceError(exception.Message);
                     _console.OutputError(exception);
                 }
             }
@@ -289,7 +292,7 @@ namespace Tharga.Toolkit.Console.Helpers
         private T Enter<T>(KeyValuePair<T, string>[] selection)
         {
             var response = GetResponse(selection, _inputBuffer);
-            RememberCommandHistory(_inputBuffer); //_inputBuffer);
+            RememberCommandHistory(_inputBuffer);
             return response;
         }
 

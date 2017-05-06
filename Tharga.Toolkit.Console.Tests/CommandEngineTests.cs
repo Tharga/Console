@@ -2,7 +2,6 @@
 using Moq;
 using NUnit.Framework;
 using Tharga.Toolkit.Console.Commands;
-using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Consoles;
 using Tharga.Toolkit.Console.Interfaces;
 
@@ -55,15 +54,5 @@ namespace Tharga.Toolkit.Console.Tests
             Assert.That(exceptionThrown, Is.Not.Null);
             Assert.That(exceptionThrown.GetType(), Is.EqualTo(typeof(CommandAlreadyRegisteredException)));
         }
-
-        //[Test]
-        //public void When_()
-        //{
-        //    //Arrange
-
-        //    //Act
-
-        //    //Assert
-        //}
     }
 }

@@ -2,16 +2,28 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Tharga.Toolkit.Console.Helpers;
+using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Consoles.Base
 {
     class ConsoleManager : IConsoleManager
     {
         private readonly TextWriter _textWriter;
+        private TextWriterInterceptor _textWriterInterceptor;
+        private TextReaderInterceptor _textReaderInterceptor;
+        private TextWriterInterceptor _errorInterceptor;
 
         public ConsoleManager(TextWriter textWriter, TextReader textReader)
         {
             _textWriter = textWriter;
+        }
+
+        public void Intercept(IConsole console)
+        {
+            _textWriterInterceptor = new TextWriterInterceptor(this, console);
+            _textReaderInterceptor = new TextReaderInterceptor(this, console);
+            _errorInterceptor = new TextWriterInterceptor(this, console);
         }
 
         public Encoding Encoding => _textWriter.Encoding;

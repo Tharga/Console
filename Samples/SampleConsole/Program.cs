@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using NUnit.Framework;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
@@ -21,25 +22,50 @@ namespace SampleConsole
         [STAThread]
         private static void Main(string[] args)
         {
-            System.Console.SetBufferSize(System.Console.BufferWidth, 300);
+            //System.Console.SetBufferSize(10, 30);
 
-            var console = new ClientConsole(new ConsoleConfiguration
-            {
-                SplashScreen = _splashscreen,
-            });
-            //var console = new VoiceConsole();
-            //var console = new ServerConsole(string.Empty);
-            //var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
-            //var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
+            //var consoleManager = new Mock<IConsoleManager>();
+            //consoleManager.SetupGet(x => x.BufferWidth).Returns(10);
+            //consoleManager.SetupGet(x => x.BufferHeight).Returns(30);
+            //var console = new TestConsole(consoleManager.Object);
+            var console = new ClientConsole(new ConsoleConfiguration { ShowAssemblyInfo = false });
+            //console.Output(new WriteEventArgs(new string('.', console.BufferWidth * (console.BufferHeight - 1))));
+            //console.Output(new WriteEventArgs("A"));
+            //console.Output(new WriteEventArgs(new string('A', console.BufferWidth * (console.BufferHeight - 1))));
+            //console.Output(new WriteEventArgs("A"));
+
+            //console.Output(new WriteEventArgs(new string('A', console.BufferWidth * (console.BufferHeight - 1))));
+            //console.Output(new WriteEventArgs("B"));
+
+
+
+            //Assert
+            //Assert.That(console.LineOutput, Is.Not.Empty);
+            //Assert.That(console.LineOutput.Last(), Is.EqualTo("A"));
+            //Assert.That(console.LineOutput.First(), Is.Not.EqualTo(new string('A', console.BufferWidth + 1)));
+            //Assert.That(console.LineOutput.First(), Is.EqualTo(new string('A', console.BufferWidth)));
+            //Assert.That(console.LineOutput.Count(), Is.EqualTo(console.BufferHeight - 1));
+            //Assert.That(console.CursorTop, Is.EqualTo(console.BufferHeight - 2));
+
+            //System.Console.SetBufferSize(System.Console.BufferWidth, 300);
+
+            //var console = new ClientConsole(new ConsoleConfiguration
+            //{
+            //    SplashScreen = _splashscreen,
+            //});
+            ////var console = new VoiceConsole();
+            ////var console = new ServerConsole(string.Empty);
+            ////var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
+            ////var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
 
             var command = new RootCommand(console);
-            command.RegisterCommand(new SomeContainerCommand());
-            command.RegisterCommand(new EngineContainerCommand());
-            command.RegisterCommand(new MathContainerCommand());
-            command.RegisterCommand(new StatusCommand());
-            command.RegisterCommand(new ParametersCommand());
-            command.RegisterCommand(new SomeContainerWithDisabledSubs());
-            command.RegisterCommand(new LineFeedCommand(console));
+            //command.RegisterCommand(new SomeContainerCommand());
+            //command.RegisterCommand(new EngineContainerCommand());
+            //command.RegisterCommand(new MathContainerCommand());
+            //command.RegisterCommand(new StatusCommand());
+            //command.RegisterCommand(new ParametersCommand());
+            //command.RegisterCommand(new SomeContainerWithDisabledSubs());
+            //command.RegisterCommand(new LineFeedCommand(console));
 
             var commandEngine = new CommandEngine(command)
             {
@@ -49,9 +75,12 @@ namespace SampleConsole
                     while (!e.IsCancellationRequested)
                     {
                         var si = i++.ToString();
+                        //System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)); //v1
+                        //System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 1)); //v2 !!!LOST CURSOR PROMPT
+                        System.Console.WriteLine(si + new string('.', 2 * Console.BufferWidth - si.Length + 0)); //v3 !!!LOST CURSOR PROMPT
+
                         //console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
-                        //System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0));
-                        Instance.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0), OutputLevel.Information);
+                        //Instance.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0), OutputLevel.Information);
                         Thread.Sleep(10);
                     }
                 }), }
@@ -59,7 +88,7 @@ namespace SampleConsole
 
             commandEngine.Run(args);
 
-            console.Dispose();
+            //console.Dispose();
         }
     }
 

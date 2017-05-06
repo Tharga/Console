@@ -6,6 +6,7 @@ namespace Tharga.Toolkit.Console.Interfaces
 {
     public interface IConsole : IOutputConsole
     {
+        event EventHandler<PushBufferDownEventArgs> PushBufferDownEvent;
         event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         int CursorLeft { get; }
         int CursorTop { get; }

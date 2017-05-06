@@ -36,7 +36,7 @@ namespace Tharga.Toolkit.Console.Consoles
         private ConsoleKeyInfo _keyInput;
 
         public VoiceConsole()
-            : base(System.Console.Out, System.Console.In)
+            : base(new ConsoleManager(System.Console.Out, System.Console.In))
         {
         }
 

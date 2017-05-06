@@ -13,7 +13,7 @@ namespace Tharga.Toolkit.Console.Consoles
         private readonly string _eventLogSource;
 
         public ServerConsole(string eventLogSource = null)
-            : base(System.Console.Out, System.Console.In)
+            : base(new ConsoleManager(System.Console.Out, System.Console.In))
         {
             if (string.IsNullOrEmpty(eventLogSource))
                 _eventLogSource = Assembly.GetExecutingAssembly().GetName().Name;

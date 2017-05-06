@@ -14,20 +14,12 @@ namespace Tharga.Toolkit.Console.Consoles.Base
     public abstract class ConsoleBase : IConsole
     {
         private readonly IConsoleManager _consoleManager;
-        private readonly TextWriterInterceptor _textWriterInterceptor;
-        private readonly TextReaderInterceptor _textReaderInterceptor;
-        private readonly TextWriterInterceptor _errorInterceptor;
         private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
 
-        protected ConsoleBase(TextWriter originalTextWriter, TextReader originalTextReader)
+        protected ConsoleBase(IConsoleManager consoleManager)
         {
-            _consoleManager = new ConsoleManager(originalTextWriter, originalTextReader);
-            if (_consoleManager != null)
-            {
-                _textWriterInterceptor = new TextWriterInterceptor(_consoleManager, this);
-                _textReaderInterceptor = new TextReaderInterceptor(_consoleManager, this);
-                _errorInterceptor = new TextWriterInterceptor(_consoleManager, this);
-            }
+            _consoleManager = consoleManager;
+            _consoleManager.Intercept(this);
 
             if (Instance.Console == null)
             {
@@ -35,12 +27,14 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             }
         }
 
+        public event EventHandler<PushBufferDownEventArgs> PushBufferDownEvent;
         public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         public event EventHandler<KeyReadEventArgs> KeyReadEvent;
 
         public int CursorLeft => _consoleManager.CursorLeft;
-        public int BufferWidth => _consoleManager.BufferWidth;
         public int CursorTop => _consoleManager.CursorTop;
+        public int BufferWidth => _consoleManager.BufferWidth;
+        public int BufferHeight => _consoleManager.BufferHeight;
 
         public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
@@ -146,10 +140,14 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
 
+        protected virtual void OnPushBufferDownEvent(int lineCount)
+        {
+            PushBufferDownEvent?.Invoke(this, new PushBufferDownEventArgs(lineCount));
+        }
+
         protected virtual void OnLinesInsertedEvent(int lineCount)
         {
-            var handler = LinesInsertedEvent;
-            handler?.Invoke(this, new LinesInsertedEventArgs(lineCount));
+            LinesInsertedEvent?.Invoke(this, new LinesInsertedEventArgs(lineCount));
         }
 
         internal virtual void OnLineWrittenEvent(LineWrittenEventArgs e)
@@ -271,9 +269,23 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
                 if (inputBufferLines + CursorTop + linesToInsert > _consoleManager.BufferHeight)
                 {
-                    MoveBufferArea(0, linesToInsert, BufferWidth, CursorTop - linesToInsert, 0, 0);
-                    SetCursorPosition(0, cursorTop - linesToInsert);
-                    OnLinesInsertedEvent(linesToInsert * -1);
+                    //throw new NotImplementedException();
+                    //NOTE: This works, but moves the entire buffer up one step and makes the screen flicker
+                    ////MoveBufferArea(0, linesToInsert, BufferWidth, CursorTop - linesToInsert, 0, 0);
+                    ////SetCursorPosition(0, cursorTop - linesToInsert);
+                    ////OnLinesInsertedEvent(linesToInsert * -1);
+
+                    //OnPushBufferDownEvent(linesToInsert);
+
+                    ////TODO: Move the cursor to the end of the input buffer
+                    SetCursorPosition(BufferWidth - 1, BufferHeight - 1); //NOTE: This will create a line feed sometimes.
+                    for (var i = 0; i < linesToInsert; i++)
+                        _consoleManager?.WriteLine(null);
+
+                    MoveBufferArea(0, CursorTop - inputBufferLines, BufferWidth, inputBufferLines, 0, CursorTop - linesToInsert + 1); //This works for 1 line to inser and 1 line in buffer
+                    ////MoveBufferArea(0, CursorTop - inputBufferLines, BufferWidth, inputBufferLines, 0, CursorTop - inputBufferLines + linesToInsert); //This works for 1 line to insert an n lines in buffer
+                    ////MoveBufferArea(0, CursorTop - inputBufferLines - linesToInsert, BufferWidth, inputBufferLines, 0, CursorTop - inputBufferLines + linesToInsert - 1); //This works for 1 line to insert an n lines in buffer
+                    SetCursorPosition(0, CursorTop - inputBufferLines - linesToInsert + 1);
                 }
                 else
                 {
@@ -403,10 +415,10 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public void Dispose()
         {
-            _textWriterInterceptor?.Dispose();
+            //_textWriterInterceptor?.Dispose();
             _consoleManager?.Dispose();
-            _errorInterceptor?.Dispose();
-            _textReaderInterceptor?.Dispose();
+            //_errorInterceptor?.Dispose();
+            //_textReaderInterceptor?.Dispose();
         }
 
         public void Mute(OutputLevel type)
