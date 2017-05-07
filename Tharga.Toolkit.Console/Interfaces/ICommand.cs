@@ -17,5 +17,6 @@ namespace Tharga.Toolkit.Console.Interfaces
         bool IsHidden { get; } //TODO: Change to IsVisible
 
         Task<bool> InvokeAsync(string paramList);
+        //void Attach(object obj);
     }
 }

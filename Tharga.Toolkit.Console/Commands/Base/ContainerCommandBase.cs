@@ -61,6 +61,14 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
             _subCommands.Add(command);
+
+            //var c = command as CommandBase;
+            //if (c != null)
+            //{
+            //    if (CommandEngine == null) throw new InvalidOperationException("No command engine assigned. Cannot attach.");
+            //    c.Attach(CommandEngine);
+            //}
+
             CommandRegisteredEvent?.Invoke(this, new CommandRegisteredEventArgs(command));
         }
 
@@ -320,6 +328,16 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
             OutputWarning($"Unknown sub command {paramList}, for {Name}.");
             return false;
+        }
+
+        protected internal override void Attach(CommandEngine commandEngine)
+        {
+            CommandEngine = commandEngine;
+            foreach (var cmd in SubCommands)
+            {
+                var c = cmd as CommandBase;
+                c?.Attach(commandEngine);
+            }
         }
     }
 }

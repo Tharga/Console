@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
+using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
@@ -11,38 +11,14 @@ namespace Tharga.Toolkit.Console
 {
     public sealed class CommandEngine
     {
-        private static IInputManager _inputManager;
-        private static IRootCommand _rootCommand;
-        private static CancellationToken _cancellationToken;
+        private IRootCommand _rootCommand;
+        private IInputManager _inputManager;
 
-        internal static IRootCommand RootCommand
-        {
-            get
-            {
-                if (_rootCommand == null) throw new InvalidOperationException("Cannot access the root command before the command engine has been created.");
-                return _rootCommand;
-            }
-        }
+        internal static readonly object SyncRoot = new object();
 
-        internal static IInputManager InputManager
-        {
-            get
-            {
-                if (_inputManager == null) throw new InvalidOperationException("Cannot access the input manager before the command engine has been created.");
-                return _inputManager;
-            }
-        }
-
-        internal static CancellationToken CancellationToken
-        {
-            get
-            {
-                if (_cancellationToken == null) throw new InvalidOperationException("Cannot access the cancellation token before the command engine has been created.");
-                return _cancellationToken;
-            }
-        }
-
-        internal static object SyncRoot = new object();
+        public IRootCommand RootCommand => _rootCommand;
+        internal IInputManager InputManager => _inputManager;
+        internal CancellationToken CancellationToken => _cancellationTokenSource.Token;
 
         private const string FlagContinueInConsoleMode = "c";
         private const string FlagContinueInConsoleModeIfError = "e";
@@ -59,15 +35,18 @@ namespace Tharga.Toolkit.Console
         {
             if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No root command provided.");
 
-            _inputManager = inputManager;
             _rootCommand = rootCommand;
+            _inputManager = inputManager;
             _cancellationTokenSource = new CancellationTokenSource();
-            _cancellationToken = _cancellationTokenSource.Token;
             _rootCommand.RequestCloseEvent += (sender, e) => { Stop(); };
+
+            //TODO: Try reversing the dependency, so that the root command has an engine instead of the engine having a root command.
+            var rc = _rootCommand as RootCommand;
+            rc?.Attach(this);
         }
 
         public Runner[] Runners { get; set; }
-
+        
         public void Run(string[] args)
         {
             _commandMode = args.Length > 0;
@@ -97,7 +76,7 @@ namespace Tharga.Toolkit.Console
                 }
                 else
                 {
-                    entry = RootCommand.QueryRootParam();
+                    entry = _rootCommand.QueryRootParam();
                 }
 
                 if (!_cancellationTokenSource.IsCancellationRequested)
@@ -163,7 +142,7 @@ namespace Tharga.Toolkit.Console
 
         private bool Execute(string entry)
         {
-            var success = RootCommand.Execute(entry);
+            var success = _rootCommand.Execute(entry);
 
             if (_commandMode && !success)
             {

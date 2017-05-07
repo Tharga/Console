@@ -32,7 +32,6 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
-        [Ignore("Cannot be run in parallel")]
         public void Should_a_full_line_string()
         {
             //Arrange
@@ -56,7 +55,6 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
-        [Ignore("Cannot be run in parallel")]
         public void Should_a_two_full_line_string()
         {
             //Arrange
@@ -81,7 +79,6 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
-        [Ignore("Cannot be run in parallel")]
         public void Should_a_two_full_line_string_v2()
         {
             //Arrange

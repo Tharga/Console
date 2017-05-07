@@ -24,6 +24,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public event EventHandler<WriteEventArgs> WriteEvent;
 
+        protected CommandEngine CommandEngine { get; set; }
+
         internal CommandBase(IEnumerable<string> names, string description = null, bool hidden = false)
         {
             _hidden = hidden;
@@ -34,6 +36,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
         //public abstract Task InvokeAsync(params string[] input); //TODO: Try to make this command happen! and replace the old style Invoke action
         public abstract Task<bool> InvokeAsync(string paramList);
         protected abstract ICommand GetHelpCommand(string paramList);
+
+        protected internal virtual void Attach(CommandEngine commandEngine)
+        {
+            CommandEngine = commandEngine;
+        }
 
         public virtual bool CanExecute(out string reasonMesage)
         {

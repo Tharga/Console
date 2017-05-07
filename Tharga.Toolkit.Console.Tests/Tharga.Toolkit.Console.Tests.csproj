@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="When_running_engine.cs" />
     <Compile Include="When_running_engine_outside_the_buffer_height.cs" />
+    <Compile Include="When_running_in_parallel.cs" />
     <Compile Include="When_writing_a_line.cs" />
     <Compile Include="CommandEngineTests.cs" />
     <Compile Include="FakeConsoleManager.cs" />

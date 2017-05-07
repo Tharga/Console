@@ -10,5 +10,6 @@ namespace Tharga.Toolkit.Console.Interfaces
         string QueryRootParam(); //TODO: Rename to "QueryInput"
         void RegisterCommand(ICommand command);
         bool Execute(string entry);
+        //void Attach(CommandEngine commandEngine);
     }
 }
