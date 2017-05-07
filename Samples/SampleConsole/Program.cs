@@ -67,6 +67,9 @@ namespace SampleConsole
             //command.RegisterCommand(new SomeContainerWithDisabledSubs());
             //command.RegisterCommand(new LineFeedCommand(console));
 
+            //System.Console.WriteLine("A");
+            //System.Console.WriteLine("A");
+
             var commandEngine = new CommandEngine(command)
             {
                 Runners = new[]{ new Runner(e =>
@@ -76,8 +79,9 @@ namespace SampleConsole
                     {
                         var si = i++.ToString();
                         System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)); //v1
-                        //System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 1)); //v2 !!!LOST CURSOR PROMPT
-                        //System.Console.WriteLine(si + new string('.', 2 * Console.BufferWidth - si.Length + 0)); //v3 !!!LOST CURSOR PROMPT
+                        //System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 1)); //v2
+                        //System.Console.WriteLine(si + new string('.', 2 * Console.BufferWidth - si.Length + 0)); //v3
+                        //System.Console.WriteLine(si + new string('.', 3 * Console.BufferWidth - si.Length + 0)); //v4
 
                         //console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
                         //Instance.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0), OutputLevel.Information);

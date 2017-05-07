@@ -262,7 +262,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             {
                 var cursorLeft = CursorLeft;
                 var cursorTop = CursorTop;
-
+                
                 if (inputBufferLines + CursorTop + linesToInsert > _consoleManager.BufferHeight)
                 {
                     //throw new NotImplementedException();
@@ -273,15 +273,22 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
                     //OnPushBufferDownEvent(linesToInsert);
 
+                    //var linesNeeded = linesToInsert; //Perhaps there is aready lines not used in the buffer, theese decucted.
+
                     ////TODO: Move the cursor to the end of the input buffer
-                    SetCursorPosition(BufferWidth - 1, BufferHeight - 1); //NOTE: This will create a line feed sometimes.
-                    for (var i = 0; i < linesToInsert; i++)
+                    SetCursorPosition(BufferWidth - 1, BufferHeight - 1);
+                    var cursorMovement = CursorTop - cursorTop;
+                    var linesNeeded = inputBufferLines + CursorTop + linesToInsert - _consoleManager.BufferHeight - cursorMovement;
+                    for (var i = 0; i < linesNeeded; i++)
                         _consoleManager?.WriteLine(null);
 
-                    MoveBufferArea(0, CursorTop - inputBufferLines, BufferWidth, inputBufferLines, 0, CursorTop - linesToInsert + 1); //This works for 1 line to inser and 1 line in buffer
-                    ////MoveBufferArea(0, CursorTop - inputBufferLines, BufferWidth, inputBufferLines, 0, CursorTop - inputBufferLines + linesToInsert); //This works for 1 line to insert an n lines in buffer
-                    ////MoveBufferArea(0, CursorTop - inputBufferLines - linesToInsert, BufferWidth, inputBufferLines, 0, CursorTop - inputBufferLines + linesToInsert - 1); //This works for 1 line to insert an n lines in buffer
+                    //This works for 1 line to insert and 1 line in buffer
+                    MoveBufferArea(0, CursorTop - linesToInsert, BufferWidth, inputBufferLines, 0, CursorTop);
                     SetCursorPosition(0, CursorTop - inputBufferLines - linesToInsert + 1);
+                    
+                    //This works for 2 line to insert and 1 line in buffer
+                    //MoveBufferArea(0, CursorTop - inputBufferLines - linesToInsert, BufferWidth, inputBufferLines, 0, CursorTop - linesToInsert + 1);
+                    //SetCursorPosition(0, CursorTop - inputBufferLines - linesToInsert);
                 }
                 else
                 {

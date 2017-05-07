@@ -73,8 +73,8 @@ namespace Tharga.Toolkit.Console.Tests
             var command2 = new RootCommand(console2);
             var commandEngine1 = new CommandEngine(command1);
             var commandEngine2 = new CommandEngine(command2);
-            Task.Run(() => { commandEngine1.Run(new string[] { }); }).Wait(100);
-            Task.Run(() => { commandEngine2.Run(new string[] { }); }).Wait(100);
+            Task.Run(() => { commandEngine1.Run(new string[] { }); }).Wait(800);
+            Task.Run(() => { commandEngine2.Run(new string[] { }); }).Wait(800);
             console1.Output(new WriteEventArgs(new string('A', console1.BufferWidth * (console1.BufferHeight - 1))));
 
             //Act

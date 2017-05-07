@@ -45,9 +45,10 @@ namespace Tharga.Toolkit.Console.Helpers
             _startLocation = new Location(CursorLeft, CursorTop);
         }
 
+        private int CursorLeft => _console.CursorLeft;
         private int CursorTop => _console.CursorTop;
         private int BufferWidth => _console.BufferWidth;
-        private int CursorLeft => _console.CursorLeft;
+        private int BufferHeight => _console.BufferHeight;
 
         private void SetCursorPosition(int left, int top)
         {
@@ -74,7 +75,9 @@ namespace Tharga.Toolkit.Console.Helpers
 
         private void LinesInsertedEvent(object sender, LinesInsertedEventArgs e)
         {
-            _startLocation = new Location(_startLocation.Left, _startLocation.Top + e.LineCount);
+            var top = _startLocation.Top + e.LineCount;
+            if (top >= BufferHeight) top = BufferHeight - 1;
+            _startLocation = new Location(_startLocation.Left, top);
         }
 
         public T ReadLine<T>(KeyValuePair<T, string>[] selection, bool allowEscape)
@@ -95,6 +98,10 @@ namespace Tharga.Toolkit.Console.Helpers
                         var currentScreenLocation = new Location(CursorLeft, CursorTop); //This is where the cursor actually is on screen.
                         var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
                         Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
+                        if (currentBufferPosition < 0)
+                        {
+                            throw new InvalidOperationException("Buffer insert position cannot be less than zero.");
+                        }
 
                         if (IsOutputKey(readKey))
                         {
