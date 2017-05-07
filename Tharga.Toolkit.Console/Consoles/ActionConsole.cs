@@ -1,3 +1,4 @@
+//TODO: Enable this class
 //using System;
 //using Tharga.Toolkit.Console.Commands.Base;
 //using Tharga.Toolkit.Console.Commands.Entities;
