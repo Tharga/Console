@@ -110,7 +110,7 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var command = new RootCommand(console);
             var commandEngine = new CommandEngine(command);
-            Task.Run(() => { commandEngine.Run(new string[] { }); }).Wait(100);
+            Task.Run(() => { commandEngine.Run(new string[] { }); }).Wait(10);
             console.Output(new WriteEventArgs(new string('A', console.BufferWidth * (console.BufferHeight - 2))));
 
             //Act

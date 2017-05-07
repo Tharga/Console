@@ -1,7 +1,12 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Moq;
 using NUnit.Framework;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Helpers;
+using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Tests
 {
@@ -44,6 +49,29 @@ namespace Tharga.Toolkit.Console.Tests
             Assert.That(consoleManager.LineOutput[1], Is.EqualTo("> "));
             Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
             Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));
+        }
+
+        [Test]
+        [Ignore("Need to fix the buffer move function in FakeConsoleManager.")]
+        public void Should_keep_buffer_after_line_output()
+        {
+            //Arrange
+            var inputEngine = new Mock<IKeyInputEngine>(MockBehavior.Strict);
+            inputEngine.Setup(x => x.ReadKey(It.IsAny<CancellationToken>())).Returns(new ConsoleKeyInfo('A', ConsoleKey.A, false, false, false));
+            var consoleManager = new FakeConsoleManager(inputEngine.Object);
+            var console = new TestConsole(consoleManager);
+            var command = new RootCommand(console);
+            var commandEngine = new CommandEngine(command);
+            Task.Run(() => { commandEngine.Run(new string[] { }); }).Wait(100);
+
+            //Act
+            console.Output(new WriteEventArgs("A"));
+
+            //Assert
+            Assert.That(consoleManager.LineOutput[0], Is.EqualTo("A"));
+            Assert.That(consoleManager.LineOutput[1], Is.EqualTo("> A"));
+            Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
+            Assert.That(consoleManager.CursorLeft, Is.EqualTo(5));
         }
 
         [Test]
