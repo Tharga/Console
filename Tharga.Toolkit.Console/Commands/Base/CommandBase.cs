@@ -9,6 +9,11 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base
 {
+    internal class Constants
+    {
+        public const string Prompt = "> ";
+    }
+
     public abstract class CommandBase : ICommand
     {
         private readonly string _description;
@@ -117,7 +122,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         //TODO: This is strictly a root command function
         public string QueryRootParam()
         {
-            return QueryParam<string>("> ", null, null, false, false);
+            return QueryParam<string>(Constants.Prompt, null, null, false, false);
         }
 
         protected string QueryPassword(string paramName, string autoProvideValue = null, string defaultValue = null)

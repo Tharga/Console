@@ -122,6 +122,7 @@ namespace SampleConsole
             RegisterCommand(new SomeTableCommand());
             RegisterCommand(new SomeDisabledCommand());
             RegisterCommand(new SomePasswordCommand());
+            RegisterCommand(new SomePromptCommand());
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -268,6 +269,25 @@ namespace SampleConsole
         public override Task<bool> InvokeAsync(string paramList)
         {
             throw new NotSupportedException("Should not be able to execute this!");
+        }
+    }
+
+    internal class SomePromptCommand : ActionCommandBase
+    {
+        public SomePromptCommand()
+            : base("prompt")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            var index = 0;
+            var abc = QueryParam<string>("ABC", GetParam(paramList, index++));
+            var ab = QueryParam<string>("AB", GetParam(paramList, index++));
+            var a = QueryParam<string>("A", GetParam(paramList, index++));
+            var _ = QueryParam<string>("", GetParam(paramList, index++));
+
+            return true;
         }
     }
 

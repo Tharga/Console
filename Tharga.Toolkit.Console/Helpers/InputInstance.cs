@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
@@ -85,7 +86,7 @@ namespace Tharga.Toolkit.Console.Helpers
             _inputBuffer = new InputBuffer();
             _inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
 
-            _console.Output(new WriteEventArgs($"{_paramName}{(_paramName.Length > 2 ? ": " : string.Empty)}", OutputLevel.Default, null, null, false, false));
+            _console.Output(new WriteEventArgs($"{_paramName}{(_paramName != Constants.Prompt ? ": " : string.Empty)}", OutputLevel.Default, null, null, false, false));
             _startLocation = new Location(CursorLeft, CursorTop);
 
             while (true)
