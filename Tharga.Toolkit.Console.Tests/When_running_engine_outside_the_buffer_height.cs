@@ -32,6 +32,7 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
+        [Ignore("Cannot be run in parallel")]
         public void Should_a_full_line_string()
         {
             //Arrange
@@ -55,6 +56,7 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
+        [Ignore("Cannot be run in parallel")]
         public void Should_a_two_full_line_string()
         {
             //Arrange
@@ -79,6 +81,7 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
+        [Ignore("Cannot be run in parallel")]
         public void Should_a_two_full_line_string_v2()
         {
             //Arrange
@@ -100,6 +103,6 @@ namespace Tharga.Toolkit.Console.Tests
             Assert.That(consoleManager.LineOutput[consoleManager.BufferHeight - 1], Is.EqualTo("> "));
             Assert.That(consoleManager.CursorTop, Is.EqualTo(consoleManager.BufferHeight - 1));
             Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));
-        }        
+        }
     }
 }

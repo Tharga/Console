@@ -271,7 +271,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             OutputInformation(data.ToFormattedString());
         }
 
-        public void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data)
+        protected void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data)
         {
             OutputTable(new[] { title }.Union(data));
         }

@@ -9,6 +9,7 @@ namespace Tharga.Toolkit.Console.Tests
     public class When_running_engine
     {
         [Test]
+        [Ignore("Cannot be run in parallel")]
         public void Should_prompt_cursor()
         {
             //Arrange
@@ -27,6 +28,7 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
+        [Ignore("Cannot be run in parallel")]
         public void Should_prompt_cursor_after_line_output()
         {
             //Arrange
@@ -47,6 +49,7 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
+        [Ignore("Cannot be run in parallel")]
         public void Should_prompt_cursor_after_full_line_output()
         {
             //Arrange
