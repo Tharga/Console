@@ -1,4 +1,5 @@
 using System;
+using Tharga.Toolkit.Console.Entities;
 
 namespace Tharga.Toolkit.Console.Interfaces
 {
@@ -10,5 +11,6 @@ namespace Tharga.Toolkit.Console.Interfaces
         bool TopMost { get; }
         ConsoleColor DefaultTextColor { get; }
         ConsoleColor BackgroundColor { get; }
+        Location StartLocation { get; }
     }
 }

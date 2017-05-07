@@ -29,34 +29,30 @@ namespace Tharga.Toolkit.Console.Consoles
         static readonly int HWND_NOTOPMOST = -2;
         private const int SWP_NOMOVE = 0x0002;
         private const int SWP_NOSIZE = 0x0001;
+        private const short SWP_NOZORDER = 0X4;
+        private const int SWP_SHOWWINDOW = 0x0040;
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
-        //[DllImport("user32.dll", SetLastError = true)]
-        //[return: MarshalAs(UnmanagedType.Bool)]
-        //private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
-
-        //[DllImport("user32.dll")]
-        //[return: MarshalAs(UnmanagedType.Bool)]
-        //static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-        //[StructLayout(LayoutKind.Sequential)]
-        //public struct RECT
-        //{
-        //    public int Left; // x position of upper-left corner
-        //    public int Top; // y position of upper-left corner
-        //    public int Right; // x position of lower-right corner
-        //    public int Bottom; // y position of lower-right corner
-        //}
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left; // x position of upper-left corner
+            public int Top; // y position of upper-left corner
+            public int Right; // x position of lower-right corner
+            public int Bottom; // y position of lower-right corner
+        }
 
         //private const int HWND_TOPMOST = -1;
         //private const int SWP_NOMOVE = 0x0002;
         //private const int SWP_NOSIZE = 0x0001;
-        //private const short SWP_NOZORDER = 0X4;
-        //private const int SWP_SHOWWINDOW = 0x0040;
+               
 
         #endregion
 
@@ -65,20 +61,25 @@ namespace Tharga.Toolkit.Console.Consoles
         {
             _consoleConfiguration = consoleConfiguration ?? new ConsoleConfiguration();
 
-            //TODO: Remember windoews location
-            //NOTE: Set specific window location
-            //SetWindowPos(hWnd, new IntPtr(0), 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
-
-            //TODO: Get the current windows position
-            //RECT rct;
-            //GetWindowRect(hWnd, out rct);
-            //Console.WriteLine(rct.Left.ToString(), OutputLevel.Warning);
-
+            SetLocation();
             SetTopMost(_consoleConfiguration.TopMost);
             SetColor();
             UpdateTitle();
             ShowSplashScreen();
             ShowAssemblyInfo();
+        }
+
+        private void SetLocation()
+        {
+            if (_consoleConfiguration.StartLocation == null) return;
+
+            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+            SetWindowPos(hWnd, new IntPtr(0), _consoleConfiguration.StartLocation.Left, _consoleConfiguration.StartLocation.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+
+            //TODO: Store the last used location
+            //RECT rct;
+            //GetWindowRect(hWnd, out rct);
+            //Console.WriteLine(rct.Left.ToString(), OutputLevel.Warning);
         }
 
         //TODO: Move to Console Manager 

@@ -1,6 +1,6 @@
 namespace Tharga.Toolkit.Console.Entities
 {
-    internal class Location
+    public class Location
     {
         public Location(int left, int top)
         {

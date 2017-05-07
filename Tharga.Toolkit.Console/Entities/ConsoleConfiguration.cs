@@ -11,8 +11,8 @@ namespace Tharga.Toolkit.Console.Entities
             SplashScreen = null;
             ShowAssemblyInfo = true;
             TopMost = false;
-            DefaultTextColor = System.Console.ForegroundColor; //TODO: Access through Console Manager
-            BackgroundColor = System.Console.BackgroundColor; //TODO: Access through Console Manager
+            DefaultTextColor = ConsoleColor.Gray;
+            BackgroundColor = ConsoleColor.Black;
         }
 
         public string Title { get; set; }
@@ -21,5 +21,6 @@ namespace Tharga.Toolkit.Console.Entities
         public bool TopMost { get; set; }
         public ConsoleColor DefaultTextColor { get; set; }
         public ConsoleColor BackgroundColor { get; set; }
+        public Location StartLocation { get; set; }
     }
 }
