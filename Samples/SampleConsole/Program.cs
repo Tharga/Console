@@ -72,22 +72,22 @@ namespace SampleConsole
 
             var commandEngine = new CommandEngine(command)
             {
-                Runners = new[]{ new Runner(e =>
-                {
-                    var i = 0;
-                    while (!e.IsCancellationRequested)
-                    {
-                        var si = i++.ToString();
-                        System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)); //v1
-                        //System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 1)); //v2
-                        //System.Console.WriteLine(si + new string('.', 2 * Console.BufferWidth - si.Length + 0)); //v3
-                        //System.Console.WriteLine(si + new string('.', 3 * Console.BufferWidth - si.Length + 0)); //v4
+                //Runners = new[]{ new Runner(e =>
+                //{
+                //    var i = 0;
+                //    while (!e.IsCancellationRequested)
+                //    {
+                //        var si = i++.ToString();
+                //        System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)); //v1
+                //        System.Console.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 1)); //v2
+                //        System.Console.WriteLine(si + new string('.', 2 * Console.BufferWidth - si.Length + 0)); //v3
+                //        System.Console.WriteLine(si + new string('.', 3 * Console.BufferWidth - si.Length + 0)); //v4
 
-                        //console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
-                        //Instance.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0), OutputLevel.Information);
-                        Thread.Sleep(10);
-                    }
-                }), }
+                //        console.Output(new WriteEventArgs(si + new string('.', 1 * Console.BufferWidth - si.Length + 0)));
+                //        Instance.WriteLine(si + new string('.', 1 * Console.BufferWidth - si.Length + 0), OutputLevel.Information);
+                //        Thread.Sleep(10);
+                //    }
+                //}), }
             };
 
             //Task.Run(() => { command.QueryRootParam(); }).Wait(1000);

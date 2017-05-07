@@ -8,18 +8,20 @@ namespace Tharga.Toolkit.Console.Commands
 {
     internal class HelpCommand : ActionCommandBase
     {
+        private readonly CommandEngine _commandEngine;
         private readonly List<HelpLine> _helpLines = new List<HelpLine>();
 
-        internal HelpCommand()
+        internal HelpCommand(CommandEngine commandEngine)
             : base(new [] { "help" }, "Displays helpt text.", false)
         {
+            _commandEngine = commandEngine;
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
         {
             foreach (var helpLine in _helpLines)
             {
-                CommandEngine.RootCommand.Console.Output(new WriteEventArgs(helpLine.Text, OutputLevel.Help, helpLine.CanExecute() ? helpLine.ForeColor : ConsoleColor.DarkGray, null, false, true));
+                _commandEngine.RootCommand.Console.Output(new WriteEventArgs(helpLine.Text, OutputLevel.Help, helpLine.CanExecute() ? helpLine.ForeColor : ConsoleColor.DarkGray, null, false, true));
             }
 
             return true;

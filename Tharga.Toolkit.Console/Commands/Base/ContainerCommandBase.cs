@@ -84,7 +84,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected override ICommand GetHelpCommand(string paramList)
         {
-            var helpCommand = new HelpCommand();
+            var helpCommand = new HelpCommand(CommandEngine);
 
             var showHidden = true;
             var command = this as ICommand;
