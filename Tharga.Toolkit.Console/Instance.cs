@@ -18,5 +18,11 @@ namespace Tharga.Toolkit.Console
             if (Console == null) throw new InvalidOperationException("No Tharga.Toolkit.Console has been set up.");
             Console.Output(new WriteEventArgs(value, level));
         }
+
+        public static void WriteLine(Exception exception)
+        {
+            if (Console == null) throw new InvalidOperationException("No Tharga.Toolkit.Console has been set up.");
+            Console.OutputError(exception);
+        }
     }
 }
