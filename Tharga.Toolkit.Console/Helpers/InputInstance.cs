@@ -98,7 +98,7 @@ namespace Tharga.Toolkit.Console.Helpers
                     {
                         var currentScreenLocation = new Location(CursorLeft, CursorTop); //This is where the cursor actually is on screen.
                         var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
-                        Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
+                        //Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
                         if (currentBufferPosition < 0)
                         {
                             throw new InvalidOperationException("Buffer insert position cannot be less than zero.");
@@ -157,7 +157,7 @@ namespace Tharga.Toolkit.Console.Helpers
 
                                 default:
                                     Trace.TraceWarning("No action for ctrl-" + readKey.Key);
-                                    Debug.WriteLine("No action for ctrl-" + readKey.Key);
+                                    //Debug.WriteLine("No action for ctrl-" + readKey.Key);
                                     break;
                             }
                         }
