@@ -489,6 +489,7 @@ namespace SampleConsole
             RegisterCommand(new StatusSuccessCommand());
             RegisterCommand(new StatusFailCommand());
             RegisterCommand(new StatusExceptionCommand());
+            RegisterCommand(new CrashExceptionCommand());
         }
     }
 
@@ -523,7 +524,30 @@ namespace SampleConsole
     public class StatusExceptionCommand : ActionCommandBase
     {
         public StatusExceptionCommand()
-            : base("exception", "A command that throws an exception.")
+            : base("exception", "A command that outputs an exception.")
+        {
+        }
+
+        public override async Task<bool> InvokeAsync(string paramList)
+        {
+            try
+            {
+                throw new NotImplementedException("Some issue.");
+            }
+            catch (Exception e)
+            {
+                e.Data.Add("A", "A1");
+                OutputError(e);
+            }
+
+            return false;
+        }
+    }
+
+    public class CrashExceptionCommand : ActionCommandBase
+    {
+        public CrashExceptionCommand()
+            : base("crash", "A command that throws an exception.")
         {
         }
 

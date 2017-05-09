@@ -27,7 +27,7 @@ namespace Tharga.Toolkit.Console.Helpers
                 sb.AppendLine(exception.InnerException.ToFormattedString(++indentationLevel));                
             }
 
-            return sb.ToString();
+            return sb.ToString().TrimEnd('\n');
         }
     }
 }
