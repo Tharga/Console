@@ -49,18 +49,18 @@ namespace SampleConsole
 
                     while (!e.IsCancellationRequested)
                     {
-                        Console.Write("Some stuff."); // + new string('c', 68));
+                        Console.Write("Some stuff."); // + new string('c', 168));
                         var index = 0;
                         while (!e.IsCancellationRequested)
                         {
                             Thread.Sleep(1000);
                             //Console.Write(new string('.', 188));
-                            //Console.Write(new string('.', 30));
-                            Console.Write('.');
+                            Console.Write(new string('.', 30));
+                            //Console.Write('.');
                             index++;
                             if (index > 6)
                             {
-                                Console.WriteLine();
+                                Console.Write("\n");
                                 break;
                             }
                         }

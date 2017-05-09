@@ -364,7 +364,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 {
                     if (output.LineFeed)
                     {
-                        var location = new Location(0, CursorTop).Move(message.Length);
+                        var location = new Location(0, CursorTop).Move(message);
                         WriteLine(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
                         SetLocation(output.Tag, location);
                     }
@@ -372,13 +372,13 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                     {
                         if (!_tagLocalLocation.ContainsKey(output.Tag))
                         {
-                            var location = new Location(0, CursorTop).Move(message.Length);
+                            var location = new Location(0, CursorTop).Move(message);
                             WriteLine(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
                             SetLocation(output.Tag, location);
                         }
                         else
                         {
-                            var prognosis = _tagLocalLocation[output.Tag].Move(message.Length);
+                            var prognosis = _tagLocalLocation[output.Tag].Move(message);
                             for(var i = 0; i < prognosis.Top - _tagLocalLocation[output.Tag].Top; i++)
                             {
                                 WriteLine(string.Empty);
