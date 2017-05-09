@@ -1,14 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<package>
+<?xml version="1.0"?>
+<package >
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
-    <title>Tharga Console</title>
+    <title>$title$</title>
     <authors>$author$</authors>
-    <description>Tharga Console is used to simplify construction of advanced console applications.</description>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/poxet/tharga-console/blob/master/License.txt</licenseUrl>
     <projectUrl>https://github.com/poxet/tharga-console</projectUrl>
     <iconUrl>http://www.thargelion.se/Images/Logotype/Thargelion-White-Icon-48.png</iconUrl>
-    <language>en-US</language>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Tharga Console is used to simplify construction of advanced console applications.</description>
     <tags>console poc posh powershell</tags>
   </metadata>
   <files>

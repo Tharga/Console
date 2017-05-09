@@ -26,7 +26,7 @@ Here are some basic examples on how to get started.
             {
                 var command = new RootCommand(console);
                 var engine = new CommandEngine(command);
-                engine.Run(args);
+                engine.Start(args);
             }
         }
     }
@@ -44,9 +44,9 @@ Here are some basic examples on how to get started.
                 var command = new RootCommand(console);
                 var engine = new CommandEngine(command)
                 {
-                    Runners = new[]
+                    TaskRunners = new[]
                     {
-                        new Runner(e =>
+                        new TaskRunner(e =>
                         {
                             while (!e.IsCancellationRequested)
                             {
@@ -57,7 +57,7 @@ Here are some basic examples on how to get started.
                     },
                 };
 
-                engine.Run(args);
+                engine.Start(args);
             }
         }
     }
@@ -76,7 +76,7 @@ Here are some basic examples on how to get started.
                 var command = new RootCommand(console);
                 command.RegisterCommand(new FooCommand());
                 var engine = new CommandEngine(command);
-                engine.Run(args);
+                engine.Start(args);
             }
         }
     }
@@ -175,6 +175,31 @@ There are four types of output, the colors for theese can be configured using th
 - WarningColor - Default Yellow
 - ErrorColor - Default Red
 - EventColor - Default Cyan
+
+## Log4net appender
+Add the nuget package *Tharga.Toolkit.Console.Log4Net* to get *Tharga Console* and a *log4net appender*.
+
+Remember to add ```[assembly: log4net.Config.XmlConfigurator(Watch = true)]``` to your *AssemblyInfo.cs*-file for the configuration to load.
+
+##### App.config example
+```
+<configuration>
+  <configSections>
+    <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net" />
+  </configSections>
+  <log4net debug="false">
+    <appender name="ThargaConsoleAppender" type="Tharga.Toolkit.Console.Log4Net.ThargaConsoleAppender, Tharga.Toolkit.Console.Log4Net">
+      <layout type="log4net.Layout.PatternLayout">
+        <conversionPattern value="%d [%t] %-5p %c %m" />
+      </layout>
+    </appender>
+    <root>
+      <level value="DEBUG" />
+      <appender-ref ref="ThargaConsoleAppender" />
+    </root>
+  </log4net>
+</configuration>
+```
 
 ## License
 Tharga Console goes under The MIT License (MIT).
