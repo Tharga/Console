@@ -11,8 +11,9 @@ namespace Tharga.Toolkit.Console.Entities
         public ConsoleColor? TextBackgroundColor { get; }
         public bool TrunkateSingleLine { get; }
         public bool LineFeed { get; }
+        public string Tag { get; }
 
-        public WriteEventArgs(string message, OutputLevel outputLevel = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null, bool trunkateSingleLine = false, bool lineFeed = true)
+        public WriteEventArgs(string message, OutputLevel outputLevel = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null, bool trunkateSingleLine = false, bool lineFeed = true, string tag = null)
         {
             Message = message;
             OutputLevel = outputLevel;
@@ -20,6 +21,7 @@ namespace Tharga.Toolkit.Console.Entities
             TextBackgroundColor = textBackgroundColor;
             TrunkateSingleLine = trunkateSingleLine;
             LineFeed = lineFeed;
+            Tag = tag;
         }
     }
 }

@@ -64,6 +64,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Entities\PushBufferDownEventArgs.cs" />
+    <Compile Include="Extensions\LocationExtensions.cs" />
     <Compile Include="Helpers\ConsoleManager.cs" />
     <Compile Include="Instance.cs" />
     <Compile Include="Interfaces\IConsoleManager.cs" />
@@ -130,7 +131,7 @@
     <Compile Include="Interfaces\IOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\RootCommand.cs" />
-    <Compile Include="Entities\Runner.cs" />
+    <Compile Include="Entities\TaskRunner.cs" />
     <Compile Include="Entities\WriteEventArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

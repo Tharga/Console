@@ -14,6 +14,8 @@ namespace Tharga.Toolkit.Console.Helpers
         private readonly IConsoleManager _consoleWriter;
         protected new char[] CoreNewLine;
 
+        private const bool _writeLineFeed = false; //TODO: When performing writel, a temporary buffer location should be stored so that next write will continue where the previous one left off.
+
         public TextWriterInterceptor(IConsoleManager consoleWriter, IConsole console)
         {
             _consoleWriter = consoleWriter;
@@ -130,87 +132,87 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public override void Write(string value)
         {
-            WriteStuff(value, false);
+            WriteStuff(value, _writeLineFeed);
         }
 
         public override void Write(decimal value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), false);
+            WriteStuff(value.ToString(CultureInfo.InvariantCulture), _writeLineFeed);
         }
 
         public override void Write(double value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), false);
+            WriteStuff(value.ToString(CultureInfo.InvariantCulture), _writeLineFeed);
         }
 
         public override void Write(float value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), false);
+            WriteStuff(value.ToString(CultureInfo.InvariantCulture), _writeLineFeed);
         }
 
         public override void Write(object value)
         {
-            WriteStuff(value.ToString(), false);
+            WriteStuff(value.ToString(), _writeLineFeed);
         }
 
         public override void Write(long value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), false);
+            WriteStuff(value.ToString(CultureInfo.InvariantCulture), _writeLineFeed);
         }
 
         public override void Write(uint value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), false);
+            WriteStuff(value.ToString(CultureInfo.InvariantCulture), _writeLineFeed);
         }
 
         public override void Write(int value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), false);
+            WriteStuff(value.ToString(CultureInfo.InvariantCulture), _writeLineFeed);
         }
 
         public override void Write(bool value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), false);
+            WriteStuff(value.ToString(CultureInfo.InvariantCulture), _writeLineFeed);
         }
 
         public override void Write(ulong value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), false);
+            WriteStuff(value.ToString(CultureInfo.InvariantCulture), _writeLineFeed);
         }
 
         public override void Write(char[] buffer)
         {
-            WriteStuff(new string(buffer), false);
+            WriteStuff(new string(buffer), _writeLineFeed);
         }
 
         public override void Write(char value)
         {
-            WriteStuff(value.ToString(CultureInfo.InvariantCulture), false);
+            WriteStuff(value.ToString(CultureInfo.InvariantCulture), _writeLineFeed);
         }
 
         public override void Write(string format, object arg0)
         {
-            WriteStuff(string.Format(format, arg0), false);
+            WriteStuff(string.Format(format, arg0), _writeLineFeed);
         }
 
         public override void Write(string format, params object[] arg)
         {
-            WriteStuff(string.Format(format, arg), false);
+            WriteStuff(string.Format(format, arg), _writeLineFeed);
         }
 
         public override void Write(string format, object arg0, object arg1)
         {
-            WriteStuff(string.Format(format, arg0, arg1), false);
+            WriteStuff(string.Format(format, arg0, arg1), _writeLineFeed);
         }
 
         public override void Write(char[] buffer, int index, int count)
         {
-            WriteStuff(new string(buffer, index, count), false);
+            WriteStuff(new string(buffer, index, count), _writeLineFeed);
         }
 
         public override void Write(string format, object arg0, object arg1, object arg2)
         {
-            WriteStuff(string.Format(format, arg0, arg1, arg2), false);
+            WriteStuff(string.Format(format, arg0, arg1, arg2), _writeLineFeed);
         }
 
         public override Task WriteAsync(char value)
@@ -248,9 +250,9 @@ namespace Tharga.Toolkit.Console.Helpers
             return Task.Run(() => { WriteLine(buffer, index, count); });
         }
 
-        private void WriteStuff(string value, bool lineFeed)
+        private void WriteStuff(string value, bool lineFeed, string tag = "Intercept")
         {
-            _console.Output(new WriteEventArgs(value, lineFeed: lineFeed));
+            _console.Output(new WriteEventArgs(value, lineFeed: lineFeed, tag: tag));
         }
     }
 }

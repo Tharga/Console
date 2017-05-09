@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -42,6 +43,29 @@ namespace SampleConsole
 
             var commandEngine = new CommandEngine(command)
             {
+                TaskRunners = new[]{ new TaskRunner(e =>
+                {
+                    Thread.Sleep(2000);
+
+                    while (!e.IsCancellationRequested)
+                    {
+                        Console.Write("Some stuff."); // + new string('c', 68));
+                        var index = 0;
+                        while (!e.IsCancellationRequested)
+                        {
+                            Thread.Sleep(1000);
+                            //Console.Write(new string('.', 188));
+                            //Console.Write(new string('.', 30));
+                            Console.Write('.');
+                            index++;
+                            if (index > 6)
+                            {
+                                Console.WriteLine();
+                                break;
+                            }
+                        }
+                    }
+                }) }
                 //Runners = new[]{ new Runner(e =>
                 //{
                 //    var i = 0;
@@ -62,7 +86,7 @@ namespace SampleConsole
 
             //Task.Run(() => { command.QueryRootParam(); }).Wait(1000);
 
-            commandEngine.Run(args);
+            commandEngine.Start(args);
 
             console.Dispose();
         }

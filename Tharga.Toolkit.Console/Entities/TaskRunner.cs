@@ -4,24 +4,26 @@ using System.Threading.Tasks;
 
 namespace Tharga.Toolkit.Console.Entities
 {
-    public class Runner
+    public class TaskRunner
     {
         private readonly Action<CancellationToken> _action;
         private readonly CancellationTokenSource _cancellationToken;
         private Task _task;
 
-        public Runner(Action<CancellationToken> action)
+        public TaskRunner(Action action)
+            : this(e => { action(); })
         {
-            _action = action;
+        }
+
+        public TaskRunner(Action<CancellationToken> action)
+        {
             _cancellationToken = new CancellationTokenSource();
+            _action = action;
         }
 
         public void Start()
         {
-            _task = Task.Run(() =>
-            {
-                _action(_cancellationToken.Token);
-            }, _cancellationToken.Token);
+            _task = Task.Run(() => { _action(_cancellationToken.Token); }, _cancellationToken.Token);
         }
 
         public void Close()

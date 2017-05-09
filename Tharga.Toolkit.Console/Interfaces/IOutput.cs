@@ -11,5 +11,6 @@ namespace Tharga.Toolkit.Console.Interfaces
         bool LineFeed { get; }
         ConsoleColor? TextColor { get; }
         ConsoleColor? TextBackgroundColor { get; }
+        string Tag { get; }
     }
 }

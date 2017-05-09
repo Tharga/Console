@@ -23,7 +23,7 @@ namespace Tharga.Toolkit.Console.Tests
             var commandEngine = new CommandEngine(command);
 
             //Act
-            Task.Run(() => { commandEngine.Run(new string[] { }); }).Wait(100);
+            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
 
             //Assert
             //TODO: Fix on build server! Assert.That(consoleManager.LineOutput[0], Is.EqualTo("> "));
@@ -39,7 +39,7 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var command = new RootCommand(console);
             var commandEngine = new CommandEngine(command);
-            Task.Run(() => { commandEngine.Run(new string[] { }); }).Wait(100);
+            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
 
             //Act
             console.Output(new WriteEventArgs("A"));
@@ -62,7 +62,7 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var command = new RootCommand(console);
             var commandEngine = new CommandEngine(command);
-            Task.Run(() => { commandEngine.Run(new string[] { }); }).Wait(100);
+            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
 
             //Act
             console.Output(new WriteEventArgs("A"));
@@ -82,7 +82,7 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var command = new RootCommand(console);
             var commandEngine = new CommandEngine(command);
-            Task.Run(() => { commandEngine.Run(new string[] { }); }).Wait(100);
+            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
 
             //Act
             console.Output(new WriteEventArgs(new string('A', console.BufferWidth)));
@@ -102,7 +102,7 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var command = new RootCommand(console);
             var commandEngine = new CommandEngine(command);
-            Task.Run(() => { commandEngine.Run(new string[] { }); }).Wait(100);
+            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
 
             //Act
             console.Output(new WriteEventArgs(new string('A', console.BufferWidth + 1)));

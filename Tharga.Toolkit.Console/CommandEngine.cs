@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -11,43 +12,42 @@ namespace Tharga.Toolkit.Console
 {
     public sealed class CommandEngine
     {
-        private IRootCommand _rootCommand;
-        private IInputManager _inputManager;
-
-        internal static readonly object SyncRoot = new object();
-
-        public IRootCommand RootCommand => _rootCommand;
-        internal IInputManager InputManager => _inputManager;
-        internal CancellationToken CancellationToken => _cancellationTokenSource.Token;
-
         private const string FlagContinueInConsoleMode = "c";
         private const string FlagContinueInConsoleModeIfError = "e";
+
+        internal static readonly object SyncRoot = new object();
 
         private readonly CancellationTokenSource _cancellationTokenSource;
         private bool _commandMode;
 
         public CommandEngine(IRootCommand rootCommand)
             : this(rootCommand, new InputManager(rootCommand.Console))
-        {            
+        {
         }
 
         internal CommandEngine(IRootCommand rootCommand, IInputManager inputManager)
         {
             if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No root command provided.");
 
-            _rootCommand = rootCommand;
-            _inputManager = inputManager;
+            RootCommand = rootCommand;
+            InputManager = inputManager;
             _cancellationTokenSource = new CancellationTokenSource();
-            _rootCommand.RequestCloseEvent += (sender, e) => { Stop(); };
+            RootCommand.RequestCloseEvent += (sender, e) => { Stop(); };
 
             //TODO: Try reversing the dependency, so that the root command has an engine instead of the engine having a root command.
-            var rc = _rootCommand as RootCommand;
+            var rc = RootCommand as RootCommand;
             rc?.Attach(this);
         }
 
-        public Runner[] Runners { get; set; }
-        
-        public void Run(string[] args)
+        public IRootCommand RootCommand { get; }
+
+        internal IInputManager InputManager { get; }
+
+        internal CancellationToken CancellationToken => _cancellationTokenSource.Token;
+
+        public TaskRunner[] TaskRunners { get; set; }
+
+        public void Start(string[] args)
         {
             _commandMode = args.Length > 0;
 
@@ -59,9 +59,9 @@ namespace Tharga.Toolkit.Console
             //TODO: This is only used by the voice console. Solve that some other way!
             //_rootCommand.Initiate();
 
-            if (Runners != null)
+            if (TaskRunners != null)
             {
-                foreach (var runner in Runners)
+                foreach (var runner in TaskRunners)
                 {
                     runner.Start();
                 }
@@ -76,7 +76,7 @@ namespace Tharga.Toolkit.Console
                 }
                 else
                 {
-                    entry = _rootCommand.QueryRootParam();
+                    entry = RootCommand.QueryRootParam();
                 }
 
                 if (!_cancellationTokenSource.IsCancellationRequested)
@@ -94,9 +94,9 @@ namespace Tharga.Toolkit.Console
                 }
             }
 
-            if (Runners != null)
+            if (TaskRunners != null)
             {
-                foreach (var runner in Runners)
+                foreach (var runner in TaskRunners)
                 {
                     runner.Close();
                 }
@@ -135,18 +135,18 @@ namespace Tharga.Toolkit.Console
                 }
             }
 
-            _rootCommand.Console.Output(new WriteEventArgs($"Command {commandIndex}: {entry}", OutputLevel.Information));
+            RootCommand.Console.Output(new WriteEventArgs($"Command {commandIndex}: {entry}", OutputLevel.Information));
 
             return entry;
         }
 
         private bool Execute(string entry)
         {
-            var success = _rootCommand.Execute(entry);
+            var success = RootCommand.Execute(entry);
 
             if (_commandMode && !success)
             {
-                _rootCommand.Console.Output(new WriteEventArgs("Terminating command chain.", OutputLevel.Error));
+                RootCommand.Console.Output(new WriteEventArgs("Terminating command chain.", OutputLevel.Error));
                 return false;
             }
 

@@ -17,7 +17,7 @@ namespace Tharga.Toolkit.Console.Tests
             var command = new RootCommand(new ClientConsole());
 
             //Act
-            new CommandEngine(command).Run(new[] { "exit" });
+            new CommandEngine(command).Start(new[] { "exit" });
 
             //Assert
             Assert.True(true);
