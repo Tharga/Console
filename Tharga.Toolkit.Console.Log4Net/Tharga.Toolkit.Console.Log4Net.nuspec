@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <package>
   <metadata>
     <id>$id$</id>
@@ -10,11 +11,11 @@
     <iconUrl>http://www.thargelion.se/Images/Logotype/Thargelion-White-Icon-48.png</iconUrl>
     <language>en-US</language>
     <tags>log4net console log</tags>
-	<dependencies>
-	  <dependency id="Tharga.Toolkit.Console" version="$version$" />
-	</dependencies>
+    <dependencies>
+      <dependency id="Tharga.Toolkit.Console" version="$version$" />
+    </dependencies>
   </metadata>
   <files>
-	<file src="bin\$configuration$\*.*" target="lib\net45\" />
+    <file src="bin\$configuration$\Tharga.Toolkit.Console.Log4Net\*.*" target="lib\net45\" />
   </files>
 </package>

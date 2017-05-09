@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Tharga.Toolkit.Console.Log4Net.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj">
