@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using log4net;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
@@ -49,21 +49,21 @@ namespace SampleConsole
 
                     while (!e.IsCancellationRequested)
                     {
-                        Console.Write("Some stuff."); // + new string('c', 168));
-                        var index = 0;
-                        while (!e.IsCancellationRequested)
-                        {
-                            Thread.Sleep(1000);
-                            //Console.Write(new string('.', 188));
-                            Console.Write(new string('.', 30));
-                            //Console.Write('.');
-                            index++;
-                            if (index > 6)
-                            {
-                                Console.Write("\n");
-                                break;
-                            }
-                        }
+                        //Console.Write("Some stuff."); // + new string('c', 168));
+                        //var index = 0;
+                        //while (!e.IsCancellationRequested)
+                        //{
+                        //    Thread.Sleep(1000);
+                        //    //Console.Write(new string('.', 188));
+                        //    Console.Write(new string('.', 30));
+                        //    //Console.Write('.');
+                        //    index++;
+                        //    if (index > 6)
+                        //    {
+                        //        Console.Write("\n");
+                        //        break;
+                        //    }
+                        //}
                     }
                 }) }
                 //Runners = new[]{ new Runner(e =>
@@ -85,6 +85,31 @@ namespace SampleConsole
             };
 
             //Task.Run(() => { command.QueryRootParam(); }).Wait(1000);
+
+            //XmlConfigurator.ConfigureAndWatch(new FileInfo(@"log4net.config"));
+
+            //var logger = LogManager.GetLogger(typeof(Program));
+            var logger =  LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+            logger.Debug("this Debug msg");
+            logger.Warn("this Warn msg");
+            logger.Info("this Info msg");
+            logger.Error("this Error msg");
+            logger.Fatal("this Fatal msg");
+
+            try
+            {
+                var i = 0;
+                var j = 5 / i;
+            }
+            catch (Exception ex)
+            {
+                ex.Data.Add("AAA", "AAA1");
+
+                logger.Error("this Error msg,中文测试", ex);
+            }
+            //System.Console.ReadKey();
+
 
             commandEngine.Start(args);
 

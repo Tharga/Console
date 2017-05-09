@@ -56,6 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Build\AssemblyVersionInfo.cs">
+      <Link>Properties\AssemblyVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="When_running_engine.cs" />
     <Compile Include="When_running_engine_outside_the_buffer_height.cs" />
     <Compile Include="When_running_in_parallel.cs" />
