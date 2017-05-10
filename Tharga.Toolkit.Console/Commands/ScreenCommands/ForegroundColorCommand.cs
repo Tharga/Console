@@ -29,21 +29,13 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
             }
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var index = 0;
-            var color = QueryParam("Color", GetParam(paramList, index++), EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
+            var color = QueryParam("Color", GetNextParam(param), EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
 
             throw new NotImplementedException("Fire event that changes the forground in the console.");
             //System.Console.ForegroundColor = color;
             //System.Console.Clear();
-
-            return true;
         }
     }
 }

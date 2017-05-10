@@ -4,6 +4,6 @@ namespace Tharga.Toolkit.Console.Interfaces
 {
     public interface ICommandAsync
     {
-        Task InvokeAsync(params string[] input);
+        Task InvokeAsync(params string[] param);
     }
 }

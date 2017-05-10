@@ -14,20 +14,13 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         {
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             var index = 0;
-            var type = QueryParam("Type", GetParam(paramList, index++), EnumExtensions.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
+            var type = QueryParam("Type", GetNextParam(param), EnumExtensions.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
 
             throw new NotImplementedException("Fire event that unmutes the console.");
             //((SystemConsoleBase)_console).Unmute(type);
-
-            return true;
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 
@@ -17,19 +16,12 @@ namespace Tharga.Toolkit.Console.Commands
             _commandEngine = commandEngine;
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             foreach (var helpLine in _helpLines)
             {
                 _commandEngine.RootCommand.Console.Output(new WriteEventArgs(helpLine.Text, OutputLevel.Help, helpLine.CanExecute() ? helpLine.ForeColor : ConsoleColor.DarkGray, null, false, true));
             }
-
-            return true;
         }
 
         internal void AddLine(string text, Func<bool> canExecute = null, ConsoleColor foreColor = ConsoleColor.Gray)

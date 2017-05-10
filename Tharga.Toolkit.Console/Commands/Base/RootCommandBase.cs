@@ -70,10 +70,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("Root command."); } }
 
-        public sealed override async Task<bool> InvokeAsync(string paramList)
-        {
-            return await ((CommandBase)GetHelpCommand(paramList)).InvokeAsync(paramList);
-        }
+        //TODO: What does this method do? Why was it there?
+        //public sealed override async Task<bool> InvokeAsync(string paramList)
+        //{
+        //    return await ((CommandBase)GetHelpCommand(paramList)).InvokeAsync(paramList);
+        //}
 
         public bool Execute(string entry)
         {
@@ -90,16 +91,21 @@ namespace Tharga.Toolkit.Console.Commands.Base
                         return false;
                     }
 
-                    var input = subCommand.ToInput().ToArray();
+                    var param = subCommand.ToInput().ToArray();
 
                     var ac = command as ActionAsyncCommandBase;
+                    var bc = command as CommandBase;
                     if (ac != null)
                     {
-                        Task.Run(() => { ac.InvokeAsync(input); }).Wait();
+                        Task.Run(() => { ac.InvokeAsyncEx(param); }).Wait();
+                    }
+                    else if (bc != null)
+                    {
+                        bc.InvokeEx(param);
                     }
                     else
                     {
-                        command.Invoke(input);
+                        command.Invoke(param);
                     }
 
                     return true;
@@ -108,6 +114,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 {
                     Console.Output(new WriteEventArgs($"Invalid command {entry}.", OutputLevel.Error));
                 }
+            }
+            catch (CommandFailedException)
+            {
+                return false;
             }
             catch (CommandEscapeException)
             {

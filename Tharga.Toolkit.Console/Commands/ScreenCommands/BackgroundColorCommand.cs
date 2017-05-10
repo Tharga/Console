@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 
@@ -29,15 +28,10 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
             }
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             var index = 0;
-            var color = QueryParam("Color", GetParam(paramList, index++), EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
+            var color = QueryParam("Color", GetParam(param, index++), EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
 
             throw new NotImplementedException("Fire event that changes background on the console.");
             //System.Console.BackgroundColor = color;

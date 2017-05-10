@@ -23,14 +23,9 @@ namespace Tharga.Toolkit.Console.Commands
             }
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var input = QueryParam<string>("Input", paramList);
+            var data = QueryParam<string>("Input", param.ToParamString());
 
             var cmd = new Process();
             cmd.StartInfo.FileName = "powershell";
@@ -38,7 +33,7 @@ namespace Tharga.Toolkit.Console.Commands
             cmd.StartInfo.RedirectStandardOutput = true;
             cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.UseShellExecute = false;
-            cmd.StartInfo.Arguments = $"{input}";
+            cmd.StartInfo.Arguments = $"{data}";
             cmd.Start();
 
             cmd.StandardInput.Flush();
@@ -46,8 +41,6 @@ namespace Tharga.Toolkit.Console.Commands
             cmd.WaitForExit();
 
             OutputDefault(cmd.StandardOutput.ReadToEnd());
-
-            return true;
         }
     }
 }

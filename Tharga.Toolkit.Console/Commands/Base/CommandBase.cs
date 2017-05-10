@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
@@ -24,7 +23,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public event EventHandler<WriteEventArgs> WriteEvent;
 
-        protected CommandEngine CommandEngine { get; set; }
+        protected CommandEngine CommandEngine;
+        protected int ParamIndex;
 
         internal CommandBase(IEnumerable<string> names, string description = null, bool hidden = false)
         {
@@ -33,13 +33,19 @@ namespace Tharga.Toolkit.Console.Commands.Base
             _description = description ?? $"Command that manages {_names[0]}.";
         }
 
-        public abstract void Invoke(params string[] input);
+        public abstract void Invoke(params string[] param);
 
-        [Obsolete("Start using the function 'Task InvokeAsync(params string[] input)' instead. This feature will be removed.")]
-        public virtual async Task<bool> InvokeAsync(string paramList)
+        internal void InvokeEx(params string[] param)
         {
-            throw new NotSupportedException("Start implementing 'Task InvokeAsync(params string[] input)' instead of using this legacy function.");
+            ParamIndex = 0;
+            Invoke(param);
         }
+
+        //[Obsolete("Start using the function 'Task InvokeAsync(params string[] input)' instead. This feature will be removed.")]
+        //public virtual async Task<bool> InvokeAsync(string paramList)
+        //{
+        //    throw new NotSupportedException("Start implementing 'Task InvokeAsync(params string[] input)' instead of using this legacy function.");
+        //}
 
         protected abstract ICommand GetHelpCommand(string paramList);
 
@@ -59,21 +65,17 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return $"You cannot execute {Name} command." + (string.IsNullOrEmpty(reason) ? string.Empty : " " + reason);
         }
 
-        protected static string GetParam(string[] input, int index)
+        protected string GetNextParam(string[] param)
         {
-            if (input == null) return null;
-            if (!input.Any()) return null;
+            return GetParam(param, ParamIndex++);
+        }
 
-            //Group items between delimiters " into one single string.
-            //var verbs = GetDelimiteredVerbs(ref paramList, '\"');
-
-            //var paramArray = paramList.Split(' ');
-            if (input.Length <= index) return null;
-
-            ////Put the grouped verbs back in to the original
-            //if (verbs.Count > 0) for (var i = 0; i < input.Length; i++) if (verbs.ContainsKey(input[i])) input[i] = verbs[input[i]];
-
-            return input[index];
+        protected string GetParam(string[] param, int index)
+        {
+            if (param == null) return null;
+            if (!param.Any()) return null;
+            if (param.Length <= index) return null;
+            return param[index];
         }
 
         [Obsolete("Use GetParam with parameter 'string[] input' instead.")]
@@ -122,6 +124,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return value;
         }
 
+        protected T QueryParam<T>(string paramName, string[] autoParam = null, string defaultValue = null)
+        {
+            return QueryParam<T>(paramName, GetNextParam(autoParam), defaultValue);
+        }
+
         protected T QueryParam<T>(string paramName, string autoProvideValue = null, string defaultValue = null)
         {
             string value;
@@ -144,6 +151,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
             var response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(value);
             return response;
+        }
+
+        protected T QueryParam<T>(string paramName, string[] autoParam, IDictionary<T, string> selectionDelegate)
+        {
+            return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate, true, false);
         }
 
         protected T QueryParam<T>(string paramName, string autoProvideValue, IDictionary<T, string> selectionDelegate)

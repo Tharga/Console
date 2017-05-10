@@ -18,11 +18,22 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
         }
 
-        public abstract Task InvokeAsync(params string[] input);
+        public abstract Task InvokeAsync(params string[] param);
 
-        public override void Invoke(params string[] input)
+        internal Task InvokeAsyncEx(string[] param)
+        {
+            ParamIndex = 0;
+            return InvokeAsync(param);
+        }
+
+        public override void Invoke(params string[] param)
         {
             throw new NotSupportedException("For async commands, use InvokeAsync instead.");
+        }
+
+        protected async Task<T> QueryParamAsync<T>(string paramName, string[] autoParam, Func<Task<IDictionary<T, string>>> selectionDelegate)
+        {
+            return await QueryParamAsync(paramName, GetNextParam(autoParam), selectionDelegate);
         }
 
         protected async Task<T> QueryParamAsync<T>(string paramName, string autoProvideValue, Func<Task<IDictionary<T, string>>> selectionDelegate)

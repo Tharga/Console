@@ -16,15 +16,15 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return paramArray;
         }
 
-        public static string ToParamString(this string[] input)
+        public static string ToParamString(this string[] param)
         {
-            var p = input.ToParamList();
+            var p = param.ToParamList();
             return string.Join(" ", p);
         }
 
-        private static IEnumerable<string> ToParamList(this string[] input)
+        private static IEnumerable<string> ToParamList(this string[] param)
         {
-            foreach (var i in input)
+            foreach (var i in param)
             {
                 if (string.IsNullOrEmpty(i))
                 {

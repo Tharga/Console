@@ -22,9 +22,9 @@ namespace Tharga.Toolkit.Console.Commands
             }
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            var data = QueryParam<string>("Input", GetParam(input, 0));
+            var data = QueryParam<string>("Input", GetParam(param, 0));
 
             var cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";

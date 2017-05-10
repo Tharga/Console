@@ -64,6 +64,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\Base\ActionAsyncCommandBase.cs" />
+    <Compile Include="Exceptions\CommandFailedException.cs" />
     <Compile Include="Helpers\ParamExtensions.cs" />
     <Compile Include="Entities\Constants.cs" />
     <Compile Include="Entities\PushBufferDownEventArgs.cs" />

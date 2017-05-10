@@ -298,9 +298,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return x1;
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            var paramList = input.ToParamString();
+            var paramList = param.ToParamString(); //TODO: Do not convert, use input all the way
 
             string reasonMessage;
             if (!CanExecute(out reasonMessage))

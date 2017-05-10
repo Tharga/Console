@@ -28,19 +28,15 @@ namespace Tharga.Toolkit.Console.Commands
             }
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var filename = QueryParam<string>("Filename", GetParam(paramList, 0));
+            var filename = QueryParam<string>("Filename", GetParam(param, 0));
 
             if (!System.IO.File.Exists(filename))
             {
-                OutputError($"File {filename} does not exist.");
-                return false;
+                throw new CommandFailedException($"File {filename} does not exist.");
+                //OutputError($"File {filename} does not exist.");
+                //return false;
             }
 
             var fileLines = System.IO.File.ReadAllLines(filename);
@@ -56,13 +52,12 @@ namespace Tharga.Toolkit.Console.Commands
                     var success = _rootCommand.Execute(line);
                     if (!success)
                     {
-                        OutputError("Terminating command chain.");
-                        return false;
+                        throw new CommandFailedException("Terminating command chain.");
+                        //OutputError("Terminating command chain.");
+                        //return false;
                     }
                 }
             }
-
-            return true;
         }
     }
 }

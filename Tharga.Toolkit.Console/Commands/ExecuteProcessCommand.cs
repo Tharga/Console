@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 
@@ -23,18 +22,10 @@ namespace Tharga.Toolkit.Console.Commands
             }
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var input = QueryParam<string>("Input", paramList);
-
-            Process.Start(input);
-
-            return true;
+            var data = QueryParam<string>("Input", param.ToParamString());
+            Process.Start(data);
         }
     }
 }

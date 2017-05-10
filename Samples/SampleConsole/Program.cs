@@ -135,40 +135,31 @@ namespace SampleConsole
             _console = console;
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             //NOTE: This will trigger the line feed bug!
-            await Task.Run(() =>
-            {
-                _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth-1), OutputLevel.Default));
-                _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth), OutputLevel.Default));
-                _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth+1), OutputLevel.Default));
+            _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth - 1), OutputLevel.Default));
+            _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth), OutputLevel.Default));
+            _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth + 1), OutputLevel.Default));
 
-                System.Console.WriteLine("abc\nabc\n" + new string('X', Console.BufferWidth * 2) + "\ns\ns");
-                System.Console.WriteLine("abc\nabc\n" + new string('X', Console.BufferWidth * 2) + "\naaa");
-                System.Console.WriteLine("abc\n" + new string('X', Console.BufferWidth - 2));
-                System.Console.WriteLine(new string('X', Console.BufferWidth) + "\n\nx");
-                System.Console.WriteLine(new string('X', Console.BufferWidth - 1));
-                System.Console.WriteLine(new string('X', Console.BufferWidth));
-                System.Console.WriteLine(new string('X', Console.BufferWidth + 1));
-                System.Console.WriteLine(new string('X', Console.BufferWidth * 2));
+            System.Console.WriteLine("abc\nabc\n" + new string('X', Console.BufferWidth * 2) + "\ns\ns");
+            System.Console.WriteLine("abc\nabc\n" + new string('X', Console.BufferWidth * 2) + "\naaa");
+            System.Console.WriteLine("abc\n" + new string('X', Console.BufferWidth - 2));
+            System.Console.WriteLine(new string('X', Console.BufferWidth) + "\n\nx");
+            System.Console.WriteLine(new string('X', Console.BufferWidth - 1));
+            System.Console.WriteLine(new string('X', Console.BufferWidth));
+            System.Console.WriteLine(new string('X', Console.BufferWidth + 1));
+            System.Console.WriteLine(new string('X', Console.BufferWidth * 2));
 
-                System.Console.Write(new string('X', 20));
-                System.Console.Write(new string('Y', 10));
-                System.Console.Write(new string('Y', Console.BufferWidth - 30));
-                System.Console.Write(new string('Y', Console.BufferWidth));
-                System.Console.WriteLine(new string('Y', Console.BufferWidth));
+            System.Console.Write(new string('X', 20));
+            System.Console.Write(new string('Y', 10));
+            System.Console.Write(new string('Y', Console.BufferWidth - 30));
+            System.Console.Write(new string('Y', Console.BufferWidth));
+            System.Console.WriteLine(new string('Y', Console.BufferWidth));
 
-                System.Console.WriteLine(new string('X', Console.BufferWidth) + "\n");
-                System.Console.WriteLine(new string('X', Console.BufferWidth) + "\n\n");
-                System.Console.WriteLine("OK");
-            });
-            return true;
+            System.Console.WriteLine(new string('X', Console.BufferWidth) + "\n");
+            System.Console.WriteLine(new string('X', Console.BufferWidth) + "\n\n");
+            System.Console.WriteLine("OK");
         }
     }
 
@@ -204,10 +195,9 @@ namespace SampleConsole
         {
         }
 
-        public override async Task InvokeAsync(params string[] input)
+        public override async Task InvokeAsync(params string[] param)
         {
-            var index = 0;
-            var id = await QueryParamAsync("Some Id", GetParam(input, index++), KeyNameList);
+            var id = await QueryParamAsync("Some Id", GetNextParam(param), KeyNameList);
 
             OutputInformation($"Some data for {id}");
         }
@@ -234,19 +224,10 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var index = 0;
-            var id = QueryParam("Some Huge Id", GetParam(paramList, index++), HugeKeyNameList());
-
+            var id = QueryParam("Some Huge Id", GetNextParam(param), HugeKeyNameList());
             OutputInformation($"Some data for {id}");
-
-            return true;
         }
 
         private List<KeyValuePair<Guid, string>> HugeKeyNameList()
@@ -270,19 +251,10 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var index = 0;
-            var id = QueryParam("Some string", GetParam(paramList, index++), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
-
+            var id = QueryParam("Some string", GetNextParam(param), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
             OutputInformation($"Entered string was: {id}");
-
-            return true;
         }
     }
 
@@ -293,16 +265,9 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             for (var i = 0; i < 5; i++) OutputInformation($"Some data {i}");
-
-            return true;
         }
     }
 
@@ -313,12 +278,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             var table = new List<string[]> { new[] { "Index", "Guid" } };
             for (var i = 0; i < 5; i++)
@@ -328,8 +288,6 @@ namespace SampleConsole
             }
 
             OutputTable(table.ToArray());
-
-            return true;
         }
     }
 
@@ -346,12 +304,7 @@ namespace SampleConsole
             return false;
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             throw new NotSupportedException("Should not be able to execute this!");
         }
@@ -364,20 +317,12 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var index = 0;
-            var abc = QueryParam<string>("ABC", GetParam(paramList, index++));
-            var ab = QueryParam<string>("AB", GetParam(paramList, index++));
-            var a = QueryParam<string>("A", GetParam(paramList, index++));
-            var _ = QueryParam<string>("", GetParam(paramList, index++));
-
-            return true;
+            var abc = QueryParam<string>("ABC", GetNextParam(param));
+            var ab = QueryParam<string>("AB", GetNextParam(param));
+            var a = QueryParam<string>("A", GetNextParam(param));
+            var _ = QueryParam<string>("", GetNextParam(param));
         }
     }
 
@@ -388,19 +333,10 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var index = 0;
-            var password = QueryPassword("Some password", GetParam(paramList, index++));
-
+            var password = QueryPassword("Some password", GetNextParam(param));
             OutputInformation($"Entered password was: {password}");
-
-            return true;
         }
     }
 
@@ -461,16 +397,9 @@ namespace SampleConsole
             }
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             _timer.Start();
-
-            return true;
         }
     }
 
@@ -493,16 +422,9 @@ namespace SampleConsole
             Console.Write(output);
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             _timer.Start();
-
-            return true;
         }
     }
 
@@ -523,20 +445,12 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var index = 0;
-            var val1 = QueryParam<int>("First value", GetParam(paramList, index++));
-            var val2 = QueryParam<int>("Second value", GetParam(paramList, index++));
+            var val1 = QueryParam<int>("First value", GetNextParam(param));
+            var val2 = QueryParam<int>("Second value", GetNextParam(param));
 
             OutputInformation($"{val1} + {val2} = {val1 + val2}");
-
-            return true;
         }
     }
 
@@ -547,12 +461,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             var index = 0;
             var vals = new List<int>();
@@ -561,14 +470,12 @@ namespace SampleConsole
 
             while (true)
             {
-                var val = QueryParam<int?>("Value", GetParam(paramList, index++));
+                var val = QueryParam<int?>("Value", GetNextParam(param));
                 if (val == null) break;
                 vals.Add(val.Value);
             }
 
             OutputInformation($"{vals.Sum()}");
-
-            return true;
         }
     }
 
@@ -591,15 +498,9 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             OutputInformation("This command worked.");
-            return true;
         }
     }
 
@@ -610,15 +511,9 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             OutputWarning("This command did not work.");
-            return false;
         }
     }
 
@@ -629,12 +524,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             try
             {
@@ -645,8 +535,6 @@ namespace SampleConsole
                 e.Data.Add("A", "A1");
                 OutputError(e);
             }
-
-            return false;
         }
     }
 
@@ -657,12 +545,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
-        {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] param)
         {
             var exception = new Exception("Some even deeper exception.");
             exception.Data.Add("A1", "B1");
@@ -697,29 +580,21 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var parameters = CreateParameters(paramList);
+            var parameters = CreateParameters(param);
             OutputInformation($"Created parameters: {parameters}");
-
-            return true;
         }
 
-        public string CreateParameters(string paramList)
+        public string CreateParameters(params string[] param)
         {
-            var index = 0;
-            var val1 = QueryParam<string>("First value", GetParam(paramList, index++));
-            var val2 = QueryParam<string>("Second value", GetParam(paramList, index++));
-            var val3 = QueryParam("Third value", GetParam(paramList, index++), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
+            var val1 = QueryParam<string>("First value", param);
+            var val2 = QueryParam<string>("Second value", param);
+            var val3 = QueryParam("Third value", param, new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
             var val4 = "some_constant";
             var val5 = DateTime.UtcNow.DayOfWeek;
 
-            var parameters = string.Format("{0} {1} {2} {3} {4}", val1, val2, val3, val4, val5);
+            var parameters = $"{val1} {val2} {val3} {val4} {val5}";
             return parameters;
         }
     }
@@ -734,19 +609,12 @@ namespace SampleConsole
             _parametersCommand = parametersCommand;
         }
 
-        public override void Invoke(params string[] input)
+        public override void Invoke(params string[] param)
         {
-            InvokeAsync(input.ToParamString()).Wait();
-        }
-
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
-            var parameters = _parametersCommand.CreateParameters(paramList);
+            var parameters = _parametersCommand.CreateParameters(param);
 
             //TODO: Execute something using the parameters
             OutputInformation($"Execute somthing using the parameters: {parameters}");
-
-            return true;
         }
     }
 
