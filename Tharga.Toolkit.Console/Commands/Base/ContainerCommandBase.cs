@@ -85,7 +85,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
             if (command == null)
             {
-                helpCommand.AddLine($"No command named {paramList}.", foreColor: ConsoleColor.Red);
+                helpCommand.AddLine($"There is no command named '{paramList?.Replace(" details", "")}', cannot help with that.", foreColor: ConsoleColor.Yellow);
                 return helpCommand;
             }
 
@@ -305,13 +305,13 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 OutputWarning(GetCanExecuteFailMessage(reasonMessage));
                 GetHelpCommand(paramList).Invoke(enumerable);
             }
-            //else if (string.IsNullOrEmpty(paramList))
-            //{
-            //    GetHelpCommand(paramList).Invoke(enumerable);
-            //}
+            else if (string.IsNullOrEmpty(paramList))
+            {
+                GetHelpCommand(paramList).Invoke(enumerable);
+            }
             else
             {
-                OutputWarning($"Unknown sub command {paramList}, for {Name}.");
+                OutputWarning($"Unknown sub command '{paramList}', for {Name}.");
             }
         }
 

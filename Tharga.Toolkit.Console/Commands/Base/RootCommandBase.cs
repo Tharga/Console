@@ -117,7 +117,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 }
                 else
                 {
-                    Console.Output(new WriteEventArgs($"Invalid command {entry}.", OutputLevel.Error));
+                    OutputWarning($"Unknown command '{entry}'.");
                 }
             }
             catch (CommandFailedException)
