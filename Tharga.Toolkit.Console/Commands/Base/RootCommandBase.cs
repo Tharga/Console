@@ -32,6 +32,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
             RegisterCommand(new ExecuteCommand(this));
 
             WriteEvent += OnOutputEvent;
+
+            console.Attach(this);
         }
 
         public new void RegisterCommand(ICommand command)

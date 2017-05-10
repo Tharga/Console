@@ -22,7 +22,8 @@ namespace SampleConsole
         [STAThread]
         private static void Main(string[] args)
         {
-            var console = new ClientConsole(new ConsoleConfiguration
+            //var console = new ClientConsole(new ConsoleConfiguration
+            var console = new VoiceConsole(new ConsoleConfiguration
             {
                 SplashScreen = _splashscreen,
                 StartLocation = new Location(10,10)

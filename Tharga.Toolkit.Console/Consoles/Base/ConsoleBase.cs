@@ -37,6 +37,10 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         public int BufferWidth => _consoleManager.BufferWidth;
         public int BufferHeight => _consoleManager.BufferHeight;
 
+        public virtual void Attach(IRootCommand command)
+        {
+        }
+
         public virtual ConsoleKeyInfo ReadKey()
         {
             return ReadKey(new CancellationToken());

@@ -2,7 +2,7 @@ using System;
 
 namespace Tharga.Toolkit.Console.Interfaces
 {
-    public interface IRootCommand : ICommand
+    public interface IRootCommand : IContainerCommand
     {
         event EventHandler<EventArgs> RequestCloseEvent;
         IConsole Console { get; }
