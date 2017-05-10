@@ -28,6 +28,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
             RegisterCommand(new PoshCommand());
             RegisterCommand(new ExecuteProcessCommand());
             RegisterCommand(new ExecuteCommand(this));
+
+            WriteEvent += OnOutputEvent;
         }
 
         public new void RegisterCommand(ICommand command)
@@ -56,7 +58,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         private void OnOutputEvent(object sender, WriteEventArgs e)
         {
-            Console.Output(e); 
+            Console.Output(e);
         }
 
         protected virtual void OnExceptionOccuredEvent(ExceptionOccuredEventArgs e)
@@ -99,10 +101,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             catch (AggregateException exception)
             {
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                foreach (var exp in exception.InnerExceptions)
-                {
-                    OutputError(exp);
-                }
+                OutputError(exception);
             }
             catch (Exception exception)
             {

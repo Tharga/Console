@@ -69,13 +69,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj">
-      <Project>{B8BD1635-042F-4EB3-8018-5CEB7302C31B}</Project>
-      <Name>Tharga.Toolkit.Console</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Tharga.Toolkit.Console.Log4Net\Tharga.Toolkit.Console.Log4Net.csproj">
       <Project>{fe04785f-33c8-4f0a-81ed-c7593fa8b5da}</Project>
       <Name>Tharga.Toolkit.Console.Log4Net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj">
+      <Project>{B8BD1635-042F-4EB3-8018-5CEB7302C31B}</Project>
+      <Name>Tharga.Toolkit.Console</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

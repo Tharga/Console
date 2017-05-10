@@ -8,7 +8,7 @@ namespace Tharga.Toolkit.Console.Helpers
     {
         public static string ToFormattedString(this Exception exception)
         {
-            return ToFormattedString(exception, 0);
+            return ToFormattedString(exception, 0).TrimEnd(Environment.NewLine.ToCharArray());
         }
 
         private static string ToFormattedString(this Exception exception, int indentationLevel)
@@ -24,10 +24,11 @@ namespace Tharga.Toolkit.Console.Helpers
 
             if (exception.InnerException != null)
             {
-                sb.AppendLine(exception.InnerException.ToFormattedString(++indentationLevel));                
+                sb.AppendLine(exception.InnerException.ToFormattedString(++indentationLevel));
             }
 
-            return sb.ToString().TrimEnd('\n');
+            var result = sb.ToString();
+            return result;
         }
     }
 }
