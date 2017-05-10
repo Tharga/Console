@@ -8,8 +8,10 @@ namespace Tharga.Toolkit.Console.Commands
     internal class ExecuteProcessCommand : ActionCommandBase
     {
         public ExecuteProcessCommand()
-            : base(new [] { "run", "exe", "execute" }, "Execute command.", true)
+            : base("run", "Execute command.", true)
         {
+            AddName("exe");
+            AddName("execute");
         }
 
         public override IEnumerable<HelpLine> HelpText

@@ -8,8 +8,9 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
     internal class ScreenCommand : ContainerCommandBase
     {
         public ScreenCommand()
-            : base(new[] { "screen", "scr" }, null, true)
+            : base("screen", null, true)
         {
+            AddName("scr");
             RegisterCommand(new ClearCommand());
             RegisterCommand(new BackgroundColorCommand());
             RegisterCommand(new ForegroundColorCommand());

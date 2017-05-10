@@ -8,11 +8,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
 {
     public abstract class ActionAsyncCommandBase : ActionCommandBase, ICommandAsync
     {
-        protected ActionAsyncCommandBase(string[] names, string description = null, bool hidden = false)
-            : base(names, description, hidden)
-        {
-        }
-
         protected ActionAsyncCommandBase(string name, string description = null, bool hidden = false)
             : base(name, description, hidden)
         {

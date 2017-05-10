@@ -9,8 +9,9 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
     internal class BackgroundColorCommand : ActionCommandBase
     {
         public BackgroundColorCommand()
-            : base(new [] { "background", "bg"}, "Sets the background color.", false)
+            : base("background", "Sets the background color.", false)
         {
+            AddName("bg");
         }
 
         public override IEnumerable<HelpLine> HelpText

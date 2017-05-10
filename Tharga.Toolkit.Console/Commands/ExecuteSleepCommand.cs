@@ -7,7 +7,7 @@ namespace Tharga.Toolkit.Console.Commands
     internal class ExecuteSleepCommand : ActionCommandBase
     {
         internal ExecuteSleepCommand()
-            : base(new [] { "sleep" }, "Sleep a number of milliseconds.", false)
+            : base("sleep", "Sleep a number of milliseconds.", false)
         {
         }
 

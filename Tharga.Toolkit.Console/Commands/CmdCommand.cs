@@ -8,8 +8,9 @@ namespace Tharga.Toolkit.Console.Commands
     internal class CmdCommand : ActionCommandBase
     {
         public CmdCommand()
-            : base(new [] {"cmd", "command"}, "Command shell commands.", true)
+            : base("cmd", "Command shell commands.", true)
         {
+            AddName("command");
         }
 
         public override IEnumerable<HelpLine> HelpText

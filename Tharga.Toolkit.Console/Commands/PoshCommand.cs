@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 
@@ -9,8 +8,9 @@ namespace Tharga.Toolkit.Console.Commands
     internal class PoshCommand : ActionCommandBase
     {
         public PoshCommand()
-            : base(new [] {"posh", "ps"}, "Powershell commands.", true)
+            : base("posh", "Powershell commands.", true)
         {
+            AddName("ps");
         }
 
         public override IEnumerable<HelpLine> HelpText

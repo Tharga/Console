@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 
@@ -10,8 +9,9 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
     internal class ForegroundColorCommand : ActionCommandBase
     {
         public ForegroundColorCommand()
-            : base(new[] { "foreground", "fg" }, "Sets the foreground color.", false)
+            : base("foreground", "Sets the foreground color.", false)
         {
+            AddName("fg");
         }
 
         public override IEnumerable<HelpLine> HelpText

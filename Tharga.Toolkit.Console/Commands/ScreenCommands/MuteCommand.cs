@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
@@ -13,7 +12,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         private readonly IConsole _console;
 
         public MuteCommand()
-            : base(new [] { "mute"}, "Mute output.", false)
+            : base("mute", "Mute output.", false)
         {
         }
 

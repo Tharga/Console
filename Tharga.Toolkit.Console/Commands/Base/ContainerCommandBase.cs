@@ -15,13 +15,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public event EventHandler<CommandRegisteredEventArgs> CommandRegisteredEvent;
 
-        internal ContainerCommandBase(string[] names, string description = null, bool hidden = false)
-            : base(names, description, hidden)
-        {
-        }
-
         protected ContainerCommandBase(string name, string description = null, bool hidden = false)
-            : this(new [] { name }, description, hidden)
+            : base(name, description, hidden)
         {
         }
 

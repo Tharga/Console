@@ -10,7 +10,7 @@ namespace Tharga.Toolkit.Console.Commands
         private readonly Action _stopAction;
 
         internal ExitCommand(Action stopAction)
-            : base(new [] { "exit" }, "Exit from the console.")
+            : base("exit", "Exit from the console.")
         {
             _stopAction = stopAction;
         }

@@ -7,8 +7,9 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
     internal class ClearCommand : ActionCommandBase
     {
         internal ClearCommand()
-            : base(new[] { "cls", "clear" }, "Clears the display.", false)
+            : base("cls", "Clears the display.", false)
         {
+            AddName("clear");
         }
 
         public override IEnumerable<HelpLine> HelpText

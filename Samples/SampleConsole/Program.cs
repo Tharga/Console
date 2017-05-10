@@ -597,6 +597,7 @@ namespace SampleConsole
             var parameters = $"{val1} {val2} {val3} {val4} {val5}";
             return parameters;
         }
+
     }
 
     public class ExecuteParametersCommand : ActionCommandBase

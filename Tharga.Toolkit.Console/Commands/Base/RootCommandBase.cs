@@ -16,7 +16,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
 
         protected RootCommandBase(IConsole console)
-            : base(new[] { "root" })
+            : base("root")
         {
             if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
 

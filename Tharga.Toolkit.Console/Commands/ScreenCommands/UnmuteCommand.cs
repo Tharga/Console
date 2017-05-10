@@ -1,16 +1,14 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
     internal class UnmuteCommand : ActionCommandBase
     {
         public UnmuteCommand()
-            : base(new[] { "unmute" }, "Unmute output.", false)
+            : base("unmute", "Unmute output.", false)
         {
         }
 

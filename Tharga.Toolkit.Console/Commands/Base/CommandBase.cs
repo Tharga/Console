@@ -10,12 +10,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
 {
     public abstract class CommandBase : ICommand
     {
+        private readonly Dictionary<string, string> _names;
         private readonly string _description;
-        private readonly string[] _names;
         private readonly bool _hidden;
 
-        public string Name => _names[0];
-        public IEnumerable<string> Names => _names;
+        public string Name => _names.Keys.First();
+        public IEnumerable<string> Names => _names.Select(x => x.Key);
         public string Description => _description;
         public bool IsHidden => _hidden;
 
@@ -26,11 +26,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected CommandEngine CommandEngine;
         protected int ParamIndex;
 
-        internal CommandBase(IEnumerable<string> names, string description = null, bool hidden = false)
+        internal CommandBase(string name, string description = null, bool hidden = false)
         {
             _hidden = hidden;
-            _names = names.Select(x => x.ToLower()).ToArray();
-            _description = description ?? $"Command that manages {_names[0]}.";
+            _names = new Dictionary<string, string> { { name.ToLower(), name } };
+            _description = description ?? $"Command that manages {name}.";
         }
 
         public abstract void Invoke(params string[] param);
@@ -39,6 +39,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             ParamIndex = 0;
             Invoke(param);
+        }
+
+        protected void AddName(string name)
+        {
+            if (!_names.ContainsKey(name.ToLower()))
+                _names.Add(name.ToLower(), name);
         }
 
         //[Obsolete("Start using the function 'Task InvokeAsync(params string[] input)' instead. This feature will be removed.")]
