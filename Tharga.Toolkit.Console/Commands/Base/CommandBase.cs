@@ -11,13 +11,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
     public abstract class CommandBase : ICommand
     {
         private readonly Dictionary<string, string> _names;
-        private readonly string _description;
-        private readonly bool _hidden;
 
         public string Name => _names.Keys.First();
         public IEnumerable<string> Names => _names.Select(x => x.Key);
-        public string Description => _description;
-        public bool IsHidden => _hidden;
+        public string Description { get; }
+        public bool IsHidden { get; }
 
         public abstract IEnumerable<HelpLine> HelpText { get; }
 
@@ -28,9 +26,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         internal CommandBase(string name, string description = null, bool hidden = false)
         {
-            _hidden = hidden;
+            IsHidden = hidden;
             _names = new Dictionary<string, string> { { name.ToLower(), name } };
-            _description = description ?? $"Command that manages {name}.";
+            Description = description ?? $"Command that manages {name}.";
         }
 
         public abstract void Invoke(params string[] param);
@@ -46,12 +44,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (!_names.ContainsKey(name.ToLower()))
                 _names.Add(name.ToLower(), name);
         }
-
-        //[Obsolete("Start using the function 'Task InvokeAsync(params string[] input)' instead. This feature will be removed.")]
-        //public virtual async Task<bool> InvokeAsync(string paramList)
-        //{
-        //    throw new NotSupportedException("Start implementing 'Task InvokeAsync(params string[] input)' instead of using this legacy function.");
-        //}
 
         protected abstract ICommand GetHelpCommand(string paramList);
 
@@ -84,28 +76,22 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return param[index];
         }
 
-        [Obsolete("Use GetParam with parameter 'string[] input' instead.")]
-        protected static string GetParam(string paramList, int index)
-        {
-            if (paramList == null) return null;
+        //[Obsolete("Use GetParam with parameter 'string[] input' instead.")]
+        //protected static string GetParam(string paramList, int index)
+        //{
+        //    if (paramList == null) return null;
 
-            //Group items between delimiters " into one single string.
-            var verbs = ParamExtensions.GetDelimiteredVerbs(ref paramList, '\"');
+        //    //Group items between delimiters " into one single string.
+        //    var verbs = ParamExtensions.GetDelimiteredVerbs(ref paramList, '\"');
 
-            var paramArray = paramList.Split(' ');
-            if (paramArray.Length <= index) return null;
+        //    var paramArray = paramList.Split(' ');
+        //    if (paramArray.Length <= index) return null;
 
-            //Put the grouped verbs back in to the original
-            if (verbs.Count > 0) for (var i = 0; i < paramArray.Length; i++) if (verbs.ContainsKey(paramArray[i])) paramArray[i] = verbs[paramArray[i]];
+        //    //Put the grouped verbs back in to the original
+        //    if (verbs.Count > 0) for (var i = 0; i < paramArray.Length; i++) if (verbs.ContainsKey(paramArray[i])) paramArray[i] = verbs[paramArray[i]];
 
-            return paramArray[index];
-        }
-
-        //TODO: This is strictly a root command function
-        public string QueryRootParam()
-        {
-            return QueryParam<string>(Constants.Prompt, null, null, false, false);
-        }
+        //    return paramArray[index];
+        //}
 
         protected string QueryPassword(string paramName, string autoProvideValue = null, string defaultValue = null)
         {
@@ -130,7 +116,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return value;
         }
 
-        protected T QueryParam<T>(string paramName, string[] autoParam = null, string defaultValue = null)
+        protected T QueryParam<T>(string paramName, string[] autoParam, string defaultValue = null)
         {
             return QueryParam<T>(paramName, GetNextParam(autoParam), defaultValue);
         }

@@ -9,18 +9,17 @@ namespace Tharga.Toolkit.Console.Tests
     {
         private const int _bufferHeight = 300;
         private const int _bufferWidth = 80;
+        private int _cursorTop;
 
         public string[] LineOutput = new string[_bufferHeight];
-        private int _cursorTop;
-        private readonly IKeyInputEngine _keyInputEngine;
 
         public FakeConsoleManager(IKeyInputEngine keyInputEngine = null)
         {
-            _keyInputEngine = keyInputEngine ?? new KeyInputEngine();
+            KeyInputEngine = keyInputEngine ?? new KeyInputEngine();
         }
 
         public void Dispose()
-        {            
+        {
         }
 
         public Encoding Encoding { get; }
@@ -58,6 +57,44 @@ namespace Tharga.Toolkit.Console.Tests
         {
             DoWriteLine(value, false);
         }
+
+        public ConsoleColor ForegroundColor { get; set; }
+        public ConsoleColor BackgroundColor { get; set; }
+
+        public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
+        {
+            if (sourceLeft != 0) throw new NotImplementedException();
+            if (sourceWidth != BufferWidth) throw new NotImplementedException();
+            if (targetLeft != 0) throw new NotImplementedException();
+            if (sourceHeight != 1) throw new NotImplementedException();
+
+            LineOutput[targetTop] = LineOutput[sourceTop];
+            LineOutput[sourceTop] = null;
+        }
+
+        public void SetCursorPosition(int left, int top)
+        {
+            if (top >= BufferHeight) throw new InvalidOperationException();
+            if (top < 0) throw new InvalidOperationException();
+            if (left < 0) throw new InvalidOperationException();
+            if (left >= BufferWidth) throw new InvalidOperationException();
+
+            CursorLeft = left;
+            CursorTop = top;
+        }
+
+        public void Clear()
+        {
+            LineOutput = new string[_bufferHeight];
+            CursorLeft = 0;
+            CursorTop = 0;
+        }
+
+        public void Intercept(IConsole console)
+        {
+        }
+
+        public IKeyInputEngine KeyInputEngine { get; }
 
         private void DoWriteLine(string value, bool lineFeed)
         {
@@ -104,51 +141,6 @@ namespace Tharga.Toolkit.Console.Tests
                         CursorLeft = LineOutput[CursorTop].Length;
                     }
                 }
-            }
-        }
-
-        public ConsoleColor ForegroundColor { get; set; }
-        public ConsoleColor BackgroundColor { get; set; }
-
-        public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
-        {
-            if (sourceLeft != 0) throw new NotImplementedException();
-            if (sourceWidth != BufferWidth) throw new NotImplementedException();
-            if (targetLeft != 0) throw new NotImplementedException();
-            if (sourceHeight != 1) throw new NotImplementedException();
-
-            LineOutput[targetTop] = LineOutput[sourceTop];
-            LineOutput[sourceTop] = null;
-        }
-
-        public void SetCursorPosition(int left, int top)
-        {
-            if(top >= BufferHeight) throw new InvalidOperationException();
-            if(top < 0) throw new InvalidOperationException();
-            if(left < 0) throw new InvalidOperationException();
-            if(left >= BufferWidth) throw new InvalidOperationException();
-
-            CursorLeft = left;
-            CursorTop = top;
-        }
-
-        public void Clear()
-        {
-            LineOutput = new string[_bufferHeight];
-            CursorLeft = 0;
-            CursorTop = 0;
-        }
-
-        public void Intercept(IConsole console)
-        {
-        }
-
-        public IKeyInputEngine KeyInputEngine
-        {
-            get
-            {
-                //throw new NotImplementedException();
-                return _keyInputEngine;
             }
         }
     }

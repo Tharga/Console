@@ -1,4 +1,4 @@
-namespace Tharga.Toolkit.Console.Commands.Base
+namespace Tharga.Toolkit.Console.Entities
 {
     internal class Constants
     {

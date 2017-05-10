@@ -14,10 +14,10 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 
         public override void Invoke(params string[] param)
         {
-            var index = 0;
-            var type = QueryParam("Type", GetNextParam(param), EnumExtensions.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
-
             throw new NotImplementedException("Fire event that unmutes the console.");
+
+            var type = QueryParam("Type", param, EnumExtensions.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
+
             //((SystemConsoleBase)_console).Unmute(type);
         }
     }

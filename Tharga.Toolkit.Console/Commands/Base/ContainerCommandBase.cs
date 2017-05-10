@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base

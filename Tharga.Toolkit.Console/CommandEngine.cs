@@ -76,7 +76,7 @@ namespace Tharga.Toolkit.Console
                 }
                 else
                 {
-                    entry = RootCommand.QueryRootParam();
+                    entry = RootCommand.QueryInput();
                 }
 
                 if (!_cancellationTokenSource.IsCancellationRequested)

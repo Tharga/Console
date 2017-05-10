@@ -172,7 +172,6 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         }
 
         //TODO: All outputs should go via this method! (Entry to this method is from different methods, should only be one, or)
-        //protected internal virtual void WriteLineEx(string value, OutputLevel level)
         protected virtual Location WriteLineEx(string value, OutputLevel level)
         {
             if (_consoleManager.ForegroundColor == _consoleManager.BackgroundColor)
@@ -190,8 +189,6 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                     if (string.IsNullOrEmpty(line))
                     {
                         _consoleManager?.WriteLine(line);
-                        //endOfTextLocation = new Location(CursorLeft, CursorTop);
-                        //_consoleManager?.WriteLine(null);
                     }
                     else
                     {
@@ -202,8 +199,6 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 else
                 {
                     _consoleManager?.WriteLine(line);
-                    //endOfTextLocation = new Location(CursorLeft, CursorTop);
-                    //_consoleManager?.WriteLine(null);
                 }
             }
             OnLineWrittenEvent(new LineWrittenEventArgs(value, level));
@@ -276,30 +271,15 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
                 if (inputBufferLines + CursorTop + linesToInsert > _consoleManager.BufferHeight)
                 {
-                    //throw new NotImplementedException();
-                    //NOTE: This works, but moves the entire buffer up one step and makes the screen flicker
-                    ////MoveBufferArea(0, linesToInsert, BufferWidth, CursorTop - linesToInsert, 0, 0);
-                    ////SetCursorPosition(0, cursorTop - linesToInsert);
-                    ////OnLinesInsertedEvent(linesToInsert * -1);
-
-                    //OnPushBufferDownEvent(linesToInsert);
-
-                    //var linesNeeded = linesToInsert; //Perhaps there is aready lines not used in the buffer, theese decucted.
-
-                    ////TODO: Move the cursor to the end of the input buffer
+                    //TODO: Does now work when there has been other inserted lines between the named write input and the cursor.
                     SetCursorPosition(BufferWidth - 1, BufferHeight - 1);
                     var cursorMovement = CursorTop - cursorTop;
                     var linesNeeded = inputBufferLines + CursorTop + linesToInsert - _consoleManager.BufferHeight - cursorMovement;
                     for (var i = 0; i < linesNeeded; i++)
                         _consoleManager?.WriteLine(null);
 
-                    //This works for 1 line to insert and 1 line in buffer
                     MoveBufferArea(0, CursorTop - linesToInsert, BufferWidth, inputBufferLines, 0, CursorTop);
                     SetCursorPosition(0, CursorTop - inputBufferLines - linesToInsert + 1);
-
-                    //This works for 2 line to insert and 1 line in buffer
-                    //MoveBufferArea(0, CursorTop - inputBufferLines - linesToInsert, BufferWidth, inputBufferLines, 0, CursorTop - linesToInsert + 1);
-                    //SetCursorPosition(0, CursorTop - inputBufferLines - linesToInsert);
                 }
                 else
                 {

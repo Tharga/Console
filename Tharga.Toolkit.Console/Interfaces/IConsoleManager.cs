@@ -1,14 +1,8 @@
 using System;
 using System.Text;
-using System.Threading;
 
 namespace Tharga.Toolkit.Console.Interfaces
 {
-    public interface IKeyInputEngine
-    {
-        ConsoleKeyInfo ReadKey(CancellationToken cancellationToken);
-    }
-
     public interface IConsoleManager : IDisposable
     {
         Encoding Encoding { get; }

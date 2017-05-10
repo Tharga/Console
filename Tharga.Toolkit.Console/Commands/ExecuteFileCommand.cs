@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 
@@ -35,8 +34,6 @@ namespace Tharga.Toolkit.Console.Commands
             if (!System.IO.File.Exists(filename))
             {
                 throw new CommandFailedException($"File {filename} does not exist.");
-                //OutputError($"File {filename} does not exist.");
-                //return false;
             }
 
             var fileLines = System.IO.File.ReadAllLines(filename);
@@ -53,8 +50,6 @@ namespace Tharga.Toolkit.Console.Commands
                     if (!success)
                     {
                         throw new CommandFailedException("Terminating command chain.");
-                        //OutputError("Terminating command chain.");
-                        //return false;
                     }
                 }
             }

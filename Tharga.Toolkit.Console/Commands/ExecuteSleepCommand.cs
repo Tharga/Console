@@ -15,7 +15,7 @@ namespace Tharga.Toolkit.Console.Commands
 
         public override void Invoke(params string[] param)
         {
-            var millisecondsTimeout = QueryParam<int>("Time", GetNextParam(param));
+            var millisecondsTimeout = QueryParam<int>("Time", param);
             System.Threading.Thread.Sleep(millisecondsTimeout);
         }
     }

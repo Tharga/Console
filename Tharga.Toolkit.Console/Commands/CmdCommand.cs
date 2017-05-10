@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Helpers;
 
 namespace Tharga.Toolkit.Console.Commands
 {
@@ -25,7 +26,7 @@ namespace Tharga.Toolkit.Console.Commands
 
         public override void Invoke(params string[] param)
         {
-            var data = QueryParam<string>("Input", GetParam(param, 0));
+            var data = QueryParam<string>("Input", param.ToParamString());
 
             var cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
@@ -42,27 +43,5 @@ namespace Tharga.Toolkit.Console.Commands
 
             OutputDefault(cmd.StandardOutput.ReadToEnd());
         }
-
-        //public override async Task<bool> InvokeAsync(string paramList)
-        //{
-        //    var input = QueryParam<string>("Input", paramList);
-
-        //    var cmd = new Process();
-        //    cmd.StartInfo.FileName = "cmd.exe";
-        //    cmd.StartInfo.RedirectStandardInput = true;
-        //    cmd.StartInfo.RedirectStandardOutput = true;
-        //    cmd.StartInfo.CreateNoWindow = true;
-        //    cmd.StartInfo.UseShellExecute = false;
-        //    cmd.StartInfo.Arguments = $"/C {input}";
-        //    cmd.Start();
-
-        //    cmd.StandardInput.Flush();
-        //    cmd.StandardInput.Close();
-        //    cmd.WaitForExit();
-
-        //    OutputDefault(cmd.StandardOutput.ReadToEnd());
-
-        //    return true;
-        //}
     }
 }

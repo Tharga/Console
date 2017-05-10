@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,36 +43,39 @@ namespace SampleConsole
 
             var commandEngine = new CommandEngine(command)
             {
-                TaskRunners = new[]{ new TaskRunner(e =>
+                TaskRunners = new TaskRunner[]
                 {
-                    Thread.Sleep(2000);
+                //    new TaskRunner(e =>
+                //{
+                //    Thread.Sleep(2000);
 
-                    while (!e.IsCancellationRequested)
-                    {
-                        Console.Write("Some stuff."); // + new string('c', 168));
-                        var index = 0;
-                        while (!e.IsCancellationRequested)
-                        {
-                            Thread.Sleep(1000);
-                            //Console.Write(new string('.', 188));
-                            //Console.Write(new string('.', 30));
-                            Console.Write('.');
-                            index++;
-                            if (index > 6)
-                            {
-                                Console.Write("\n");
-                                break;
-                            }
-                        }
-                    }
-                    console.Output(new WriteEventArgs("The pricess was stopped", textColor: ConsoleColor.DarkRed));
-                }),
-                new TaskRunner(e =>
-                {
-                    e.WaitOne();
-                    console.Output(new WriteEventArgs("Press any key to exit."));
-                    console.ReadKey();
-                }), }
+                //    while (!e.IsCancellationRequested)
+                //    {
+                //        Console.Write("Some stuff."); // + new string('c', 168));
+                //        var index = 0;
+                //        while (!e.IsCancellationRequested)
+                //        {
+                //            Thread.Sleep(1000);
+                //            //Console.Write(new string('.', 188));
+                //            //Console.Write(new string('.', 30));
+                //            Console.Write('.');
+                //            index++;
+                //            if (index > 6)
+                //            {
+                //                Console.Write("\n");
+                //                break;
+                //            }
+                //        }
+                //    }
+                //    console.Output(new WriteEventArgs("The pricess was stopped", textColor: ConsoleColor.DarkRed));
+                //}),
+                //new TaskRunner(e =>
+                //{
+                //    e.WaitOne();
+                //    console.Output(new WriteEventArgs("Press any key to exit."));
+                //    console.ReadKey();
+                //}),
+                }
                 //Runners = new[]{ new Runner(e =>
                 //{
                 //    var i = 0;
@@ -94,30 +96,27 @@ namespace SampleConsole
 
             //Task.Run(() => { command.QueryRootParam(); }).Wait(1000);
 
-            //XmlConfigurator.ConfigureAndWatch(new FileInfo(@"log4net.config"));
 
-            //var logger = LogManager.GetLogger(typeof(Program));
-            var logger =  LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            //NOTE: Logger
+            //var logger =  LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-            logger.Debug("this Debug msg");
-            logger.Warn("this Warn msg");
-            logger.Info("this Info msg");
-            logger.Error("this Error msg");
-            logger.Fatal("this Fatal msg");
+            //logger.Debug("this Debug msg");
+            //logger.Warn("this Warn msg");
+            //logger.Info("this Info msg");
+            //logger.Error("this Error msg");
+            //logger.Fatal("this Fatal msg");
 
-            try
-            {
-                var i = 0;
-                var j = 5 / i;
-            }
-            catch (Exception ex)
-            {
-                ex.Data.Add("AAA", "AAA1");
+            //try
+            //{
+            //    var i = 0;
+            //    var j = 5 / i;
+            //}
+            //catch (Exception ex)
+            //{
+            //    ex.Data.Add("AAA", "AAA1");
 
-                logger.Error("this Error msg,中文测试", ex);
-            }
-            //System.Console.ReadKey();
-
+            //    logger.Error("this Error msg,中文测试", ex);
+            //}
 
             commandEngine.Start(args);
 

@@ -14,48 +14,6 @@ namespace Tharga.Toolkit.Console.Consoles
         private readonly IConsoleConfiguration _consoleConfiguration;
         private bool _topMost;
 
-        public bool TopMost
-        {
-            get { return _topMost; }
-            set
-            {
-                SetTopMost(value);
-            }
-        }
-
-        #region User32
-
-        private const int HWND_TOPMOST = -1;
-        static readonly int HWND_NOTOPMOST = -2;
-        private const int SWP_NOMOVE = 0x0002;
-        private const int SWP_NOSIZE = 0x0001;
-        private const short SWP_NOZORDER = 0X4;
-        private const int SWP_SHOWWINDOW = 0x0040;
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
-        {
-            public int Left; // x position of upper-left corner
-            public int Top; // y position of upper-left corner
-            public int Right; // x position of lower-right corner
-            public int Bottom; // y position of lower-right corner
-        }
-
-        //private const int HWND_TOPMOST = -1;
-        //private const int SWP_NOMOVE = 0x0002;
-        //private const int SWP_NOSIZE = 0x0001;
-               
-
-        #endregion
-
         public ClientConsole(IConsoleConfiguration consoleConfiguration = null)
             : base(new ConsoleManager(System.Console.Out, System.Console.In))
         {
@@ -69,6 +27,13 @@ namespace Tharga.Toolkit.Console.Consoles
             ShowAssemblyInfo();
         }
 
+        public bool TopMost
+        {
+            get { return _topMost; }
+            set { SetTopMost(value); }
+        }
+
+        //TODO: Make it possible to set what screen the window should be placed on
         private void SetLocation()
         {
             if (_consoleConfiguration.StartLocation == null) return;
@@ -82,7 +47,7 @@ namespace Tharga.Toolkit.Console.Consoles
             //Console.WriteLine(rct.Left.ToString(), OutputLevel.Warning);
         }
 
-        //TODO: Move to Console Manager 
+        //TODO: Move to Console Manager
         private void SetColor()
         {
             if (System.Console.BackgroundColor == _consoleConfiguration.BackgroundColor && System.Console.ForegroundColor == _consoleConfiguration.DefaultTextColor) return;
@@ -92,7 +57,7 @@ namespace Tharga.Toolkit.Console.Consoles
             System.Console.Clear();
         }
 
-        //TODO: Move to Console Manager 
+        //TODO: Move to Console Manager
         private void UpdateTitle()
         {
             try
@@ -140,5 +105,37 @@ namespace Tharga.Toolkit.Console.Consoles
                 SetWindowPos(hWnd, new IntPtr(HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             }
         }
+
+        #region User32
+
+        private const int HWND_TOPMOST = -1;
+        private static readonly int HWND_NOTOPMOST = -2;
+        private const int SWP_NOMOVE = 0x0002;
+        private const int SWP_NOSIZE = 0x0001;
+        private const short SWP_NOZORDER = 0X4;
+        private const int SWP_SHOWWINDOW = 0x0040;
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left; // x position of upper-left corner
+            public int Top; // y position of upper-left corner
+            public int Right; // x position of lower-right corner
+            public int Bottom; // y position of lower-right corner
+        }
+
+        //private const int HWND_TOPMOST = -1;
+        //private const int SWP_NOMOVE = 0x0002;
+        //private const int SWP_NOSIZE = 0x0001;
+
+        #endregion
     }
 }

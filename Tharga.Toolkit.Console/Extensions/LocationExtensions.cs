@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
 using Tharga.Toolkit.Console.Entities;
 
 namespace Tharga.Toolkit.Console

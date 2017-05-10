@@ -99,6 +99,7 @@
     <Compile Include="Entities\CommandRegisteredEventArgs.cs" />
     <Compile Include="Interfaces\IActionCommand.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
+    <Compile Include="Interfaces\IKeyInputEngine.cs" />
     <Compile Include="Interfaces\IOutputConsole.cs" />
     <Compile Include="Interfaces\IConsole.cs" />
     <Compile Include="Consoles\ClientConsole.cs" />

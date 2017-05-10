@@ -24,16 +24,17 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 
                 foreach (var color in EnumExtensions.GetValues<ConsoleColor>())
                 {
-                    yield return new HelpLine($"{color.ToString()}", color);
+                    yield return new HelpLine($"{color}", color);
                 }
             }
         }
 
         public override void Invoke(params string[] param)
         {
-            var color = QueryParam("Color", GetNextParam(param), EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
-
             throw new NotImplementedException("Fire event that changes the forground in the console.");
+
+            var color = QueryParam("Color", param, EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
+
             //System.Console.ForegroundColor = color;
             //System.Console.Clear();
         }

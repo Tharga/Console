@@ -20,7 +20,7 @@ namespace Tharga.Toolkit.Console.Commands
         {
             foreach (var helpLine in _helpLines)
             {
-                _commandEngine.RootCommand.Console.Output(new WriteEventArgs(helpLine.Text, OutputLevel.Help, helpLine.CanExecute() ? helpLine.ForeColor : ConsoleColor.DarkGray, null, false, true));
+                _commandEngine.RootCommand.Console.Output(new WriteEventArgs(helpLine.Text, OutputLevel.Help, helpLine.CanExecute() ? helpLine.ForeColor : ConsoleColor.DarkGray));
             }
         }
 

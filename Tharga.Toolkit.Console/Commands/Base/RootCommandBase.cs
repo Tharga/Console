@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base
@@ -70,11 +71,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("Root command."); } }
 
-        //TODO: What does this method do? Why was it there?
-        //public sealed override async Task<bool> InvokeAsync(string paramList)
-        //{
-        //    return await ((CommandBase)GetHelpCommand(paramList)).InvokeAsync(paramList);
-        //}
+        public string QueryInput()
+        {
+            return QueryParam<string>(Constants.Prompt);
+        }
 
         public bool Execute(string entry)
         {
@@ -84,17 +84,22 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 var command = GetSubCommand(entry, out subCommand);
                 if (command != null)
                 {
-                    string reason;
-                    if (!CanExecute(out reason))
+                    var ac = command as ActionAsyncCommandBase;
+                    var bc = command as CommandBase;
+                    var cc = command as ContainerCommandBase;
+
+                    if (cc == null)
                     {
-                        OutputWarning(GetCanExecuteFailMessage(reason));
-                        return false;
+                        string reason;
+                        if (!command.CanExecute(out reason))
+                        {
+                            OutputWarning(GetCanExecuteFailMessage(reason));
+                            return false;
+                        }
                     }
 
                     var param = subCommand.ToInput().ToArray();
 
-                    var ac = command as ActionAsyncCommandBase;
-                    var bc = command as CommandBase;
                     if (ac != null)
                     {
                         Task.Run(() => { ac.InvokeAsyncEx(param); }).Wait();

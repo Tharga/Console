@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Tharga.Toolkit.Console.Commands.Base
+namespace Tharga.Toolkit.Console.Helpers
 {
     public static class ParamExtensions
     {
@@ -10,10 +11,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (string.IsNullOrEmpty(paramList))
                 return new List<string>();
 
-            GetDelimiteredVerbs(ref paramList, '\"');
+            var verbs = GetDelimiteredVerbs(ref paramList, '\"');
+            return verbs.Select(x => x.Key);
 
-            var paramArray = paramList.Split(' ');
-            return paramArray;
+            //var paramArray = paramList.Split(' ');
+            //return paramArray;
         }
 
         public static string ToParamString(this string[] param)
@@ -31,13 +33,13 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     //yield break;
                 }
                 else if (i.Contains(" "))
-                    yield return "\"" + i + "\"";
+                    yield return $"\"{i}\"";
                 else
                     yield return i;
             }
         }
 
-        internal static Dictionary<string, string> GetDelimiteredVerbs(ref string paramList, char delimiter)
+        private static Dictionary<string, string> GetDelimiteredVerbs(ref string paramList, char delimiter)
         {
             var verbs = new Dictionary<string, string>();
 
