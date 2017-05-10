@@ -294,20 +294,21 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return x1;
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
-            var paramList = param.ToParamString(); //TODO: Do not convert, use input all the way
+            var enumerable = param as string[] ?? param.ToArray();
+            var paramList = enumerable.ToParamString(); //TODO: Do not convert, use input all the way
 
             string reasonMessage;
             if (!CanExecute(out reasonMessage))
             {
                 OutputWarning(GetCanExecuteFailMessage(reasonMessage));
-                GetHelpCommand(paramList).Invoke(paramList);
+                GetHelpCommand(paramList).Invoke(enumerable);
             }
-            else if (string.IsNullOrEmpty(paramList))
-            {
-                GetHelpCommand(paramList).Invoke(paramList);
-            }
+            //else if (string.IsNullOrEmpty(paramList))
+            //{
+            //    GetHelpCommand(paramList).Invoke(enumerable);
+            //}
             else
             {
                 OutputWarning($"Unknown sub command {paramList}, for {Name}.");

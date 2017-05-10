@@ -24,7 +24,7 @@ namespace Tharga.Toolkit.Console.Commands
             }
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var data = QueryParam<string>("Input", param.ToParamString());
 

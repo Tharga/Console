@@ -16,7 +16,7 @@ namespace Tharga.Toolkit.Console.Commands
             _commandEngine = commandEngine;
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             foreach (var helpLine in _helpLines)
             {

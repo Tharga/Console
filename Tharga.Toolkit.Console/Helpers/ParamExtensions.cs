@@ -18,9 +18,9 @@ namespace Tharga.Toolkit.Console.Helpers
             //return paramArray;
         }
 
-        public static string ToParamString(this string[] param)
+        public static string ToParamString(this IEnumerable<string> param)
         {
-            var p = param.ToParamList();
+            var p = param.ToArray().ToParamList();
             return string.Join(" ", p);
         }
 

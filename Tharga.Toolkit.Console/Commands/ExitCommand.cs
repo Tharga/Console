@@ -17,7 +17,7 @@ namespace Tharga.Toolkit.Console.Commands
 
         public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("This command terminates the application."); } }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             _stopAction();
         }

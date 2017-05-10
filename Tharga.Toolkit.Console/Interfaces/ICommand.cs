@@ -13,6 +13,6 @@ namespace Tharga.Toolkit.Console.Interfaces
         bool CanExecute(out string reasonMessage);
         IEnumerable<HelpLine> HelpText { get; }
         bool IsHidden { get; } //TODO: Change to IsVisible
-        void Invoke(params string[] param);
+        void Invoke(string[] param);
     }
 }

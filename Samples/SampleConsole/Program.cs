@@ -134,7 +134,7 @@ namespace SampleConsole
             _console = console;
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             //NOTE: This will trigger the line feed bug!
             _console.Output(new WriteEventArgs(new string('.', Console.BufferWidth - 1), OutputLevel.Default));
@@ -194,7 +194,7 @@ namespace SampleConsole
         {
         }
 
-        public override async Task InvokeAsync(params string[] param)
+        public override async Task InvokeAsync(string[] param)
         {
             var id = await QueryParamAsync("Some Id", GetNextParam(param), KeyNameList);
 
@@ -223,7 +223,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var id = QueryParam("Some Huge Id", GetNextParam(param), HugeKeyNameList());
             OutputInformation($"Some data for {id}");
@@ -250,7 +250,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var id = QueryParam("Some string", GetNextParam(param), new Dictionary<string, string> { { "A", "A" }, { "B", "B" } });
             OutputInformation($"Entered string was: {id}");
@@ -264,7 +264,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             for (var i = 0; i < 5; i++) OutputInformation($"Some data {i}");
         }
@@ -277,7 +277,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var table = new List<string[]> { new[] { "Index", "Guid" } };
             for (var i = 0; i < 5; i++)
@@ -303,7 +303,7 @@ namespace SampleConsole
             return false;
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             throw new NotSupportedException("Should not be able to execute this!");
         }
@@ -316,7 +316,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var abc = QueryParam<string>("ABC", GetNextParam(param));
             var ab = QueryParam<string>("AB", GetNextParam(param));
@@ -332,7 +332,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var password = QueryPassword("Some password", GetNextParam(param));
             OutputInformation($"Entered password was: {password}");
@@ -396,7 +396,7 @@ namespace SampleConsole
             }
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             _timer.Start();
         }
@@ -421,7 +421,7 @@ namespace SampleConsole
             Console.Write(output);
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             _timer.Start();
         }
@@ -444,7 +444,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var val1 = QueryParam<int>("First value", GetNextParam(param));
             var val2 = QueryParam<int>("Second value", GetNextParam(param));
@@ -460,9 +460,8 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
-            var index = 0;
             var vals = new List<int>();
 
             OutputInformation("Enter multiple values to add. Enter nothing to calculate.");
@@ -497,7 +496,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             OutputInformation("This command worked.");
         }
@@ -510,7 +509,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             OutputWarning("This command did not work.");
         }
@@ -523,7 +522,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             try
             {
@@ -544,7 +543,7 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var exception = new Exception("Some even deeper exception.");
             exception.Data.Add("A1", "B1");
@@ -579,13 +578,13 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var parameters = CreateParameters(param);
             OutputInformation($"Created parameters: {parameters}");
         }
 
-        public string CreateParameters(params string[] param)
+        public string CreateParameters(IEnumerable<string> param)
         {
             var val1 = QueryParam<string>("First value", param);
             var val2 = QueryParam<string>("Second value", param);
@@ -609,7 +608,7 @@ namespace SampleConsole
             _parametersCommand = parametersCommand;
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             var parameters = _parametersCommand.CreateParameters(param);
 

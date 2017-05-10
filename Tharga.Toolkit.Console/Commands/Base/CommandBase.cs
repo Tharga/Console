@@ -31,9 +31,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
             Description = description ?? $"Command that manages {name}.";
         }
 
-        public abstract void Invoke(params string[] param);
+        public abstract void Invoke(string[] param);
 
-        internal void InvokeEx(params string[] param)
+        internal void InvokeEx(string[] param)
         {
             ParamIndex = 0;
             Invoke(param);
@@ -63,17 +63,18 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return $"You cannot execute {Name} command." + (string.IsNullOrEmpty(reason) ? string.Empty : " " + reason);
         }
 
-        protected string GetNextParam(string[] param)
+        protected string GetNextParam(IEnumerable<string> param)
         {
             return GetParam(param, ParamIndex++);
         }
 
-        protected string GetParam(string[] param, int index)
+        protected string GetParam(IEnumerable<string> param, int index)
         {
             if (param == null) return null;
-            if (!param.Any()) return null;
-            if (param.Length <= index) return null;
-            return param[index];
+            var enumerable = param as string[] ?? param.ToArray();
+            if (!enumerable.Any()) return null;
+            if (enumerable.Length <= index) return null;
+            return enumerable[index];
         }
 
         //[Obsolete("Use GetParam with parameter 'string[] input' instead.")]
@@ -116,7 +117,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return value;
         }
 
-        protected T QueryParam<T>(string paramName, string[] autoParam, string defaultValue = null)
+        protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, string defaultValue = null)
         {
             return QueryParam<T>(paramName, GetNextParam(autoParam), defaultValue);
         }
@@ -145,7 +146,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return response;
         }
 
-        protected T QueryParam<T>(string paramName, string[] autoParam, IDictionary<T, string> selectionDelegate)
+        protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IDictionary<T, string> selectionDelegate)
         {
             return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate, true, false);
         }

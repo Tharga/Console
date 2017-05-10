@@ -16,7 +16,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         {
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             throw new NotImplementedException("Fire event that mutes the console.");
 

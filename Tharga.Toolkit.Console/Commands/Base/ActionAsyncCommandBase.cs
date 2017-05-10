@@ -13,7 +13,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
         }
 
-        public abstract Task InvokeAsync(params string[] param);
+        public abstract Task InvokeAsync(string[] param);
 
         internal Task InvokeAsyncEx(string[] param)
         {
@@ -21,7 +21,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return InvokeAsync(param);
         }
 
-        public override void Invoke(params string[] param)
+        public override void Invoke(string[] param)
         {
             throw new NotSupportedException("For async commands, use InvokeAsync instead.");
         }
