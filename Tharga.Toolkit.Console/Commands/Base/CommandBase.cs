@@ -9,11 +9,6 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base
 {
-    internal class Constants
-    {
-        public const string Prompt = "> ";
-    }
-
     public abstract class CommandBase : ICommand
     {
         private readonly string _description;
@@ -38,8 +33,14 @@ namespace Tharga.Toolkit.Console.Commands.Base
             _description = description ?? $"Command that manages {_names[0]}.";
         }
 
-        //public abstract Task InvokeAsync(params string[] input); //TODO: Try to make this command happen! and replace the old style Invoke action
-        public abstract Task<bool> InvokeAsync(string paramList);
+        public abstract void Invoke(params string[] input);
+
+        [Obsolete("Start using the function 'Task InvokeAsync(params string[] input)' instead. This feature will be removed.")]
+        public virtual async Task<bool> InvokeAsync(string paramList)
+        {
+            throw new NotSupportedException("Start implementing 'Task InvokeAsync(params string[] input)' instead of using this legacy function.");
+        }
+
         protected abstract ICommand GetHelpCommand(string paramList);
 
         protected internal virtual void Attach(CommandEngine commandEngine)
@@ -58,37 +59,30 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return $"You cannot execute {Name} command." + (string.IsNullOrEmpty(reason) ? string.Empty : " " + reason);
         }
 
-        internal virtual async Task<bool> InvokeWithCanExecuteCheckAsync(string paramList)
+        protected static string GetParam(string[] input, int index)
         {
-            string reason;
-            if (!CanExecute(out reason))
-            {
-                OutputWarning(GetCanExecuteFailMessage(reason));
-                return true;
-            }
+            if (input == null) return null;
+            if (!input.Any()) return null;
 
-            try
-            {
-                return await InvokeAsync(paramList);
-            }
-            catch (AggregateException exception)
-            {
-                if (exception.InnerException is CommandEscapeException)
-                    return false;
-                throw;
-            }
-            catch (CommandEscapeException)
-            {
-                return false;
-            }
+            //Group items between delimiters " into one single string.
+            //var verbs = GetDelimiteredVerbs(ref paramList, '\"');
+
+            //var paramArray = paramList.Split(' ');
+            if (input.Length <= index) return null;
+
+            ////Put the grouped verbs back in to the original
+            //if (verbs.Count > 0) for (var i = 0; i < input.Length; i++) if (verbs.ContainsKey(input[i])) input[i] = verbs[input[i]];
+
+            return input[index];
         }
 
+        [Obsolete("Use GetParam with parameter 'string[] input' instead.")]
         protected static string GetParam(string paramList, int index)
         {
             if (paramList == null) return null;
 
             //Group items between delimiters " into one single string.
-            var verbs = GetDelimiteredVerbs(ref paramList, '\"');
+            var verbs = ParamExtensions.GetDelimiteredVerbs(ref paramList, '\"');
 
             var paramArray = paramList.Split(' ');
             if (paramArray.Length <= index) return null;
@@ -97,26 +91,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (verbs.Count > 0) for (var i = 0; i < paramArray.Length; i++) if (verbs.ContainsKey(paramArray[i])) paramArray[i] = verbs[paramArray[i]];
 
             return paramArray[index];
-        }
-
-        private static Dictionary<string, string> GetDelimiteredVerbs(ref string paramList, char delimiter)
-        {
-            var verbs = new Dictionary<string, string>();
-
-            var pos = paramList.IndexOf(delimiter, 0);
-            while (pos != -1)
-            {
-                var endPos = paramList.IndexOf(delimiter, pos + 1);
-                var data = paramList.Substring(pos + 1, endPos - pos - 1);
-                var key = Guid.NewGuid().ToString();
-                verbs.Add(key, data);
-
-                paramList = paramList.Substring(0, pos) + key + paramList.Substring(endPos + 1);
-
-                pos = paramList.IndexOf(delimiter, pos + 1);
-            }
-
-            return verbs;
         }
 
         //TODO: This is strictly a root command function
@@ -169,19 +143,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
 
             var response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(value);
-            return response;
-        }
-
-        protected async Task<T> QueryParamAsync<T>(string paramName, string autoProvideValue, Func<Task<IDictionary<T, string>>> selectionDelegate)
-        {
-            List<KeyValuePair<T, string>> selection = null;
-            if (selectionDelegate != null)
-            {
-                OutputInformation($"Loading data for {paramName}...");
-                selection = (await selectionDelegate()).ToList();
-            }
-
-            var response = QueryParam(paramName, autoProvideValue, selection);
             return response;
         }
 

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
@@ -61,13 +60,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
             _subCommands.Add(command);
-
-            //var c = command as CommandBase;
-            //if (c != null)
-            //{
-            //    if (CommandEngine == null) throw new InvalidOperationException("No command engine assigned. Cannot attach.");
-            //    c.Attach(CommandEngine);
-            //}
 
             CommandRegisteredEvent?.Invoke(this, new CommandRegisteredEventArgs(command));
         }
@@ -306,28 +298,24 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return x1;
         }
 
-        internal override async Task<bool> InvokeWithCanExecuteCheckAsync(string paramList)
+        public override void Invoke(params string[] input)
         {
-            return await InvokeAsync(paramList);
-        }
+            var paramList = input.ToParamString();
 
-        public override async Task<bool> InvokeAsync(string paramList)
-        {
             string reasonMessage;
             if (!CanExecute(out reasonMessage))
             {
                 OutputWarning(GetCanExecuteFailMessage(reasonMessage));
-                await ((CommandBase)GetHelpCommand(paramList)).InvokeAsync(paramList);
-                return false;
+                GetHelpCommand(paramList).Invoke(paramList);
             }
-
-            if (string.IsNullOrEmpty(paramList))
+            else if (string.IsNullOrEmpty(paramList))
             {
-                return await ((CommandBase)GetHelpCommand(paramList)).InvokeAsync(paramList);
+                GetHelpCommand(paramList).Invoke(paramList);
             }
-
-            OutputWarning($"Unknown sub command {paramList}, for {Name}.");
-            return false;
+            else
+            {
+                OutputWarning($"Unknown sub command {paramList}, for {Name}.");
+            }
         }
 
         protected internal override void Attach(CommandEngine commandEngine)

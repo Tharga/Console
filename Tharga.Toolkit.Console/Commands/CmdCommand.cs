@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands
 {
@@ -25,9 +22,9 @@ namespace Tharga.Toolkit.Console.Commands
             }
         }
 
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(params string[] input)
         {
-            var input = QueryParam<string>("Input", paramList);
+            var data = QueryParam<string>("Input", GetParam(input, 0));
 
             var cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
@@ -35,7 +32,7 @@ namespace Tharga.Toolkit.Console.Commands
             cmd.StartInfo.RedirectStandardOutput = true;
             cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.UseShellExecute = false;
-            cmd.StartInfo.Arguments = $"/C {input}";
+            cmd.StartInfo.Arguments = $"/C {data}";
             cmd.Start();
 
             cmd.StandardInput.Flush();
@@ -43,8 +40,28 @@ namespace Tharga.Toolkit.Console.Commands
             cmd.WaitForExit();
 
             OutputDefault(cmd.StandardOutput.ReadToEnd());
-
-            return true;
         }
+
+        //public override async Task<bool> InvokeAsync(string paramList)
+        //{
+        //    var input = QueryParam<string>("Input", paramList);
+
+        //    var cmd = new Process();
+        //    cmd.StartInfo.FileName = "cmd.exe";
+        //    cmd.StartInfo.RedirectStandardInput = true;
+        //    cmd.StartInfo.RedirectStandardOutput = true;
+        //    cmd.StartInfo.CreateNoWindow = true;
+        //    cmd.StartInfo.UseShellExecute = false;
+        //    cmd.StartInfo.Arguments = $"/C {input}";
+        //    cmd.Start();
+
+        //    cmd.StandardInput.Flush();
+        //    cmd.StandardInput.Close();
+        //    cmd.WaitForExit();
+
+        //    OutputDefault(cmd.StandardOutput.ReadToEnd());
+
+        //    return true;
+        //}
     }
 }

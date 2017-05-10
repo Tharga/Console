@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
 using Tharga.Toolkit.Console.Entities;
@@ -76,22 +77,41 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public bool Execute(string entry)
         {
-            var success = false;
-
             try
             {
                 string subCommand;
                 var command = GetSubCommand(entry, out subCommand);
                 if (command != null)
                 {
-                    var task = ((CommandBase)command).InvokeWithCanExecuteCheckAsync(subCommand);
-                    task.Wait();
-                    success = task.Result;
+                    string reason;
+                    if (!CanExecute(out reason))
+                    {
+                        OutputWarning(GetCanExecuteFailMessage(reason));
+                        return false;
+                    }
+
+                    var input = subCommand.ToInput().ToArray();
+
+                    var ac = command as ActionAsyncCommandBase;
+                    if (ac != null)
+                    {
+                        Task.Run(() => { ac.InvokeAsync(input); }).Wait();
+                    }
+                    else
+                    {
+                        command.Invoke(input);
+                    }
+
+                    return true;
                 }
                 else
                 {
                     Console.Output(new WriteEventArgs($"Invalid command {entry}.", OutputLevel.Error));
                 }
+            }
+            catch (CommandEscapeException)
+            {
+                return false;
             }
             catch (SystemException exception)
             {
@@ -100,6 +120,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
             catch (AggregateException exception)
             {
+                if (exception.InnerException is CommandEscapeException)
+                    return false;
+
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
                 OutputError(exception);
             }
@@ -111,7 +134,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 throw;
             }
 
-            return success;
+            return false;
         }
     }
 }

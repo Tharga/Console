@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
@@ -28,6 +27,11 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
                     yield return new HelpLine($"{color.ToString()}", color);
                 }
             }
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)

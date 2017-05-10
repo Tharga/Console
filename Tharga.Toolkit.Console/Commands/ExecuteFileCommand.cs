@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands
 {
@@ -27,6 +26,11 @@ namespace Tharga.Toolkit.Console.Commands
                 yield return new HelpLine("Each line read from the file is executed as a command, one by one.");
                 yield return new HelpLine("A line marked with # will be ignored.");
             }
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)

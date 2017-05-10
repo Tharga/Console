@@ -17,6 +17,11 @@ namespace Tharga.Toolkit.Console.Commands
             _commandEngine = commandEngine;
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             foreach (var helpLine in _helpLines)

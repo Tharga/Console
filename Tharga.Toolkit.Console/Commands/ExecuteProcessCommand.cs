@@ -23,6 +23,11 @@ namespace Tharga.Toolkit.Console.Commands
             }
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var input = QueryParam<string>("Input", paramList);

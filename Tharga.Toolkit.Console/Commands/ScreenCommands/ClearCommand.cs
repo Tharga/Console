@@ -17,6 +17,11 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
             get { yield return new HelpLine("This command cleares all text from the display."); }
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             CommandEngine.RootCommand.Console.Clear();

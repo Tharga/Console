@@ -96,10 +96,7 @@ namespace Tharga.Toolkit.Console
 
             if (TaskRunners != null)
             {
-                foreach (var runner in TaskRunners)
-                {
-                    runner.Close();
-                }
+                Parallel.ForEach(TaskRunners, x => x.Close());
             }
         }
 

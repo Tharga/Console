@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,23 +50,30 @@ namespace SampleConsole
 
                     while (!e.IsCancellationRequested)
                     {
-                        //Console.Write("Some stuff."); // + new string('c', 168));
-                        //var index = 0;
-                        //while (!e.IsCancellationRequested)
-                        //{
-                        //    Thread.Sleep(1000);
-                        //    //Console.Write(new string('.', 188));
-                        //    Console.Write(new string('.', 30));
-                        //    //Console.Write('.');
-                        //    index++;
-                        //    if (index > 6)
-                        //    {
-                        //        Console.Write("\n");
-                        //        break;
-                        //    }
-                        //}
+                        Console.Write("Some stuff."); // + new string('c', 168));
+                        var index = 0;
+                        while (!e.IsCancellationRequested)
+                        {
+                            Thread.Sleep(1000);
+                            //Console.Write(new string('.', 188));
+                            //Console.Write(new string('.', 30));
+                            Console.Write('.');
+                            index++;
+                            if (index > 6)
+                            {
+                                Console.Write("\n");
+                                break;
+                            }
+                        }
                     }
-                }) }
+                    console.Output(new WriteEventArgs("The pricess was stopped", textColor: ConsoleColor.DarkRed));
+                }),
+                new TaskRunner(e =>
+                {
+                    e.WaitOne();
+                    console.Output(new WriteEventArgs("Press any key to exit."));
+                    console.ReadKey();
+                }), }
                 //Runners = new[]{ new Runner(e =>
                 //{
                 //    var i = 0;
@@ -127,6 +135,11 @@ namespace SampleConsole
             _console = console;
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             //NOTE: This will trigger the line feed bug!
@@ -184,21 +197,19 @@ namespace SampleConsole
         }
     }
 
-    internal class SomeItemCommand : ActionCommandBase
+    internal class SomeItemCommand : ActionAsyncCommandBase
     {
         public SomeItemCommand()
             : base("item", "Gets a single item.")
         {
         }
 
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override async Task InvokeAsync(params string[] input)
         {
             var index = 0;
-            var id = await QueryParamAsync("Some Id", GetParam(paramList, index++), KeyNameList);
+            var id = await QueryParamAsync("Some Id", GetParam(input, index++), KeyNameList);
 
             OutputInformation($"Some data for {id}");
-
-            return true;
         }
 
         private async Task<IDictionary<Guid, string>> KeyNameList()
@@ -221,6 +232,11 @@ namespace SampleConsole
         public SomeHugeItemCommand()
             : base("huge", "Gets a single huge item.")
         {
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -254,6 +270,11 @@ namespace SampleConsole
         {
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
@@ -272,6 +293,11 @@ namespace SampleConsole
         {
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             for (var i = 0; i < 5; i++) OutputInformation($"Some data {i}");
@@ -285,6 +311,11 @@ namespace SampleConsole
         public SomeTableCommand()
             : base("table", "Output information in a table.")
         {
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -315,6 +346,11 @@ namespace SampleConsole
             return false;
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override Task<bool> InvokeAsync(string paramList)
         {
             throw new NotSupportedException("Should not be able to execute this!");
@@ -326,6 +362,11 @@ namespace SampleConsole
         public SomePromptCommand()
             : base("prompt")
         {
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -345,6 +386,11 @@ namespace SampleConsole
         public SomePasswordCommand()
             : base("password", "Command with password entry.")
         {
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -415,6 +461,11 @@ namespace SampleConsole
             }
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             _timer.Start();
@@ -442,6 +493,11 @@ namespace SampleConsole
             Console.Write(output);
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             _timer.Start();
@@ -467,6 +523,11 @@ namespace SampleConsole
         {
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;
@@ -484,6 +545,11 @@ namespace SampleConsole
         public MathAddMultipleCommand()
             : base("addm", "Adds multiple values together.")
         {
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -525,6 +591,11 @@ namespace SampleConsole
         {
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             OutputInformation("This command worked.");
@@ -539,6 +610,11 @@ namespace SampleConsole
         {
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             OutputWarning("This command did not work.");
@@ -551,6 +627,11 @@ namespace SampleConsole
         public StatusExceptionCommand()
             : base("exception", "A command that outputs an exception.")
         {
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -574,6 +655,11 @@ namespace SampleConsole
         public CrashExceptionCommand()
             : base("crash", "A command that throws an exception.")
         {
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)
@@ -611,6 +697,11 @@ namespace SampleConsole
         {
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var parameters = CreateParameters(paramList);
@@ -641,6 +732,11 @@ namespace SampleConsole
             : base("execute", "Execute a command.")
         {
             _parametersCommand = parametersCommand;
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)

@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands
 {
@@ -23,6 +21,11 @@ namespace Tharga.Toolkit.Console.Commands
                 yield return new HelpLine("Ex.");
                 yield return new HelpLine("posh ls");
             }
+        }
+
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
         }
 
         public override async Task<bool> InvokeAsync(string paramList)

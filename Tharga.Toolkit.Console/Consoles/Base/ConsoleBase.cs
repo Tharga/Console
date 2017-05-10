@@ -37,6 +37,11 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         public int BufferWidth => _consoleManager.BufferWidth;
         public int BufferHeight => _consoleManager.BufferHeight;
 
+        public virtual ConsoleKeyInfo ReadKey()
+        {
+            return ReadKey(new CancellationToken());
+        }
+
         public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
             var consoleKeyInfo = _consoleManager.KeyInputEngine.ReadKey(cancellationToken);

@@ -17,6 +17,11 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         {
         }
 
+        public override void Invoke(params string[] input)
+        {
+            InvokeAsync(input.ToParamString()).Wait();
+        }
+
         public override async Task<bool> InvokeAsync(string paramList)
         {
             var index = 0;

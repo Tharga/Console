@@ -63,10 +63,14 @@
     <Compile Include="..\Build\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\Base\ActionAsyncCommandBase.cs" />
+    <Compile Include="Helpers\ParamExtensions.cs" />
+    <Compile Include="Entities\Constants.cs" />
     <Compile Include="Entities\PushBufferDownEventArgs.cs" />
     <Compile Include="Extensions\LocationExtensions.cs" />
     <Compile Include="Helpers\ConsoleManager.cs" />
     <Compile Include="Instance.cs" />
+    <Compile Include="Interfaces\ICommandAsync.cs" />
     <Compile Include="Interfaces\IConsoleManager.cs" />
     <Compile Include="Entities\ConsoleConfiguration.cs" />
     <Compile Include="Helpers\TextReaderInterceptor.cs" />
