@@ -57,7 +57,7 @@ namespace Tharga.Toolkit.Console.Tests
             //Assert
             Assert.That(console1.CursorLeft, Is.EqualTo(0));
             Assert.That(console2.CursorLeft, Is.EqualTo(0));
-            Assert.That(console1.CursorTop, Is.EqualTo(0));
+            Assert.That(console1.CursorTop, Is.EqualTo(1));
             Assert.That(console2.CursorTop, Is.EqualTo(0));
         }
 
