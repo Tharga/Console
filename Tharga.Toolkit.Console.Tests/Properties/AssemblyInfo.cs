@@ -21,3 +21,5 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("06a4f0c8-da52-41e1-a49d-a474b4d1c8d7")]
+
+[assembly: InternalsVisibleTo("Tharga.Toolkit.Console")]

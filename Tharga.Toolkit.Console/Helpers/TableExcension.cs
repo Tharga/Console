@@ -17,10 +17,10 @@ namespace Tharga.Toolkit.Console.Helpers
                 var sb = new StringBuilder();
                 for (var i = 0; i < line.Length; i++)
                 {
-                    sb.AppendFormat("{0}{1}", line[i], new string(' ', columnLength[i] - line[i].Length + 1));
+                    sb.AppendFormat("{0}{1}", line[i] ?? string.Empty, new string(' ', columnLength[i] - (line[i]?.Length ?? 0) + 1));
                 }
 
-                sbO.AppendLine(sb.ToString());
+                sbO.AppendLine(sb.ToString().TrimEnd());
             }
 
             var lineCount = arr.Length - 1;
@@ -40,9 +40,9 @@ namespace Tharga.Toolkit.Console.Helpers
             {
                 for (var i = 0; i < line.Length; i++)
                 {
-                    if (line[i].Length > length[i])
+                    if ((line[i]?.Length ?? 0) > length[i])
                     {
-                        length[i] = line[i].Length;
+                        length[i] = line[i]?.Length ?? 0;
                     }
                 }
             }
