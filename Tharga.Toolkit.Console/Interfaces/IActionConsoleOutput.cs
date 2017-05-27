@@ -1,6 +1,6 @@
 using Tharga.Toolkit.Console.Entities;
 
-namespace Tharga.Toolkit.Console.Consoles
+namespace Tharga.Toolkit.Console.Interfaces
 {
     public interface IActionConsoleOutput
     {

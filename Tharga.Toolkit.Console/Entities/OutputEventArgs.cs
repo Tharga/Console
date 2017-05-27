@@ -1,13 +1,13 @@
-using Tharga.Toolkit.Console.Interfaces;
+using System;
 
 namespace Tharga.Toolkit.Console.Entities
 {
-    public class ActionConsoleOutput : IActionConsoleOutput
+    public class OutputEventArgs : EventArgs
     {
         public string Message { get; }
         public OutputLevel OutputLevel { get; }
 
-        public ActionConsoleOutput(string message, OutputLevel outputLevel)
+        public OutputEventArgs(string message, OutputLevel outputLevel)
         {
             Message = message;
             OutputLevel = outputLevel;

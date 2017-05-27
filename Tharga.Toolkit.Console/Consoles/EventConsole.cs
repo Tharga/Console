@@ -8,19 +8,18 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Consoles
 {
-    public class ActionConsole : ConsoleBase
+    public class EventConsole : ConsoleBase
     {
-        private readonly Action<IActionConsoleOutput> _action;
+        public event EventHandler<OutputEventArgs> OutputEvent;
 
-        public ActionConsole(Action<IActionConsoleOutput> action, IConsoleConfiguration consoleConfiguration = null)
+        public EventConsole()
             : base(new NullConsoleManager())
         {
-            _action = action;
         }
 
         public override void Output(IOutput output)
         {
-            _action(new ActionConsoleOutput(output.Message, output.OutputLevel));
+            OutputEvent?.Invoke(this,new OutputEventArgs(output.Message, output.OutputLevel));
         }
 
         public override void Attach(IRootCommand command)
@@ -55,7 +54,7 @@ namespace Tharga.Toolkit.Console.Consoles
 
         protected internal override Location WriteLineEx(string value, OutputLevel level)
         {
-            _action(new ActionConsoleOutput(value, level));
+            OutputEvent?.Invoke(this, new OutputEventArgs(value, level));
             return new Location(0, 0);
         }
 

@@ -23,12 +23,15 @@ namespace SampleConsole
         private static void Main(string[] args)
         {
             //var console = new ClientConsole(new ConsoleConfiguration
-            var console = new VoiceConsole(new ConsoleConfiguration
-            {
-                SplashScreen = _splashscreen,
-                StartLocation = new Location(10,10)
-            });
-            ////var console = new VoiceConsole();
+            //var console = new VoiceConsole(new ConsoleConfiguration
+            //{
+            //    SplashScreen = _splashscreen,
+            //    StartLocation = new Location(10,10)
+            //});
+            //var console = new NullConsole();
+            var console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });
+            //var console = new EventConsole();
+            //console.OutputEvent += (sender, e) => { System.Diagnostics.Debug.WriteLine(e.Message); };
             ////var console = new ServerConsole(string.Empty);
             ////var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
             ////var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
