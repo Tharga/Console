@@ -1,43 +1,42 @@
-//TODO: Enable this class
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading;
-//using Tharga.Toolkit.Console.Consoles.Base;
-//using Tharga.Toolkit.Console.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Tharga.Toolkit.Console.Consoles.Base;
+using Tharga.Toolkit.Console.Interfaces;
 
-//namespace Tharga.Toolkit.Console.Consoles
-//{
-//    public class AggregateConsole : ConsoleBase
-//    {
-//        private readonly ConsoleBase[] _consoles;
+namespace Tharga.Toolkit.Console.Consoles
+{
+    public class AggregateConsole : ConsoleBase
+    {
+        private readonly ConsoleBase[] _consoles;
 
-//        public AggregateConsole(params ConsoleBase[] consoles)
-//            : base(consoles.First().ConsoleWriter)
-//        {
-//            _consoles = consoles;
-//        }
+        public AggregateConsole(IConsoleManager consoleManager, params ConsoleBase[] consoles)
+            : base(consoleManager)
+        {
+            _consoles = consoles;
+        }
 
-//        public override ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
-//        {
-//            return _consoles.First().ReadKey(cancellationToken);
-//        }
+        public override ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
+        {
+            return _consoles.First().ReadKey(cancellationToken);
+        }
 
-//        public override void Initiate(IEnumerable<string> commandKeys)
-//        {
-//            var enumerable = commandKeys as string[] ?? commandKeys.ToArray();
-//            foreach (var console in _consoles)
-//            {
-//                console.Initiate(enumerable);
-//            }
-//        }
+        public override void Initiate(IEnumerable<string> commandKeys)
+        {
+            var enumerable = commandKeys as string[] ?? commandKeys.ToArray();
+            foreach (var console in _consoles)
+            {
+                console.Initiate(enumerable);
+            }
+        }
 
-//        protected internal override void WriteLineEx(string value, OutputLevel level)
-//        {
-//            foreach (var console in _consoles)
-//            {
-//                console.WriteLineEx(value, level);
-//            }
-//        }
-//    }
-//}
+        public override void Output(IOutput output)
+        {
+            foreach (var console in _consoles)
+            {
+                console.Output(output);
+            }
+        }
+    }
+}

@@ -1,36 +1,22 @@
-//TODO: Enable this class
-//using System;
-//using Tharga.Toolkit.Console.Commands.Base;
-//using Tharga.Toolkit.Console.Commands.Entities;
-//using Tharga.Toolkit.Console.Interfaces;
+using System;
+using Tharga.Toolkit.Console.Consoles.Base;
+using Tharga.Toolkit.Console.Interfaces;
 
-//namespace Tharga.Toolkit.Console.Consoles
-//{
-//    public class ActionConsole : SystemConsoleBase
-//    {
-//        private readonly Action<IActionConsoleOutput> _action;
+namespace Tharga.Toolkit.Console.Consoles
+{
+    public class ActionConsole : ConsoleBase
+    {
+        private readonly Action<IActionConsoleOutput> _action;
 
-//        private class ActionConsoleOutput : IActionConsoleOutput
-//        {
-//            public ActionConsoleOutput(string value, OutputLevel item2)
-//            {
-//                Value = value;
-//                Level = item2;
-//            }
+        public ActionConsole(IConsoleManager consoleManager, Action<IActionConsoleOutput> action)
+            : base(consoleManager)
+        {
+            _action = action;
+        }
 
-//            public string Value { get; }
-//            public OutputLevel Level { get; }
-//        }
-
-//        public ActionConsole(Action<IActionConsoleOutput> action)
-//            : base(System.Console.Out)
-//        {
-//            _action = action;
-//        }
-
-//        protected internal override void WriteLineEx(string value, OutputLevel level)
-//        {
-//            _action(new ActionConsoleOutput(value, level));
-//        }
-//    }
-//}
+        public override void Output(IOutput output)
+        {
+            _action(new ActionConsoleOutput(output.Message, output.OutputLevel));
+        }
+    }
+}

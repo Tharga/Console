@@ -1,15 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Speech.Recognition;
-using System.Threading;
-using System.Threading.Tasks;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Consoles.Base;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Consoles

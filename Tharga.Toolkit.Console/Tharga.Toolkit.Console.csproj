@@ -64,6 +64,8 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\Base\ActionAsyncCommandBase.cs" />
+    <Compile Include="Entities\ActionConsoleOutput.cs" />
+    <Compile Include="Interfaces\IActionConsoleOutput.cs" />
     <Compile Include="Exceptions\CommandFailedException.cs" />
     <Compile Include="Helpers\ParamExtensions.cs" />
     <Compile Include="Entities\Constants.cs" />
@@ -114,7 +116,7 @@
     <Compile Include="Entities\LineWrittenEventArgs.cs" />
     <Compile Include="Entities\Location.cs" />
     <Compile Include="Entities\OutputLevel.cs" />
-    <Compile Include="Consoles\ServerConsole.cs" />
+    <Compile Include="Consoles\ServiceConsole.cs" />
     <Compile Include="Consoles\Base\ConsoleBase.cs" />
     <Compile Include="Entities\Variable.cs" />
     <Compile Include="Helpers\VariableStore.cs" />
