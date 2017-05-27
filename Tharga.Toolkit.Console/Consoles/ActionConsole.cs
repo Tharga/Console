@@ -13,7 +13,7 @@ namespace Tharga.Toolkit.Console.Consoles
         private readonly Action<IActionConsoleOutput> _action;
 
         public ActionConsole(Action<IActionConsoleOutput> action, IConsoleConfiguration consoleConfiguration = null)
-            : base(new NullConsoleManager())
+            : base(new ConsoleManager(System.Console.Out, System.Console.In))
         {
             _action = action;
         }

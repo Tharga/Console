@@ -29,9 +29,9 @@ namespace SampleConsole
             //    StartLocation = new Location(10,10)
             //});
             //var console = new NullConsole();
-            var console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });
-            //var console = new EventConsole();
-            //console.OutputEvent += (sender, e) => { System.Diagnostics.Debug.WriteLine(e.Message); };
+            //var console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });
+            var console = new EventConsole();
+            console.OutputEvent += (sender, e) => { System.Diagnostics.Debug.WriteLine(e.Message); };
             ////var console = new ServerConsole(string.Empty);
             ////var console = new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); });
             ////var console = new AggregateConsole(new ClientConsole(), new ActionConsole((message) => { System.Diagnostics.Debug.WriteLine(message.Item1); }));
@@ -49,30 +49,32 @@ namespace SampleConsole
             {
                 TaskRunners = new TaskRunner[]
                 {
-                //    new TaskRunner(e =>
-                //{
-                //    Thread.Sleep(2000);
+                    new TaskRunner(e =>
+                {
+                    Thread.Sleep(2000);
 
-                //    while (!e.IsCancellationRequested)
-                //    {
+                    while (!e.IsCancellationRequested)
+                    {
                 //        Console.Write("Some stuff."); // + new string('c', 168));
                 //        var index = 0;
-                //        while (!e.IsCancellationRequested)
-                //        {
-                //            Thread.Sleep(1000);
+                        while (!e.IsCancellationRequested)
+                        {
+                            Thread.Sleep(100);
                 //            //Console.Write(new string('.', 188));
                 //            //Console.Write(new string('.', 30));
-                //            Console.Write('.');
+                            //Console.Write('.');
+                            Console.WriteLine('.');
+                            //console.Output(new WriteEventArgs(".", lineFeed:false));
                 //            index++;
                 //            if (index > 6)
                 //            {
                 //                Console.Write("\n");
                 //                break;
                 //            }
-                //        }
-                //    }
+                        }
+                    }
                 //    console.Output(new WriteEventArgs("The pricess was stopped", textColor: ConsoleColor.DarkRed));
-                //}),
+                }),
                 //new TaskRunner(e =>
                 //{
                 //    e.WaitOne();

@@ -13,7 +13,7 @@ namespace Tharga.Toolkit.Console.Consoles
         public event EventHandler<OutputEventArgs> OutputEvent;
 
         public EventConsole()
-            : base(new NullConsoleManager())
+            : base(new ConsoleManager(System.Console.Out, System.Console.In))
         {
         }
 
