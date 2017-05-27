@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 
 namespace Tharga.Toolkit.Console.Interfaces

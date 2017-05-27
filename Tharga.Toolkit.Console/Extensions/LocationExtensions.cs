@@ -25,7 +25,7 @@ namespace Tharga.Toolkit.Console
             while (item.Left + length >= consoleManager.BufferWidth)
             {
                 line++;
-                length = length - System.Console.BufferWidth;
+                length = length - consoleManager.BufferWidth;
             }
 
             return new Location(item.Left + length, item.Top + line);
