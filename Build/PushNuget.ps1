@@ -28,8 +28,6 @@ Param
 
 Try
 {
-	#C:\TeamCity\buildAgent\work\8056a26431335114
-
 	$filename = $package.Substring($package.LastIndexOf("\")+1)
 	$arr = $filename.Split('.');
 	$len = $arr.length;
@@ -40,14 +38,13 @@ Try
 	}
 	$packageName = $arr[0..($len-5)] -join '.'
 
-
 	write-host ("version '" + $version + "'.") -f "green"
 	write-host ("prerelease '" + $prerelease + "'.") -f "green"
 	write-host ("packageName '" + $packageName + "'.") -f "green"
 
 	#Push to nuget
 	if (-NOT $prerelease)
-	{
+	{	
 		if ([System.Convert]::ToBoolean($label))
 		{
 			#Tag git repository
@@ -57,17 +54,22 @@ Try
 			write-host ("Pushing tag '" + $version + "' to origin.") -f "green"
 			git push origin $version
 		}
+		else
+		{
+			write-host ("Do not label tag repo.") -f "yellow"
+		}
 
-		#%teamcity.tool.NuGet.CommandLine.DEFAULT%\tools\nuget.exe
 		if (-Not $nugetExe)
 		{
 			#$nugetExe = "%teamcity.tool.NuGet.CommandLine.DEFAULT%\tools\nuget.exe"
 			#$nugetExe = "C:\TeamCity\buildAgent0\tools\NuGet.CommandLine.3.4.4\tools\NuGet.exe"
 		}
+
 		if (-Not $target)
 		{
 			$target = "https://www.nuget.org"
 		}
+
 		write-host ("Pushing package '" + $filename + "' to '" + $target + "'.") -f "green"
 		#write-host ("Executing: $nugetExe push $package -ApiKey $apiKey -Source https://www.nuget.org")
 		#iex $nugetExe push $package -ApiKey $apiKey -Source https://www.nuget.org
