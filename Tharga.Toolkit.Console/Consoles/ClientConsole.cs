@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -18,19 +19,18 @@ namespace Tharga.Toolkit.Console.Consoles
             : base(new ConsoleManager(System.Console.Out, System.Console.In))
         {
             _consoleConfiguration = consoleConfiguration ?? new ConsoleConfiguration();
-
-            Initiate();
+            _initialPosition = GetCurrentPosition();
+            Initiate(_consoleConfiguration);
         }
 
-        private void Initiate()
+        private void Initiate(IConsoleConfiguration consoleConfiguration)
         {
-            ConsoleManager.Clear();
-            SetLocation();
-            SetTopMost(_consoleConfiguration.TopMost);
-            SetColor();
-            UpdateTitle();
-            ShowSplashScreen();
-            ShowAssemblyInfo();
+            SetLocation(consoleConfiguration);
+            SetTopMost(consoleConfiguration.TopMost);
+            SetColor(consoleConfiguration);
+            UpdateTitle(consoleConfiguration);
+            ShowSplashScreen(consoleConfiguration);
+            ShowAssemblyInfo(consoleConfiguration);
         }
 
         public bool TopMost
@@ -40,31 +40,53 @@ namespace Tharga.Toolkit.Console.Consoles
         }
 
         //TODO: Make it possible to set what screen the window should be placed on
-        private void SetLocation()
+        private void SetLocation(IConsoleConfiguration consoleConfiguration)
         {
             var hWnd = Process.GetCurrentProcess().MainWindowHandle;
             Position position = null;
 
-            if (_consoleConfiguration.StartPosition != null)
+            if (consoleConfiguration.StartPosition != null)
             {
-                position = _consoleConfiguration.StartPosition;
+                position = consoleConfiguration.StartPosition;
             }
-            else if (_consoleConfiguration.RememberStartLocation)
+            else if (consoleConfiguration.RememberStartLocation)
             {
-                position = GetPosition();
+                position = GetStoredPosition();
                 SubscribeToWindowMovement(hWnd);
             }
 
-            SetWidth(position);
-            SetHeight(position);
-
             if (position != null)
             {
-                SetWindowPos(hWnd, new IntPtr(0), position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                SetWidth(position);
+                SetHeight(position);
+
+                SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                //TODO: This code will reposition the window at startup, the same way as a "scr reset" command will.
+                //For some reason the "SetWindowPos" does not act the same when run directly when the console starts as it does when the application has been running for a short while.
+                //Task.Run(() =>
+                //{
+                //    System.Threading.Thread.Sleep(250);
+                //    SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                //});
+                //System.Console.WriteLine($"set: {position.Left}:{position.Top} {hWnd}");
             }
         }
 
-        private Position GetPosition()
+        private Position GetCurrentPosition()
+        {
+            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+
+            //RECT rct;
+            //GetWindowRect(hWnd, out rct);
+
+            var wp = new WINDOWPLACEMENT();
+            GetWindowPlacement(hWnd, ref wp);
+            //System.Console.WriteLine($"get: {wp.rcNormalPosition.Left}:{wp.rcNormalPosition.Top}");
+
+            return new Position(wp.rcNormalPosition.Left, wp.rcNormalPosition.Top, ConsoleManager.WindowWidth, ConsoleManager.WindowHeight, ConsoleManager.BufferWidth, ConsoleManager.BufferHeight);
+        }
+
+        private Position GetStoredPosition()
         {
             try
             {
@@ -87,9 +109,7 @@ namespace Tharga.Toolkit.Console.Consoles
         {
             try
             {
-                if (position == null) return;
-
-                if (position.Width != null)
+                if (position.Width != null && position.Width.Value > 0)
                     ConsoleManager.WindowWidth = position.Width.Value;
 
                 if (position.BufferWidth != null)
@@ -107,8 +127,6 @@ namespace Tharga.Toolkit.Console.Consoles
         {
             try
             {
-                if (position == null) return;
-
                 if (position.Height != null)
                     ConsoleManager.WindowHeight = position.Height.Value;
 
@@ -121,20 +139,20 @@ namespace Tharga.Toolkit.Console.Consoles
             }
         }
 
-        private void SetColor()
+        private void SetColor(IConsoleConfiguration consoleConfiguration)
         {
-            if (ConsoleManager.BackgroundColor == _consoleConfiguration.BackgroundColor && ConsoleManager.ForegroundColor == _consoleConfiguration.DefaultTextColor) return;
+            if (ConsoleManager.BackgroundColor == consoleConfiguration.BackgroundColor && ConsoleManager.ForegroundColor == consoleConfiguration.DefaultTextColor) return;
 
-            ConsoleManager.BackgroundColor = _consoleConfiguration.BackgroundColor;
-            ConsoleManager.ForegroundColor = _consoleConfiguration.DefaultTextColor;
+            ConsoleManager.BackgroundColor = consoleConfiguration.BackgroundColor;
+            ConsoleManager.ForegroundColor = consoleConfiguration.DefaultTextColor;
             ConsoleManager.Clear();
         }
 
-        private void UpdateTitle()
+        private void UpdateTitle(IConsoleConfiguration consoleConfiguration)
         {
             try
             {
-                ConsoleManager.Title = _consoleConfiguration.Title ?? AssemblyHelper.GetAssemblyInfo() ?? "Tharga Console";
+                ConsoleManager.Title = consoleConfiguration.Title ?? AssemblyHelper.GetAssemblyInfo() ?? "Tharga Console";
             }
             catch (IOException exception)
             {
@@ -142,17 +160,17 @@ namespace Tharga.Toolkit.Console.Consoles
             }
         }
 
-        private void ShowSplashScreen()
+        private void ShowSplashScreen(IConsoleConfiguration consoleConfiguration)
         {
-            if (string.IsNullOrEmpty(_consoleConfiguration.SplashScreen))
+            if (string.IsNullOrEmpty(consoleConfiguration.SplashScreen))
                 return;
 
-            Output(new WriteEventArgs(_consoleConfiguration.SplashScreen));
+            Output(new WriteEventArgs(consoleConfiguration.SplashScreen));
         }
 
-        private void ShowAssemblyInfo()
+        private void ShowAssemblyInfo(IConsoleConfiguration consoleConfiguration)
         {
-            if (_consoleConfiguration.ShowAssemblyInfo)
+            if (consoleConfiguration.ShowAssemblyInfo)
             {
                 var info = AssemblyHelper.GetAssemblyInfo();
                 if (!string.IsNullOrEmpty(info))
@@ -168,7 +186,7 @@ namespace Tharga.Toolkit.Console.Consoles
             _topMost = value;
 
             var hWnd = Process.GetCurrentProcess().MainWindowHandle;
-            if (_consoleConfiguration.TopMost)
+            if (value)
             {
                 SetWindowPos(hWnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             }
@@ -181,7 +199,21 @@ namespace Tharga.Toolkit.Console.Consoles
         protected internal override void Reset()
         {
             Registry.ClearAllSettings();
-            Initiate();
+            ConsoleManager.Clear();
+
+            var consoleConfiguration = new ConsoleConfiguration
+            {
+                BackgroundColor = _consoleConfiguration.BackgroundColor,
+                RememberStartLocation = _consoleConfiguration.RememberStartLocation,
+                TopMost = _consoleConfiguration.TopMost,
+                SplashScreen = _consoleConfiguration.SplashScreen,
+                Title = _consoleConfiguration.Title,
+                DefaultTextColor = _consoleConfiguration.DefaultTextColor,
+                ShowAssemblyInfo = _consoleConfiguration.ShowAssemblyInfo,
+                StartPosition = _consoleConfiguration.StartPosition ?? _initialPosition,
+            };
+
+            Initiate(consoleConfiguration);
         }
 
         #region User32
@@ -193,15 +225,22 @@ namespace Tharga.Toolkit.Console.Consoles
         private const short SWP_NOZORDER = 0X4;
         private const int SWP_SHOWWINDOW = 0x0040;
 
+        public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
+
+        //[DllImport("user32.dll", SetLastError = true)]
+        //static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int Width, int Height, bool Repaint);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
-        public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
 
         [DllImport("user32.dll")]
         public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
@@ -215,48 +254,204 @@ namespace Tharga.Toolkit.Console.Consoles
             public int Bottom; // y position of lower-right corner
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct Pt
+        {
+            public int X;
+            public int Y;
+        }
+
+        //internal struct Rc
+        //{
+        //    public int X;
+        //    public int Y;
+        //    public int Width;
+        //    public int Height;
+        //}
+
+        [Serializable]
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct WINDOWPLACEMENT
+        {
+            public int length;
+            public int flags;
+            public ShowWindowCommands showCmd;
+            public Pt ptMinPosition;
+            public Pt ptMaxPosition;
+            public RECT rcNormalPosition;
+        }
+
+        internal enum ShowWindowCommands : int
+        {
+            Hide = 0,
+            Normal = 1,
+            Minimized = 2,
+            Maximized = 3,
+        }
+
         //private const int HWND_TOPMOST = -1;
         //private const int SWP_NOMOVE = 0x0002;
         //private const int SWP_NOSIZE = 0x0001;
+
+        #endregion
+        #region  Show and hide console
+
+        public static void ShowConsoleWindow()
+        {
+            var handle = GetConsoleWindow();
+
+            if (handle == IntPtr.Zero)
+            {
+                AllocConsole();
+            }
+            else
+            {
+                ShowWindow(handle, SW_SHOW);
+            }
+        }
+
+        public static void HideConsoleWindow()
+        {
+            var handle = GetConsoleWindow();
+
+            ShowWindow(handle, SW_HIDE);
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        const int SW_HIDE = 0;
+        const int SW_SHOW = 5;
 
         #endregion
         #region Window movement subscription
 
         private IntPtr _target;
         private uint _processId, _threadId;
-        private WinEventDelegate _winEventDelegate;
+        private readonly Position _initialPosition;
+
+        const int EVENT_SYSTEM_MOVESIZESTART = 0x000A; //An MSAA event indicating that a window is being moved or resized.
+        const int EVENT_SYSTEM_MOVESIZEEND = 0x000B; //An MSAA event indicating that the movement or resizing of a window is finished.
+        const int EVENT_SYSTEM_MINIMIZESTART = 0x0016; //An MSAA event indicating that a window object is about to be minimized or maximized.
+        const int EVENT_SYSTEM_MINIMIZEEND = 0x0017; //An MSAA event indicating that a window object was minimized or maximized.
+        const int EVENT_SYSTEM_FOREGROUND = 0x0003; //An MSAA event indicating that the foreground window changed.
+
+        /*
+Global Const $EVENT_SYSTEM_SOUND = 0x0001 ;An MSAA event indicating that a sound was played.
+Global Const $EVENT_SYSTEM_ALERT = 0x0002 ;An MSAA event indicating that an alert was generated.
+Global Const $EVENT_SYSTEM_MENUSTART = 0x0004 ;An MSAA event indicating that a menu item on the menu bar was selected.
+Global Const $EVENT_SYSTEM_MENUEND = 0x0005 ;An MSAA event indicating that a menu from the menu bar was closed.
+Global Const $EVENT_SYSTEM_MENUPOPUPSTART = 0x0006 ;An MSAA event indicating that a pop-up menu was displayed.
+Global Const $EVENT_SYSTEM_MENUPOPUPEND = 0x0007 ;An MSAA event indicating that a pop-up menu was closed.
+Global Const $EVENT_SYSTEM_CAPTURESTART = 0x0008 ;An MSAA event indicating that a window has received mouse capture.
+Global Const $EVENT_SYSTEM_CAPTUREEND = 0x0009 ;An MSAA event indicating that a window has lost mouse capture.
+Global Const $EVENT_SYSTEM_DIALOGSTART = 0x0010 ;An MSAA event indicating that a dialog box was displayed.
+Global Const $EVENT_SYSTEM_DIALOGEND = 0x0011 ;An MSAA event indicating that a dialog box was closed.
+Global Const $EVENT_SYSTEM_SCROLLINGSTART = 0x0012 ;An MSAA event indicating that scrolling has started on a scroll bar.
+Global Const $EVENT_SYSTEM_SCROLLINGEND = 0x0013 ;An MSAA event indicating that scrolling has ended on a scroll bar.
+Global Const $EVENT_SYSTEM_SWITCHSTART = 0x0014 ;An MSAA event indicating that the user pressed ALT+TAB, which activates the switch window.
+Global Const $EVENT_SYSTEM_SWITCHEND = 0x0015 ;An MSAA event indicating that the user released ALT+TAB.
+Global Const $EVENT_SYSTEM_CONTEXTHELPSTART = 0x000C ;An MSAA event indicating that a window entered context-sensitive Help mode.
+Global Const $EVENT_SYSTEM_CONTEXTHELPEND = 0x000D  ;An MSAA event indicating that a window exited context-sensitive Help mode.
+Global Const $EVENT_SYSTEM_DRAGDROPSTART = 0x000E ;An MSAA event indicating that an application is about to enter drag-and-drop mode.
+Global Const $EVENT_SYSTEM_DRAGDROPEND = 0x000F ;An MSAA event indicating that an application is about to exit drag-and-drop mode.
+
+; EVENT_OBJECT events are triggered quite often, handle with care...
+Global Const $EVENT_OBJECT_CREATE = 0x8000 ;An MSAA event indicating that an object was created.
+Global Const $EVENT_OBJECT_DESTROY = 0x8001 ;An MSAA event indicating that an object was destroyed.
+Global Const $EVENT_OBJECT_SHOW = 0x8002 ;An MSAA event indicating that a hidden object is being shown.
+Global Const $EVENT_OBJECT_HIDE = 0x8003 ;An MSAA event indicating that an object is being hidden.
+Global Const $EVENT_OBJECT_REORDER = 0x8004 ;An MSAA event indicating that a container object has added, removed, or reordered its children.
+Global Const $EVENT_OBJECT_FOCUS = 0x8005 ;An MSAA event indicating that an object has received the keyboard focus.
+Global Const $EVENT_OBJECT_SELECTION = 0x8006 ;An MSAA event indicating that the selection within a container object changed.
+Global Const $EVENT_OBJECT_SELECTIONADD = 0x8007 ;An MSAA event indicating that an item within a container object was added to the selection.
+Global Const $EVENT_OBJECT_SELECTIONREMOVE = 0x8008 ;An MSAA event indicating that an item within a container object was removed from the selection.
+Global Const $EVENT_OBJECT_SELECTIONWITHIN = 0x8009 ;An MSAA event indicating that numerous selection changes occurred within a container object.
+Global Const $EVENT_OBJECT_HELPCHANGE = 0x8010 ;An MSAA event indicating that an object's MSAA Help property changed.
+Global Const $EVENT_OBJECT_DEFACTIonchange = 0x8011 ;An MSAA event indicating that an object's MSAA DefaultAction property changed.
+Global Const $EVENT_OBJECT_ACCELERATORCHANGE = 0x8012 ;An MSAA event indicating that an object's MSAA KeyboardShortcut property changed.
+Global Const $EVENT_OBJECT_INVOKED = 0x8013 ;An MSAA event indicating that an object has been invoked; for example, the user has clicked a button.
+Global Const $EVENT_OBJECT_TEXTSELECTIonchangeD = 0x8014 ;An MSAA event indicating that an object's text selection has changed.
+Global Const $EVENT_OBJECT_CONTENTSCROLLED = 0x8015 ;An MSAA event indicating that the scrolling of a window object has ended.
+Global Const $EVENT_OBJECT_STATECHANGE = 0x800A ;An MSAA event indicating that an object's state has changed.
+Global Const $EVENT_OBJECT_LOCATIonchange = 0x800B ;An MSAA event indicating that an object has changed location, shape, or size.
+Global Const $EVENT_OBJECT_NAMECHANGE = 0x800C ;An MSAA event indicating that an object's MSAA Name property changed.
+Global Const $EVENT_OBJECT_DESCRIPTIonchange = 0x800D ;An MSAA event indicating that an object's MSAA Description property changed.
+Global Const $EVENT_OBJECT_VALUECHANGE = 0x800E ;An MSAA event indicating that an object's MSAA Value property changed.
+Global Const $EVENT_OBJECT_PARENTCHANGE = 0x800F ;An MSAA event indicating that an object has a new parent object.
+
+;minimum and maximum events
+;to monitor one event type only use same event for min/max
+Global $EVENT_Min = $EVENT_SYSTEM_SOUND
+Global $EVENT_Max = $EVENT_SYSTEM_DRAGDROPEND
+
+             */
 
         private void SubscribeToWindowMovement(IntPtr hWnd)
         {
             _target = hWnd;
 
-            // 10 = window move start, 11 = window move end, 0 = fire out of context
-            _winEventDelegate = WhenWindowMoveStartsOrEnds;
-            var hook = SetWinEventHook(10, 11, _target, _winEventDelegate, _processId, _threadId, 0);
+            SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, _target, WindowMoved, _processId, _threadId, 0);
+            //SetWinEventHook(1, 0x0F0F, _target, WindowMinimized, _processId, _threadId, 0);
         }
 
-        //TODO: Move to Console Manager
-        private void WhenWindowMoveStartsOrEnds(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        private void WindowMinimized(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
             try
             {
                 if (hwnd != _target)
                     return;
 
-                if (eventType == 10) //Movement started
+                switch (eventType)
                 {
+                    case EVENT_SYSTEM_FOREGROUND:
+                        //NOTE: Window was brought to forground
+                        System.Console.WriteLine("EVENT_SYSTEM_FOREGROUND");
+                        break;
+                    case EVENT_SYSTEM_MINIMIZESTART:
+                        System.Console.WriteLine("EVENT_SYSTEM_MINIMIZESTART");
+                        break;
+                    case EVENT_SYSTEM_MINIMIZEEND:
+                        System.Console.WriteLine("EVENT_SYSTEM_MINIMIZEEND");
+                        break;
+                    default:
+                        System.Console.WriteLine(eventType);
+                        break;
                 }
-                else if (eventType == 11) //Movement ended
+            }
+            catch (Exception exception)
+            {
+                OutputError(exception);
+            }
+        }
+
+        private void WindowMoved(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        {
+            try
+            {
+                if (hwnd != _target)
+                    return;
+
+                switch (eventType)
                 {
-                    RECT rct;
-                    GetWindowRect(hwnd, out rct);
+                    case EVENT_SYSTEM_MOVESIZESTART:
+                        break;
+                    case EVENT_SYSTEM_MOVESIZEEND:
+                        var position = GetCurrentPosition();
 
-                    //TODO: Find out what screen we are on (when using multiple screens)
+                        //TODO: Find out what screen we are on (when using multiple screens)
 
-                    var val = $"{rct.Left}:{rct.Top}|{ConsoleManager.WindowWidth}:{ConsoleManager.WindowHeight}|{ConsoleManager.BufferWidth}:{ConsoleManager.BufferHeight}";
-                    //ConsoleManager.WriteLine(val);
+                        var val = $"{position.Left}:{position.Top}|{position.Width}:{position.Height}|{position.BufferWidth}:{position.BufferHeight}";
+                        //ConsoleManager.WriteLine(val);
 
-                    Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
+                        Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
+                        break;
                 }
             }
             catch (Exception exception)

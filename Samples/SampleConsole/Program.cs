@@ -26,7 +26,8 @@ namespace SampleConsole
             //var console = new VoiceConsole(new ConsoleConfiguration
             {
                 SplashScreen = _splashscreen,
-                //StartPosition = new Position(10, 10)
+                //StartPosition = new Position(0, 0),
+                //RememberStartLocation = false
             });
             //var console = new NullConsole();
             //var console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });

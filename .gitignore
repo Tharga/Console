@@ -65,6 +65,7 @@ packages/
 *.crunchsolution.cache
 *.ncrunchsolution
 *.ncrunchproject
+_NCrunch_*
  
 # Resharper
 _ReSharper.*

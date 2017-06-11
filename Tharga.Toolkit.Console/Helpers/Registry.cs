@@ -43,8 +43,14 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public static void ClearAllSettings()
         {
-            var fullPath = GetFullPath(null);
-            Microsoft.Win32.Registry.CurrentUser.DeleteSubKeyTree(fullPath);
+            try
+            {
+                var fullPath = GetFullPath(null);
+                Microsoft.Win32.Registry.CurrentUser.DeleteSubKeyTree(fullPath);
+            }
+            catch (ArgumentException)
+            {
+            }
         }
 
         private static string GetFullPath(string subPath)

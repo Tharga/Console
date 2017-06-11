@@ -16,7 +16,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         public override void Invoke(string[] param)
         {
             _consoleBase.Reset();
-            OutputInformation("All settings have been removed.");
+            //OutputInformation("All settings have been removed.");
         }
     }
 }

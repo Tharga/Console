@@ -28,9 +28,6 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public Encoding Encoding => _textWriter.Encoding;
         public IKeyInputEngine KeyInputEngine => _keyInputEngine ?? (_keyInputEngine = new KeyInputEngine());
-        public string Title { get; set; }
-
-        public int WindowHeight { get; set; }
 
         public void WriteLine(string value)
         {
@@ -80,7 +77,56 @@ namespace Tharga.Toolkit.Console.Helpers
             set { System.Console.BufferWidth = value; }
         }
 
-        public int WindowWidth { get; set; }
+        public int WindowWidth
+        {
+            get
+            {
+                try
+                {
+                    return System.Console.WindowWidth;
+                }
+                catch (IOException exception)
+                {
+                    Trace.TraceError($"Cannot get console window width. Using 80 as default. {exception.Message}");
+                    return 80;
+                }
+            }
+            set { System.Console.WindowWidth = value; }
+        }
+
+        public string Title
+        {
+            get
+            {
+                try
+                {
+                    return System.Console.Title;
+                }
+                catch (IOException exception)
+                {
+                    Trace.TraceError($"Cannot get console title. {exception.Message}");
+                    return null;
+                }
+            }
+            set { System.Console.Title = value; }
+        }
+
+        public int WindowHeight
+        {
+            get
+            {
+                try
+                {
+                    return System.Console.WindowHeight;
+                }
+                catch (IOException exception)
+                {
+                    Trace.TraceError($"Cannot get console window height. Using 80 as default. {exception.Message}");
+                    return 80;
+                }
+            }
+            set { System.Console.WindowHeight = value; }
+        }
 
         public int CursorTop
         {
