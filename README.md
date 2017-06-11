@@ -112,9 +112,16 @@ A good sample to look at can be found here.
 
 ## Arguments
 
-You can send arguments to the console application having it execute commands  right when it starts. Each *command* is sent using quotation marks (ie "some list" "some item A"). When sending parameters the console will exit automatically. If you want the console to stay open send the switch /c.
+You can send arguments to the console application having it execute commands right when it starts. Each *command* is sent using quotation marks (ie "some list" "some item A"). When sending parameters the console will exit automatically.
 
+#### /c
+If you want the console to stay open send the switch /c.
+
+#### /e
 The switch /e will make the console stay open if something goes wrong, otherwise it will close.
+
+#### /r
+Resets configuration.
 
 ### Theese examples will make the console stay open when completed
 - "status success" /c

@@ -135,6 +135,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     //helpCommand.AddLine(string.Empty);
                     //helpCommand.AddLine("More details.", foreColor: ConsoleColor.DarkCyan);
                     //helpCommand.AddLine("Visit https://github.com/poxet/tharga-console.");
+
+                    helpCommand.AddLine(string.Empty);
+                    helpCommand.AddLine("Switches:", foreColor: ConsoleColor.DarkCyan);
+                    helpCommand.AddLine("/c Keeps the console open when parameters are sent to the console (command mode).");
+                    helpCommand.AddLine("/e Keeps the console open when parameters are sent to the console and something goes wrong (command mode).");
+                    helpCommand.AddLine("/r Resets settings.");
                 }
             }
             else if (command.HelpText.Any())

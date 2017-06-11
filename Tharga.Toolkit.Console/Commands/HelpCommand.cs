@@ -11,7 +11,7 @@ namespace Tharga.Toolkit.Console.Commands
         private readonly List<HelpLine> _helpLines = new List<HelpLine>();
 
         internal HelpCommand(CommandEngine commandEngine)
-            : base("help", "Displays helpt text.", false)
+            : base("help", "Displays helpt text.")
         {
             _commandEngine = commandEngine;
         }

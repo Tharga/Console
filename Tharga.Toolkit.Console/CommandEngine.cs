@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands;
+using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
@@ -14,6 +15,7 @@ namespace Tharga.Toolkit.Console
     {
         private const string FlagContinueInConsoleMode = "c";
         private const string FlagContinueInConsoleModeIfError = "e";
+        private const string FlagReset = "r";
 
         internal static readonly object SyncRoot = new object();
 
@@ -49,10 +51,10 @@ namespace Tharga.Toolkit.Console
 
         public void Start(string[] args)
         {
-            _commandMode = args.Length > 0;
-
             var commands = GetCommands(args);
             var flags = GetFlags(args);
+
+            _commandMode = commands.Count > 0;
 
             var commandIndex = 0;
 
@@ -65,6 +67,11 @@ namespace Tharga.Toolkit.Console
                 {
                     runner.Start();
                 }
+            }
+
+            if (flags.Any())
+            {
+                HandleFlags(flags);
             }
 
             while (!_cancellationTokenSource.IsCancellationRequested)
@@ -97,6 +104,23 @@ namespace Tharga.Toolkit.Console
             if (TaskRunners != null)
             {
                 Parallel.ForEach(TaskRunners, x => x.Close());
+            }
+        }
+
+        private void HandleFlags(List<string> flags)
+        {
+            if (HasFlag(flags, FlagReset))
+            {
+                var consoleBase = RootCommand.Console as ConsoleBase;
+                if (consoleBase != null)
+                {
+                    consoleBase.Reset();
+                    RootCommand.Console.Output(new WriteEventArgs("Reset performed, triggered by the reset flag '/r' provide as a parameter.", OutputLevel.Information));
+                }
+                else
+                {
+                    RootCommand.Console.Output(new WriteEventArgs("Cannot perform reset command since the console does not inherid from the class 'ConsoleBase'.", OutputLevel.Warning));
+                }
             }
         }
 
