@@ -36,15 +36,56 @@ namespace Tharga.Toolkit.Console.Consoles
         //TODO: Make it possible to set what screen the window should be placed on
         private void SetLocation()
         {
-            if (_consoleConfiguration.StartLocation == null) return;
+            if (_consoleConfiguration.StartPosition != null)
+            {
+                SetWidth();
+                SetHeight();
 
-            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
-            SetWindowPos(hWnd, new IntPtr(0), _consoleConfiguration.StartLocation.Left, _consoleConfiguration.StartLocation.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+                SetWindowPos(hWnd, new IntPtr(0), _consoleConfiguration.StartPosition.Left, _consoleConfiguration.StartPosition.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+            }
+            else if (_consoleConfiguration.RememberStartLocation)
+            {
+                var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+                SubscribeToWindowMovement(hWnd);
 
-            //TODO: Store the last used location
-            //RECT rct;
-            //GetWindowRect(hWnd, out rct);
-            //Console.WriteLine(rct.Left.ToString(), OutputLevel.Warning);
+                //TODO: Read last start position from registry
+                //TODO: Position the window
+            }
+        }
+
+        private void SetWidth()
+        {
+            try
+            {
+                if (_consoleConfiguration.StartPosition.Width != null)
+                    System.Console.WindowWidth = _consoleConfiguration.StartPosition.Width.Value;
+
+                if (_consoleConfiguration.StartPosition.BufferWidth != null)
+                    System.Console.BufferWidth = _consoleConfiguration.StartPosition.BufferWidth.Value;
+                else
+                    System.Console.BufferWidth = System.Console.WindowWidth;
+            }
+            catch (Exception exception)
+            {
+                OutputError(exception);
+            }
+        }
+
+        private void SetHeight()
+        {
+            try
+            {
+                if (_consoleConfiguration.StartPosition.Height != null)
+                    System.Console.WindowHeight = _consoleConfiguration.StartPosition.Height.Value;
+
+                if (_consoleConfiguration.StartPosition.BufferHeight != null)
+                    System.Console.BufferHeight = _consoleConfiguration.StartPosition.BufferHeight.Value;
+            }
+            catch (Exception exception)
+            {
+                OutputError(exception);
+            }
         }
 
         //TODO: Move to Console Manager
@@ -123,6 +164,11 @@ namespace Tharga.Toolkit.Console.Consoles
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
+        public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
+
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
@@ -135,6 +181,50 @@ namespace Tharga.Toolkit.Console.Consoles
         //private const int HWND_TOPMOST = -1;
         //private const int SWP_NOMOVE = 0x0002;
         //private const int SWP_NOSIZE = 0x0001;
+
+        #endregion
+        #region Window movement subscription
+
+        private IntPtr _target;
+        private uint _processId, _threadId;
+        private WinEventDelegate _winEventDelegate;
+
+        private void SubscribeToWindowMovement(IntPtr hWnd)
+        {
+            _target = hWnd;
+
+            // 10 = window move start, 11 = window move end, 0 = fire out of context
+            _winEventDelegate = WhenWindowMoveStartsOrEnds;
+            var hook = SetWinEventHook(10, 11, _target, _winEventDelegate, _processId, _threadId, 0);
+        }
+
+        private void WhenWindowMoveStartsOrEnds(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        {
+            if (hwnd != _target)
+                return;
+
+            if (eventType == 10) //Movement Starts
+            {
+            }
+            else if (eventType == 11)
+            {
+                RECT rct;
+                GetWindowRect(hwnd, out rct);
+                //System.Console.WriteLine(rct.Left + ":" + rct.Top + $" [{rct.Right}:{rct.Bottom}]", OutputLevel.Warning);
+
+                var w = System.Console.WindowWidth;
+                var h = System.Console.WindowHeight;
+
+                var bw = System.Console.BufferWidth;
+                var bh = System.Console.BufferHeight;
+
+                //System.Console.WriteLine($"{rct.Left}:{rct.Top} [{w}:{h}] [{bw}:{bh}]", OutputLevel.Warning);
+
+                //TODO: Find out what screen we are on (when using multiple screens)
+
+                //TODO: Store location in registry
+            }
+        }
 
         #endregion
     }

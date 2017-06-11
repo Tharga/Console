@@ -134,14 +134,27 @@ It is also possible to provide commands using a textfile. Use the command "exec 
 ## Clients
 There are several different type of consoles that can be used.
 - ClientConsole - Regular console used for normal console applications.
-- VoiceConsole - With this client you can use voice commands to control the application.
-- ServerConsole - This console outputs time information and writes to the event log. Great when hosting services.
-- ActionConsole - Performs an action on output.
-- AggregateConsole - Merge serveral consoles together and use them all by using the aggregate console.
+- EventConsole - Fires off an event on each console output.
+- ActionConsole - Fires off a function on each console output.
+- NullConsole - Swallows all inputs and outputs
+- AggregateConsole - Merge serveral consoles together and use them all. For instance *ClientConsole* and *EventConsole* in combination.
+- VoiceConsole - Use voice commands to control the application. (*Under development*)
 
-### ServerConsole
-The default behaviour is that output of type information, warnings and errors are written to the event log (not the default type).
-This can be configured by adding items with the key LogError, LogWarning, LogInformation and LogDefault to appSettings with a boolean value of true or false.
+### Client inheritance tree
+```
+IOutputConsole
+	IConsole
+		ConsoleBase
+			ClientConsole
+				VoiceConsole (*Under development*)
+			NullConsole
+			EventConsole
+			ActionConsole
+			AggregateConsole
+	OutputConsoleBase (*Planned*)
+		EventLogConsole (*Planned*)
+		FileLogConsole (*Planned*)
+```
 
 ## Commands
 There are two types of command classes; container commands and action commands. The container commands is used to group other commands together and the action commands to execute stuff.
@@ -156,18 +169,18 @@ When executing the command by typing *some item*, the user will be queried for *
 You can also send the parameter directly by typing *some item A*. This will automatically send the parameter value A as the first parameter for the command. (The part *GetParam(paramList, 0)* will feed the *QueryParam<T>* function with the fist value provided)
 
 ### Query input in different ways
-The simplest way of querying is just to use the generic *QueryParam<T>* function.
-Ex: *var id = QueryParam<string>("Some Id", GetParam(paramList, 0));*
+The simplest way of querying is just to use the generic *QueryParam<T>* function. The parameter *param* is an enumerable string. The *QueryParam* function will pick the first value from *parm* the first time it is called, and the second value next time and so on. If there are not enough values in *param* the user will be queried for the input.
+Ex: *var id = QueryParam<string>("Some Id", param);*
 
 If you want the user to have options to choose from you can provide a list of possible selections as a dictionary. The key is what will be returned and the value (string) what will be displayed.
-Ex: *var answer = QueryParam<bool>("Are you sure?", GetParam(paramList, 0), new Dictionary<bool, string> { { true, "Yes" }, { false, "No" } });*
+Ex: *var answer = QueryParam<bool>("Are you sure?", param, new Dictionary<bool, string> { { true, "Yes" }, { false, "No" } });*
 
-There are also async versions that takes functions of possible selections.
+There are also async versions that takes functions of possible selections, when using the base class *ActionAsyncCommandBase*.
 
 ## Help texts
 Type your command followed by -? to get help. Or just use the keyword help.
 
-Override the command classes you crate with the property HelpText and write your own help text for each command you create.
+Override the command classes you crate with the property *HelpText* and write your own help text for each command you create.
 
 ## Color
 There are four types of output, the colors for theese can be configured using the appSettings part of the config file

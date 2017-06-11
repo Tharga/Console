@@ -11,6 +11,7 @@ namespace Tharga.Toolkit.Console.Interfaces
         bool TopMost { get; }
         ConsoleColor DefaultTextColor { get; }
         ConsoleColor BackgroundColor { get; }
-        Location StartLocation { get; }
+        Position StartPosition { get; }
+        bool RememberStartLocation { get; }
     }
 }
