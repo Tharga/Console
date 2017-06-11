@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
+using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
@@ -25,7 +26,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
             RegisterCommand(new ExitCommand(() => { RequestCloseEvent?.Invoke(this, new EventArgs()); }));
             RegisterCommand(new ClearCommand());
-            RegisterCommand(new ScreenCommand());
+            RegisterCommand(new ScreenCommand(console));
             RegisterCommand(new CmdCommand());
             RegisterCommand(new PoshCommand());
             RegisterCommand(new ExecuteProcessCommand());

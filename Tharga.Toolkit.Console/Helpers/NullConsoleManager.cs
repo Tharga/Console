@@ -11,6 +11,8 @@ namespace Tharga.Toolkit.Console.Helpers
         public NullConsoleManager()
         {
             _keyInputEngine = new NullKeyInputEngine();
+            BufferWidth = 80;
+            BufferHeight = 300;
         }
 
         public void Dispose()
@@ -20,8 +22,10 @@ namespace Tharga.Toolkit.Console.Helpers
         public Encoding Encoding => Encoding.UTF8;
         public int CursorLeft => 0;
         public int CursorTop => 0;
-        public int BufferWidth => 80;
-        public int BufferHeight => 300;
+        public int BufferWidth { get; set; }
+        public int BufferHeight { get; set; }
+        public int WindowWidth { get; set; }
+        public int WindowHeight { get; set; }
 
         public void WriteLine(string value)
         {
@@ -34,6 +38,8 @@ namespace Tharga.Toolkit.Console.Helpers
         public ConsoleColor ForegroundColor { get; set; }
         public ConsoleColor BackgroundColor { get; set; }
         public IKeyInputEngine KeyInputEngine => _keyInputEngine;
+        public string Title { get; set; }
+
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
         }

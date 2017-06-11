@@ -13,7 +13,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 {
     public abstract class ConsoleBase : IConsole
     {
-        protected readonly IConsoleManager ConsoleManager;
+        internal readonly IConsoleManager ConsoleManager;
         private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
         private Dictionary<string, Location> _tagLocalLocation = new Dictionary<string, Location>();
 
@@ -469,5 +469,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
             _mutedTypes.Remove(type);
         }
+
+        protected internal virtual void Reset() { }
     }
 }

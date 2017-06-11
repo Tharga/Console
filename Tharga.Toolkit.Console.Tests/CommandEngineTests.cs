@@ -3,6 +3,7 @@ using Moq;
 using NUnit.Framework;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Consoles;
+using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Tests
@@ -14,7 +15,7 @@ namespace Tharga.Toolkit.Console.Tests
         public void When_providing_the_exit_command_the_command_engine_should_exit()
         {
             //Arrange
-            var command = new RootCommand(new ClientConsole());
+            var command = new RootCommand(new ClientConsole(new ConsoleConfiguration { RememberStartLocation = false }));
 
             //Act
             new CommandEngine(command).Start(new[] { "exit" });
@@ -27,7 +28,7 @@ namespace Tharga.Toolkit.Console.Tests
         public void When_registering_two_commands_with_the_same_name()
         {
             //Arrange
-            var console = new ClientConsole();
+            var console = new ClientConsole(new ConsoleConfiguration { RememberStartLocation = false });
             var command = new RootCommand(console);
             var cmd1 = new Mock<ICommand>(MockBehavior.Strict);
             cmd1.Setup(x => x.Name).Returns("A");

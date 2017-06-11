@@ -7,11 +7,11 @@ namespace Tharga.Toolkit.Console.Tests
 {
     internal class FakeConsoleManager : IConsoleManager
     {
-        private const int _bufferHeight = 300;
-        private const int _bufferWidth = 80;
+        private const int CbufferHeight = 300;
+        private const int CbufferWidth = 80;
         private int _cursorTop;
 
-        public string[] LineOutput = new string[_bufferHeight];
+        public string[] LineOutput = new string[CbufferHeight];
 
         public FakeConsoleManager(IKeyInputEngine keyInputEngine = null)
         {
@@ -30,23 +30,28 @@ namespace Tharga.Toolkit.Console.Tests
             get { return _cursorTop; }
             private set
             {
-                if (value == _bufferHeight)
-                {
-                    //NOTE: Keep the buffer height, but move the array one step up
-                    for (var i = 0; i < _bufferHeight - 1; i++)
-                    {
+                if (value == CbufferHeight)
+                    for (var i = 0; i < CbufferHeight - 1; i++)
                         LineOutput[i] = LineOutput[i + 1];
-                    }
-                }
                 else
-                {
                     _cursorTop = value;
-                }
             }
         }
 
-        public int BufferWidth => _bufferWidth;
-        public int BufferHeight => _bufferHeight;
+        public int WindowWidth { get; set; }
+        public int WindowHeight { get; set; }
+
+        public int BufferWidth
+        {
+            get { return CbufferWidth; }
+            set { throw new NotSupportedException(); }
+        }
+
+        public int BufferHeight
+        {
+            get { return CbufferHeight; }
+            set { throw new NotSupportedException(); }
+        }
 
         public void WriteLine(string value)
         {
@@ -85,7 +90,7 @@ namespace Tharga.Toolkit.Console.Tests
 
         public void Clear()
         {
-            LineOutput = new string[_bufferHeight];
+            LineOutput = new string[CbufferHeight];
             CursorLeft = 0;
             CursorTop = 0;
         }
@@ -95,6 +100,7 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         public IKeyInputEngine KeyInputEngine { get; }
+        public string Title { get; set; }
 
         private void DoWriteLine(string value, bool lineFeed)
         {

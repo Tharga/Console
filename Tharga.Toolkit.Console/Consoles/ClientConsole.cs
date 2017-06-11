@@ -19,6 +19,12 @@ namespace Tharga.Toolkit.Console.Consoles
         {
             _consoleConfiguration = consoleConfiguration ?? new ConsoleConfiguration();
 
+            Initiate();
+        }
+
+        private void Initiate()
+        {
+            ConsoleManager.Clear();
             SetLocation();
             SetTopMost(_consoleConfiguration.TopMost);
             SetColor();
@@ -36,35 +42,60 @@ namespace Tharga.Toolkit.Console.Consoles
         //TODO: Make it possible to set what screen the window should be placed on
         private void SetLocation()
         {
+            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+            Position position = null;
+
             if (_consoleConfiguration.StartPosition != null)
             {
-                SetWidth();
-                SetHeight();
-
-                var hWnd = Process.GetCurrentProcess().MainWindowHandle;
-                SetWindowPos(hWnd, new IntPtr(0), _consoleConfiguration.StartPosition.Left, _consoleConfiguration.StartPosition.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                position = _consoleConfiguration.StartPosition;
             }
             else if (_consoleConfiguration.RememberStartLocation)
             {
-                var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+                position = GetPosition();
                 SubscribeToWindowMovement(hWnd);
+            }
 
-                //TODO: Read last start position from registry
-                //TODO: Position the window
+            SetWidth(position);
+            SetHeight(position);
+
+            if (position != null)
+            {
+                SetWindowPos(hWnd, new IntPtr(0), position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
             }
         }
 
-        private void SetWidth()
+        private Position GetPosition()
         {
             try
             {
-                if (_consoleConfiguration.StartPosition.Width != null)
-                    System.Console.WindowWidth = _consoleConfiguration.StartPosition.Width.Value;
+                var val = Registry.GetSetting("StartPosition", Registry.RegistryHKey.CurrentUser, string.Empty);
+                if (string.IsNullOrEmpty(val)) return null;
+                var segments = val.Split('|');
+                var pos = segments[0].Split(':');
+                var wz = segments[1].Split(':');
+                var bz = segments[2].Split(':');
+                return new Position(int.Parse(pos[0]), int.Parse(pos[1]), int.Parse(wz[0]), int.Parse(wz[1]), int.Parse(bz[0]), int.Parse(bz[1]));
+            }
+            catch (Exception exception)
+            {
+                OutputError(exception);
+                return null;
+            }
+        }
 
-                if (_consoleConfiguration.StartPosition.BufferWidth != null)
-                    System.Console.BufferWidth = _consoleConfiguration.StartPosition.BufferWidth.Value;
-                else
-                    System.Console.BufferWidth = System.Console.WindowWidth;
+        private void SetWidth(Position position)
+        {
+            try
+            {
+                if (position == null) return;
+
+                if (position.Width != null)
+                    ConsoleManager.WindowWidth = position.Width.Value;
+
+                if (position.BufferWidth != null)
+                    ConsoleManager.BufferWidth = position.BufferWidth.Value;
+                else if (ConsoleManager.WindowWidth > 0)
+                    ConsoleManager.BufferWidth = ConsoleManager.WindowWidth;
             }
             catch (Exception exception)
             {
@@ -72,15 +103,17 @@ namespace Tharga.Toolkit.Console.Consoles
             }
         }
 
-        private void SetHeight()
+        private void SetHeight(Position position)
         {
             try
             {
-                if (_consoleConfiguration.StartPosition.Height != null)
-                    System.Console.WindowHeight = _consoleConfiguration.StartPosition.Height.Value;
+                if (position == null) return;
 
-                if (_consoleConfiguration.StartPosition.BufferHeight != null)
-                    System.Console.BufferHeight = _consoleConfiguration.StartPosition.BufferHeight.Value;
+                if (position.Height != null)
+                    ConsoleManager.WindowHeight = position.Height.Value;
+
+                if (position.BufferHeight != null)
+                    ConsoleManager.BufferHeight = position.BufferHeight.Value;
             }
             catch (Exception exception)
             {
@@ -88,22 +121,20 @@ namespace Tharga.Toolkit.Console.Consoles
             }
         }
 
-        //TODO: Move to Console Manager
         private void SetColor()
         {
-            if (System.Console.BackgroundColor == _consoleConfiguration.BackgroundColor && System.Console.ForegroundColor == _consoleConfiguration.DefaultTextColor) return;
+            if (ConsoleManager.BackgroundColor == _consoleConfiguration.BackgroundColor && ConsoleManager.ForegroundColor == _consoleConfiguration.DefaultTextColor) return;
 
-            System.Console.BackgroundColor = _consoleConfiguration.BackgroundColor;
-            System.Console.ForegroundColor = _consoleConfiguration.DefaultTextColor;
-            System.Console.Clear();
+            ConsoleManager.BackgroundColor = _consoleConfiguration.BackgroundColor;
+            ConsoleManager.ForegroundColor = _consoleConfiguration.DefaultTextColor;
+            ConsoleManager.Clear();
         }
 
-        //TODO: Move to Console Manager
         private void UpdateTitle()
         {
             try
             {
-                System.Console.Title = _consoleConfiguration.Title ?? AssemblyHelper.GetAssemblyInfo() ?? "Tharga Console";
+                ConsoleManager.Title = _consoleConfiguration.Title ?? AssemblyHelper.GetAssemblyInfo() ?? "Tharga Console";
             }
             catch (IOException exception)
             {
@@ -116,7 +147,7 @@ namespace Tharga.Toolkit.Console.Consoles
             if (string.IsNullOrEmpty(_consoleConfiguration.SplashScreen))
                 return;
 
-            Output(new WriteEventArgs(_consoleConfiguration.SplashScreen, OutputLevel.Default));
+            Output(new WriteEventArgs(_consoleConfiguration.SplashScreen));
         }
 
         private void ShowAssemblyInfo()
@@ -145,6 +176,12 @@ namespace Tharga.Toolkit.Console.Consoles
             {
                 SetWindowPos(hWnd, new IntPtr(HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             }
+        }
+
+        protected internal override void Reset()
+        {
+            Registry.ClearAllSettings();
+            Initiate();
         }
 
         #region User32
@@ -198,31 +235,33 @@ namespace Tharga.Toolkit.Console.Consoles
             var hook = SetWinEventHook(10, 11, _target, _winEventDelegate, _processId, _threadId, 0);
         }
 
+        //TODO: Move to Console Manager
         private void WhenWindowMoveStartsOrEnds(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            if (hwnd != _target)
-                return;
-
-            if (eventType == 10) //Movement Starts
+            try
             {
+                if (hwnd != _target)
+                    return;
+
+                if (eventType == 10) //Movement started
+                {
+                }
+                else if (eventType == 11) //Movement ended
+                {
+                    RECT rct;
+                    GetWindowRect(hwnd, out rct);
+
+                    //TODO: Find out what screen we are on (when using multiple screens)
+
+                    var val = $"{rct.Left}:{rct.Top}|{ConsoleManager.WindowWidth}:{ConsoleManager.WindowHeight}|{ConsoleManager.BufferWidth}:{ConsoleManager.BufferHeight}";
+                    //ConsoleManager.WriteLine(val);
+
+                    Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
+                }
             }
-            else if (eventType == 11)
+            catch (Exception exception)
             {
-                RECT rct;
-                GetWindowRect(hwnd, out rct);
-                //System.Console.WriteLine(rct.Left + ":" + rct.Top + $" [{rct.Right}:{rct.Bottom}]", OutputLevel.Warning);
-
-                var w = System.Console.WindowWidth;
-                var h = System.Console.WindowHeight;
-
-                var bw = System.Console.BufferWidth;
-                var bh = System.Console.BufferHeight;
-
-                //System.Console.WriteLine($"{rct.Left}:{rct.Top} [{w}:{h}] [{bw}:{bh}]", OutputLevel.Warning);
-
-                //TODO: Find out what screen we are on (when using multiple screens)
-
-                //TODO: Store location in registry
+                OutputError(exception);
             }
         }
 

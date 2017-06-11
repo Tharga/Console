@@ -28,6 +28,9 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public Encoding Encoding => _textWriter.Encoding;
         public IKeyInputEngine KeyInputEngine => _keyInputEngine ?? (_keyInputEngine = new KeyInputEngine());
+        public string Title { get; set; }
+
+        public int WindowHeight { get; set; }
 
         public void WriteLine(string value)
         {
@@ -74,7 +77,10 @@ namespace Tharga.Toolkit.Console.Helpers
                     return 80;
                 }
             }
+            set { System.Console.BufferWidth = value; }
         }
+
+        public int WindowWidth { get; set; }
 
         public int CursorTop
         {
@@ -106,6 +112,7 @@ namespace Tharga.Toolkit.Console.Helpers
                     return 300;
                 }
             }
+            set { System.Console.BufferHeight = value; }
         }
 
         public ConsoleColor ForegroundColor
@@ -140,7 +147,14 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public void Clear()
         {
-            System.Console.Clear();
+            try
+            {
+                System.Console.Clear();
+            }
+            catch (IOException exception)
+            {
+                Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
+            }
         }
     }
 }

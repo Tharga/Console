@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
     internal class ForegroundColorCommand : ActionCommandBase
     {
-        public ForegroundColorCommand()
-            : base("foreground", "Sets the foreground color.", false)
+        private readonly IConsoleManager _consoleManager;
+
+        public ForegroundColorCommand(IConsoleManager consoleManager)
+            : base("foreground", "Sets the foreground color.")
         {
+            _consoleManager = consoleManager;
             AddName("fg");
         }
 
@@ -31,12 +35,10 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 
         public override void Invoke(string[] param)
         {
-            throw new NotImplementedException("Fire event that changes the forground in the console.");
-
             var color = QueryParam("Color", param, EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
 
-            //System.Console.ForegroundColor = color;
-            //System.Console.Clear();
+            _consoleManager.ForegroundColor = color;
+            _consoleManager.Clear();
         }
     }
 }
