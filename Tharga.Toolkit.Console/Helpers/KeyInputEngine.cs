@@ -26,5 +26,17 @@ namespace Tharga.Toolkit.Console.Helpers
         {
             return _buffer.Take(cancellationToken);
         }
+
+        public void Feed(string data)
+        {
+            foreach (var item in data)
+            {
+                ConsoleKey val;
+                ConsoleKey.TryParse(item.ToString(), true, out val);
+                _buffer.Add(new ConsoleKeyInfo(item, val, false, false, false));
+            }
+
+            _buffer.Add(new ConsoleKeyInfo((char)13, ConsoleKey.Enter, false, false, false));
+        }
     }
 }

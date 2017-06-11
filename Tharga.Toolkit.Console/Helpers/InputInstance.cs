@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
@@ -26,12 +27,13 @@ namespace Tharga.Toolkit.Console.Helpers
         private static int _cursorLineOffset;
         private InputBuffer _inputBuffer;
         private readonly CancellationToken _cancellationToken;
+        private readonly IEnumerable<CommandTreeNode> _tabTree;
 
         //TODO: Theese values should be read from the instance, not as a static value!
         public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
         public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
-        public InputInstance(IConsole console, string paramName, char? passwordChar, CancellationToken cancellationToken)
+        public InputInstance(IConsole console, string paramName, char? passwordChar, CancellationToken cancellationToken, IEnumerable<CommandTreeNode> tabTree)
         {
             if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
 
@@ -39,6 +41,7 @@ namespace Tharga.Toolkit.Console.Helpers
             _paramName = paramName;
             _passwordChar = passwordChar;
             _cancellationToken = cancellationToken;
+            _tabTree = tabTree;
 
             _console.PushBufferDownEvent += PushBufferDownEvent;
             _console.LinesInsertedEvent += LinesInsertedEvent;
@@ -156,7 +159,6 @@ namespace Tharga.Toolkit.Console.Helpers
 
                                 default:
                                     Trace.TraceWarning("No action for ctrl-" + readKey.Key);
-                                    //Debug.WriteLine("No action for ctrl-" + readKey.Key);
                                     break;
                             }
                         }
@@ -242,7 +244,20 @@ namespace Tharga.Toolkit.Console.Helpers
                                     }
                                     else
                                     {
-                                        InsertText(currentScreenLocation, (char)9, _inputBuffer, currentBufferPosition, _startLocation);
+                                        //TODO: Look into the command tree for a matching command. Cycle from that point if there are more than one.
+                                        var inp = _inputBuffer.ToString().ToLower().Split(' ');
+
+                                        var options = _tabTree.Where(x => x.Name.ToLower().StartsWith(inp[0])).ToArray();
+                                        if (options.Any())
+                                        {
+                                            var op = options.First();
+                                            var opn = op.Name;
+                                            Clear(_inputBuffer);
+                                            _console.Output(new WriteEventArgs(opn, OutputLevel.Default, null, null, false, false));
+                                            _inputBuffer.Add(opn);
+                                            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                        }
+                                        //InsertText(currentScreenLocation, (char)9, _inputBuffer, currentBufferPosition, _startLocation);
                                     }
 
                                     break;
@@ -356,7 +371,6 @@ namespace Tharga.Toolkit.Console.Helpers
 
                 Clear(inputBuffer);
                 _commandHistoryIndex = chi;
-                //_console.Write(_commandHistory[_paramName][_commandHistoryIndex]);
                 _console.Output(new WriteEventArgs(_commandHistory[_paramName][_commandHistoryIndex], OutputLevel.Default, null, null, false, false));
                 inputBuffer.Add(_commandHistory[_paramName][_commandHistoryIndex]);
             }
@@ -417,7 +431,6 @@ namespace Tharga.Toolkit.Console.Helpers
         {
             _commandHistoryIndex = -1;
             MoveCursorToStart(_startLocation);
-            //_console.Write(new string(' ', inputBuffer.Length));
             _console.Output(new WriteEventArgs(new string(' ', inputBuffer.Length), OutputLevel.Default, null, null, false, false));
             MoveCursorToStart(_startLocation);
             inputBuffer.Clear();
@@ -426,61 +439,50 @@ namespace Tharga.Toolkit.Console.Helpers
 
         private T GetResponse<T>(KeyValuePair<T, string>[] selection, InputBuffer inputBuffer)
         {
-            //try
-            //{
-                if (_finished) throw new InvalidOperationException("Cannot get response more than once from a single input manager.");
-                _finished = true;
-                T response;
-                if (selection.Any())
+            if (_finished) throw new InvalidOperationException("Cannot get response more than once from a single input manager.");
+            _finished = true;
+            T response;
+            if (selection.Any())
+            {
+                if (_tabIndex != -1)
                 {
-                    if (_tabIndex != -1)
-                    {
-                        //_console.NewLine();
-                        _console.Output(new WriteEventArgs(null, OutputLevel.Default));
-                        response = selection[_tabIndex].Key;
-                    }
-                    else
-                    {
-                        var items = selection.Where(x => x.Value == inputBuffer.ToString()).ToArray();
-                        if (!items.Any())
-                        {
-                            try
-                            {
-                                response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
-                                //_console.NewLine();
-                                _console.Output(new WriteEventArgs(null, OutputLevel.Default));
-                            }
-                            catch (FormatException exception)
-                            {
-                                throw new EntryException("No item match the entry.", exception);
-                            }
-                        }
-                        else
-                        {
-                            if (items.Count() > 1)
-                            {
-                                throw new EntryException("There are several matches to the entry.");
-                            }
-
-                            //_console.NewLine();
-                            _console.Output(new WriteEventArgs(null, OutputLevel.Default));
-                            response = items.Single().Key;
-                        }
-                    }
+                    _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+                    response = selection[_tabIndex].Key;
                 }
                 else
                 {
-                    response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
-                    //_console.NewLine();
-                    _console.Output(new WriteEventArgs(null, OutputLevel.Default));
-                }
+                    var items = selection.Where(x => x.Value == inputBuffer.ToString()).ToArray();
+                    if (!items.Any())
+                    {
+                        try
+                        {
+                            response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
+                            _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+                        }
+                        catch (FormatException exception)
+                        {
+                            throw new EntryException("No item match the entry.", exception);
+                        }
+                    }
+                    else
+                    {
+                        if (items.Count() > 1)
+                        {
+                            throw new EntryException("There are several matches to the entry.");
+                        }
 
-                return response;
-            //}
-            //finally
-            //{
-            //    inputBuffer.Dispose();
-            //}
+                        _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+                        response = items.Single().Key;
+                    }
+                }
+            }
+            else
+            {
+                response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
+                _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+            }
+
+            return response;
         }
 
         private void InputBufferChangedEvent(object sender, InputBufferChangedEventArgs e)
@@ -490,38 +492,33 @@ namespace Tharga.Toolkit.Console.Helpers
 
         private void InsertText(Location currentScreenLocation, char input, InputBuffer inputBuffer, int currentBufferPosition, Location startLocation)
         {
-            //lock (CommandEngine.SyncRoot)
-            //{
-                if (BufferWidth <= 1) throw new ArgumentException("BufferWidth needs to be larger than 1.");
+            if (BufferWidth <= 1) throw new ArgumentException("BufferWidth needs to be larger than 1.");
 
-                //Check if the text to the right is on more than one line
-                var charsToTheRight = inputBuffer.Length - currentBufferPosition;
-                var bufferToTheRight = BufferWidth - currentScreenLocation.Left - startLocation.Left + 1;
-                if (charsToTheRight > bufferToTheRight)
+            //Check if the text to the right is on more than one line
+            var charsToTheRight = inputBuffer.Length - currentBufferPosition;
+            var bufferToTheRight = BufferWidth - currentScreenLocation.Left - startLocation.Left + 1;
+            if (charsToTheRight > bufferToTheRight)
+            {
+                var lines = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + startLocation.Left + 1) / BufferWidth);
+                for (var i = lines; i > 0; i--)
                 {
-                    var lines = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + startLocation.Left + 1) / BufferWidth);
-                    for (var i = lines; i > 0; i--)
-                    {
-                        _console.MoveBufferArea(0, currentScreenLocation.Top + i - 1 + 1, BufferWidth - 1, 1, 1, currentScreenLocation.Top + i - 1 + 1);
-                        _console.MoveBufferArea(BufferWidth - 1, currentScreenLocation.Top + i - 1, 1, 1, 0, currentScreenLocation.Top + i - 1 + 1);
-                    }
+                    _console.MoveBufferArea(0, currentScreenLocation.Top + i - 1 + 1, BufferWidth - 1, 1, 1, currentScreenLocation.Top + i - 1 + 1);
+                    _console.MoveBufferArea(BufferWidth - 1, currentScreenLocation.Top + i - 1, 1, 1, 0, currentScreenLocation.Top + i - 1 + 1);
                 }
+            }
 
-                _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + 1, currentScreenLocation.Top);
-                if (input == 9)
-                {
-                    //_console.Write(((char)26).ToString(CultureInfo.InvariantCulture));
-                    _console.Output(new WriteEventArgs(((char)26).ToString(CultureInfo.InvariantCulture), OutputLevel.Default, null, null, false, false));
-                }
-                else
-                {
-                    //_console.Write(_passwordChar?.ToString() ?? input.ToString());
-                    _console.Output(new WriteEventArgs(_passwordChar?.ToString() ?? input.ToString(), OutputLevel.Default, null, null, false, false));
-                }
+            _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + 1, currentScreenLocation.Top);
+            if (input == 9)
+            {
+                _console.Output(new WriteEventArgs(((char)26).ToString(CultureInfo.InvariantCulture), OutputLevel.Default, null, null, false, false));
+            }
+            else
+            {
+                _console.Output(new WriteEventArgs(_passwordChar?.ToString() ?? input.ToString(), OutputLevel.Default, null, null, false, false));
+            }
 
-                inputBuffer.Insert(currentBufferPosition, input.ToString(CultureInfo.InvariantCulture));
-                CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
-            //}
+            inputBuffer.Insert(currentBufferPosition, input.ToString(CultureInfo.InvariantCulture));
+            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
         }
 
         private void MoveBufferLeft(Location currentScreenLocation, InputBuffer inputBuffer, Location startLocation)

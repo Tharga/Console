@@ -37,10 +37,10 @@ namespace Tharga.Toolkit.Console.Consoles
             return base.ToString();
         }
 
-        public override ConsoleKeyInfo ReadKey()
-        {
-            return base.ReadKey();
-        }
+        //public override ConsoleKeyInfo ReadKey()
+        //{
+        //    return base.ReadKey();
+        //}
 
         public override ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {

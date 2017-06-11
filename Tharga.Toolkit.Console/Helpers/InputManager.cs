@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Tharga.Toolkit.Console.Commands.Base;
+using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Helpers
@@ -15,13 +17,13 @@ namespace Tharga.Toolkit.Console.Helpers
             _console = console;
         }
 
-        public T ReadLine<T>(string paramName, KeyValuePair<T, string>[] selection, bool allowEscape, CancellationToken cancellationToken, char? passwordChar, int? timeoutMilliseconds)
+        public T ReadLine<T>(string paramName, KeyValuePair<T, string>[] selection, bool allowEscape, CancellationToken cancellationToken, char? passwordChar, int? timeoutMilliseconds, IEnumerable<CommandTreeNode> tabTree)
         {
             Task<T> task = null;
             InputInstance inputInstance = null;
             try
             {
-                inputInstance = new InputInstance(_console, paramName, passwordChar, cancellationToken);
+                inputInstance = new InputInstance(_console, paramName, passwordChar, cancellationToken, tabTree);
                 task = new Task<T>(() => inputInstance.ReadLine(selection, allowEscape));
                 task.Start();
 

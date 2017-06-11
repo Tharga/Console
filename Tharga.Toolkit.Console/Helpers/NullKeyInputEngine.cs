@@ -18,5 +18,9 @@ namespace Tharga.Toolkit.Console.Helpers
                 return new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false);
             }).Result;
         }
+
+        public void Feed(string data)
+        {            
+        }
     }
 }

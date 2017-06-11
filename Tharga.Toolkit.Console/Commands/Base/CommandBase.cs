@@ -77,23 +77,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return enumerable[index];
         }
 
-        //[Obsolete("Use GetParam with parameter 'string[] input' instead.")]
-        //protected static string GetParam(string paramList, int index)
-        //{
-        //    if (paramList == null) return null;
-
-        //    //Group items between delimiters " into one single string.
-        //    var verbs = ParamExtensions.GetDelimiteredVerbs(ref paramList, '\"');
-
-        //    var paramArray = paramList.Split(' ');
-        //    if (paramArray.Length <= index) return null;
-
-        //    //Put the grouped verbs back in to the original
-        //    if (verbs.Count > 0) for (var i = 0; i < paramArray.Length; i++) if (verbs.ContainsKey(paramArray[i])) paramArray[i] = verbs[paramArray[i]];
-
-        //    return paramArray[index];
-        //}
-
         protected string QueryPassword(string paramName, IEnumerable<string> autoParam, string defaultValue = null)
         {
             return QueryPassword(paramName, GetNextParam(autoParam), defaultValue);
@@ -171,7 +154,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return QueryParam(paramName, autoProvideValue, selectionDelegate, true, passwordEntry);
         }
 
-        private T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool allowEscape, bool passwordEntry)
+        internal protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool allowEscape, bool passwordEntry, IEnumerable<CommandTreeNode> tabTree = null)
         {
             var selection = new List<KeyValuePair<T, string>>();
             if (selectionDelegate != null)
@@ -185,7 +168,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
 
             var inputManager = CommandEngine.InputManager;
-            var response = inputManager.ReadLine(paramName + (!selection.Any() ? "" : " [Tab]"), selection.ToArray(), allowEscape, CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null);
+            var response = inputManager.ReadLine(paramName + (!selection.Any() ? "" : " [Tab]"), selection.ToArray(), allowEscape, CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null, tabTree);
             return response;
         }
 

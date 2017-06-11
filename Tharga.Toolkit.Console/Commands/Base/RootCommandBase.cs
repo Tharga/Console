@@ -76,7 +76,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public string QueryInput()
         {
-            return QueryParam<string>(Constants.Prompt);
+            var tabTree = SubCommands.Select(x => new CommandTreeNode(x.Name));
+
+            return QueryParam<string>(Constants.Prompt, null, null, true, false, tabTree);
         }
 
         public bool Execute(string entry)

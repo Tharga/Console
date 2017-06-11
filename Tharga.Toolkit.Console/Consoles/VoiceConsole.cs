@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Speech.Recognition;
+using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Consoles
@@ -10,7 +12,7 @@ namespace Tharga.Toolkit.Console.Consoles
         private readonly SpeechRecognitionEngine _mainSpeechRecognitionEngine = new SpeechRecognitionEngine();
 
         public VoiceConsole(IConsoleConfiguration consoleConfiguration = null)
-            :base(consoleConfiguration)
+            : base(consoleConfiguration)
         {
             _mainSpeechRecognitionEngine.AudioLevelUpdated += _mainSpeechRecognitionEngine_AudioLevelUpdated;
             _mainSpeechRecognitionEngine.AudioSignalProblemOccurred += _mainSpeechRecognitionEngine_AudioSignalProblemOccurred;
@@ -27,12 +29,12 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private void _mainSpeechRecognitionEngine_AudioSignalProblemOccurred(object sender, AudioSignalProblemOccurredEventArgs e)
         {
-            OutputDefault("_mainSpeechRecognitionEngine_AudioSignalProblemOccurred");
+            //OutputDefault("_mainSpeechRecognitionEngine_AudioSignalProblemOccurred");
         }
 
         private void _mainSpeechRecognitionEngine_AudioStateChanged(object sender, AudioStateChangedEventArgs e)
         {
-            OutputDefault("_mainSpeechRecognitionEngine_AudioStateChanged");
+            //OutputDefault("_mainSpeechRecognitionEngine_AudioStateChanged");
         }
 
         private void _mainSpeechRecognitionEngine_EmulateRecognizeCompleted(object sender, EmulateRecognizeCompletedEventArgs e)
@@ -42,7 +44,7 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private void _mainSpeechRecognitionEngine_RecognizerUpdateReached(object sender, RecognizerUpdateReachedEventArgs e)
         {
-            OutputDefault("_mainSpeechRecognitionEngine_RecognizerUpdateReached");
+            //OutputDefault("_mainSpeechRecognitionEngine_RecognizerUpdateReached");
         }
 
         private void _mainSpeechRecognitionEngine_RecognizeCompleted(object sender, RecognizeCompletedEventArgs e)
@@ -52,12 +54,12 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private void _mainSpeechRecognitionEngine_SpeechHypothesized(object sender, SpeechHypothesizedEventArgs e)
         {
-            OutputDefault("_mainSpeechRecognitionEngine_SpeechHypothesized");
+            //OutputDefault("_mainSpeechRecognitionEngine_SpeechHypothesized");
         }
 
         private void _mainSpeechRecognitionEngine_AudioLevelUpdated(object sender, AudioLevelUpdatedEventArgs e)
         {
-            OutputDefault("_mainSpeechRecognitionEngine_AudioLevelUpdated");
+            //OutputDefault("_mainSpeechRecognitionEngine_AudioLevelUpdated");
         }
 
         private void _mainSpeechRecognitionEngine_LoadGrammarCompleted(object sender, LoadGrammarCompletedEventArgs e)
@@ -67,7 +69,7 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private void _mainSpeechRecognitionEngine_SpeechDetected(object sender, SpeechDetectedEventArgs e)
         {
-            OutputDefault("_mainSpeechRecognitionEngine_SpeechDetected");
+            //OutputDefault("_mainSpeechRecognitionEngine_SpeechDetected");
         }
 
         private void _mainSpeechRecognitionEngine_SpeechRecognitionRejected(object sender, SpeechRecognitionRejectedEventArgs e)
@@ -77,7 +79,11 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private void _mainSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            OutputDefault("_mainSpeechRecognitionEngine_SpeechRecognized");
+            //TODO: Execute the statement as a command (or input)
+            OutputInformation(e.Result.Text);
+            ConsoleManager.KeyInputEngine.Feed(e.Result.Text);
+
+
             //        throw new NotImplementedException();
             //        //if (_reading)
             //        //{
@@ -88,13 +94,6 @@ namespace Tharga.Toolkit.Console.Consoles
             //        //    _autoResetEvent.Set();
             //        //}
         }
-
-        #region User32
-
-        //[DllImport("User32.Dll", EntryPoint = "PostMessageA")]
-        //private static extern bool PostMessage(IntPtr hwnd, uint msg, int wparam, int lparam);
-
-        #endregion
 
         //    private const int Retrun = 0x0D;
         //    private const int Keydown = 0x100;
@@ -119,59 +118,116 @@ namespace Tharga.Toolkit.Console.Consoles
         //    }
 
         public override void Attach(IRootCommand rootCommand)
+        {
+            var coreCommands = new[] { "help" };
+            var baseCommands = GetCommands(rootCommand.SubCommands);
+
+            var commands = coreCommands.Union(baseCommands).ToArray();
+
+            var choices = new Choices();
+            choices.Add(commands);
+            //foreach (var cmd in commands)
+            //    OutputInformation(cmd);
+            var gr = new Grammar(new GrammarBuilder(choices));
+            _mainSpeechRecognitionEngine.RequestRecognizerUpdate();
+            _mainSpeechRecognitionEngine.LoadGrammar(gr);
+            //_mainSpeechRecognitionEngine.SetInputToWaveFile("helloworld.wav");
+
+            try
             {
-                var commands = rootCommand.SubCommands.Select(x => x.Name).ToArray();
+                _mainSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
+            }
+            catch (Exception exception)
+            {
+                OutputError(exception);
+                //try
+                //{
+                //    throw new InvalidOperationException("Unable to set default input audio device", exception);
+                //}
+                //catch (Exception e)
+                //{
+                //    OutputError(e);
+                //}
+                ////base.WriteLine($"Unable to set default input audio device. Error: {exception.Message}", OutputLevel.Error, null, null);
+                //return;
+            }
 
-                var choices = new Choices();
-                choices.Add(commands);
-                var gr = new Grammar(new GrammarBuilder(choices));
-                _mainSpeechRecognitionEngine.RequestRecognizerUpdate();
-                _mainSpeechRecognitionEngine.LoadGrammar(gr);
+            //var subChoices = new Choices();
+            //subChoices.Add(new[] { "tab", "enter" });
+            //var subGr = new Grammar(new GrammarBuilder(subChoices));
+            //_subSpeechRecognitionEngine.RequestRecognizerUpdate();
+            //_subSpeechRecognitionEngine.LoadGrammar(subGr);
+            //_subSpeechRecognitionEngine.SpeechRecognized += _subSpeechRecognitionEngine_SpeechRecognized;
+            //_subSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
 
-                    try
-                    {
-                        _mainSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
-                    }
-                    catch (Exception exception)
-                    {
-            //            try
-            //            {
-            //                throw new InvalidOperationException("Unable to set default input audio device", exception);
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                OutputError(e);
-            //            }
-            //            //base.WriteLine($"Unable to set default input audio device. Error: {exception.Message}", OutputLevel.Error, null, null);
-            //            return;
-                    }
+            foreach (var x in SpeechRecognitionEngine.InstalledRecognizers())
+            {
+                OutputInformation(x.Name);
+            }
 
-            //        var subChoices = new Choices();
-            //        subChoices.Add(new[] { "tab", "enter" });
-            //        var subGr = new Grammar(new GrammarBuilder(subChoices));
-            //        _subSpeechRecognitionEngine.RequestRecognizerUpdate();
-            //        _subSpeechRecognitionEngine.LoadGrammar(subGr);
-            //        _subSpeechRecognitionEngine.SpeechRecognized += _subSpeechRecognitionEngine_SpeechRecognized;
-            //        _subSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
+            Task.Run(() =>
+            {
+                //TODO: Terminate when application exists
+                //TODO: This is the main recognizer, only use it when waiting for a main command. Not a command parameter input.
+                while (true)
+                {
+                    OutputInformation("Recognize Main Input...");
+                    _mainSpeechRecognitionEngine.Recognize();
+                }
+            });
         }
 
-        //    //protected override void WriteLineEx(string value, OutputLevel outputLevel)
-        //    //{
-        //    //    base.WriteLineEx(value, outputLevel);
+        private static IEnumerable<string> GetCommands(IEnumerable<ICommand> commands)
+        {
+            if (commands == null) yield break;
+            foreach (var cmd in commands)
+            {
+                var cmt = cmd as IContainerCommand;
+                var subs = GetCommands(cmt?.SubCommands).ToArray();
 
-        //    //    //var builder = new PromptBuilder();
-        //    //    //builder.StartSentence();
-        //    //    //builder.AppendText(value);
-        //    //    //builder.EndSentence();
+                foreach (var name in cmd.Names)
+                {
+                    yield return name;
+                    yield return name + " help";
+
+                    foreach (var sub in subs)
+                        yield return name + " " + sub;
+                }
+            }
+        }
+
+        //    //}
+        //    //    //}
+        //    //    //    synthesizer.Speak(builder);
+        //    //    //    synthesizer.SelectVoice("Microsoft Zira Desktop");
+        //    //    //    //synthesizer.SelectVoice("Microsoft Hazel Desktop");
+        //    //    //    //synthesizer.SelectVoice("Microsoft David Desktop");
+        //    //    //{
 
         //    //    //using (var synthesizer = new SpeechSynthesizer())
-        //    //    //{
-        //    //    //    //synthesizer.SelectVoice("Microsoft David Desktop");
-        //    //    //    //synthesizer.SelectVoice("Microsoft Hazel Desktop");
-        //    //    //    synthesizer.SelectVoice("Microsoft Zira Desktop");
-        //    //    //    synthesizer.Speak(builder);
-        //    //    //}
-        //    //}
+        //    //    //builder.EndSentence();
+        //    //    //builder.AppendText(value);
+        //    //    //builder.StartSentence();
+
+        //    //    //var builder = new PromptBuilder();
+        //    //    base.WriteLineEx(value, outputLevel);
+
+        //public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
+        //public override ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
+        //{
+        //    return base.ReadKey(cancellationToken);
+        //}
+
+        #region User32
+
+        //[DllImport("User32.Dll", EntryPoint = "PostMessageA")]
+        //private static extern bool PostMessage(IntPtr hwnd, uint msg, int wparam, int lparam);
+
+        #endregion
+
+        //    //{
+
+        //    //protected override void WriteLineEx(string value, OutputLevel outputLevel)
 
         //    private void _subSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         //    {
