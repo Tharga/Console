@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using log4net;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
@@ -26,8 +25,8 @@ namespace SampleConsole
             //var console = new VoiceConsole(new ConsoleConfiguration
             {
                 SplashScreen = _splashscreen,
-                //StartPosition = new Position(0, 0),
-                //RememberStartLocation = false
+                //StartPosition = new Position(10, 10, 120, 80),
+                //RememberStartPosition = false
             });
             //var console = new NullConsole();
             //var console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });

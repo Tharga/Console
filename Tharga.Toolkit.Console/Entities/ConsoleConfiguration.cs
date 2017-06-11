@@ -13,7 +13,7 @@ namespace Tharga.Toolkit.Console.Entities
             TopMost = false;
             DefaultTextColor = ConsoleColor.Gray;
             BackgroundColor = ConsoleColor.Black;
-            RememberStartLocation = true;
+            RememberStartPosition = true;
         }
 
         public string Title { get; set; }
@@ -23,6 +23,6 @@ namespace Tharga.Toolkit.Console.Entities
         public ConsoleColor DefaultTextColor { get; set; }
         public ConsoleColor BackgroundColor { get; set; }
         public Position StartPosition { get; set; }
-        public bool RememberStartLocation { get; set; }
+        public bool RememberStartPosition { get; set; }
     }
 }

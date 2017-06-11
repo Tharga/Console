@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -39,7 +40,6 @@ namespace Tharga.Toolkit.Console.Consoles
             set { SetTopMost(value); }
         }
 
-        //TODO: Make it possible to set what screen the window should be placed on
         private void SetLocation(IConsoleConfiguration consoleConfiguration)
         {
             var hWnd = Process.GetCurrentProcess().MainWindowHandle;
@@ -49,7 +49,7 @@ namespace Tharga.Toolkit.Console.Consoles
             {
                 position = consoleConfiguration.StartPosition;
             }
-            else if (consoleConfiguration.RememberStartLocation)
+            else if (consoleConfiguration.RememberStartPosition)
             {
                 position = GetStoredPosition();
                 SubscribeToWindowMovement(hWnd);
@@ -60,30 +60,84 @@ namespace Tharga.Toolkit.Console.Consoles
                 SetWidth(position);
                 SetHeight(position);
 
-                SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                //TODO: Do not send the window where it cannot be visible. For instance, a secondary screen that is no longer attached.
+                var monitors = GetMonitors();
+                var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
+                if (monitor != null)
+                {
+                    SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                }
+
                 //TODO: This code will reposition the window at startup, the same way as a "scr reset" command will.
                 //For some reason the "SetWindowPos" does not act the same when run directly when the console starts as it does when the application has been running for a short while.
                 //Task.Run(() =>
                 //{
-                //    System.Threading.Thread.Sleep(250);
-                //    SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                //    var monitors = GetMonitors();
+                //    var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
+                //    if (monitor != null)
+                //    {
+                //        System.Threading.Thread.Sleep(250);
+                //        SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                //    }
                 //});
                 //System.Console.WriteLine($"set: {position.Left}:{position.Top} {hWnd}");
             }
         }
 
+        private RECT Offset(RECT rect, Position position)
+        {
+            return new RECT
+            {
+                Top = rect.Top + position.Top,
+                Left = rect.Left + position.Left,
+                Bottom = rect.Bottom + position.Top,
+                Right = rect.Right + position.Left
+            };
+        }
+
+        private int? VisibleOnMonitor(List<RECT> monitors, RECT window)
+        {
+            var index = 0;    
+            foreach (var monitor in monitors)
+            {
+                if (window.Right >= monitor.Left && (window.Left <= monitor.Right && (window.Bottom >= monitor.Top && window.Top <= monitor.Bottom)))
+                {
+                    return index;
+                }
+
+                index++;
+            }
+
+            return null;
+        }
+
+        private static List<RECT> GetMonitors()
+        {
+            var monitors = new List<RECT>();
+            MonitorEnumProc callback = (IntPtr hDesktop, IntPtr hdc, ref RECT prect, int d) => { monitors.Add(prect); return true; };
+            EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, callback, 0);
+            return monitors;
+        }
+
         private Position GetCurrentPosition()
+        {
+            var rct = GetWindowRect();
+
+            return new Position(rct.Left, rct.Top, ConsoleManager.WindowWidth, ConsoleManager.WindowHeight, ConsoleManager.BufferWidth, ConsoleManager.BufferHeight);
+        }
+
+        private static RECT GetWindowRect()
         {
             var hWnd = Process.GetCurrentProcess().MainWindowHandle;
 
-            //RECT rct;
-            //GetWindowRect(hWnd, out rct);
+            RECT rct;
+            GetWindowRect(hWnd, out rct);
 
-            var wp = new WINDOWPLACEMENT();
-            GetWindowPlacement(hWnd, ref wp);
+            //var wp = new WINDOWPLACEMENT();
+            //GetWindowPlacement(hWnd, ref wp);
             //System.Console.WriteLine($"get: {wp.rcNormalPosition.Left}:{wp.rcNormalPosition.Top}");
 
-            return new Position(wp.rcNormalPosition.Left, wp.rcNormalPosition.Top, ConsoleManager.WindowWidth, ConsoleManager.WindowHeight, ConsoleManager.BufferWidth, ConsoleManager.BufferHeight);
+            return rct;
         }
 
         private Position GetStoredPosition()
@@ -119,7 +173,7 @@ namespace Tharga.Toolkit.Console.Consoles
             }
             catch (Exception exception)
             {
-                OutputError(exception);
+                //OutputError(exception);
             }
         }
 
@@ -135,7 +189,7 @@ namespace Tharga.Toolkit.Console.Consoles
             }
             catch (Exception exception)
             {
-                OutputError(exception);
+                //OutputError(exception);
             }
         }
 
@@ -204,7 +258,7 @@ namespace Tharga.Toolkit.Console.Consoles
             var consoleConfiguration = new ConsoleConfiguration
             {
                 BackgroundColor = _consoleConfiguration.BackgroundColor,
-                RememberStartLocation = _consoleConfiguration.RememberStartLocation,
+                RememberStartPosition = _consoleConfiguration.RememberStartPosition,
                 TopMost = _consoleConfiguration.TopMost,
                 SplashScreen = _consoleConfiguration.SplashScreen,
                 Title = _consoleConfiguration.Title,
@@ -226,6 +280,7 @@ namespace Tharga.Toolkit.Console.Consoles
         private const int SWP_SHOWWINDOW = 0x0040;
 
         public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+        private delegate bool MonitorEnumProc(IntPtr hDesktop, IntPtr hdc, ref RECT pRect, int dwData);
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -233,6 +288,9 @@ namespace Tharga.Toolkit.Console.Consoles
 
         //[DllImport("user32.dll", SetLastError = true)]
         //static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int Width, int Height, bool Repaint);
+
+        [DllImport("user32")]
+        private static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lpRect, MonitorEnumProc callback, int dwData);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -444,8 +502,6 @@ Global $EVENT_Max = $EVENT_SYSTEM_DRAGDROPEND
                         break;
                     case EVENT_SYSTEM_MOVESIZEEND:
                         var position = GetCurrentPosition();
-
-                        //TODO: Find out what screen we are on (when using multiple screens)
 
                         var val = $"{position.Left}:{position.Top}|{position.Width}:{position.Height}|{position.BufferWidth}:{position.BufferHeight}";
                         //ConsoleManager.WriteLine(val);

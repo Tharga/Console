@@ -138,8 +138,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     helpCommand.AddLine(string.Empty);
                     helpCommand.AddLine("Switches:", foreColor: ConsoleColor.DarkCyan);
-                    helpCommand.AddLine("/c Keeps the console open when parameters are sent to the console (command mode).");
-                    helpCommand.AddLine("/e Keeps the console open when parameters are sent to the console and something goes wrong (command mode).");
+                    helpCommand.AddLine("/c Keeps the console open when parameters are sent to the console.");
+                    helpCommand.AddLine("/e Keeps the console open when parameters are sent to the console and something goes wrong.");
                     helpCommand.AddLine("/r Resets settings.");
                 }
             }

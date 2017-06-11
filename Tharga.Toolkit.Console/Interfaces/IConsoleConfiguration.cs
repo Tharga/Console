@@ -12,6 +12,6 @@ namespace Tharga.Toolkit.Console.Interfaces
         ConsoleColor DefaultTextColor { get; }
         ConsoleColor BackgroundColor { get; }
         Position StartPosition { get; }
-        bool RememberStartLocation { get; }
+        bool RememberStartPosition { get; }
     }
 }
