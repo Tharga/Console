@@ -136,43 +136,40 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IDictionary<T, string> selectionDelegate)
         {
-            return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate, true, false);
+            return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
         }
 
         protected T QueryParam<T>(string paramName, string autoProvideValue, IDictionary<T, string> selectionDelegate)
         {
-            return QueryParam(paramName, autoProvideValue, selectionDelegate, true, false);
+            return QueryParam(paramName, autoProvideValue, selectionDelegate.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
         }
 
         protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
         {
-            return QueryParam<T>(paramName, GetNextParam(autoParam), selectionDelegate, true, passwordEntry);
+            return QueryParam<T>(paramName, GetNextParam(autoParam), selectionDelegate.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
         }
 
         protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
         {
-            return QueryParam(paramName, autoProvideValue, selectionDelegate, true, passwordEntry);
+            return QueryParam(paramName, autoProvideValue, selectionDelegate.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
         }
 
-        internal protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool allowEscape, bool passwordEntry, IEnumerable<CommandTreeNode> tabTree = null)
+        internal protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, bool passwordEntry)
         {
-            var selection = new List<KeyValuePair<T, string>>();
-            if (selectionDelegate != null)
+            var sel = selection?.OrderBy(x => x.Value).ToArray() ?? new CommandTreeNode<T>[] { };
+            var q = GetParamByString(autoProvideValue, sel);
+            if (q != null)
             {
-                selection = selectionDelegate.OrderBy(x => x.Value).ToList();
-                var q = GetParamByString(autoProvideValue, selection);
-                if (q != null)
-                {
-                    return q.Value.Key;
-                }
+                return q.Key;
             }
 
             var inputManager = CommandEngine.InputManager;
-            var response = inputManager.ReadLine(paramName + (!selection.Any() ? "" : " [Tab]"), selection.ToArray(), allowEscape, CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null, tabTree);
+            var prompt = paramName + ((!sel.Any() || paramName == "> ") ? string.Empty : " [Tab]");
+            var response = inputManager.ReadLine(prompt, sel.ToArray(), allowEscape, CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null);
             return response;
         }
 
-        private static KeyValuePair<T, string>? GetParamByString<T>(string autoProvideValue, List<KeyValuePair<T, string>> selection)
+        private static CommandTreeNode<T> GetParamByString<T>(string autoProvideValue, CommandTreeNode<T>[] selection)
         {
             if (!string.IsNullOrEmpty(autoProvideValue))
             {
@@ -191,7 +188,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 try
                 {
                     var r = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(autoProvideValue);
-                    return new KeyValuePair<T, string>(r, autoProvideValue);
+                    return new CommandTreeNode<T>(r, autoProvideValue);
                 }
                 catch (FormatException exception)
                 {

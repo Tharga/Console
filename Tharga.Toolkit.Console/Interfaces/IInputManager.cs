@@ -7,7 +7,7 @@ namespace Tharga.Toolkit.Console.Interfaces
 {
     public interface IInputManager
     {
-        T ReadLine<T>(string paramName, KeyValuePair<T, string>[] selection, bool allowEscape, CancellationToken cancellationToken, char? passwordChar, int? timeoutMilliseconds, IEnumerable<CommandTreeNode> tabTree);
+        T ReadLine<T>(string paramName, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, CancellationToken cancellationToken, char? passwordChar, int? timeoutMilliseconds);
         ConsoleKeyInfo ReadKey();
     }
 }

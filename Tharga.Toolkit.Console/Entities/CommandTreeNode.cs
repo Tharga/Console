@@ -2,14 +2,16 @@ using System.Collections.Generic;
 
 namespace Tharga.Toolkit.Console.Entities
 {
-    public class CommandTreeNode
+    public class CommandTreeNode<T>
     {
-        public string Name { get; }
-        public List<CommandTreeNode> Subs { get; }
+        public T Key { get; }
+        public string Value { get; }
+        public List<CommandTreeNode<T>> Subs { get; }
 
-        public CommandTreeNode(string name, List<CommandTreeNode> subs = null)
+        public CommandTreeNode(T key, string value, List<CommandTreeNode<T>> subs = null)
         {
-            Name = name;
+            Key = key;
+            Value = value;
             Subs = subs;
         }
     }

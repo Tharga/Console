@@ -27,13 +27,12 @@ namespace Tharga.Toolkit.Console.Helpers
         private static int _cursorLineOffset;
         private InputBuffer _inputBuffer;
         private readonly CancellationToken _cancellationToken;
-        private readonly IEnumerable<CommandTreeNode> _tabTree;
 
         //TODO: Theese values should be read from the instance, not as a static value!
         public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
         public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
-        public InputInstance(IConsole console, string paramName, char? passwordChar, CancellationToken cancellationToken, IEnumerable<CommandTreeNode> tabTree)
+        public InputInstance(IConsole console, string paramName, char? passwordChar, CancellationToken cancellationToken)
         {
             if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
 
@@ -41,7 +40,6 @@ namespace Tharga.Toolkit.Console.Helpers
             _paramName = paramName;
             _passwordChar = passwordChar;
             _cancellationToken = cancellationToken;
-            _tabTree = tabTree;
 
             _console.PushBufferDownEvent += PushBufferDownEvent;
             _console.LinesInsertedEvent += LinesInsertedEvent;
@@ -83,8 +81,10 @@ namespace Tharga.Toolkit.Console.Helpers
             _startLocation = new Location(_startLocation.Left, top);
         }
 
-        public T ReadLine<T>(KeyValuePair<T, string>[] selection, bool allowEscape)
+        public T ReadLine<T>(IEnumerable<CommandTreeNode<T>> s2, bool allowEscape)
         {
+            var selection = s2?.ToArray() ?? new CommandTreeNode<T>[] {};
+
             _inputBuffer = new InputBuffer();
             _inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
 
@@ -242,23 +242,6 @@ namespace Tharga.Toolkit.Console.Helpers
                                         _tabIndex = tabIndex;
                                         CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                     }
-                                    else
-                                    {
-                                        //TODO: Look into the command tree for a matching command. Cycle from that point if there are more than one.
-                                        var inp = _inputBuffer.ToString().ToLower().Split(' ');
-
-                                        var options = _tabTree.Where(x => x.Name.ToLower().StartsWith(inp[0])).ToArray();
-                                        if (options.Any())
-                                        {
-                                            var op = options.First();
-                                            var opn = op.Name;
-                                            Clear(_inputBuffer);
-                                            _console.Output(new WriteEventArgs(opn, OutputLevel.Default, null, null, false, false));
-                                            _inputBuffer.Add(opn);
-                                            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
-                                        }
-                                        //InsertText(currentScreenLocation, (char)9, _inputBuffer, currentBufferPosition, _startLocation);
-                                    }
 
                                     break;
 
@@ -311,7 +294,7 @@ namespace Tharga.Toolkit.Console.Helpers
             }
         }
 
-        private T Enter<T>(KeyValuePair<T, string>[] selection)
+        private T Enter<T>(CommandTreeNode<T>[] selection)
         {
             var response = GetResponse(selection, _inputBuffer);
             RememberCommandHistory(_inputBuffer);
@@ -437,7 +420,7 @@ namespace Tharga.Toolkit.Console.Helpers
             CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
         }
 
-        private T GetResponse<T>(KeyValuePair<T, string>[] selection, InputBuffer inputBuffer)
+        private T GetResponse<T>(CommandTreeNode<T>[] selection, InputBuffer inputBuffer)
         {
             if (_finished) throw new InvalidOperationException("Cannot get response more than once from a single input manager.");
             _finished = true;
