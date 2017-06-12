@@ -31,6 +31,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         public event EventHandler<PushBufferDownEventArgs> PushBufferDownEvent;
         public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         public event EventHandler<KeyReadEventArgs> KeyReadEvent;
+        protected event EventHandler<EventArgs> DisposeEvent;
 
         public int CursorLeft => ConsoleManager.CursorLeft;
         public int CursorTop => ConsoleManager.CursorTop;
@@ -456,6 +457,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public void Dispose()
         {
+            DisposeEvent?.Invoke(this, new EventArgs());
             ConsoleManager?.Dispose();
         }
 

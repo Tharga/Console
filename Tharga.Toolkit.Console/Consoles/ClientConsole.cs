@@ -21,6 +21,15 @@ namespace Tharga.Toolkit.Console.Consoles
             _consoleConfiguration = consoleConfiguration ?? new ConsoleConfiguration();
             _initialPosition = GetCurrentPosition();
             Initiate(_consoleConfiguration);
+
+            //NOTE: Listen to the dispose event, and trigger a location save before exit.
+            DisposeEvent += (sender, e) =>
+            {
+                if (_consoleConfiguration.RememberStartPosition)
+                {
+                    StoreCurrentPosition();
+                }
+            };
         }
 
         private void Initiate(IConsoleConfiguration consoleConfiguration)
@@ -41,45 +50,52 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private void SetLocation(IConsoleConfiguration consoleConfiguration)
         {
-            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
-            Position position = null;
-
-            if (consoleConfiguration.StartPosition != null)
+            try
             {
-                position = consoleConfiguration.StartPosition;
-            }
-            else if (consoleConfiguration.RememberStartPosition)
-            {
-                position = GetStoredPosition();
-                SubscribeToWindowMovement(hWnd);
-            }
+                var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+                Position position = null;
 
-            if (position != null)
-            {
-                SetWidth(position);
-                SetHeight(position);
-
-                //TODO: Do not send the window where it cannot be visible. For instance, a secondary screen that is no longer attached.
-                var monitors = GetMonitors();
-                var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
-                if (monitor != null)
+                if (consoleConfiguration.StartPosition != null)
                 {
-                    SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                    position = consoleConfiguration.StartPosition;
+                }
+                else if (consoleConfiguration.RememberStartPosition)
+                {
+                    position = GetStoredPosition();
+                    SubscribeToWindowMovement(hWnd);
                 }
 
-                //TODO: This code will reposition the window at startup, the same way as a "scr reset" command will.
-                //For some reason the "SetWindowPos" does not act the same when run directly when the console starts as it does when the application has been running for a short while.
-                //Task.Run(() =>
-                //{
-                //    var monitors = GetMonitors();
-                //    var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
-                //    if (monitor != null)
-                //    {
-                //        System.Threading.Thread.Sleep(250);
-                //        SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
-                //    }
-                //});
-                //System.Console.WriteLine($"set: {position.Left}:{position.Top} {hWnd}");
+                if (position != null)
+                {
+                    SetWidth(position);
+                    SetHeight(position);
+
+                    //TODO: Do not send the window where it cannot be visible. For instance, a secondary screen that is no longer attached.
+                    var monitors = GetMonitors();
+                    var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
+                    if (monitor != null)
+                    {
+                        SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                    }
+
+                    //TODO: This code will reposition the window at startup, the same way as a "scr reset" command will.
+                    //For some reason the "SetWindowPos" does not act the same when run directly when the console starts as it does when the application has been running for a short while.
+                    //Task.Run(() =>
+                    //{
+                    //    var monitors = GetMonitors();
+                    //    var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
+                    //    if (monitor != null)
+                    //    {
+                    //        System.Threading.Thread.Sleep(250);
+                    //        SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                    //    }
+                    //});
+                    //System.Console.WriteLine($"set: {position.Left}:{position.Top} {hWnd}");
+                }
+            }
+            catch (Exception exception)
+            {
+                OutputError(exception);
             }
         }
 
@@ -96,7 +112,7 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private int? VisibleOnMonitor(List<RECT> monitors, RECT window)
         {
-            var index = 0;    
+            var index = 0;
             foreach (var monitor in monitors)
             {
                 if (window.Right >= monitor.Left && (window.Left <= monitor.Right && (window.Bottom >= monitor.Top && window.Top <= monitor.Bottom)))
@@ -155,6 +171,23 @@ namespace Tharga.Toolkit.Console.Consoles
             {
                 OutputError(exception);
                 return null;
+            }
+        }
+
+        private void StoreCurrentPosition()
+        {
+            try
+            {
+                var position = GetCurrentPosition();
+
+                var val = $"{position.Left}:{position.Top}|{position.Width}:{position.Height}|{position.BufferWidth}:{position.BufferHeight}";
+                //ConsoleManager.WriteLine(val);
+
+                Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
+            }
+            catch (Exception exception)
+            {
+                OutputError(exception);
             }
         }
 
@@ -500,12 +533,7 @@ Global $EVENT_Max = $EVENT_SYSTEM_DRAGDROPEND
                     case EVENT_SYSTEM_MOVESIZESTART:
                         break;
                     case EVENT_SYSTEM_MOVESIZEEND:
-                        var position = GetCurrentPosition();
-
-                        var val = $"{position.Left}:{position.Top}|{position.Width}:{position.Height}|{position.BufferWidth}:{position.BufferHeight}";
-                        //ConsoleManager.WriteLine(val);
-
-                        Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
+                        StoreCurrentPosition();
                         break;
                 }
             }
