@@ -44,19 +44,28 @@ namespace Tharga.Toolkit.Console.Commands.Base
             var containerCommand = command as IContainerCommand;
             if (containerCommand != null)
             {
-                containerCommand.CommandRegisteredEvent += (sender, e) =>
-                {
-                    e.Command.WriteEvent += OnOutputEvent;
-                };
+                containerCommand.CommandRegisteredEvent += (sender, e) => { e.Command.WriteEvent += OnOutputEvent; };
             }
 
             base.RegisterCommand(command);
 
+            RegisterSubCommand(containerCommand);
+        }
+
+        private void RegisterSubCommand(IContainerCommand containerCommand)
+        {
             if (containerCommand != null)
             {
                 foreach (var c in containerCommand.SubCommands)
                 {
                     c.WriteEvent += OnOutputEvent;
+
+                    //Recursive registering of sub-container commands
+                    var sc = c as IContainerCommand;
+                    if (sc != null)
+                    {
+                        RegisterSubCommand(sc);
+                    }
                 }
             }
         }

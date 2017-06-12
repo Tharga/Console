@@ -6,6 +6,7 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.Base
 {
+    [Obsolete("Use the non async version 'ActionCommandBase' instead. This command will be discontinued.")]
     public abstract class ActionAsyncCommandBase : ActionCommandBase, ICommandAsync
     {
         protected ActionAsyncCommandBase(string name, string description = null, bool hidden = false)

@@ -65,7 +65,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected string GetNextParam(IEnumerable<string> param)
         {
-            return GetParam(param, ParamIndex++);
+            return GetParam(param, ParamIndex);
         }
 
         protected string GetParam(IEnumerable<string> param, int index)
@@ -74,6 +74,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             var enumerable = param as string[] ?? param.ToArray();
             if (!enumerable.Any()) return null;
             if (enumerable.Length <= index) return null;
+            ParamIndex++;
             return enumerable[index];
         }
 
@@ -136,22 +137,22 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IDictionary<T, string> selectionDelegate)
         {
-            return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
+            return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
         }
 
         protected T QueryParam<T>(string paramName, string autoProvideValue, IDictionary<T, string> selectionDelegate)
         {
-            return QueryParam(paramName, autoProvideValue, selectionDelegate.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
+            return QueryParam(paramName, autoProvideValue, selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
         }
 
         protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
         {
-            return QueryParam<T>(paramName, GetNextParam(autoParam), selectionDelegate.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
+            return QueryParam<T>(paramName, GetNextParam(autoParam), selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
         }
 
         protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
         {
-            return QueryParam(paramName, autoProvideValue, selectionDelegate.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
+            return QueryParam(paramName, autoProvideValue, selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
         }
 
         internal protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, bool passwordEntry)
@@ -174,15 +175,18 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (!string.IsNullOrEmpty(autoProvideValue))
             {
                 var item = selection.SingleOrDefault(x => string.Compare(x.Value, autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (item.Value == autoProvideValue)
+                if (item?.Value == autoProvideValue)
                 {
                     return item;
                 }
 
                 item = selection.SingleOrDefault(x => string.Compare(x.Key.ToString(), autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (item.Key != null && item.Key.ToString() == autoProvideValue)
+                if (item != null)
                 {
-                    return item;
+                    if (item.Key != null && item.Key.ToString() == autoProvideValue)
+                    {
+                        return item;
+                    }
                 }
 
                 try

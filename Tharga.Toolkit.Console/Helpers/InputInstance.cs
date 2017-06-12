@@ -423,7 +423,7 @@ namespace Tharga.Toolkit.Console.Helpers
         private T GetResponse<T>(CommandTreeNode<T>[] selection, InputBuffer inputBuffer)
         {
             if (_finished) throw new InvalidOperationException("Cannot get response more than once from a single input manager.");
-            _finished = true;
+
             T response;
             if (selection.Any())
             {
@@ -465,6 +465,7 @@ namespace Tharga.Toolkit.Console.Helpers
                 _console.Output(new WriteEventArgs(null, OutputLevel.Default));
             }
 
+            _finished = true;
             return response;
         }
 
