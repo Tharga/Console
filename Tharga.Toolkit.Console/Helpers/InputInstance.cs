@@ -81,9 +81,9 @@ namespace Tharga.Toolkit.Console.Helpers
             _startLocation = new Location(_startLocation.Left, top);
         }
 
-        public T ReadLine<T>(IEnumerable<CommandTreeNode<T>> s2, bool allowEscape)
+        public T ReadLine<T>(IEnumerable<CommandTreeNode<T>> selection, bool allowEscape)
         {
-            var selection = s2?.ToArray() ?? new CommandTreeNode<T>[] {};
+            var sel = selection?.ToArray() ?? new CommandTreeNode<T>[] {};
 
             _inputBuffer = new InputBuffer();
             _inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
@@ -167,7 +167,7 @@ namespace Tharga.Toolkit.Console.Helpers
                             switch (readKey.Key)
                             {
                                 case ConsoleKey.Enter:
-                                    return Enter(selection);
+                                    return Enter(sel);
 
                                 case ConsoleKey.LeftArrow:
                                     if (currentBufferPosition == 0) continue;
@@ -218,12 +218,12 @@ namespace Tharga.Toolkit.Console.Helpers
                                     break;
 
                                 case ConsoleKey.Tab:
-                                    if (selection.Any())
+                                    if (sel.Any())
                                     {
                                         //Go to the next item by using the input buffer
                                         if (_tabIndex == -1)
                                         {
-                                            var enumerable = selection.Select(x => x.Value).ToList();
+                                            var enumerable = sel.Select(x => x.Value).ToList();
                                             var firstHit = enumerable.FirstOrDefault(x => x.StartsWith(_inputBuffer.ToString(), StringComparison.InvariantCultureIgnoreCase));
                                             if (firstHit != null)
                                                 _tabIndex = enumerable.IndexOf(firstHit) - 1;
@@ -234,11 +234,11 @@ namespace Tharga.Toolkit.Console.Helpers
                                             step = -1;
 
                                         var tabIndex = _tabIndex + step;
-                                        if (tabIndex == selection.Length) tabIndex = 0;
-                                        if (tabIndex <= -1) tabIndex = selection.Length - 1;
+                                        if (tabIndex == sel.Length) tabIndex = 0;
+                                        if (tabIndex <= -1) tabIndex = sel.Length - 1;
                                         Clear(_inputBuffer);
-                                        _console.Output(new WriteEventArgs(selection[tabIndex].Value, OutputLevel.Default, null, null, false, false));
-                                        _inputBuffer.Add(selection[tabIndex].Value);
+                                        _console.Output(new WriteEventArgs(sel[tabIndex].Value, OutputLevel.Default, null, null, false, false));
+                                        _inputBuffer.Add(sel[tabIndex].Value);
                                         _tabIndex = tabIndex;
                                         CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                     }
@@ -280,7 +280,7 @@ namespace Tharga.Toolkit.Console.Helpers
                 {
                     Trace.TraceWarning(exception.Message);
                     //NOTE: Operation was cancelled, causing what ever is in the buffer to be returned, or, should an empty selection be returned?
-                    return Enter(selection);
+                    return Enter(sel);
                 }
                 catch (CommandEscapeException)
                 {

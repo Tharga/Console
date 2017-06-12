@@ -42,11 +42,6 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
         }
 
-        //public virtual ConsoleKeyInfo ReadKey()
-        //{
-        //    return ReadKey(new CancellationToken());
-        //}
-
         public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
             var consoleKeyInfo = ConsoleManager.KeyInputEngine.ReadKey(cancellationToken);

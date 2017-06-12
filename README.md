@@ -63,7 +63,6 @@ Here are some basic examples on how to get started.
     }
 ```
 
-
 #### Adding custom commands
 ```
     internal static class Program
@@ -183,6 +182,22 @@ If you want the user to have options to choose from you can provide a list of po
 Ex: *var answer = QueryParam<bool>("Are you sure?", param, new Dictionary<bool, string> { { true, "Yes" }, { false, "No" } });*
 
 There are also async versions that takes functions of possible selections, when using the base class *ActionAsyncCommandBase*.
+
+### Tab
+Using the Tab-key, it is possible to cycle over all possible inputs. You can also type the first letters of a command and have the Tab-cycle start from there.
+Also combination of command and sub commands can be Tab-Cycled.
+
+Example.
+```
+Type 's' and press Tab. Then 'screen' will be seen in the prompt. Then press ' ' (space) and Tab again.
+Now you are cycling inside the 'screen' command for sub-commands to execute.
+```
+
+When in a parameter query input the Tab-key is used to cycle through the alternative parameters provided to the command.
+
+### Arrow up and down
+Using the arrow up and down keys, it is possible to cycle over all previously used commands.
+This works in the main command mode as well as for each parameter query input, where each entry have its own *memory*.
 
 ## Help texts
 Type your command followed by -? to get help. Or just use the keyword help.

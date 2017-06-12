@@ -59,7 +59,10 @@
     <Compile Include="..\Build\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Arrow_command_recall_tests.cs" />
+    <Compile Include="Entry_command_tests.cs" />
     <Compile Include="Table_Formatter_tests.cs" />
+    <Compile Include="Tab_command_recall_tests.cs" />
     <Compile Include="When_running_engine.cs" />
     <Compile Include="When_running_engine_outside_the_buffer_height.cs" />
     <Compile Include="When_running_in_parallel.cs" />
@@ -68,7 +71,6 @@
     <Compile Include="FakeConsoleManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestConsole.cs" />
-    <Compile Include="TextInputTests.cs" />
     <Compile Include="When_writing_outside_the_buffer_height.cs" />
   </ItemGroup>
   <ItemGroup>

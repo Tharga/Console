@@ -165,7 +165,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
 
             var inputManager = CommandEngine.InputManager;
-            var prompt = paramName + ((!sel.Any() || paramName == "> ") ? string.Empty : " [Tab]");
+            var prompt = paramName + ((!sel.Any() || paramName == Constants.Prompt) ? string.Empty : " [Tab]");
             var response = inputManager.ReadLine(prompt, sel.ToArray(), allowEscape, CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null);
             return response;
         }

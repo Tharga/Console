@@ -69,7 +69,7 @@ namespace Tharga.Toolkit.Console.Tests
 
             //Assert
             Assert.That(consoleManager.LineOutput[0], Is.EqualTo("A"));
-            Assert.That(consoleManager.LineOutput[1], Is.EqualTo("> A"));
+            Assert.That(consoleManager.LineOutput[1], Is.EqualTo($"{Constants.Prompt}A"));
             Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
             Assert.That(consoleManager.CursorLeft, Is.EqualTo(5));
         }

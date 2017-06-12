@@ -1,10 +1,43 @@
 using System;
+using System.Collections.Concurrent;
 using System.Text;
+using System.Threading;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Tests
 {
+    internal class FakeKeyInputEngine : IKeyInputEngine
+    {
+        private readonly BlockingCollection<ConsoleKeyInfo> _buffer = new BlockingCollection<ConsoleKeyInfo>();
+
+        public FakeKeyInputEngine(ConsoleKey[] data)
+        {
+            foreach (var item in data)
+            {
+                _buffer.Add(new ConsoleKeyInfo((char)item, item, false, false, false));
+            }
+        }
+
+        public FakeKeyInputEngine(ConsoleKeyInfo[] data)
+        {
+            foreach (var item in data)
+            {
+                _buffer.Add(item);
+            }
+        }
+
+        public void Feed(string data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
+        {
+            return _buffer.Take(cancellationToken);
+        }
+    }
+
     internal class FakeConsoleManager : IConsoleManager
     {
         private const int CbufferHeight = 300;
@@ -68,13 +101,24 @@ namespace Tharga.Toolkit.Console.Tests
 
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
-            if (sourceLeft != 0) throw new NotImplementedException();
-            if (sourceWidth != BufferWidth) throw new NotImplementedException();
-            if (targetLeft != 0) throw new NotImplementedException();
-            if (sourceHeight != 1) throw new NotImplementedException();
-
-            LineOutput[targetTop] = LineOutput[sourceTop];
-            LineOutput[sourceTop] = null;
+            if (sourceLeft == 0 && (sourceWidth == BufferWidth && (targetLeft == 0 && sourceHeight == 1)))
+            {
+                LineOutput[targetTop] = LineOutput[sourceTop];
+                LineOutput[sourceTop] = null;
+            }
+            else if (sourceTop == targetTop && sourceHeight == 1)
+            {
+                if (LineOutput[targetTop].Length != sourceLeft)
+                {
+                    throw new NotImplementedException("Move buffer on same line, is not yet implemented.");
+                }
+            }
+            else
+            {
+                //TODO: Implement fuffer move and remove this feature.
+                //if (!_bufferMoveEnabled) return; //NOTE: This feature is just becuase Im lazy and do not want to implement this function
+                throw new NotImplementedException("Move partial buffer, is not yet implemented.");
+            }
         }
 
         public void SetCursorPosition(int left, int top)
@@ -136,7 +180,13 @@ namespace Tharga.Toolkit.Console.Tests
                 }
                 else
                 {
-                    LineOutput[CursorTop] = value;
+                    if (CursorLeft < (LineOutput[CursorTop]?.Length ?? 0))
+                    {
+                        LineOutput[CursorTop] = LineOutput[CursorTop].Substring(0, CursorLeft - 1);
+                    }
+
+                    LineOutput[CursorTop] += value;
+
                     if (lineFeed)
                     {
                         CursorTop++;
