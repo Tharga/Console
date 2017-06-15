@@ -76,9 +76,12 @@ namespace Tharga.Toolkit.Console.Helpers
 
         private void LinesInsertedEvent(object sender, LinesInsertedEventArgs e)
         {
-            var top = _startLocation.Top + e.LineCount;
-            if (top >= BufferHeight) top = BufferHeight - 1;
-            _startLocation = new Location(_startLocation.Left, top);
+            lock (_startLocation)
+            {
+                var top = _startLocation.Top + e.LineCount;
+                if (top >= BufferHeight) top = BufferHeight - 1;
+                _startLocation = new Location(_startLocation.Left, top);
+            }
         }
 
         public T ReadLine<T>(IEnumerable<CommandTreeNode<T>> selection, bool allowEscape)
@@ -89,18 +92,43 @@ namespace Tharga.Toolkit.Console.Helpers
             _inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
 
             _console.Output(new WriteEventArgs($"{_paramName}{(_paramName != Constants.Prompt ? ": " : string.Empty)}", OutputLevel.Default, null, null, false, false));
-            _startLocation = new Location(CursorLeft, CursorTop);
+            lock (_startLocation)
+            {
+                _startLocation = new Location(CursorLeft, CursorTop);
+            }
 
             while (true)
             {
                 try
                 {
+                    var preEntryBuffWidth = BufferWidth;
+                    var preEntryCursorLocationTop = CursorTop;
+                    var preStartCursorLocationTop = _startLocation.Top;
+
                     var readKey = _console.ReadKey(_cancellationToken);
                     lock (CommandEngine.SyncRoot)
                     {
                         var currentScreenLocation = new Location(CursorLeft, CursorTop); //This is where the cursor actually is on screen.
+
+                        //This code handle buffer resize on a running console.
+                        if (preEntryBuffWidth != BufferWidth)
+                        {
+                            if (currentScreenLocation.Top != preEntryCursorLocationTop || _startLocation.Top != preStartCursorLocationTop)
+                            {
+                                lock (_startLocation)
+                                {
+                                    var pop1 = currentScreenLocation.Top - preEntryCursorLocationTop;
+                                    var pop2 = preStartCursorLocationTop - _startLocation.Top;
+                                    var top = _startLocation.Top + pop1 + pop2;
+                                    if (top >= BufferHeight) top = BufferHeight - 1;
+                                    _startLocation = new Location(_startLocation.Left, top);
+                                }
+                            }
+                        }
+
                         var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
                         //Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
+                        //System.Console.Title = $"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}";
                         if (currentBufferPosition < 0)
                         {
                             throw new InvalidOperationException("Buffer insert position cannot be less than zero.");

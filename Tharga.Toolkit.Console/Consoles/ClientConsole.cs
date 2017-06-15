@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -25,10 +26,10 @@ namespace Tharga.Toolkit.Console.Consoles
             //NOTE: Listen to the dispose event, and trigger a location save before exit.
             DisposeEvent += (sender, e) =>
             {
-                if (_consoleConfiguration.RememberStartPosition)
-                {
-                    StoreCurrentPosition();
-                }
+                //if (_consoleConfiguration.RememberStartPosition)
+                //{
+                //    StoreCurrentPosition();
+                //}
             };
         }
 
@@ -70,15 +71,19 @@ namespace Tharga.Toolkit.Console.Consoles
                     SetWidth(position);
                     SetHeight(position);
 
-                    //TODO: Do not send the window where it cannot be visible. For instance, a secondary screen that is no longer attached.
+                    ////TODO: Do not send the window where it cannot be visible. For instance, a secondary screen that is no longer attached.
                     var monitors = GetMonitors();
                     var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
                     if (monitor != null)
                     {
                         SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
                     }
+                    else
+                    {
+                        OutputWarning("Console location is reset since it otherwise sould appear outside the visual field.");
+                    }
 
-                    //TODO: This code will reposition the window at startup, the same way as a "scr reset" command will.
+                    //NOTE: This code will reposition the window at startup, the same way as a "scr reset" command will.
                     //For some reason the "SetWindowPos" does not act the same when run directly when the console starts as it does when the application has been running for a short while.
                     //Task.Run(() =>
                     //{
@@ -86,10 +91,15 @@ namespace Tharga.Toolkit.Console.Consoles
                     //    var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
                     //    if (monitor != null)
                     //    {
-                    //        System.Threading.Thread.Sleep(250);
+                    //        System.Threading.Thread.Sleep(1000);
                     //        SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
                     //    }
+                    //    else
+                    //    {
+                    //        OutputWarning("Console location is reset since it otherwise sould appear outside the visual field.");
+                    //    }
                     //});
+
                     //System.Console.WriteLine($"set: {position.Left}:{position.Top} {hWnd}");
                 }
             }
@@ -144,6 +154,7 @@ namespace Tharga.Toolkit.Console.Consoles
         private static RECT GetWindowRect()
         {
             var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+            //System.Console.WriteLine(hWnd.ToString());
 
             RECT rct;
             GetWindowRect(hWnd, out rct);
