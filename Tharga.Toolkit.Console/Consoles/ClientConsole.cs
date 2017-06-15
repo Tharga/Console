@@ -78,7 +78,7 @@ namespace Tharga.Toolkit.Console.Consoles
                     var monitor = VisibleOnMonitor(monitors, Offset(position, GetWindowRect()));
                     if (monitor != null)
                     {
-                        OutputEvent($"SetWindowPos {position.Left}:{position.Top}");
+                        //OutputEvent($"SetWindowPos {position.Left}:{position.Top}");
                         ExecuteApiFunction(() => SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW));
                     }
                     else
@@ -183,7 +183,7 @@ namespace Tharga.Toolkit.Console.Consoles
             ExecuteApiFunction(() => GetWindowRect(hWnd, out rct));
 
             //Trace.TraceInformation($"GetWindowRect {hWnd} {rct.Left}:{rct.Top}.");
-            OutputEvent($"GetWindowRect {hWnd} {rct.Left}:{rct.Top}.");
+            //OutputEvent($"GetWindowRect {hWnd} {rct.Left}:{rct.Top}.");
 
             //var wp = new WINDOWPLACEMENT();
             //GetWindowPlacement(hWnd, ref wp);

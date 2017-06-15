@@ -65,6 +65,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\Base\ActionAsyncCommandBase.cs" />
+    <Compile Include="Commands\ScreenCommands\InfoScreenCommand.cs" />
     <Compile Include="Entities\CommandTreeNode.cs" />
     <Compile Include="Commands\ScreenCommands\ResetScreenCommand.cs" />
     <Compile Include="Consoles\EventConsole.cs" />

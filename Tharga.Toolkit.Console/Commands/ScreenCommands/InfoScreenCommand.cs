@@ -3,22 +3,21 @@ using Tharga.Toolkit.Console.Consoles.Base;
 
 namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
-    internal class ResetScreenCommand : ActionCommandBase
+    internal class InfoScreenCommand : ActionCommandBase
     {
         private readonly ConsoleBase _consoleBase;
 
-        public ResetScreenCommand(ConsoleBase consoleBase)
-            : base("reset", "Resets current and stored settings back to default.")
+        public InfoScreenCommand(ConsoleBase consoleBase)
+            : base("info")
         {
-            AddName("r");
-
             _consoleBase = consoleBase;
+            AddName("i");
         }
 
         public override void Invoke(string[] param)
         {
-            _consoleBase.Reset();
-            //OutputInformation("All settings have been removed.");
+            var info = _consoleBase.GetInfo();
+            OutputInformation(info);
         }
     }
 }

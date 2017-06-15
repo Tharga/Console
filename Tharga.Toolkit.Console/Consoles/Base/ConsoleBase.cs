@@ -467,7 +467,10 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             _mutedTypes.Remove(type);
         }
 
-        protected internal virtual void Reset() { }
+        protected internal virtual void Reset()
+        {
+        }
+
         protected internal virtual string GetInfo()
         {
             return "There is no info for this console type.";
