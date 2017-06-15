@@ -13,6 +13,7 @@ namespace Tharga.Toolkit.Console.Helpers
 {
     internal class InputInstance : IDisposable
     {
+        private readonly object _locationLock = new object();
         private bool _finished;
         private readonly string _paramName;
         private readonly char? _passwordChar;
@@ -76,7 +77,7 @@ namespace Tharga.Toolkit.Console.Helpers
 
         private void LinesInsertedEvent(object sender, LinesInsertedEventArgs e)
         {
-            lock (_startLocation)
+            lock (_locationLock)
             {
                 var top = _startLocation.Top + e.LineCount;
                 if (top >= BufferHeight) top = BufferHeight - 1;
@@ -92,7 +93,7 @@ namespace Tharga.Toolkit.Console.Helpers
             _inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
 
             _console.Output(new WriteEventArgs($"{_paramName}{(_paramName != Constants.Prompt ? ": " : string.Empty)}", OutputLevel.Default, null, null, false, false));
-            lock (_startLocation)
+            lock (_locationLock)
             {
                 _startLocation = new Location(CursorLeft, CursorTop);
             }
@@ -115,7 +116,7 @@ namespace Tharga.Toolkit.Console.Helpers
                         {
                             if (currentScreenLocation.Top != preEntryCursorLocationTop || _startLocation.Top != preStartCursorLocationTop)
                             {
-                                lock (_startLocation)
+                                lock (_locationLock)
                                 {
                                     var pop1 = currentScreenLocation.Top - preEntryCursorLocationTop;
                                     var pop2 = preStartCursorLocationTop - _startLocation.Top;

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Build.Tasks;
 using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -71,12 +73,13 @@ namespace Tharga.Toolkit.Console.Consoles
                     SetWidth(position);
                     SetHeight(position);
 
-                    ////TODO: Do not send the window where it cannot be visible. For instance, a secondary screen that is no longer attached.
+                    //NOTE: Do not send the window where it cannot be visible. For instance, a secondary screen that is no longer attached.
                     var monitors = GetMonitors();
-                    var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
+                    var monitor = VisibleOnMonitor(monitors, Offset(position, GetWindowRect()));
                     if (monitor != null)
                     {
-                        SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+                        OutputEvent($"SetWindowPos {position.Left}:{position.Top}");
+                        ExecuteApiFunction(() => SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW));
                     }
                     else
                     {
@@ -109,15 +112,37 @@ namespace Tharga.Toolkit.Console.Consoles
             }
         }
 
-        private RECT Offset(RECT rect, Position position)
+        private void ExecuteApiFunction(Action apiCall)
         {
-            return new RECT
+            try
             {
-                Top = rect.Top + position.Top,
-                Left = rect.Left + position.Left,
-                Bottom = rect.Bottom + position.Top,
-                Right = rect.Right + position.Left
+                var pre = GetLastError();
+                apiCall();
+                var aft = GetLastError();
+                if (aft != 0 && pre != aft)
+                {
+                    OutputWarning($"Error {aft} when calling api method {apiCall.Method.Name}.");
+                }
+            }
+            catch (Exception exception)
+            {
+                OutputError(exception);
+            }
+        }
+
+        private RECT Offset(Position position, RECT rect)
+        {
+            var height = rect.Bottom - rect.Top;
+            var width = rect.Right - rect.Left;
+
+            var rct = new RECT
+            {
+                Top = position.Top,
+                Left = position.Left,
+                Bottom = position.Top + height,
+                Right = position.Left + width,
             };
+            return rct;
         }
 
         private int? VisibleOnMonitor(List<RECT> monitors, RECT window)
@@ -136,31 +161,33 @@ namespace Tharga.Toolkit.Console.Consoles
             return null;
         }
 
-        private static List<RECT> GetMonitors()
+        private List<RECT> GetMonitors()
         {
             var monitors = new List<RECT>();
             MonitorEnumProc callback = (IntPtr hDesktop, IntPtr hdc, ref RECT prect, int d) => { monitors.Add(prect); return true; };
-            EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, callback, 0);
+            ExecuteApiFunction(() => EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, callback, 0));
             return monitors;
         }
 
         private Position GetCurrentPosition()
         {
             var rct = GetWindowRect();
-
             return new Position(rct.Left, rct.Top, ConsoleManager.WindowWidth, ConsoleManager.WindowHeight, ConsoleManager.BufferWidth, ConsoleManager.BufferHeight);
         }
 
-        private static RECT GetWindowRect()
+        private RECT GetWindowRect()
         {
             var hWnd = Process.GetCurrentProcess().MainWindowHandle;
-            //System.Console.WriteLine(hWnd.ToString());
 
-            RECT rct;
-            GetWindowRect(hWnd, out rct);
+            var rct = new RECT();
+            ExecuteApiFunction(() => GetWindowRect(hWnd, out rct));
+
+            //Trace.TraceInformation($"GetWindowRect {hWnd} {rct.Left}:{rct.Top}.");
+            OutputEvent($"GetWindowRect {hWnd} {rct.Left}:{rct.Top}.");
 
             //var wp = new WINDOWPLACEMENT();
             //GetWindowPlacement(hWnd, ref wp);
+            //ExecuteApiFunction();
             //System.Console.WriteLine($"get: {wp.rcNormalPosition.Left}:{wp.rcNormalPosition.Top}");
 
             return rct;
@@ -193,6 +220,7 @@ namespace Tharga.Toolkit.Console.Consoles
 
                 var val = $"{position.Left}:{position.Top}|{position.Width}:{position.Height}|{position.BufferWidth}:{position.BufferHeight}";
                 //ConsoleManager.WriteLine(val);
+                Trace.TraceInformation($"StoreCurrentPosition {val}.");
 
                 Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
             }
@@ -216,7 +244,7 @@ namespace Tharga.Toolkit.Console.Consoles
             }
             catch (Exception exception)
             {
-                //OutputError(exception);
+                OutputError(exception);
             }
         }
 
@@ -232,7 +260,7 @@ namespace Tharga.Toolkit.Console.Consoles
             }
             catch (Exception exception)
             {
-                //OutputError(exception);
+                OutputError(exception);
             }
         }
 
@@ -285,12 +313,25 @@ namespace Tharga.Toolkit.Console.Consoles
             var hWnd = Process.GetCurrentProcess().MainWindowHandle;
             if (value)
             {
-                SetWindowPos(hWnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+                ExecuteApiFunction(() => SetWindowPos(hWnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE));
             }
             else
             {
-                SetWindowPos(hWnd, new IntPtr(HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+                ExecuteApiFunction(() => SetWindowPos(hWnd, new IntPtr(HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE));
             }
+        }
+
+        protected internal override string GetInfo()
+        {
+            var sb = new StringBuilder();
+
+            var current = GetCurrentPosition();
+            sb.Append($"Current position: {current.Left}:{current.Top}\n");
+
+            var stored = GetStoredPosition();
+            sb.Append($"Stored position: {stored.Left}:{stored.Top}");
+
+            return sb.ToString();
         }
 
         protected internal override void Reset()
@@ -307,7 +348,7 @@ namespace Tharga.Toolkit.Console.Consoles
                 Title = _consoleConfiguration.Title,
                 DefaultTextColor = _consoleConfiguration.DefaultTextColor,
                 ShowAssemblyInfo = _consoleConfiguration.ShowAssemblyInfo,
-                StartPosition = _consoleConfiguration.StartPosition ?? _initialPosition,
+                StartPosition = _consoleConfiguration.StartPosition ?? _initialPosition ?? new Position(100, 100),
             };
 
             Initiate(consoleConfiguration);
@@ -332,10 +373,10 @@ namespace Tharga.Toolkit.Console.Consoles
         //[DllImport("user32.dll", SetLastError = true)]
         //static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int Width, int Height, bool Repaint);
 
-        [DllImport("user32")]
+        [DllImport("user32", SetLastError = true)]
         private static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lpRect, MonitorEnumProc callback, int dwData);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
@@ -343,10 +384,12 @@ namespace Tharga.Toolkit.Console.Consoles
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
 
-        [StructLayout(LayoutKind.Sequential)]
+        [DllImport("kernel32.dll")]
+        static extern uint GetLastError();
+
         public struct RECT
         {
             public int Left; // x position of upper-left corner
@@ -498,7 +541,9 @@ Global $EVENT_Max = $EVENT_SYSTEM_DRAGDROPEND
         {
             _target = hWnd;
 
-            SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, _target, WindowMoved, _processId, _threadId, 0);
+            Trace.TraceInformation($"SubscribeToWindowMovement({hWnd})");
+
+            ExecuteApiFunction(() => SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, _target, WindowMoved, _processId, _threadId, 0));
             //SetWinEventHook(1, 0x0F0F, _target, WindowMinimized, _processId, _threadId, 0);
         }
 
@@ -534,6 +579,7 @@ Global $EVENT_Max = $EVENT_SYSTEM_DRAGDROPEND
 
         private void WindowMoved(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
+            Trace.TraceInformation($"WindowMoved eventType={eventType} hwnd={hwnd} _target={_target}.");
             try
             {
                 if (hwnd != _target)

@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
     internal class BackgroundColorCommand : ActionCommandBase
     {
-        public BackgroundColorCommand()
+        private readonly IConsoleManager _consoleManager;
+
+        public BackgroundColorCommand(IConsoleManager consoleManager)
             : base("background", "Sets the background color.", false)
         {
+            _consoleManager = consoleManager;
             AddName("bg");
         }
 
@@ -31,14 +35,10 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 
         public override void Invoke(string[] param)
         {
-            throw new NotImplementedException("Fire event that changes background on the console.");
-
             var color = QueryParam("Color", param, EnumExtensions.GetValues<ConsoleColor>().ToDictionary(x => x, x => x.ToString()));
 
-            //System.Console.BackgroundColor = color;
-            //System.Console.Clear();
-
-            //return true;
+            _consoleManager.BackgroundColor = color;
+            _consoleManager.Clear();
         }
     }
 }

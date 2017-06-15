@@ -18,7 +18,8 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
             if (consoleBase != null)
             {
                 RegisterCommand(new ResetScreenCommand(consoleBase));
-                //RegisterCommand(new BackgroundColorCommand());
+                RegisterCommand(new InfoScreenCommand(consoleBase));
+                RegisterCommand(new BackgroundColorCommand(consoleBase.ConsoleManager));
                 RegisterCommand(new ForegroundColorCommand(consoleBase.ConsoleManager));
                 //RegisterCommand(new MuteCommand());
                 //RegisterCommand(new UnmuteCommand());

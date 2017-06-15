@@ -54,13 +54,14 @@ namespace SampleConsole
                         new TaskRunner(e =>
                         {
                             var i = 0;
+                            var intervalSeconds = 15;
                             while (!e.IsCancellationRequested)
                             {
-                                if (i % 20 == 0)
+                                if (i % (10 * intervalSeconds) == 0)
                                 {
-                                    Instance.WriteLine("First taskrunner is alive in the background. Repporting every 10 seconds.", OutputLevel.Information);
+                                    Instance.WriteLine($"First taskrunner is alive in the background. Repporting every {intervalSeconds} seconds.", OutputLevel.Information);
                                 }
-                                Thread.Sleep(500);
+                                Thread.Sleep(100);
                                 i++;
                             }
                             Instance.WriteLine("First taskrunner is exiting.", OutputLevel.Information);

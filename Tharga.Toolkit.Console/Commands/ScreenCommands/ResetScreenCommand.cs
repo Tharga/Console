@@ -3,6 +3,24 @@ using Tharga.Toolkit.Console.Consoles.Base;
 
 namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
+    internal class InfoScreenCommand : ActionCommandBase
+    {
+        private readonly ConsoleBase _consoleBase;
+
+        public InfoScreenCommand(ConsoleBase consoleBase)
+            : base("info")
+        {
+            _consoleBase = consoleBase;
+            AddName("i");
+        }
+
+        public override void Invoke(string[] param)
+        {
+            var info = _consoleBase.GetInfo();
+            OutputInformation(info);
+        }
+    }
+
     internal class ResetScreenCommand : ActionCommandBase
     {
         private readonly ConsoleBase _consoleBase;
@@ -10,6 +28,8 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         public ResetScreenCommand(ConsoleBase consoleBase)
             : base("reset", "Resets current and stored settings back to default.")
         {
+            AddName("r");
+
             _consoleBase = consoleBase;
         }
 
