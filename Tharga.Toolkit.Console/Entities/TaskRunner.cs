@@ -43,7 +43,18 @@ namespace Tharga.Toolkit.Console.Entities
 
         public void Start()
         {
-            _task = Task.Run(() => { _action(_cancellationToken.Token, _autoResetEvent); }, _cancellationToken.Token);
+            _task = Task.Run(() =>
+            {
+                try
+                {
+                    _action(_cancellationToken.Token, _autoResetEvent);
+                }
+                catch (Exception exception)
+                {
+                    Instance.Console.OutputError(exception);
+                    throw;
+                }
+            }, _cancellationToken.Token);
         }
 
         public void Close()
