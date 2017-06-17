@@ -326,10 +326,16 @@ namespace Tharga.Toolkit.Console.Consoles
             var sb = new StringBuilder();
 
             var current = GetCurrentPosition();
-            sb.Append($"Current position: {current.Left}:{current.Top}\n");
+            if (current != null)
+                sb.Append($"Current position: {current.Left}:{current.Top}\n");
+            else
+                sb.Append($"Current position: n/a\n");
 
             var stored = GetStoredPosition();
-            sb.Append($"Stored position: {stored.Left}:{stored.Top}");
+            if (stored != null)
+                sb.Append($"Stored position: {stored.Left}:{stored.Top} (path: {Registry.GetFullPath(null)})");
+            else
+                sb.Append($"Stored position: n/a (path: {Registry.GetFullPath(null)})");
 
             return sb.ToString();
         }

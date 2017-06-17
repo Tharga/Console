@@ -53,7 +53,7 @@ namespace Tharga.Toolkit.Console.Helpers
             }
         }
 
-        private static string GetFullPath(string subPath)
+        public static string GetFullPath(string subPath)
         {
             if (!string.IsNullOrEmpty(subPath))
                 subPath = "\\" + subPath;
