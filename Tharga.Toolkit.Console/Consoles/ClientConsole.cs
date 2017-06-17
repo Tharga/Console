@@ -340,6 +340,12 @@ namespace Tharga.Toolkit.Console.Consoles
             return sb.ToString();
         }
 
+        protected internal override string SavePosition()
+        {
+            StoreCurrentPosition();
+            return GetInfo();
+        }
+
         protected internal override void Reset()
         {
             Registry.ClearAllSettings();

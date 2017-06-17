@@ -3,20 +3,20 @@ using Tharga.Toolkit.Console.Consoles.Base;
 
 namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
-    internal class InfoScreenCommand : ActionCommandBase
+    internal class SaveScreenCommand : ActionCommandBase
     {
         private readonly ConsoleBase _consoleBase;
 
-        public InfoScreenCommand(ConsoleBase consoleBase)
-            : base("info", "Show information aabout the console.")
+        public SaveScreenCommand(ConsoleBase consoleBase)
+            : base("save", "Save the console position to registry.")
         {
             _consoleBase = consoleBase;
-            AddName("i");
+            AddName("s");
         }
 
         public override void Invoke(string[] param)
         {
-            var info = _consoleBase.GetInfo();
+            var info = _consoleBase.SavePosition();
             OutputInformation(info);
         }
     }

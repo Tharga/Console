@@ -475,5 +475,10 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
             return "There is no info for this console type.";
         }
+
+        protected internal virtual string SavePosition()
+        {
+            return "Save position is not implemented for this console type.";
+        }
     }
 }
