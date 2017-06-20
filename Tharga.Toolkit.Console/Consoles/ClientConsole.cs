@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Build.Tasks;
 using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -556,7 +554,7 @@ Global $EVENT_Max = $EVENT_SYSTEM_DRAGDROPEND
             Trace.TraceInformation($"SubscribeToWindowMovement({hWnd})");
 
             ExecuteApiFunction(() => SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, _target, WindowMoved, _processId, _threadId, 0));
-            ExecuteApiFunction(() => SetWinEventHook(1, 0xFFFF, _target, WindowHook, _processId, _threadId, 0));
+            //ExecuteApiFunction(() => SetWinEventHook(1, 0xFFFF, _target, WindowHook, _processId, _threadId, 0));
             //SetWinEventHook(1, 0x0F0F, _target, WindowMinimized, _processId, _threadId, 0);
         }
 

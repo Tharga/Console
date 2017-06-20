@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="Arrow_command_recall_tests.cs" />
     <Compile Include="Entry_command_tests.cs" />
+    <Compile Include="FakeKeyInputEngine.cs" />
     <Compile Include="Table_Formatter_tests.cs" />
     <Compile Include="Tab_command_recall_tests.cs" />
     <Compile Include="When_running_engine.cs" />

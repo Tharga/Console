@@ -32,37 +32,6 @@ Here are some basic examples on how to get started.
     }
 ```
 
-#### Adding stuff that should start automatically and run in background
-```
-    internal static class Program
-    {
-        [STAThread]
-        private static void Main(string[] args)
-        {
-            using (var console = new ClientConsole())
-            {
-                var command = new RootCommand(console);
-                var engine = new CommandEngine(command)
-                {
-                    TaskRunners = new[]
-                    {
-                        new TaskRunner(e =>
-                        {
-                            while (!e.IsCancellationRequested)
-                            {
-                                console.WriteLine("Running...", OutputLevel.Information);
-                                Thread.Sleep(3000);
-                            }
-                        }),
-                    },
-                };
-
-                engine.Start(args);
-            }
-        }
-    }
-```
-
 #### Adding custom commands
 ```
     internal static class Program
@@ -104,6 +73,37 @@ Here are some basic examples on how to get started.
     }
 ```
 
+#### Adding stuff that should start automatically and run in background
+```
+    internal static class Program
+    {
+        [STAThread]
+        private static void Main(string[] args)
+        {
+            using (var console = new ClientConsole())
+            {
+                var command = new RootCommand(console);
+                var engine = new CommandEngine(command)
+                {
+                    TaskRunners = new[]
+                    {
+                        new TaskRunner(e =>
+                        {
+                            while (!e.IsCancellationRequested)
+                            {
+                                console.WriteLine("Running...", OutputLevel.Information);
+                                Thread.Sleep(3000);
+                            }
+                        }),
+                    },
+                };
+
+                engine.Start(args);
+            }
+        }
+    }
+```
+
 ## Sample
 
 A good sample to look at can be found here.
@@ -137,14 +137,10 @@ Resets configuration.
 
 It is also possible to provide commands using a textfile. Use the command "exec file myCommandFile.txt" as a parameter and the console will execute each line in the file as a separate command. I usually use this method during development when I want to set up data or testing.
 
-## Clients
-There are several different type of consoles that can be used.
-- ClientConsole - Regular console used for normal console applications.
-- EventConsole - Fires off an event on each console output.
-- ActionConsole - Fires off a function on each console output.
-- NullConsole - Swallows all inputs and outputs
-- AggregateConsole - Merge serveral consoles together and use them all. For instance *ClientConsole* and *EventConsole* in combination.
-- VoiceConsole - Use voice commands to control the application. (*Under development*)
+## Console Clients
+There are several different type of consoles to choose from that can be used for different purposes.
+
+When building a service that is hosted as a console in development, a good idea is to use the *ClientConsole* when running in development and use the *EventConsole* when running as a service.
 
 ### Client inheritance tree
 ```
@@ -162,7 +158,28 @@ IOutputConsole
 		FileLogConsole (*Planned*)
 ```
 
-## Commands
+### ClientConsole
+Regular console used for normal console applications.
+
+This console have got several built in commands that can be used for manageing, testing and probing. There are several commands that are normally hidden. Type *help* to se the full description of the commands and what they do.
+
+### EventConsole
+Fires off an event on each console output.
+
+### ActionConsole
+Fires off a function on each console output.
+
+### NullConsole
+Swallows all inputs and outputs.
+
+### AggregateConsole
+Merge serveral consoles together and use them all. For instance *ClientConsole* and *EventConsole* in combination.
+
+### VoiceConsole (*Under development*)
+Use voice commands to control the application.
+
+
+## Building Console Commands
 There are two types of command classes; container commands and action commands. The container commands is used to group other commands together and the action commands to execute stuff.
 When executing commands from the console the names are to be typed in one flow. Say for instance that you have a container command named "some" and an action command named "item".
 The command is executed by typing *some item*.
