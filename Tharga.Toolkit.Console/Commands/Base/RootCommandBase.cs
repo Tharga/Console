@@ -85,8 +85,22 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public string QueryInput()
         {
-            var tabTree = SubCommands.Select(x => new CommandTreeNode<string>(x.Name, x.Name));
+            var tabTree = Build(SubCommands, null);
             return QueryParam(Constants.Prompt, null, tabTree, true, false);
+        }
+
+        private IEnumerable<CommandTreeNode<string>> Build(IEnumerable<ICommand> commands, string lead)
+        {
+            foreach (var command in commands)
+            {
+                var cc = command as ContainerCommandBase;
+                CommandTreeNode<string>[] subTree = null;
+                if (cc != null)
+                {
+                    subTree = Build(cc.SubCommands, cc.Name).ToArray();
+                }
+                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command.Name}" : command.Name, command.Name, subTree);
+            }
         }
 
         public bool Execute(string entry)

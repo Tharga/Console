@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Entities;
@@ -16,7 +15,7 @@ namespace Tharga.Toolkit.Console.Helpers
             _console = console;
         }
 
-        public T ReadLine<T>(string paramName, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, CancellationToken cancellationToken, char? passwordChar, int? timeoutMilliseconds)
+        public T ReadLine<T>(string paramName, CommandTreeNode<T> selection, bool allowEscape, CancellationToken cancellationToken, char? passwordChar, int? timeoutMilliseconds)
         {
             Task<T> task = null;
             InputInstance inputInstance = null;

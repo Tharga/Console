@@ -37,14 +37,14 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var cancellationToken = new CancellationToken();
             var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-            var selection = new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") };
+            var selection = new CommandTreeNode<string>( new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
 
             //Act
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(selection.First().Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + selection.First().Value));
+            Assert.That(r, Is.EqualTo(selection.Subs.First().Key));
+            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + selection.Subs.First().Value));
         }
 
         [Test]
@@ -56,14 +56,14 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var cancellationToken = new CancellationToken();
             var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-            var selection = new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") };
+            var selection = new CommandTreeNode<string>(new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
 
             //Act
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(selection.Last().Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + selection.Last().Value));
+            Assert.That(r, Is.EqualTo(selection.Subs.Last().Key));
+            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + selection.Subs.Last().Value));
         }
 
         [Test]
@@ -75,14 +75,14 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var cancellationToken = new CancellationToken();
             var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-            var selection = new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") };
+            var selection = new CommandTreeNode<string>( new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
 
             //Act
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(selection[1].Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + selection[1].Value));
+            Assert.That(r, Is.EqualTo(selection.Subs[1].Key));
+            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + selection.Subs[1].Value));
         }
     }
 }

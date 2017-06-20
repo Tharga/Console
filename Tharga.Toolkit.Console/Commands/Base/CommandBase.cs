@@ -157,7 +157,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         internal protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, bool passwordEntry)
         {
-            var sel = selection?.OrderBy(x => x.Value).ToArray() ?? new CommandTreeNode<T>[] { };
+            var sel = new CommandTreeNode<T>(selection?.OrderBy(x => x.Value).ToArray() ?? new CommandTreeNode<T>[] { });
             var q = GetParamByString(autoProvideValue, sel);
             if (q != null)
             {
@@ -165,22 +165,22 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
 
             var inputManager = CommandEngine.InputManager;
-            var prompt = paramName + ((!sel.Any() || paramName == Constants.Prompt) ? string.Empty : " [Tab]");
-            var response = inputManager.ReadLine(prompt, sel.ToArray(), allowEscape, CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null);
+            var prompt = paramName + ((!sel.Subs.Any() || paramName == Constants.Prompt) ? string.Empty : " [Tab]");
+            var response = inputManager.ReadLine(prompt, sel, allowEscape, CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null);
             return response;
         }
 
-        private static CommandTreeNode<T> GetParamByString<T>(string autoProvideValue, CommandTreeNode<T>[] selection)
+        private static CommandTreeNode<T> GetParamByString<T>(string autoProvideValue, CommandTreeNode<T> selection)
         {
             if (!string.IsNullOrEmpty(autoProvideValue))
             {
-                var item = selection.SingleOrDefault(x => string.Compare(x.Value, autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
+                var item = selection.Subs.SingleOrDefault(x => string.Compare(x.Value, autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
                 if (item?.Value == autoProvideValue)
                 {
                     return item;
                 }
 
-                item = selection.SingleOrDefault(x => string.Compare(x.Key.ToString(), autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
+                item = selection.Subs.SingleOrDefault(x => string.Compare(x.Key.ToString(), autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
                 if (item != null)
                 {
                     if (item.Key != null && item.Key.ToString() == autoProvideValue)
