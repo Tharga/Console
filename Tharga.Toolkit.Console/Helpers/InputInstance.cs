@@ -475,6 +475,10 @@ namespace Tharga.Toolkit.Console.Helpers
                         {
                             throw new EntryException("No item match the entry.", exception);
                         }
+                        catch (Exception exception)
+                        {
+                            throw new EntryException("No item match the entry.", exception);
+                        }
                     }
                     else
                     {

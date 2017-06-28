@@ -36,6 +36,10 @@ namespace Tharga.Toolkit.Console.Helpers
 
                 return task.Result;
             }
+            catch (AggregateException exception)
+            {
+                throw (exception as AggregateException)?.InnerException ?? exception;
+            }
             finally
             {
                 task?.Dispose();

@@ -83,7 +83,14 @@ namespace Tharga.Toolkit.Console
                 }
                 else
                 {
-                    entry = RootCommand.QueryInput();
+                    try
+                    {
+                        entry = RootCommand.QueryInput();
+                    }
+                    catch (CommandEscapeException)
+                    {
+                        continue;
+                    }
                 }
 
                 if (!_cancellationTokenSource.IsCancellationRequested)

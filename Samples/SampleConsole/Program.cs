@@ -211,6 +211,7 @@ namespace SampleConsole
         public override void Invoke(string[] param)
         {
             var id = QueryParam("Some Id", param, GetSelection());
+            //var id = QueryParam("Some Id", param, new Dictionary<int, string> { { 1, "One" }, { 2, "Two" } });
 
             OutputInformation($"Some data for {id}");
         }
