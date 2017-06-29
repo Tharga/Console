@@ -86,8 +86,6 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public T ReadLine<T>(CommandTreeNode<T> selection, bool allowEscape)
         {
-            //var sel = selection?.ToArray() ?? new CommandTreeNode<T>[] {};
-
             _inputBuffer = new InputBuffer();
             _inputBuffer.InputBufferChangedEvent += InputBufferChangedEvent;
 
@@ -236,10 +234,16 @@ namespace Tharga.Toolkit.Console.Helpers
                                     break;
 
                                 case ConsoleKey.Escape:
-                                    if (_inputBuffer.IsEmpty && allowEscape)
+                                    if (allowEscape)
                                     {
-                                        _console.Output(new WriteEventArgs(null));
-                                        throw new CommandEscapeException();
+                                        if (_inputBuffer.IsEmpty)
+                                        {
+                                            _console.Output(new WriteEventArgs(null));
+                                            throw new CommandEscapeException();
+                                        }
+                                    }
+                                    else
+                                    {
                                     }
 
                                     Clear(_inputBuffer);

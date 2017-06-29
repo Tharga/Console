@@ -86,7 +86,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         public string QueryInput()
         {
             var tabTree = Build(SubCommands, null);
-            return QueryParam(Constants.Prompt, null, tabTree, true, false);
+            return QueryParam(Constants.Prompt, null, tabTree, false, false);
         }
 
         private IEnumerable<CommandTreeNode<string>> Build(IEnumerable<ICommand> commands, string lead)
