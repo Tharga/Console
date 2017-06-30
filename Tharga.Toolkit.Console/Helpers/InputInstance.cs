@@ -603,13 +603,11 @@ namespace Tharga.Toolkit.Console.Helpers
         public void Cancel()
         {
             throw new NotImplementedException();
-            //_cancellationTokenSource.Cancel();
         }
 
         public void Dispose()
         {
             _console?.Dispose();
-            //_inputBuffer?.Dispose();
         }
     }
 }

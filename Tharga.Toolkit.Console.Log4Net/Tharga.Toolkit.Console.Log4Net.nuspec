@@ -13,8 +13,8 @@
     <description>Tharga Console Log4Net is an appender for Tharga Console.</description>
     <tags>log4net console log</tags>
     <dependencies>
-      <dependency id="Tharga.Toolkit.Console" version="1.7.122" />
-      <dependency id="log4net" version="2.0" />
+      <dependency id="Tharga.Toolkit.Console" version="2.0.39" />
+      <dependency id="log4net" version="2.0.8" />
     </dependencies>
   </metadata>
   <files>
