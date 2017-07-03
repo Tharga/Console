@@ -30,6 +30,7 @@ namespace Tharga.Toolkit.Console
         internal CommandEngine(IRootCommand rootCommand, IInputManager inputManager)
         {
             if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No root command provided.");
+            if (rootCommand.Console == null) throw new ArgumentNullException(nameof(rootCommand.Console), "No console for root command provided.");
 
             RootCommand = rootCommand;
             InputManager = inputManager;
@@ -151,7 +152,7 @@ namespace Tharga.Toolkit.Console
             var cmds = commands as string[] ?? commands.ToArray();
             var entry = cmds.ToList()[commandIndex++];
 
-            if (commandIndex >= cmds.Count())
+            if (commandIndex >= cmds.Length)
             {
                 if (HasFlag(flags, FlagContinueInConsoleMode))
                 {
@@ -159,7 +160,8 @@ namespace Tharga.Toolkit.Console
                 }
                 else
                 {
-                    _cancellationTokenSource.Cancel();
+                    Stop();
+                    //_cancellationTokenSource.Cancel();
                 }
             }
 
@@ -184,6 +186,7 @@ namespace Tharga.Toolkit.Console
         public void Stop()
         {
             _cancellationTokenSource.Cancel();
+            RootCommand.Console.Close();
         }
     }
 }

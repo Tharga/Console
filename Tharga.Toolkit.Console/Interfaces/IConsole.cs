@@ -15,5 +15,6 @@ namespace Tharga.Toolkit.Console.Interfaces
         void SetCursorPosition(int left, int top);
         void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop);
         void Attach(IRootCommand rootCommand);
+        void Close();
     }
 }

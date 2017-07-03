@@ -15,6 +15,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
     {
         internal readonly IConsoleManager ConsoleManager;
         private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private Dictionary<string, Location> _tagLocalLocation = new Dictionary<string, Location>();
 
         protected ConsoleBase(IConsoleManager consoleManager)
@@ -24,7 +25,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
             if (Instance.Console == null)
             {
-                Instance.Setup(this);
+                Instance.Setup(this, _cancellationTokenSource.Token);
             }
         }
 
@@ -40,6 +41,11 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public virtual void Attach(IRootCommand command)
         {
+        }
+
+        public void Close()
+        {
+            _cancellationTokenSource.Cancel();
         }
 
         public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
