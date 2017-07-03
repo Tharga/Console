@@ -35,7 +35,7 @@ namespace Tharga.Toolkit.Console.Helpers
             if (data.Length == 0)
                 return new int[] { };
 
-            var length = new int[data[0].Length];
+            var length = new int[data.Max(y => y.Length)];
             foreach (var line in data)
             {
                 for (var i = 0; i < line.Length; i++)
