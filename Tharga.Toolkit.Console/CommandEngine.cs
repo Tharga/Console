@@ -61,13 +61,16 @@ namespace Tharga.Toolkit.Console
 
             //TODO: This is only used by the voice console. Solve that some other way!
             //_rootCommand.Initiate();
-
+            
             if (TaskRunners != null)
             {
-                foreach (var runner in TaskRunners)
+                Task.Run(() =>
                 {
-                    runner.Start();
-                }
+                    foreach (var runner in TaskRunners)
+                    {
+                        runner.Start();
+                    }
+                }, CancellationToken);
             }
 
             if (flags.Any())
