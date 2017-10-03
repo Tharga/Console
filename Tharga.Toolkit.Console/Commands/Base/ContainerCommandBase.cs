@@ -67,7 +67,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected ICommand GetCommand(string commandName)
         {
-            return _subCommands.FirstOrDefault(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0);
+            return _subCommands.FirstOrDefault(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0 || x.Names.Any(y => string.Compare(y, commandName, StringComparison.InvariantCultureIgnoreCase) == 0));
         }
 
         protected override ICommand GetHelpCommand(string paramList)
