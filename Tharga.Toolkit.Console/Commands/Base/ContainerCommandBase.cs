@@ -31,7 +31,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 {
                     foreach (var name in sub.Names)
                     {
-                        var c = this as RootCommand;
+                        var c = this as RootCommandBase;
                         if (c != null)
                         {
                             yield return "help";
