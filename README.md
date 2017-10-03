@@ -104,6 +104,97 @@ Here are some basic examples on how to get started.
     }
 ```
 
+#### Basic text input
+In this example we start by registering a command named *Input*. Start the program and type input to test.
+
+You can also provide commands in a single line by typeing *Input ABC 123 qwerty*.
+
+The third way is to start the console program with a provided parameter *"Input ABC 123 qwerty" /c*. (The /c parameter will keep the console open after execution.)
+```
+    internal static class Program
+    {
+        [STAThread]
+        private static void Main(string[] args)
+        {
+            using (var console = new ClientConsole())
+            {
+                var command = new RootCommand(console);
+                command.RegisterCommand(new InputCommand());
+                var engine = new CommandEngine(command);
+
+                engine.Start(args);
+            }
+        }
+    }
+
+    internal class InputCommand : ActionCommandBase
+    {
+        public InputCommand()
+            : base("Input")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            //Query the user for input
+            var stringInput = QueryParam<string>("Enter a string", param);
+            var intInput = QueryParam<int>("Enter an int", param);
+            var passwordInput = QueryPassword("Enter a password", param);
+
+            //Show the result
+            OutputInformation(stringInput);
+            OutputInformation(intInput.ToString());
+            OutputInformation(passwordInput);
+        }
+    }
+```
+
+#### Input with options
+In this example the user can choose between three inputs using the *tab*-key.
+It is also possible to manually enter (or provide) any of the named options *First*, *Second* or *Third*, ither as a parameter (Try to type *Input First*) to the command, or to the program (*"Input First" /c*)
+```
+    internal static class Program
+    {
+        [STAThread]
+        private static void Main(string[] args)
+        {
+            using (var console = new ClientConsole())
+            {
+                var command = new RootCommand(console);
+                command.RegisterCommand(new InputCommand());
+                var engine = new CommandEngine(command);
+
+                engine.Start(args);
+            }
+        }
+    }
+
+    internal class InputCommand : ActionCommandBase
+    {
+        public InputCommand()
+            : base("Input")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            //Prepare the selection to choose from
+            var selection = new Dictionary<Guid, string>
+            {
+                { Guid.NewGuid(), "First" },
+                { Guid.NewGuid(), "Second" },
+                { Guid.NewGuid(), "Third" }
+            };
+
+            //Query the user for input
+            var someKey = QueryParam("Enter a key", param, selection);
+
+            //Show the result
+            OutputInformation(someKey.ToString());
+        }
+    }
+```
+
 ## Sample
 
 A good sample to look at can be found here.
