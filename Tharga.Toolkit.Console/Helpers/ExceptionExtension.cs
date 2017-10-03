@@ -7,12 +7,12 @@ namespace Tharga.Toolkit.Console.Helpers
 {
     internal static class ExceptionExtension
     {
-        public static string ToFormattedString(this Exception exception)
+        public static string ToFormattedString(this Exception exception, bool includeStackTrace)
         {
-            return ToFormattedString(exception, 0).TrimEnd(Environment.NewLine.ToCharArray());
+            return ToFormattedString(exception, 0, includeStackTrace).TrimEnd(Environment.NewLine.ToCharArray());
         }
 
-        private static string ToFormattedString(this Exception exception, int indentationLevel)
+        private static string ToFormattedString(this Exception exception, int indentationLevel, bool includeStackTrace)
         {
             var sb = new StringBuilder();
 
@@ -25,30 +25,33 @@ namespace Tharga.Toolkit.Console.Helpers
 
             if (exception.InnerException != null)
             {
-                sb.AppendLine(exception.InnerException.ToFormattedString(++indentationLevel));
+                sb.AppendLine(exception.InnerException.ToFormattedString(++indentationLevel, false));
             }
 
-            try
+            if (includeStackTrace)
             {
-                //NOTE: Make it configurable if to include stacktrace or not
-                sb.AppendLine();
-                sb.AppendLine("Stack trace:");
-                var stackTrace = exception.StackTrace.Split(new[] { " at " }, StringSplitOptions.None);
-                foreach (var line in stackTrace.Where(x => !string.IsNullOrWhiteSpace(x)))
+                try
                 {
-                    var pair = line.Split(new[] { " in " }, StringSplitOptions.None);
-                    if (pair.Length == 2)
+                    //NOTE: Make it configurable if to include stacktrace or not
+                    sb.AppendLine();
+                    sb.AppendLine("Stack trace:");
+                    var stackTrace = exception.StackTrace.Split(new[] { " at " }, StringSplitOptions.None);
+                    foreach (var line in stackTrace.Where(x => !string.IsNullOrWhiteSpace(x)))
                     {
-                        sb.AppendLine(pair[0].Trim());
-                        sb.AppendLine($"  {pair[1].Trim()}");
+                        var pair = line.Split(new[] { " in " }, StringSplitOptions.None);
+                        if (pair.Length == 2)
+                        {
+                            sb.AppendLine(pair[0].Trim());
+                            sb.AppendLine($"  {pair[1].Trim()}");
+                        }
+                        else
+                            sb.AppendLine(line);
                     }
-                    else
-                        sb.AppendLine(line);
                 }
-            }
-            catch (Exception e)
-            {
-                //TODO: Oups, unable to parse 
+                catch (Exception e)
+                {
+                    //TODO: Oups, unable to parse 
+                }
             }
 
             var result = sb.ToString();

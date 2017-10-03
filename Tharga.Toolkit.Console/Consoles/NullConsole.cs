@@ -50,11 +50,6 @@ namespace Tharga.Toolkit.Console.Consoles
         {
         }
 
-        //public override ConsoleKeyInfo ReadKey()
-        //{
-        //    return base.ReadKey();
-        //}
-
         public override ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
             return base.ReadKey(cancellationToken);

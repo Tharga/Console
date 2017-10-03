@@ -113,26 +113,37 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected T QueryParam<T>(string paramName, string autoProvideValue = null, string defaultValue = null)
         {
-            string value;
+            try
+            {
+                string value;
 
-            if (!string.IsNullOrEmpty(autoProvideValue))
-            {
-                value = autoProvideValue;
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(defaultValue))
+                if (!string.IsNullOrEmpty(autoProvideValue))
                 {
-                    value = QueryParam(paramName, (string)null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, false);
+                    value = autoProvideValue;
                 }
                 else
                 {
-                    value = QueryParam(paramName, (string)null, (List<KeyValuePair<string, string>>)null);
+                    if (!string.IsNullOrEmpty(defaultValue))
+                    {
+                        value = QueryParam(paramName, (string)null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, false);
+                    }
+                    else
+                    {
+                        value = QueryParam(paramName, (string)null, (List<KeyValuePair<string, string>>)null);
+                    }
                 }
-            }
 
-            var response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(value);
-            return response;
+                var response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(value);
+                return response;
+            }
+            catch (Exception exception)
+            {
+                if (exception.InnerException?.GetType() == typeof(FormatException))
+                {
+                    throw exception.InnerException;
+                }
+                throw;
+            }
         }
 
         protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IDictionary<T, string> selectionDelegate)
@@ -157,6 +168,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         internal protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, bool passwordEntry)
         {
+            if (CommandEngine == null) throw new InvalidOperationException("The command engine has not been assigned yet.");
+
             var sel = new CommandTreeNode<T>(selection?.OrderBy(x => x.Value).ToArray() ?? new CommandTreeNode<T>[] { });
             var q = GetParamByString(autoProvideValue, sel);
             if (q != null)
@@ -203,9 +216,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return null;
         }
 
-        protected void OutputError(Exception exception)
+        protected void OutputError(Exception exception, bool includeStackTrace = false)
         {
-            OutputError(exception.ToFormattedString());
+            OutputError(exception.ToFormattedString(includeStackTrace));
         }
 
         protected void OutputError(string message)

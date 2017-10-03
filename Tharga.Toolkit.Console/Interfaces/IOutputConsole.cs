@@ -8,7 +8,7 @@ namespace Tharga.Toolkit.Console.Interfaces
         int BufferWidth { get; }
         int BufferHeight { get; }
         void Output(IOutput outputEventArgs);
-        void OutputError(Exception exception);
+        void OutputError(Exception exception, bool includeStackTrace = false);
         void OutputTable(IEnumerable<IEnumerable<string>> data);
         void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data);
     }

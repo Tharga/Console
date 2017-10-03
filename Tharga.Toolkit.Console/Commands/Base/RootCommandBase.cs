@@ -158,7 +158,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             catch (SystemException exception)
             {
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception);
+                OutputError(exception, false);
             }
             catch (AggregateException exception)
             {
@@ -166,12 +166,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     return false;
 
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception);
+                OutputError(exception, false);
             }
             catch (Exception exception)
             {
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception);
+                OutputError(exception, false);
                 OutputWarning("Terminating application...");
                 throw;
             }
