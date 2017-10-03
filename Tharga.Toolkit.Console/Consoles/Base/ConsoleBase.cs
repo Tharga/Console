@@ -486,5 +486,11 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
             return "Save position is not implemented for this console type.";
         }
+
+        [Obsolete("This is just a temporary test. It might be removed.")]
+        public string ReadLine()
+        {
+            return ConsoleManager?.ReadLine();
+        }
     }
 }

@@ -22,5 +22,8 @@ namespace Tharga.Toolkit.Console.Interfaces
         void SetCursorPosition(int left, int top);
         void Clear();
         void Intercept(IConsole console);
+
+        [Obsolete("This is just a temporary test. It might be removed.")]
+        string ReadLine();
     }
 }

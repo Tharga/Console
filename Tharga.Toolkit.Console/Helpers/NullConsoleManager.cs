@@ -55,5 +55,11 @@ namespace Tharga.Toolkit.Console.Helpers
         public void Intercept(IConsole console)
         {
         }
+
+        [Obsolete("This is just a temporary test. It might be removed.")]
+        public string ReadLine()
+        {
+            return null;
+        }
     }
 }

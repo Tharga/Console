@@ -166,5 +166,11 @@ namespace Tharga.Toolkit.Console.Tests
                 }
             }
         }
+
+        [Obsolete("This is just a temporary test. It might be removed.")]
+        public string ReadLine()
+        {
+            return null;
+        }
     }
 }
