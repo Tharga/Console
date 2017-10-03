@@ -108,6 +108,20 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, string defaultValue = null)
         {
+            if (defaultValue == null)
+            {
+                if (default(T) is Enum)
+                {
+                    var selection = Enum.GetValues(typeof(T)).Cast<T>().ToDictionary(x => x, x => x.ToString());
+                    return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
+                }
+                if (default(T) is bool)
+                {
+                    var selection = new Dictionary<T, string> { { (T)(object)true, true.ToString() }, { (T)(object)false, false.ToString() } };
+                    return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
+                }
+            }
+
             return QueryParam<T>(paramName, GetNextParam(autoParam), defaultValue);
         }
 
@@ -170,7 +184,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             if (CommandEngine == null) throw new InvalidOperationException("The command engine has not been assigned yet.");
 
-            var sel = new CommandTreeNode<T>(selection?.OrderBy(x => x.Value).ToArray() ?? new CommandTreeNode<T>[] { });
+            //var sel = new CommandTreeNode<T>(selection?.OrderBy(x => x.Value).ToArray() ?? new CommandTreeNode<T>[] { });
+            var sel = new CommandTreeNode<T>(selection?.ToArray() ?? new CommandTreeNode<T>[] { });
             var q = GetParamByString(autoProvideValue, sel);
             if (q != null)
             {
