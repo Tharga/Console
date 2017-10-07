@@ -21,8 +21,12 @@ namespace Tharga.Toolkit.Console.Helpers
             InputInstance inputInstance = null;
             try
             {
-                inputInstance = new InputInstance(_console, paramName, passwordChar, cancellationToken);
-                task = new Task<T>(() => inputInstance.ReadLine(selection, allowEscape));
+                task = new Task<T>(() =>
+                {
+                    inputInstance = new InputInstance(_console, paramName, passwordChar, cancellationToken);
+                    return inputInstance.ReadLine(selection, allowEscape);
+                });
+
                 task.Start();
 
                 if (timeoutMilliseconds != null)
@@ -38,7 +42,7 @@ namespace Tharga.Toolkit.Console.Helpers
             }
             catch (AggregateException exception)
             {
-                throw (exception as AggregateException)?.InnerException ?? exception;
+                throw exception.InnerException ?? exception;
             }
             finally
             {
