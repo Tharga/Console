@@ -22,6 +22,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         public event EventHandler<WriteEventArgs> WriteEvent;
 
         protected CommandEngine CommandEngine;
+        protected ICommandResolver CommandResolver;
         protected int ParamIndex;
 
         internal CommandBase(string name, string description = null, bool hidden = false)
@@ -47,9 +48,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected abstract ICommand GetHelpCommand(string paramList);
 
-        protected internal virtual void Attach(CommandEngine commandEngine)
+        protected internal virtual void Attach(CommandEngine commandEngine, ICommandResolver commandResolver)
         {
             CommandEngine = commandEngine;
+            CommandResolver = commandResolver;
         }
 
         public virtual bool CanExecute(out string reasonMesage)

@@ -12,6 +12,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
     {
         private readonly List<ICommand> _subCommands = new List<ICommand>();
 
+        protected readonly List<Type> SubCommandTypes = new List<Type>();
+
         public IEnumerable<ICommand> SubCommands => _subCommands;
 
         public event EventHandler<CommandRegisteredEventArgs> CommandRegisteredEvent;
@@ -31,8 +33,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 {
                     foreach (var name in sub.Names)
                     {
-                        var c = this as RootCommandBase;
-                        if (c != null)
+                        if (this is RootCommandBase)
                         {
                             yield return "help";
                         }
@@ -50,6 +51,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     }
                 }
             }
+        }
+
+        protected void RegisterCommand<T>()
+        {
+            SubCommandTypes.Add(typeof(T));
         }
 
         protected void RegisterCommand(ICommand command)
@@ -321,13 +327,23 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
         }
 
-        protected internal override void Attach(CommandEngine commandEngine)
+        protected internal override void Attach(CommandEngine commandEngine, ICommandResolver commandResolver)
         {
-            CommandEngine = commandEngine;
+            base.Attach(commandEngine, commandResolver ?? CommandResolver);
+
+            foreach (var subCommandType in SubCommandTypes)
+            {
+                var command = CommandResolver.Resolve(subCommandType);
+                if (this is RootCommandBase rc)
+                    rc.RegisterCommand(command);
+                else
+                    RegisterCommand(command);
+            }
+
             foreach (var cmd in SubCommands)
             {
                 var c = cmd as CommandBase;
-                c?.Attach(commandEngine);
+                c?.Attach(commandEngine, CommandResolver);
             }
         }
     }

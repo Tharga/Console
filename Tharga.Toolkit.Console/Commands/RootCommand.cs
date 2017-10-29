@@ -9,5 +9,10 @@ namespace Tharga.Toolkit.Console.Commands
             : base(console)
         {
         }
+
+        public RootCommand(IConsole console, ICommandResolver commandResolver)
+            : base(console, commandResolver)
+        {
+        }
     }
 }

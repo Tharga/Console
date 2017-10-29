@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
-using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
@@ -20,9 +19,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected RootCommandBase(IConsole console)
             : base("root")
         {
-            if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
-
-            Console = console;
+            Console = console ?? throw new ArgumentNullException(nameof(console), "No console provided.");
 
             RegisterCommand(new ExitCommand(() => { RequestCloseEvent?.Invoke(this, new EventArgs()); }));
             RegisterCommand(new ClearCommand());
@@ -35,6 +32,17 @@ namespace Tharga.Toolkit.Console.Commands.Base
             WriteEvent += OnOutputEvent;
 
             console.Attach(this);
+        }
+
+        protected RootCommandBase(IConsole console, ICommandResolver commandResolver)
+            : this(console)
+        {
+            CommandResolver = commandResolver;
+        }
+
+        public new void RegisterCommand<T>()
+        {
+            SubCommandTypes.Add(typeof(T));
         }
 
         public new void RegisterCommand(ICommand command)
@@ -107,8 +115,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             try
             {
-                string subCommand;
-                var command = GetSubCommand(entry, out subCommand);
+                var command = GetSubCommand(entry, out var subCommand);
                 if (command != null)
                 {
                     var ac = command as ActionAsyncCommandBase;

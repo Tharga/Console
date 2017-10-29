@@ -65,10 +65,60 @@ Here are some basic examples on how to get started.
         {
         }
 
-        public override async Task<bool> InvokeAsync(string paramList)
+        public override void Invoke(string[] param)
         {
             OutputInformation("Foo Bar command executed successfully.");
-            return true;
+        }
+    }
+```
+
+#### Adding custom commands using IOC container
+You can use any IOC container by using the generic *CommandResolver* class provided or implement your own based by *ICommandResolver* and inject it in the RootCommand constructor.
+When registering the console command, just use the generic *RegisterCommand<>* function and provide the command class type (or interface). The IOC will then resolve dependencies for the command.
+You can use interfaces for the commands and dependencies, if you do not want to register concrete classes. You can also provide dependencies other than console commands, for the console commands to use.
+The commands are resolved and instantiated once when the program starts.
+In this example we are using *castle windsor*.
+```
+    internal static class Program
+    {
+        [STAThread]
+        private static void Main(string[] args)
+        {
+            var container = new WindsorContainer();
+            container.Register(Component.For<FooCommand>().LifestyleTransient());
+            container.Register(Component.For<BarCommand>().LifestyleTransient());
+
+            var commandResolver = new CommandResolver(type => (ICommand)container.Resolve(type));
+
+            using (var console = new ClientConsole())
+            {
+                var command = new RootCommand(console, commandResolver);
+                command.RegisterCommand<FooCommand>();
+                var engine = new CommandEngine(command);
+                engine.Start(args);
+            }
+        }
+    }
+
+    public class FooCommand : ContainerCommandBase
+    {
+        public FooCommand()
+            : base("Foo")
+        {
+            RegisterCommand<BarCommand>();
+        }
+    }
+
+    public class BarCommand : ActionCommandBase
+    {
+        public BarCommand()
+            : base("Bar")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            OutputInformation("Foo Bar command executed successfully.");
         }
     }
 ```
@@ -87,11 +137,11 @@ Here are some basic examples on how to get started.
                 {
                     TaskRunners = new[]
                     {
-                        new TaskRunner(e =>
+                        new TaskRunner((c, a) =>
                         {
-                            while (!e.IsCancellationRequested)
+                            while (!c.IsCancellationRequested)
                             {
-                                console.WriteLine("Running...", OutputLevel.Information);
+                                console.OutputInformation("Running...");
                                 Thread.Sleep(3000);
                             }
                         }),
