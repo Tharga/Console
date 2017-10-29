@@ -64,7 +64,6 @@
     <Compile Include="..\Build\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Commands\Base\ActionAsyncCommandBase.cs" />
     <Compile Include="Helpers\CommandResolver.cs" />
     <Compile Include="Commands\ScreenCommands\InfoScreenCommand.cs" />
     <Compile Include="Commands\ScreenCommands\SaveScreenCommand.cs" />

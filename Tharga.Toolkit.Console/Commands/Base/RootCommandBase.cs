@@ -120,7 +120,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 var command = GetSubCommand(entry, out var subCommand);
                 if (command != null)
                 {
-                    var ac = command as ActionAsyncCommandBase;
                     var bc = command as CommandBase;
                     var cc = command as ContainerCommandBase;
 
@@ -136,11 +135,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     var param = subCommand.ToInput().ToArray();
 
-                    if (ac != null)
-                    {
-                        Task.Run(() => { ac.InvokeAsyncEx(param); }).Wait();
-                    }
-                    else if (bc != null)
+                    if (bc != null)
                     {
                         bc.InvokeEx(param);
                     }
