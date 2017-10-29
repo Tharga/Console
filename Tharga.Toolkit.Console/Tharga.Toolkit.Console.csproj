@@ -64,7 +64,7 @@
     <Compile Include="..\Build\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Commands\Base\ActionAsyncCommandBase.cs" />
+    <Compile Include="Helpers\CommandResolver.cs" />
     <Compile Include="Commands\ScreenCommands\InfoScreenCommand.cs" />
     <Compile Include="Commands\ScreenCommands\SaveScreenCommand.cs" />
     <Compile Include="Entities\CommandTreeNode.cs" />
@@ -86,6 +86,7 @@
     <Compile Include="Helpers\ConsoleManager.cs" />
     <Compile Include="Instance.cs" />
     <Compile Include="Interfaces\ICommandAsync.cs" />
+    <Compile Include="Interfaces\ICommandResolver.cs" />
     <Compile Include="Interfaces\IConsoleManager.cs" />
     <Compile Include="Entities\ConsoleConfiguration.cs" />
     <Compile Include="Helpers\TextReaderInterceptor.cs" />

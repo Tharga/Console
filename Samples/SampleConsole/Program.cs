@@ -136,6 +136,8 @@ namespace SampleConsole
             RegisterCommand(new SomeTableCommand());
             RegisterCommand(new SomePasswordCommand());
             RegisterCommand(new SomeDisabledCommand());
+            RegisterCommand(new SomeEnumCommand());
+            RegisterCommand(new SomeBoolCommand());
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -204,14 +206,12 @@ namespace SampleConsole
         public SomeOptionCommand()
             : base("option", "Gets a single item from a list of options.")
         {
+            RegisterQuery<Guid>("Id", "Some Id", GetSelection);
         }
 
         public override void Invoke(string[] param)
         {
-            var id = QueryParam("Some Id", param, GetSelection());
-            //var id = QueryParam("Some Id", param, new Dictionary<int, string> { { 1, "One" }, { 2, "Two" } });
-
-            OutputInformation($"Some data for {id}");
+            OutputInformation($"Some data for {GetParam<Guid>("Id")}");
         }
 
         private IDictionary<Guid, string> GetSelection()
@@ -320,6 +320,36 @@ namespace SampleConsole
                 yield return new HelpLine("The function 'CanExecute' can be overrdden and depending on circumstances, return the proper state together with a reason message.");
                 yield return new HelpLine("You can still get help from a command that is disabled.");
             }
+        }
+    }
+
+    internal class SomeEnumCommand : ActionCommandBase
+    {
+        enum MyEnum { One, Two, Three }
+
+        public SomeEnumCommand()
+            : base("enum", "Enum option selection.")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            var selection = QueryParam<MyEnum>("Select", param);
+            OutputInformation(selection.ToString());
+        }
+    }
+
+    internal class SomeBoolCommand : ActionCommandBase
+    {
+        public SomeBoolCommand()
+            : base("bool", "Choose between yes and no.")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            var selection = QueryParam<bool>("Select", param);
+            OutputInformation(selection.ToString());
         }
     }
 

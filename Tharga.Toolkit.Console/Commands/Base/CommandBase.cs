@@ -22,6 +22,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         public event EventHandler<WriteEventArgs> WriteEvent;
 
         protected CommandEngine CommandEngine;
+        protected ICommandResolver CommandResolver;
         protected int ParamIndex;
 
         internal CommandBase(string name, string description = null, bool hidden = false)
@@ -33,7 +34,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public abstract void Invoke(string[] param);
 
-        internal void InvokeEx(string[] param)
+        internal virtual void InvokeEx(string[] param)
         {
             ParamIndex = 0;
             Invoke(param);
@@ -47,9 +48,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected abstract ICommand GetHelpCommand(string paramList);
 
-        protected internal virtual void Attach(CommandEngine commandEngine)
+        protected internal virtual void Attach(CommandEngine commandEngine, ICommandResolver commandResolver)
         {
             CommandEngine = commandEngine;
+            CommandResolver = commandResolver;
         }
 
         public virtual bool CanExecute(out string reasonMesage)
@@ -108,6 +110,20 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, string defaultValue = null)
         {
+            if (defaultValue == null)
+            {
+                if (default(T) is Enum)
+                {
+                    var selection = Enum.GetValues(typeof(T)).Cast<T>().ToDictionary(x => x, x => x.ToString());
+                    return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
+                }
+                if (default(T) is bool)
+                {
+                    var selection = new Dictionary<T, string> { { (T)(object)true, true.ToString() }, { (T)(object)false, false.ToString() } };
+                    return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
+                }
+            }
+
             return QueryParam<T>(paramName, GetNextParam(autoParam), defaultValue);
         }
 
@@ -170,7 +186,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             if (CommandEngine == null) throw new InvalidOperationException("The command engine has not been assigned yet.");
 
-            var sel = new CommandTreeNode<T>(selection?.OrderBy(x => x.Value).ToArray() ?? new CommandTreeNode<T>[] { });
+            var sel = new CommandTreeNode<T>(selection?.ToArray() ?? new CommandTreeNode<T>[] { });
             var q = GetParamByString(autoProvideValue, sel);
             if (q != null)
             {
@@ -188,7 +204,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (!string.IsNullOrEmpty(autoProvideValue))
             {
                 var item = selection.Subs.SingleOrDefault(x => string.Compare(x.Value, autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (item?.Value == autoProvideValue)
+                if (string.Equals(item?.Value, autoProvideValue, StringComparison.CurrentCultureIgnoreCase))
                 {
                     return item;
                 }

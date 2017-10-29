@@ -10,6 +10,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
 {
     public abstract class ActionCommandBase : CommandBase, IActionCommand
     {
+        private readonly List<Func<string[], KeyValuePair<string, object>>> _registeredQuery = new List<Func<string[], KeyValuePair<string, object>>>();
+        private readonly List<Func<string[]>> _selectionDelegate = new List<Func<string[]>>();
+        private Dictionary<string, object> _param = new Dictionary<string, object>();
         private Func<string> _canExecute;
 
         public override IEnumerable<HelpLine> HelpText { get { yield break; } }
@@ -17,6 +20,36 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected ActionCommandBase(string name, string description = null, bool hidden = false)
             : base(name, description, hidden)
         {
+        }
+
+        protected void RegisterQuery<T>(string key, string paramName, Func<IDictionary<T, string>> selectionDelegate)
+        {
+            _registeredQuery.Add((param) =>
+            {
+                var result = QueryParam(paramName, param, selectionDelegate());
+                return new KeyValuePair<string, object>(key, result);
+            });
+            _selectionDelegate.Add(() =>
+            {
+                return selectionDelegate().Select(x => x.Value).ToArray();
+            });
+        }
+
+        protected T GetParam<T>(string key)
+        {
+            return (T)Convert.ChangeType(_param[key], typeof(T));
+        }
+
+        internal override void InvokeEx(string[] param)
+        {
+            ParamIndex = 0;
+            _param = new Dictionary<string, object>();
+            foreach (var query in _registeredQuery)
+            {
+                var result = query.Invoke(param);
+                _param.Add(result.Key, result.Value); 
+            }
+            Invoke(param);
         }
 
         protected override ICommand GetHelpCommand(string paramList)
@@ -75,6 +108,20 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                 VariableStore.Instance.Add(new Variable(pair[0], val));
             }
+        }
+
+        public IEnumerable<IEnumerable<string>> GetOptionList()
+        {
+            var l = new List<string>();
+            foreach (var x in _selectionDelegate)
+            {
+                var r = x.Invoke().ToArray();
+                foreach (var v in r)
+                {
+                    l.Add(v);
+                }
+            }
+            yield return l;
         }
     }
 }

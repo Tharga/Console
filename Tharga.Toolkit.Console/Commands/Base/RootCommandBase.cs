@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
-using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
@@ -20,9 +20,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected RootCommandBase(IConsole console)
             : base("root")
         {
-            if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
-
-            Console = console;
+            Console = console ?? throw new ArgumentNullException(nameof(console), "No console provided.");
 
             RegisterCommand(new ExitCommand(() => { RequestCloseEvent?.Invoke(this, new EventArgs()); }));
             RegisterCommand(new ClearCommand());
@@ -35,6 +33,17 @@ namespace Tharga.Toolkit.Console.Commands.Base
             WriteEvent += OnOutputEvent;
 
             console.Attach(this);
+        }
+
+        protected RootCommandBase(IConsole console, ICommandResolver commandResolver)
+            : this(console)
+        {
+            CommandResolver = commandResolver;
+        }
+
+        public new void RegisterCommand<T>()
+        {
+            SubCommandTypes.Add(typeof(T));
         }
 
         public new void RegisterCommand(ICommand command)
@@ -94,12 +103,31 @@ namespace Tharga.Toolkit.Console.Commands.Base
             foreach (var command in commands)
             {
                 var cc = command as ContainerCommandBase;
+                var ac = command as ActionCommandBase;
+
                 CommandTreeNode<string>[] subTree = null;
+
                 if (cc != null)
                 {
-                    subTree = Build(cc.SubCommands, cc.Name).ToArray();
+                    var l = (lead != null ? (lead + " ") : "") + cc.Name;
+                    subTree = Build(cc.SubCommands, l).ToArray();
                 }
+                else if (ac != null)
+                {
+                    var l = (lead != null ? (lead + " ") : "") + ac.Name;
+                    var sub = ac.GetOptionList().ToArray();
+                    subTree = Build(sub, l).ToArray();
+                }
+                
                 yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command.Name}" : command.Name, command.Name, subTree);
+            }
+        }
+
+        private IEnumerable<CommandTreeNode<string>> Build(IEnumerable<string>[] commands, string lead)
+        {
+            foreach (var command in commands[0])
+            {
+                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command}" : command, command, null);
             }
         }
 
@@ -107,18 +135,16 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             try
             {
-                string subCommand;
-                var command = GetSubCommand(entry, out subCommand);
+                var command = GetSubCommand(entry, out var subCommand);
                 if (command != null)
                 {
-                    var ac = command as ActionAsyncCommandBase;
                     var bc = command as CommandBase;
+                    var ac = command as ActionCommandBase;
                     var cc = command as ContainerCommandBase;
 
                     if (cc == null)
                     {
-                        string reason;
-                        if (!command.CanExecute(out reason))
+                        if (!command.CanExecute(out var reason))
                         {
                             OutputWarning(GetCanExecuteFailMessage(reason));
                             return false;
@@ -129,7 +155,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     if (ac != null)
                     {
-                        Task.Run(() => { ac.InvokeAsyncEx(param); }).Wait();
+                        ac.InvokeEx(param);
                     }
                     else if (bc != null)
                     {
