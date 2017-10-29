@@ -334,7 +334,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
             foreach (var subCommandType in SubCommandTypes)
             {
                 var command = CommandResolver.Resolve(subCommandType);
-                if (this is RootCommandBase rc)
+                var rc = this as RootCommandBase;
+                if (rc != null)
                     rc.RegisterCommand(command);
                 else
                     RegisterCommand(command);
