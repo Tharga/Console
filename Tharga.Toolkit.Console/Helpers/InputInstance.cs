@@ -467,7 +467,7 @@ namespace Tharga.Toolkit.Console.Helpers
                 }
                 else
                 {
-                    var items = selection.Subs.Where(x => x.Value == inputBuffer.ToString()).ToArray();
+                    var items = selection.Subs.Where(x => string.Equals(x.Value, inputBuffer.ToString(), StringComparison.CurrentCultureIgnoreCase)).ToArray();
                     if (!items.Any())
                     {
                         try

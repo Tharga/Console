@@ -204,7 +204,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (!string.IsNullOrEmpty(autoProvideValue))
             {
                 var item = selection.Subs.SingleOrDefault(x => string.Compare(x.Value, autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (item?.Value == autoProvideValue)
+                if (string.Equals(item?.Value, autoProvideValue, StringComparison.CurrentCultureIgnoreCase))
                 {
                     return item;
                 }
