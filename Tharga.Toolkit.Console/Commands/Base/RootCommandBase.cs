@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -105,7 +106,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 CommandTreeNode<string>[] subTree = null;
                 if (cc != null)
                 {
-                    subTree = Build(cc.SubCommands, cc.Name).ToArray();
+                    var l = (lead != null ? (lead + " ") : "") + cc.Name;
+                    subTree = Build(cc.SubCommands, l).ToArray();
                 }
                 yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command.Name}" : command.Name, command.Name, subTree);
             }
