@@ -34,7 +34,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public abstract void Invoke(string[] param);
 
-        internal void InvokeEx(string[] param)
+        internal virtual void InvokeEx(string[] param)
         {
             ParamIndex = 0;
             Invoke(param);

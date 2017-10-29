@@ -206,14 +206,12 @@ namespace SampleConsole
         public SomeOptionCommand()
             : base("option", "Gets a single item from a list of options.")
         {
+            RegisterQuery<Guid>("Id", "Some Id", GetSelection);
         }
 
         public override void Invoke(string[] param)
         {
-            var id = QueryParam("Some Id", param, GetSelection());
-            //var id = QueryParam("Some Id", param, new Dictionary<int, string> { { 1, "One" }, { 2, "Two" } });
-
-            OutputInformation($"Some data for {id}");
+            OutputInformation($"Some data for {GetParam<Guid>("Id")}");
         }
 
         private IDictionary<Guid, string> GetSelection()

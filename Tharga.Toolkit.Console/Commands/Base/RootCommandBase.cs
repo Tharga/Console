@@ -103,13 +103,31 @@ namespace Tharga.Toolkit.Console.Commands.Base
             foreach (var command in commands)
             {
                 var cc = command as ContainerCommandBase;
+                var ac = command as ActionCommandBase;
+
                 CommandTreeNode<string>[] subTree = null;
+
                 if (cc != null)
                 {
                     var l = (lead != null ? (lead + " ") : "") + cc.Name;
                     subTree = Build(cc.SubCommands, l).ToArray();
                 }
+                else if (ac != null)
+                {
+                    var l = (lead != null ? (lead + " ") : "") + ac.Name;
+                    var sub = ac.GetOptionList().ToArray();
+                    subTree = Build(sub, l).ToArray();
+                }
+                
                 yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command.Name}" : command.Name, command.Name, subTree);
+            }
+        }
+
+        private IEnumerable<CommandTreeNode<string>> Build(IEnumerable<string>[] commands, string lead)
+        {
+            foreach (var command in commands[0])
+            {
+                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command}" : command, command, null);
             }
         }
 
@@ -121,12 +139,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 if (command != null)
                 {
                     var bc = command as CommandBase;
+                    var ac = command as ActionCommandBase;
                     var cc = command as ContainerCommandBase;
 
                     if (cc == null)
                     {
-                        string reason;
-                        if (!command.CanExecute(out reason))
+                        if (!command.CanExecute(out var reason))
                         {
                             OutputWarning(GetCanExecuteFailMessage(reason));
                             return false;
@@ -135,7 +153,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     var param = subCommand.ToInput().ToArray();
 
-                    if (bc != null)
+                    if (ac != null)
+                    {
+                        ac.InvokeEx(param);
+                    }
+                    else if (bc != null)
                     {
                         bc.InvokeEx(param);
                     }
