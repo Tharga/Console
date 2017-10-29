@@ -14,7 +14,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected readonly List<Type> SubCommandTypes = new List<Type>();
 
-        public IEnumerable<ICommand> SubCommands => _subCommands;
+        public IEnumerable<ICommand> SubCommands => _subCommands.OrderBy(x => x.Name);
 
         public event EventHandler<CommandRegisteredEventArgs> CommandRegisteredEvent;
 

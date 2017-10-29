@@ -186,7 +186,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             if (CommandEngine == null) throw new InvalidOperationException("The command engine has not been assigned yet.");
 
-            //var sel = new CommandTreeNode<T>(selection?.OrderBy(x => x.Value).ToArray() ?? new CommandTreeNode<T>[] { });
             var sel = new CommandTreeNode<T>(selection?.ToArray() ?? new CommandTreeNode<T>[] { });
             var q = GetParamByString(autoProvideValue, sel);
             if (q != null)
