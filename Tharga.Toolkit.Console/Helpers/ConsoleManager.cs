@@ -9,7 +9,6 @@ namespace Tharga.Toolkit.Console.Helpers
     class ConsoleManager : IConsoleManager
     {
         private readonly TextWriter _textWriter;
-        private readonly TextReader _textReader;
         private TextWriterInterceptor _textWriterInterceptor;
         private TextReaderInterceptor _textReaderInterceptor;
         private TextWriterInterceptor _errorInterceptor;
@@ -18,7 +17,6 @@ namespace Tharga.Toolkit.Console.Helpers
         public ConsoleManager(TextWriter textWriter, TextReader textReader)
         {
             _textWriter = textWriter;
-            _textReader = textReader;
         }
 
         public void Intercept(IConsole console)
@@ -203,12 +201,6 @@ namespace Tharga.Toolkit.Console.Helpers
             {
                 Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
             }
-        }
-
-        [Obsolete("This is just a temporary test. It might be removed.")]
-        public string ReadLine()
-        {
-            return _textReader.ReadLine();
         }
     }
 }
