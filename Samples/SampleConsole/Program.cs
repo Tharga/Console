@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -25,89 +24,94 @@ namespace SampleConsole
             try
             {
                 //Part 1. Console.
-                //NOTE: Enable the type of console you want to use for the sample.
-                console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
-                //console = new VoiceConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
-                //console = new NullConsole();
-                //console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });
-                //console = new EventConsole();
-                //console.OutputEvent += (sender, e) => { System.Diagnostics.Debug.WriteLine(e.Message); };
-                //console = new AggregateConsole(new ClientConsole(), new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); }));
+                using (
+                    //NOTE: Enable the type of console you want to use for the sample.
+                    console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
+                    //console = new VoiceConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
+                    //console = new NullConsole();
+                    //console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });
+                    //console = new EventConsole();
+                    //console.OutputEvent += (sender, e) => { System.Diagnostics.Debug.WriteLine(e.Message); };
+                    //console = new AggregateConsole(new ClientConsole(), new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); }));
+                ){
+
+                    //Part 2. Commands
+                    //NOTE: Creating the command object and registering some commands
+                    var command = new RootCommand(console);
+                    command.RegisterCommand(new SomeContainerCommand());
+                    command.RegisterCommand(new MathContainerCommand());
+                    command.RegisterCommand(new StatusCommand());
+                    command.RegisterCommand(new SomeContainerWithDisabledSubs());
+                    command.RegisterCommand(new OutputContainerCommand());
+
+                    //Part 3. Engine
+                    var commandEngine = new CommandEngine(command)
+                    {
+                        //If you want the console to run some managed background process, they can be created here.
+                        TaskRunners = new[]
+                        {
+                            new TaskRunner((c, a) =>
+                            {
+                            }),
+                            //    //NOTE: You can add a runner that runs until the application exits.
+                            //    new TaskRunner(e =>
+                            //    {
+                            //        var i = 0;
+                            //        var intervalSeconds = 15;
+                            //        while (!e.IsCancellationRequested)
+                            //        {
+                            //            if (i % (10 * intervalSeconds) == 0)
+                            //            {
+                            //                Instance.WriteLine($"First taskrunner is alive in the background. Repporting every {intervalSeconds} seconds.", OutputLevel.Information);
+                            //            }
+                            //            Thread.Sleep(100);
+                            //            i++;
+                            //        }
+                            //        Instance.WriteLine("First taskrunner is exiting.", OutputLevel.Information);
+                            //    }),
+
+                            //    //NOTE: You can add a runner that contains an AutoResetEvent that triggers when the application exits.
+                            //    new TaskRunner(e =>
+                            //    {
+                            //        Instance.WriteLine("Second taskrunner is doing some stuff at startup.", OutputLevel.Information);
+                            //        e.WaitOne();
+                            //        Instance.WriteLine("Second taskrunner is doing some stuff before the application exits.", OutputLevel.Information);
+                            //    }),
+                        }
+                    };
 
 
-                //Part 2. Commands
-                //NOTE: Creating the command object and registering some commands
-                var command = new RootCommand(console);
-                command.RegisterCommand(new SomeContainerCommand());
-                command.RegisterCommand(new MathContainerCommand());
-                command.RegisterCommand(new StatusCommand());
-                command.RegisterCommand(new SomeContainerWithDisabledSubs());
-                command.RegisterCommand(new OutputContainerCommand());
+                    ////Log4Net
+                    ////Enable this section to try out the Log4Net appender provided in the nuget package "Tharga.Toolkit.Log4Net".
+                    //var logger =  LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-                //Part 3. Engine
-                var commandEngine = new CommandEngine(command)
-                {
-                    ////If you want the console to run some managed background process, they can be created here.
-                    //TaskRunners = new[]
+                    ////Logging on different levels
+                    //logger.Debug("this Debug msg");
+                    //logger.Warn("this Warn msg");
+                    //logger.Info("this Info msg");
+                    //logger.Error("this Error msg");
+                    //logger.Fatal("this Fatal msg");
+
+                    ////Logging exceptions
+                    //try
                     //{
-                    //    //NOTE: You can add a runner that runs until the application exits.
-                    //    new TaskRunner(e =>
-                    //    {
-                    //        var i = 0;
-                    //        var intervalSeconds = 15;
-                    //        while (!e.IsCancellationRequested)
-                    //        {
-                    //            if (i % (10 * intervalSeconds) == 0)
-                    //            {
-                    //                Instance.WriteLine($"First taskrunner is alive in the background. Repporting every {intervalSeconds} seconds.", OutputLevel.Information);
-                    //            }
-                    //            Thread.Sleep(100);
-                    //            i++;
-                    //        }
-                    //        Instance.WriteLine("First taskrunner is exiting.", OutputLevel.Information);
-                    //    }),
-
-                    //    //NOTE: You can add a runner that contains an AutoResetEvent that triggers when the application exits.
-                    //    new TaskRunner(e =>
-                    //    {
-                    //        Instance.WriteLine("Second taskrunner is doing some stuff at startup.", OutputLevel.Information);
-                    //        e.WaitOne();
-                    //        Instance.WriteLine("Second taskrunner is doing some stuff before the application exits.", OutputLevel.Information);
-                    //    }),
+                    //    var i = 0;
+                    //    var j = 5 / i;
                     //}
-                };
+                    //catch (Exception ex)
+                    //{
+                    //    ex.Data.Add("AAA", "AAA1"); //Append data to the exception
+                    //    logger.Error("this Error msg,中文测试", ex);
+                    //}
 
 
-                ////Log4Net
-                ////Enable this section to try out the Log4Net appender provided in the nuget package "Tharga.Toolkit.Log4Net".
-                //var logger =  LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+                    //NOTE: This part starts the console engine.
+                    commandEngine.Start(args);
 
-                ////Logging on different levels
-                //logger.Debug("this Debug msg");
-                //logger.Warn("this Warn msg");
-                //logger.Info("this Info msg");
-                //logger.Error("this Error msg");
-                //logger.Fatal("this Fatal msg");
-
-                ////Logging exceptions
-                //try
-                //{
-                //    var i = 0;
-                //    var j = 5 / i;
-                //}
-                //catch (Exception ex)
-                //{
-                //    ex.Data.Add("AAA", "AAA1"); //Append data to the exception
-                //    logger.Error("this Error msg,中文测试", ex);
-                //}
-
-
-                //NOTE: This part starts the console engine.
-                commandEngine.Start(args);
-
-                //NOTE: Enable this code if you want to see what happens right before the application closes
-                //Console.WriteLine("Press any key to exit...");
-                //Console.ReadKey();
+                    //NOTE: Enable this code if you want to see what happens right before the application closes
+                    //Console.WriteLine("Press any key to exit...");
+                    //Console.ReadKey();
+                }
             }
             catch (Exception exception)
             {

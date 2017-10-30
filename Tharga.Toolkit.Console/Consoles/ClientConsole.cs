@@ -63,7 +63,7 @@ namespace Tharga.Toolkit.Console.Consoles
                 else if (consoleConfiguration.RememberStartPosition)
                 {
                     position = GetStoredPosition();
-                    SubscribeToWindowMovement(hWnd);
+                    //SubscribeToWindowMovement(hWnd);
                 }
 
                 if (position != null)
@@ -553,9 +553,8 @@ Global $EVENT_Max = $EVENT_SYSTEM_DRAGDROPEND
 
             Trace.TraceInformation($"SubscribeToWindowMovement({hWnd})");
 
+            //TODO: Fis this line of code, it makes the console crash when running on some versions of windows.
             ExecuteApiFunction(() => SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, _target, WindowMoved, _processId, _threadId, 0));
-            //ExecuteApiFunction(() => SetWinEventHook(1, 0xFFFF, _target, WindowHook, _processId, _threadId, 0));
-            //SetWinEventHook(1, 0x0F0F, _target, WindowMinimized, _processId, _threadId, 0);
         }
 
         private void WindowHook(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
@@ -568,36 +567,6 @@ Global $EVENT_Max = $EVENT_SYSTEM_DRAGDROPEND
 
             Trace.TraceInformation($"Hook on {hwnd}, event {eventType}.");
         }
-
-        //private void WindowMinimized(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
-        //{
-        //    try
-        //    {
-        //        if (hwnd != _target)
-        //            return;
-
-        //        switch (eventType)
-        //        {
-        //            case EVENT_SYSTEM_FOREGROUND:
-        //                //NOTE: Window was brought to forground
-        //                System.Console.WriteLine("EVENT_SYSTEM_FOREGROUND");
-        //                break;
-        //            case EVENT_SYSTEM_MINIMIZESTART:
-        //                System.Console.WriteLine("EVENT_SYSTEM_MINIMIZESTART");
-        //                break;
-        //            case EVENT_SYSTEM_MINIMIZEEND:
-        //                System.Console.WriteLine("EVENT_SYSTEM_MINIMIZEEND");
-        //                break;
-        //            default:
-        //                System.Console.WriteLine(eventType);
-        //                break;
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        OutputError(exception);
-        //    }
-        //}
 
         private void WindowMoved(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {

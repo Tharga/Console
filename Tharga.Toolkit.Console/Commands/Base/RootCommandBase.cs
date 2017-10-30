@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Schema;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -20,7 +18,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected RootCommandBase(IConsole console)
             : base("root")
         {
-            Console = console ?? throw new ArgumentNullException(nameof(console), "No console provided.");
+            if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
+
+            Console = console;
 
             RegisterCommand(new ExitCommand(() => { RequestCloseEvent?.Invoke(this, new EventArgs()); }));
             RegisterCommand(new ClearCommand());
@@ -135,7 +135,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             try
             {
-                var command = GetSubCommand(entry, out var subCommand);
+                string subCommand;
+                var command = GetSubCommand(entry, out subCommand);
                 if (command != null)
                 {
                     var bc = command as CommandBase;
@@ -144,7 +145,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     if (cc == null)
                     {
-                        if (!command.CanExecute(out var reason))
+                        string reason;
+                        if (!command.CanExecute(out reason))
                         {
                             OutputWarning(GetCanExecuteFailMessage(reason));
                             return false;
