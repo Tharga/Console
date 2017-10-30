@@ -22,7 +22,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
         }
 
-        protected void RegisterQuery<T>(string key, string paramName, Func<IDictionary<T, string>> selectionDelegate)
+        protected void RegisterQuery<T>(string key, string paramName, Func<IEnumerable<KeyValuePair<T, string>>> selectionDelegate)
         {
             _registeredQuery.Add((param) =>
             {
