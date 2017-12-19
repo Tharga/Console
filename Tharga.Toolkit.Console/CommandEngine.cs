@@ -52,69 +52,83 @@ namespace Tharga.Toolkit.Console
 
         public void Start(string[] args)
         {
-            var commands = GetCommands(args);
-            var flags = GetFlags(args);
-
-            _commandMode = commands.Count > 0;
-
-            var commandIndex = 0;
-
-            //TODO: This is only used by the voice console. Solve that some other way!
-            //_rootCommand.Initiate();
-            
-            if (TaskRunners != null)
+            try
             {
-                Task.Run(() =>
-                {
-                    foreach (var runner in TaskRunners)
-                    {
-                        runner.Start();
-                    }
-                }, CancellationToken);
-            }
+                var commands = GetCommands(args);
+                var flags = GetFlags(args);
 
-            if (flags.Any())
-            {
-                HandleFlags(flags);
-            }
+                _commandMode = commands.Count > 0;
 
-            while (!_cancellationTokenSource.IsCancellationRequested)
-            {
-                string entry;
-                if (_commandMode)
-                {
-                    entry = GetCommandModeEntry(commands, ref commandIndex, flags);
-                }
-                else
-                {
-                    try
-                    {
-                        entry = RootCommand.QueryInput();
-                    }
-                    catch (CommandEscapeException)
-                    {
-                        continue;
-                    }
-                }
+                var commandIndex = 0;
 
-                if (!_cancellationTokenSource.IsCancellationRequested)
+                //TODO: This is only used by the voice console. Solve that some other way!
+                //_rootCommand.Initiate();
+
+                if (TaskRunners != null)
                 {
-                    if (!Execute(entry))
+                    Task.Run(() =>
                     {
-                        if (_commandMode && HasFlag(args, FlagContinueInConsoleModeIfError))
+                        foreach (var runner in TaskRunners)
                         {
-                            _commandMode = false;
+                            runner.Start();
+                        }
+                    }, CancellationToken);
+                }
+
+                if (flags.Any())
+                {
+                    HandleFlags(flags);
+                }
+
+                while (!_cancellationTokenSource.IsCancellationRequested)
+                {
+                    string entry;
+                    if (_commandMode)
+                    {
+                        entry = GetCommandModeEntry(commands, ref commandIndex, flags);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            entry = RootCommand.QueryInput();
+                        }
+                        catch (CommandEscapeException)
+                        {
                             continue;
                         }
+                    }
 
-                        break;
+                    if (!_cancellationTokenSource.IsCancellationRequested)
+                    {
+                        if (!Execute(entry))
+                        {
+                            if (_commandMode && HasFlag(args, FlagContinueInConsoleModeIfError))
+                            {
+                                _commandMode = false;
+                                continue;
+                            }
+
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (TaskRunners != null)
+                if (TaskRunners != null)
+                {
+                    Parallel.ForEach(TaskRunners, x => x.Close());
+                }
+            }
+            catch (Exception exception)
             {
-                Parallel.ForEach(TaskRunners, x => x.Close());
+                try
+                {
+                    RootCommand.Console.OutputError(exception, true);
+                }
+                catch (Exception e)
+                {
+                    System.Console.WriteLine(e.Message + " Original: " + exception.Message + " @" + exception.StackTrace);
+                }
             }
         }
 
