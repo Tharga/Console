@@ -73,7 +73,7 @@ Try
 		write-host ("Pushing package '" + $filename + "' to '" + $target + "'.") -f "green"
 		#write-host ("Executing: $nugetExe push $package -ApiKey $apiKey -Source https://www.nuget.org")
 		#iex $nugetExe push $package -ApiKey $apiKey -Source https://www.nuget.org
-		C:\TeamCity\buildAgent\tools\NuGet.CommandLine.3.5.0\tools\NuGet.exe push $package -ApiKey $apiKey -Source https://www.nuget.org
+		C:\TeamCity\buildAgent\tools\NuGet.CommandLine.4.5.0\tools\NuGet.exe push $package -ApiKey $apiKey -Source https://www.nuget.org
 	}
 	else
 	{
