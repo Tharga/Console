@@ -210,7 +210,7 @@ namespace SampleConsole
         public SomeOptionCommand()
             : base("option", "Gets a single item from a list of options.")
         {
-            RegisterQuery<Guid>("Id", "Some Id", GetSelection);
+            RegisterQuery("Id", "Some Id", GetSelection);
         }
 
         public override void Invoke(string[] param)
