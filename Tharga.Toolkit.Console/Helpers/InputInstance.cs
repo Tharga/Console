@@ -544,7 +544,14 @@ namespace Tharga.Toolkit.Console.Helpers
 
         private void MoveBufferLeft(Location currentScreenLocation, InputBuffer inputBuffer, Location startLocation)
         {
-            _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left - 1, currentScreenLocation.Top);
+            if (currentScreenLocation.Left == 0)
+            {
+                currentScreenLocation = new Location(BufferWidth, currentScreenLocation.Top - 1);
+            }
+
+            var targetLeft = currentScreenLocation.Left - 1;
+
+            _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, BufferWidth - currentScreenLocation.Left, 1, targetLeft, currentScreenLocation.Top);
 
             var done = BufferWidth - startLocation.Left;
             var line = 1;
@@ -573,7 +580,10 @@ namespace Tharga.Toolkit.Console.Helpers
                 pos -= BufferWidth;
             }
 
-            SetCursorPosition(pos, startLocation.Top + ln);
+            if(pos == BufferWidth)
+                SetCursorPosition(0, startLocation.Top + ln + 1);
+            else
+                SetCursorPosition(pos, startLocation.Top + ln);
         }
 
         private void MoveCursorRight()
