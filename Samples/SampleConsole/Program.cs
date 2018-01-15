@@ -4,12 +4,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using Castle.Core;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using log4net;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Consoles;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 using Timer = System.Timers.Timer;
 
@@ -20,6 +24,13 @@ namespace SampleConsole
         [STAThread]
         private static void Main(string[] args)
         {
+            var container = new WindsorContainer();
+            container.Register(Classes.FromAssemblyInThisApplication()
+                .IncludeNonPublicTypes()
+                .BasedOn<ICommand>()
+                .Configure(x => x.LifeStyle.Is(LifestyleType.Transient)));
+
+            var commandResolver = new CommandResolver(type => (ICommand)container.Resolve(type));
             IConsole console = null;
             try
             {
@@ -37,12 +48,12 @@ namespace SampleConsole
 
                     //Part 2. Commands
                     //NOTE: Creating the command object and registering some commands
-                    var command = new RootCommand(console);
-                    command.RegisterCommand(new SomeContainerCommand());
-                    command.RegisterCommand(new MathContainerCommand());
-                    command.RegisterCommand(new StatusCommand());
-                    command.RegisterCommand(new SomeContainerWithDisabledSubs());
-                    command.RegisterCommand(new OutputContainerCommand());
+                    var command = new RootCommand(console, commandResolver);
+                    command.RegisterCommand<SomeContainerCommand>();
+                    command.RegisterCommand<MathContainerCommand>();
+                    command.RegisterCommand<StatusCommand>();
+                    command.RegisterCommand<SomeContainerWithDisabledSubs>();
+                    command.RegisterCommand<OutputContainerCommand>();
 
                     //Part 3. Engine
                     var commandEngine = new CommandEngine(command)
@@ -134,14 +145,13 @@ namespace SampleConsole
         public SomeContainerCommand()
             : base("some")
         {
-            RegisterCommand(new SomeListCommand());
-            RegisterCommand(new SomeItemCommand());
-            RegisterCommand(new SomeOptionCommand());
-            RegisterCommand(new SomeTableCommand());
-            RegisterCommand(new SomePasswordCommand());
-            RegisterCommand(new SomeDisabledCommand());
-            RegisterCommand(new SomeEnumCommand());
-            RegisterCommand(new SomeBoolCommand());
+            RegisterCommand<SomeListCommand>();
+            RegisterCommand<SomeItemCommand>();
+            RegisterCommand<SomeOptionCommand>();
+            RegisterCommand<SomeTableCommand>();
+            RegisterCommand<SomeDisabledCommand>();
+            RegisterCommand<SomeEnumCommand>();
+            RegisterCommand<SomeBoolCommand>();
         }
 
         public override IEnumerable<HelpLine> HelpText
