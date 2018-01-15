@@ -88,6 +88,25 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             //NOTE: At this point, the buffer is moved down. The cursor is ready to output the 'value' to be written.
             //When done the buffer (ie '> ') should still be visible, and the cursor should be moved in position
 
+            ColorManager(level, textColor, textBackgroundColor, () =>
+            {
+                var corr = 0;
+                var t1 = CursorTop; //NOTE: The actual cursor location after insert... should normally be one line above the input buffer location, but if the output is exactly the sise of the width, then the buffer would have beend moved down one line too low. In this case the buffer should not moved vertically. This is calculated by the corr value.
+                try
+                {
+                    WriteLineEx(value, level);
+                    corr = CursorTop - t1 - linesToInsert;
+                }
+                finally
+                {
+                    RestoreCursor(cursorLocation.Left, intCursorLineOffset - corr);
+                    OnLinesInsertedEvent(linesToInsert);
+                }
+            });
+        }
+
+        private void ColorManager(OutputLevel level, ConsoleColor? textColor, ConsoleColor? textBackgroundColor, Action action)
+        {
             var defaultColor = ConsoleColor.White;
             var defaultBack = ConsoleColor.Black;
             if (textColor == null || textBackgroundColor == null)
@@ -111,12 +130,9 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 ConsoleManager.BackgroundColor = textBackgroundColor.Value;
             }
 
-            var corr = 0;
-            var t1 = CursorTop; //NOTE: The actual cursor location after insert... should normally be one line above the input buffer location, but if the output is exactly the sise of the width, then the buffer would have beend moved down one line too low. In this case the buffer should not moved vertically. This is calculated by the corr value.
             try
             {
-                WriteLineEx(value, level);
-                corr = CursorTop - t1 - linesToInsert;
+                action();
             }
             finally
             {
@@ -128,9 +144,6 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 {
                     ConsoleManager.BackgroundColor = defaultBack;
                 }
-
-                RestoreCursor(cursorLocation.Left, intCursorLineOffset - corr);
-                OnLinesInsertedEvent(linesToInsert);
             }
         }
 
