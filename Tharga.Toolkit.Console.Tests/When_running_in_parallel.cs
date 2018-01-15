@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Entities;
@@ -50,6 +51,8 @@ namespace Tharga.Toolkit.Console.Tests
             var console2 = new TestConsole(new FakeConsoleManager());
             var command1 = new RootCommand(console1);
             var command2 = new RootCommand(console2);
+            var commandEngine1 = new CommandEngine(command1);
+            var commandEngine2 = new CommandEngine(command2);
 
             //Act
             command1.Execute("help");
@@ -57,7 +60,7 @@ namespace Tharga.Toolkit.Console.Tests
             //Assert
             Assert.That(console1.CursorLeft, Is.EqualTo(0));
             Assert.That(console2.CursorLeft, Is.EqualTo(0));
-            Assert.That(console1.CursorTop, Is.EqualTo(1));
+            Assert.That(console1.CursorTop, Is.EqualTo(26));
             Assert.That(console2.CursorTop, Is.EqualTo(0));
         }
 
