@@ -38,8 +38,9 @@ namespace Tharga.Toolkit.Console
             RootCommand.RequestCloseEvent += (sender, e) => { Stop(); };
 
             //TODO: Try reversing the dependency, so that the root command has an engine instead of the engine having a root command.
+
             var rc = RootCommand as RootCommandBase;
-            rc?.Attach(this, null);
+            rc?.Initiate(this);
         }
 
         public IRootCommand RootCommand { get; }

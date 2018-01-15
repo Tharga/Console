@@ -21,8 +21,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public event EventHandler<WriteEventArgs> WriteEvent;
 
-        protected CommandEngine CommandEngine;
-        protected ICommandResolver CommandResolver;
+        protected RootCommandBase RootCommand;
         protected int ParamIndex;
 
         internal CommandBase(string name, string description = null, bool hidden = false)
@@ -48,10 +47,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected abstract ICommand GetHelpCommand(string paramList);
 
-        protected internal virtual void Attach(CommandEngine commandEngine, ICommandResolver commandResolver)
+        protected internal virtual void Attach(RootCommandBase rootCommand)
         {
-            CommandEngine = commandEngine;
-            CommandResolver = commandResolver;
+            if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No rootCommand provided");
+            if (RootCommand != null) throw new InvalidOperationException("The command is already attached.");
+
+            RootCommand = rootCommand;
         }
 
         public virtual bool CanExecute(out string reasonMesage)
@@ -184,7 +185,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         internal protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, bool passwordEntry)
         {
-            if (CommandEngine == null) throw new InvalidOperationException("The command engine has not been assigned yet.");
+            if (RootCommand.CommandEngine == null) throw new InvalidOperationException("The command engine has not been assigned yet.");
 
             var sel = new CommandTreeNode<T>(selection?.ToArray() ?? new CommandTreeNode<T>[] { });
             var q = GetParamByString(autoProvideValue, sel);
@@ -193,9 +194,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 return q.Key;
             }
 
-            var inputManager = CommandEngine.InputManager;
+            var inputManager = RootCommand.CommandEngine.InputManager;
             var prompt = paramName + ((!sel.Subs.Any() || paramName == Constants.Prompt) ? string.Empty : " [Tab]");
-            var response = inputManager.ReadLine(prompt, sel, allowEscape, CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null);
+            var response = inputManager.ReadLine(prompt, sel, allowEscape, RootCommand.CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null);
             return response;
         }
 
@@ -239,32 +240,38 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected void OutputError(string message)
         {
-            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Error));
+            OnWriteEvent(this, new WriteEventArgs(message, OutputLevel.Error));
         }
 
         protected void OutputWarning(string message)
         {
-            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Warning));
+            OnWriteEvent(this, new WriteEventArgs(message, OutputLevel.Warning));
         }
 
         protected void OutputInformation(string message)
         {
-            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Information));
+            OnWriteEvent(this, new WriteEventArgs(message, OutputLevel.Information));
         }
 
         protected void OutputEvent(string message)
         {
-            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Event));
+            OnWriteEvent(this, new WriteEventArgs(message, OutputLevel.Event));
         }
 
         protected void OutputDefault(string message)
         {
-            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Default));
+            OnWriteEvent(this, new WriteEventArgs(message, OutputLevel.Default));
         }
 
         protected void OutputHelp(string message)
         {
-            WriteEvent?.Invoke(this, new WriteEventArgs(message, OutputLevel.Help));
+            OnWriteEvent(this, new WriteEventArgs(message, OutputLevel.Help));
+        }
+
+        internal void OnWriteEvent(object sender, WriteEventArgs e)
+        {
+            if (WriteEvent == null) throw new InvalidOperationException($"Command {Name} has no WriteEvent listener attached.");
+            WriteEvent.Invoke(sender, e);
         }
 
         protected void OutputTable(IEnumerable<IEnumerable<string>> data)

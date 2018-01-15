@@ -11,7 +11,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
     public abstract class ContainerCommandBase : CommandBase, IContainerCommand
     {
         private readonly List<ICommand> _subCommands = new List<ICommand>();
-
         protected readonly List<Type> SubCommandTypes = new List<Type>();
 
         public IEnumerable<ICommand> SubCommands => _subCommands.OrderBy(x => x.Name);
@@ -63,6 +62,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
             _subCommands.Add(command);
 
+            command.WriteEvent += OnOutputEvent;
+
             CommandRegisteredEvent?.Invoke(this, new CommandRegisteredEventArgs(command));
         }
 
@@ -78,7 +79,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected override ICommand GetHelpCommand(string paramList)
         {
-            var helpCommand = new HelpCommand(CommandEngine);
+            var helpCommand = new HelpCommand(RootCommand.CommandEngine);
 
             var showHidden = true;
             var command = this as ICommand;
@@ -327,24 +328,30 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
         }
 
-        protected internal override void Attach(CommandEngine commandEngine, ICommandResolver commandResolver)
+        protected void OnOutputEvent(object sender, WriteEventArgs e)
         {
-            base.Attach(commandEngine, commandResolver ?? CommandResolver);
+            RootCommand.Console.Output(e);
+        }
 
-            foreach (var subCommandType in SubCommandTypes)
+        protected internal override void Attach(RootCommandBase rootCommand)
+        {
+            base.Attach(rootCommand);
+
+            if (SubCommandTypes.Any())
             {
-                var command = CommandResolver.Resolve(subCommandType);
-                var rc = this as RootCommandBase;
-                if (rc != null)
-                    rc.RegisterCommand(command);
-                else
+                if (RootCommand.CommandResolver == null) throw new InvalidOperationException("No CommandResolver has been defined.");
+
+                foreach (var subCommandType in SubCommandTypes)
+                {
+                    var command = RootCommand.CommandResolver.Resolve(subCommandType);
                     RegisterCommand(command);
+                }
             }
 
             foreach (var cmd in SubCommands)
             {
                 var c = cmd as CommandBase;
-                c?.Attach(commandEngine, CommandResolver);
+                c?.Attach(rootCommand);
             }
         }
     }

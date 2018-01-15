@@ -123,6 +123,15 @@ In this example we are using *castle windsor*.
     }
 ```
 
+You can also use this to register all commands at once.
+```
+container.Register(Classes.FromAssemblyInThisApplication()
+    .IncludeNonPublicTypes()
+    .BasedOn<ICommand>()
+    .Configure(x => x.LifeStyle.Is(LifestyleType.Transient)));
+```
+
+
 #### Adding stuff that should start automatically and run in background
 ```
     internal static class Program

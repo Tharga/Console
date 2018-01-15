@@ -19,7 +19,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 
         public override void Invoke(string[] param)
         {
-            CommandEngine.RootCommand.Console.Clear();
+            RootCommand.Console.Clear();
         }
     }
 }

@@ -54,7 +54,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected override ICommand GetHelpCommand(string paramList)
         {
-            var helpCommand = new HelpCommand(CommandEngine);
+            var helpCommand = new HelpCommand(RootCommand.CommandEngine);
             if (HelpText.Any())
             {
                 //TODO: Get the help color

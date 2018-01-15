@@ -11,6 +11,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
     public abstract class RootCommandBase : ContainerCommandBase, IRootCommand
     {
         public IConsole Console { get; }
+        internal CommandEngine CommandEngine;
+        internal ICommandResolver CommandResolver;
 
         public event EventHandler<EventArgs> RequestCloseEvent;
         public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
@@ -48,49 +50,19 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public new void RegisterCommand(ICommand command)
         {
-            command.WriteEvent += OnOutputEvent;
-
-            var containerCommand = command as IContainerCommand;
-            if (containerCommand != null)
-            {
-                containerCommand.CommandRegisteredEvent += (sender, e) => { e.Command.WriteEvent += OnOutputEvent; };
-            }
-
             base.RegisterCommand(command);
-
-            RegisterSubCommand(containerCommand);
         }
-
-        private void RegisterSubCommand(IContainerCommand containerCommand)
-        {
-            if (containerCommand != null)
-            {
-                foreach (var c in containerCommand.SubCommands)
-                {
-                    c.WriteEvent += OnOutputEvent;
-
-                    //Recursive registering of sub-container commands
-                    var sc = c as IContainerCommand;
-                    if (sc != null)
-                    {
-                        RegisterSubCommand(sc);
-                    }
-                }
-            }
-        }
-
-        private void OnOutputEvent(object sender, WriteEventArgs e)
-        {
-            Console.Output(e);
-        }
-
+        
         protected virtual void OnExceptionOccuredEvent(ExceptionOccuredEventArgs e)
         {
             var handler = ExceptionOccuredEvent;
             handler?.Invoke(this, e);
         }
 
-        public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("Root command."); } }
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield return new HelpLine("Root command."); }
+        }
 
         public string QueryInput()
         {
@@ -118,7 +90,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     var sub = ac.GetOptionList().ToArray();
                     subTree = Build(sub, l).ToArray();
                 }
-                
+
                 yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command.Name}" : command.Name, command.Name, subTree);
             }
         }
@@ -205,6 +177,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
 
             return false;
+        }
+
+        protected internal void Initiate(CommandEngine commandEngine)
+        {
+            CommandEngine = commandEngine;
+            Attach(this);
         }
     }
 }
