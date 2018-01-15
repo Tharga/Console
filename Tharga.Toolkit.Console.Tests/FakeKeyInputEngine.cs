@@ -9,6 +9,10 @@ namespace Tharga.Toolkit.Console.Tests
     {
         private readonly BlockingCollection<ConsoleKeyInfo> _buffer = new BlockingCollection<ConsoleKeyInfo>();
 
+        public FakeKeyInputEngine()
+        {            
+        }
+
         public FakeKeyInputEngine(ConsoleKey[] data)
         {
             foreach (var item in data)
@@ -27,7 +31,24 @@ namespace Tharga.Toolkit.Console.Tests
 
         public void Feed(string data)
         {
-            throw new NotImplementedException();
+            foreach (char item in data)
+            {
+                ConsoleKey key;
+                switch (item)
+                {
+                    case '\r':
+                        key = ConsoleKey.Enter;
+                        break;
+                    case '\n':
+                        continue;
+                    default:
+                        if (!Enum.TryParse(item.ToString(), true, out key))
+                            throw new InvalidOperationException($"Cannot parse {item} to key.");
+                        break;
+                }
+                var k = new ConsoleKeyInfo(item, key, false, false, false);
+                _buffer.Add(k);
+            }
         }
 
         public ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
