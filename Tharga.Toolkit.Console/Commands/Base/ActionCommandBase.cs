@@ -37,7 +37,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected T GetParam<T>(string key)
         {
-            return (T)Convert.ChangeType(_param[key], typeof(T));
+            return (T)_param[key];
         }
 
         internal override void InvokeEx(string[] param)
