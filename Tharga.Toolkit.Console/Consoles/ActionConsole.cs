@@ -20,6 +20,7 @@ namespace Tharga.Toolkit.Console.Consoles
 
         public override void Output(IOutput output)
         {
+            if (output == null) throw new ArgumentNullException(nameof(output), "No output parameter provided.");
             _action(new ActionConsoleOutput(output.Message, output.OutputLevel));
         }
 
