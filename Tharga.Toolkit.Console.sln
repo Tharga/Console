@@ -12,9 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{ACE8284E-D920-4FFA-96D1-0C340A02A935}"
 	ProjectSection(SolutionItems) = preProject
 		Build\AssemblyVersionInfo.cs = Build\AssemblyVersionInfo.cs
-		Build\build.tasks = Build\build.tasks
-		Build\ci.msbuild = Build\ci.msbuild
-		Build\release.msbuild = Build\release.msbuild
+		Build\PushNuget.ps1 = Build\PushNuget.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{131058FA-7B3E-4359-8A5B-D9BD80D161F6}"
