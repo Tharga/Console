@@ -11,7 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleConsole", "Samples\Sa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{ACE8284E-D920-4FFA-96D1-0C340A02A935}"
 	ProjectSection(SolutionItems) = preProject
-		Build\AssemblyVersionInfo.cs = Build\AssemblyVersionInfo.cs
 		Build\PushNuget.ps1 = Build\PushNuget.ps1
 	EndProjectSection
 EndProject
@@ -32,14 +31,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.CI|Any CPU.ActiveCfg = CI|Any CPU
-		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.CI|Any CPU.Build.0 = CI|Any CPU
+		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.CI|Any CPU.ActiveCfg = Release|Any CPU
+		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.CI|Any CPU.Build.0 = Release|Any CPU
 		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49F7E0AC-7856-415A-B760-300A37BC9889}.CI|Any CPU.ActiveCfg = CI|Any CPU
-		{49F7E0AC-7856-415A-B760-300A37BC9889}.CI|Any CPU.Build.0 = CI|Any CPU
+		{49F7E0AC-7856-415A-B760-300A37BC9889}.CI|Any CPU.ActiveCfg = Release|Any CPU
+		{49F7E0AC-7856-415A-B760-300A37BC9889}.CI|Any CPU.Build.0 = Release|Any CPU
 		{49F7E0AC-7856-415A-B760-300A37BC9889}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{49F7E0AC-7856-415A-B760-300A37BC9889}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49F7E0AC-7856-415A-B760-300A37BC9889}.Release|Any CPU.ActiveCfg = Release|Any CPU

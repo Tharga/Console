@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using log4net;
+//using log4net;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;

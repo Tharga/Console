@@ -193,39 +193,40 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private Position GetStoredPosition()
         {
-            try
-            {
-                var val = Registry.GetSetting("StartPosition", Registry.RegistryHKey.CurrentUser, string.Empty);
-                if (string.IsNullOrEmpty(val)) return null;
-                var segments = val.Split('|');
-                var pos = segments[0].Split(':');
-                var wz = segments[1].Split(':');
-                var bz = segments[2].Split(':');
-                return new Position(int.Parse(pos[0]), int.Parse(pos[1]), int.Parse(wz[0]), int.Parse(wz[1]), int.Parse(bz[0]), int.Parse(bz[1]));
-            }
-            catch (Exception exception)
-            {
-                OutputError(exception);
-                return null;
-            }
+            //try
+            //{
+            //    var val = Registry.GetSetting("StartPosition", Registry.RegistryHKey.CurrentUser, string.Empty);
+            //    if (string.IsNullOrEmpty(val)) return null;
+            //    var segments = val.Split('|');
+            //    var pos = segments[0].Split(':');
+            //    var wz = segments[1].Split(':');
+            //    var bz = segments[2].Split(':');
+            //    return new Position(int.Parse(pos[0]), int.Parse(pos[1]), int.Parse(wz[0]), int.Parse(wz[1]), int.Parse(bz[0]), int.Parse(bz[1]));
+            //}
+            //catch (Exception exception)
+            //{
+            //    OutputError(exception);
+            //    return null;
+            //}
+            return null;
         }
 
         private void StoreCurrentPosition()
         {
-            try
-            {
-                var position = GetCurrentPosition();
+            //try
+            //{
+            //    var position = GetCurrentPosition();
 
-                var val = $"{position.Left}:{position.Top}|{position.Width}:{position.Height}|{position.BufferWidth}:{position.BufferHeight}";
-                //ConsoleManager.WriteLine(val);
-                Trace.TraceInformation($"StoreCurrentPosition {val}.");
+            //    var val = $"{position.Left}:{position.Top}|{position.Width}:{position.Height}|{position.BufferWidth}:{position.BufferHeight}";
+            //    //ConsoleManager.WriteLine(val);
+            //    Trace.TraceInformation($"StoreCurrentPosition {val}.");
 
-                Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
-            }
-            catch (Exception exception)
-            {
-                OutputError(exception);
-            }
+            //    Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
+            //}
+            //catch (Exception exception)
+            //{
+            //    OutputError(exception);
+            //}
         }
 
         private void SetWidth(Position position)

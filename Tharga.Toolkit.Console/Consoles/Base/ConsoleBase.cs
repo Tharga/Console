@@ -453,7 +453,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         private static Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(string name, ConsoleColor defaultColor, ConsoleColor? defaultTextBackgroundColor)
         {
-            var colorString = ConfigurationManager.AppSettings[name + "Color"];
+            var colorString = string.Empty; //ConfigurationManager.AppSettings[name + "Color"];
             if (string.IsNullOrEmpty(colorString)) return new Tuple<ConsoleColor?, ConsoleColor?>(defaultColor, defaultTextBackgroundColor);
             var cols = colorString.Split(';');
             ConsoleColor color;
