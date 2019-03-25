@@ -100,18 +100,15 @@ namespace Tharga.Toolkit.Console
                         }
                     }
 
-                    if (!_cancellationTokenSource.IsCancellationRequested)
+                    if (!Execute(entry))
                     {
-                        if (!Execute(entry))
+                        if (_commandMode && HasFlag(args, FlagContinueInConsoleModeIfError))
                         {
-                            if (_commandMode && HasFlag(args, FlagContinueInConsoleModeIfError))
-                            {
-                                _commandMode = false;
-                                continue;
-                            }
-
-                            break;
+                            _commandMode = false;
+                            continue;
                         }
+
+                        break;
                     }
                 }
 
