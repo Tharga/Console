@@ -25,6 +25,22 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
+        public void When_typing_the_exit_command_the_command_engine_should_exit()
+        {
+            //Arrange
+            var input = new[] { ConsoleKey.E, ConsoleKey.X, ConsoleKey.I, ConsoleKey.T, ConsoleKey.Enter };
+            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
+            var console = new TestConsole(consoleManager);
+            var command = new RootCommand(console);
+
+            //Act
+            new CommandEngine(command).Start(new string[] { });
+
+            //Assert
+            Assert.True(true);
+        }
+
+        [Test]
         public void When_registering_two_commands_with_the_same_name()
         {
             //Arrange

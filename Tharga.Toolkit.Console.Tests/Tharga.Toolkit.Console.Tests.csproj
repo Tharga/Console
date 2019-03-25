@@ -62,6 +62,7 @@
     <Compile Include="Table_Formatter_tests.cs" />
     <Compile Include="Tab_command_recall_tests.cs" />
     <Compile Include="TestConsole.cs" />
+    <Compile Include="With_command_line.cs" />
     <Compile Include="When_running_engine.cs" />
     <Compile Include="When_running_engine_outside_the_buffer_height.cs" />
     <Compile Include="When_running_in_parallel.cs" />
