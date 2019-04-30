@@ -6,11 +6,15 @@
     <title>Tharga Console</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>https://github.com/poxet/tharga-console/blob/master/License.txt</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
     <projectUrl>https://github.com/poxet/tharga-console</projectUrl>
     <iconUrl>http://www.thargelion.se/Images/Logotype/Thargelion-White-Icon-48.png</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <repository url="https://github.com/poxet/tharga-console.git" />
     <description>Tharga Console is used to simplify construction of advanced console applications.</description>
     <tags>console poc posh powershell</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0" />
+    </dependencies>
   </metadata>
 </package>
