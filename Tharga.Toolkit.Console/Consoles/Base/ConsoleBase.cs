@@ -351,7 +351,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
             if (_mutedTypes.Contains(output.OutputLevel)) return;
 
-            var textColor = output.TextColor ?? ConsoleColor.White;
+            var textColor = output.TextColor; // ?? ConsoleColor.White;
             var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
             var tag = output.Tag ?? string.Empty;
             var outputLevel = output.OutputLevel;
