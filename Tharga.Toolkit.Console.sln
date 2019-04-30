@@ -3,18 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Toolkit.Console", "Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj", "{B8BD1635-042F-4EB3-8018-5CEB7302C31B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{2B08D378-9CE9-497A-96FB-BA17B13B5789}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleConsole", "Samples\SampleConsole\SampleConsole.csproj", "{49F7E0AC-7856-415A-B760-300A37BC9889}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Toolkit.Console", "Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj", "{B8BD1635-042F-4EB3-8018-5CEB7302C31B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{ACE8284E-D920-4FFA-96D1-0C340A02A935}"
 	ProjectSection(SolutionItems) = preProject
-		Build\AssemblyVersionInfo.cs = Build\AssemblyVersionInfo.cs
-		Build\build.tasks = Build\build.tasks
-		Build\ci.msbuild = Build\ci.msbuild
-		Build\release.msbuild = Build\release.msbuild
+		Build\PushNuget.ps1 = Build\PushNuget.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{131058FA-7B3E-4359-8A5B-D9BD80D161F6}"
@@ -23,9 +16,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Toolkit.Console.Log4Net", "Tharga.Toolkit.Console.Log4Net\Tharga.Toolkit.Console.Log4Net.csproj", "{FE04785F-33C8-4F0A-81ED-C7593FA8B5DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Toolkit.Console.Log4Net", "Tharga.Toolkit.Console.Log4Net\Tharga.Toolkit.Console.Log4Net.csproj", "{FE04785F-33C8-4F0A-81ED-C7593FA8B5DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Toolkit.Console.Tests", "Tharga.Toolkit.Console.Tests\Tharga.Toolkit.Console.Tests.csproj", "{35C71DC9-20D1-4AC2-A9EE-92FD27FF4AF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Toolkit.Console.Tests", "Tharga.Toolkit.Console.Tests\Tharga.Toolkit.Console.Tests.csproj", "{35C71DC9-20D1-4AC2-A9EE-92FD27FF4AF5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleCoreConsole", "SampleCoreConsole\SampleCoreConsole.csproj", "{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{BE6C5C8D-9EF4-4880-A0E7-E2FBFAADEA99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleFrameworkConsole", "SampleFrameworkConsole\SampleFrameworkConsole.csproj", "{63CE1275-CD32-4292-8774-557255BF9E19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,18 +33,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.CI|Any CPU.ActiveCfg = CI|Any CPU
-		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.CI|Any CPU.Build.0 = CI|Any CPU
+		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.CI|Any CPU.ActiveCfg = Release|Any CPU
+		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.CI|Any CPU.Build.0 = Release|Any CPU
 		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8BD1635-042F-4EB3-8018-5CEB7302C31B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49F7E0AC-7856-415A-B760-300A37BC9889}.CI|Any CPU.ActiveCfg = CI|Any CPU
-		{49F7E0AC-7856-415A-B760-300A37BC9889}.CI|Any CPU.Build.0 = CI|Any CPU
-		{49F7E0AC-7856-415A-B760-300A37BC9889}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49F7E0AC-7856-415A-B760-300A37BC9889}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49F7E0AC-7856-415A-B760-300A37BC9889}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49F7E0AC-7856-415A-B760-300A37BC9889}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FE04785F-33C8-4F0A-81ED-C7593FA8B5DA}.CI|Any CPU.ActiveCfg = Release|Any CPU
 		{FE04785F-33C8-4F0A-81ED-C7593FA8B5DA}.CI|Any CPU.Build.0 = Release|Any CPU
 		{FE04785F-33C8-4F0A-81ED-C7593FA8B5DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -58,12 +51,25 @@ Global
 		{35C71DC9-20D1-4AC2-A9EE-92FD27FF4AF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35C71DC9-20D1-4AC2-A9EE-92FD27FF4AF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35C71DC9-20D1-4AC2-A9EE-92FD27FF4AF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}.CI|Any CPU.ActiveCfg = Debug|Any CPU
+		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}.CI|Any CPU.Build.0 = Debug|Any CPU
+		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.CI|Any CPU.ActiveCfg = Release|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.CI|Any CPU.Build.0 = Release|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{49F7E0AC-7856-415A-B760-300A37BC9889} = {2B08D378-9CE9-497A-96FB-BA17B13B5789}
+		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2} = {BE6C5C8D-9EF4-4880-A0E7-E2FBFAADEA99}
+		{63CE1275-CD32-4292-8774-557255BF9E19} = {BE6C5C8D-9EF4-4880-A0E7-E2FBFAADEA99}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D7D7391C-196D-44E1-8966-28CBD0872CE5}

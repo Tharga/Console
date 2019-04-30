@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tharga.Toolkit.Console")]
+//[assembly: AssemblyTitle("Tharga.Toolkit.Console")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Thargelion AB")]
-[assembly: AssemblyProduct("Tharga.Toolkit.Console")]
+//[assembly: AssemblyConfiguration("")]
+//[assembly: AssemblyCompany("Thargelion AB")]
+//[assembly: AssemblyProduct("Tharga.Toolkit.Console")]
 [assembly: AssemblyCopyright("Copyright © Thargelion AB 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -141,19 +141,19 @@ namespace Tharga.Toolkit.Console.Helpers
                         {
                             switch (readKey.Key)
                             {
-                                case ConsoleKey.V:
-                                    var input = System.Windows.Clipboard.GetText().ToArray();
-                                    foreach (var chr in input)
-                                    {
-                                        InsertText(currentScreenLocation, chr, _inputBuffer, currentBufferPosition, _startLocation);
-                                        if (currentScreenLocation.Left == BufferWidth - 1)
-                                            currentScreenLocation = new Location(0, currentScreenLocation.Top + 1);
-                                        else
-                                            currentScreenLocation = new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top);
-                                        currentBufferPosition++;
-                                    }
+                                //case ConsoleKey.V:
+                                //    var input = System.Windows.Clipboard.GetText().ToArray();
+                                //    foreach (var chr in input)
+                                //    {
+                                //        InsertText(currentScreenLocation, chr, _inputBuffer, currentBufferPosition, _startLocation);
+                                //        if (currentScreenLocation.Left == BufferWidth - 1)
+                                //            currentScreenLocation = new Location(0, currentScreenLocation.Top + 1);
+                                //        else
+                                //            currentScreenLocation = new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top);
+                                //        currentBufferPosition++;
+                                //    }
 
-                                    break;
+                                //    break;
 
                                 case ConsoleKey.LeftArrow:
                                     if (currentBufferPosition > 0)

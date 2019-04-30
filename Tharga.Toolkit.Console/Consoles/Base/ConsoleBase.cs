@@ -347,21 +347,27 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public virtual void Output(IOutput output)
         {
+            if (output == null) throw new ArgumentNullException(nameof(output), "No output parameter provided.");
+
             if (_mutedTypes.Contains(output.OutputLevel)) return;
 
-            var message = output.TrunkateSingleLine ? output.Message.Truncate() : output.Message;
+            var textColor = output.TextColor; // ?? ConsoleColor.White;
+            var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
+            var tag = output.Tag ?? string.Empty;
+            var outputLevel = output.OutputLevel;
+            var message = output.TrunkateSingleLine ? (output.Message?.Truncate() ?? string.Empty) : output.Message;
 
             lock (CommandEngine.SyncRoot)
             {
-                if (string.IsNullOrEmpty(output.Tag))
+                if (string.IsNullOrEmpty(tag))
                 {
                     if (output.LineFeed)
                     {
-                        WriteLine(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
+                        WriteLine(message, outputLevel, textColor, textBackgroundColor);
                     }
                     else
                     {
-                        Write(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
+                        Write(message, outputLevel, textColor, textBackgroundColor);
                     }
                 }
                 else
@@ -369,29 +375,29 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                     if (output.LineFeed)
                     {
                         var location = new Location(0, CursorTop).Move(ConsoleManager, message);
-                        WriteLine(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
-                        SetLocation(output.Tag, location);
+                        WriteLine(message, outputLevel, textColor, textBackgroundColor);
+                        SetLocation(tag, location);
                     }
                     else
                     {
-                        if (!_tagLocalLocation.ContainsKey(output.Tag))
+                        if (!_tagLocalLocation.ContainsKey(tag))
                         {
                             var location = new Location(0, CursorTop).Move(ConsoleManager, message);
-                            WriteLine(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
-                            SetLocation(output.Tag, location);
+                            WriteLine(message, outputLevel, textColor, textBackgroundColor);
+                            SetLocation(tag, location);
                         }
                         else
                         {
-                            var prognosis = _tagLocalLocation[output.Tag].Move(ConsoleManager, message);
-                            for(var i = 0; i < prognosis.Top - _tagLocalLocation[output.Tag].Top; i++)
+                            var prognosis = _tagLocalLocation[tag].Move(ConsoleManager, message);
+                            for(var i = 0; i < prognosis.Top - _tagLocalLocation[tag].Top; i++)
                             {
                                 WriteLine(string.Empty);
                             }
 
                             var cursor = new Location(CursorLeft, CursorTop);
-                            SetCursorPosition(_tagLocalLocation[output.Tag].Left, _tagLocalLocation[output.Tag].Top);
-                            Write(message, output.OutputLevel, output.TextColor, output.TextBackgroundColor);
-                            _tagLocalLocation[output.Tag] = new Location(CursorLeft, CursorTop);
+                            SetCursorPosition(_tagLocalLocation[tag].Left, _tagLocalLocation[tag].Top);
+                            Write(message, outputLevel, textColor, textBackgroundColor);
+                            _tagLocalLocation[tag] = new Location(CursorLeft, CursorTop);
                             SetCursorPosition(cursor.Left, cursor.Top);
                         }
                     }
@@ -447,7 +453,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         private static Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(string name, ConsoleColor defaultColor, ConsoleColor? defaultTextBackgroundColor)
         {
-            var colorString = ConfigurationManager.AppSettings[name + "Color"];
+            var colorString = string.Empty; //ConfigurationManager.AppSettings[name + "Color"];
             if (string.IsNullOrEmpty(colorString)) return new Tuple<ConsoleColor?, ConsoleColor?>(defaultColor, defaultTextBackgroundColor);
             var cols = colorString.Split(';');
             ConsoleColor color;

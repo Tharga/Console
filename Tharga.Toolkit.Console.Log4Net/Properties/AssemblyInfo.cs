@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tharga.Toolkit.Log4Net")]
+//[assembly: AssemblyTitle("Tharga.Toolkit.Log4Net")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Thargelion AB")]
-[assembly: AssemblyProduct("Tharga.Toolkit.Log4Net")]
+//[assembly: AssemblyConfiguration("")]
+//[assembly: AssemblyCompany("Thargelion AB")]
+//[assembly: AssemblyProduct("Tharga.Toolkit.Log4Net")]
 [assembly: AssemblyCopyright("Copyright © Thargelion AB 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
