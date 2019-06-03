@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
 using Tharga.Toolkit.Console.Consoles.Base;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -14,13 +10,13 @@ namespace Tharga.Toolkit.Console.Consoles
     public class ClientConsole : ConsoleBase
     {
         private readonly IConsoleConfiguration _consoleConfiguration;
-        private bool _topMost;
+        //private bool _topMost;
 
         public ClientConsole(IConsoleConfiguration consoleConfiguration = null)
             : base(new ConsoleManager(System.Console.Out, System.Console.In))
         {
             _consoleConfiguration = consoleConfiguration ?? new ConsoleConfiguration();
-            _initialPosition = GetCurrentPosition();
+            //_initialPosition = GetCurrentPosition();
             Initiate(_consoleConfiguration);
 
             //NOTE: Listen to the dispose event, and trigger a location save before exit.
@@ -35,233 +31,233 @@ namespace Tharga.Toolkit.Console.Consoles
 
         private void Initiate(IConsoleConfiguration consoleConfiguration)
         {
-            SetLocation(consoleConfiguration);
-            SetTopMost(consoleConfiguration.TopMost);
+            //SetLocation(consoleConfiguration);
+            //SetTopMost(consoleConfiguration.TopMost);
             SetColor(consoleConfiguration);
             UpdateTitle(consoleConfiguration);
             ShowSplashScreen(consoleConfiguration);
             ShowAssemblyInfo(consoleConfiguration);
         }
 
-        public bool TopMost
-        {
-            get { return _topMost; }
-            set { SetTopMost(value); }
-        }
+        //public bool TopMost
+        //{
+        //    get { return _topMost; }
+        //    set { SetTopMost(value); }
+        //}
 
-        private void SetLocation(IConsoleConfiguration consoleConfiguration)
-        {
-            try
-            {
-                var hWnd = Process.GetCurrentProcess().MainWindowHandle;
-                Position position = null;
+        //private void SetLocation(IConsoleConfiguration consoleConfiguration)
+        //{
+        //    try
+        //    {
+        //        var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+        //        Position position = null;
 
-                if (consoleConfiguration.StartPosition != null)
-                {
-                    position = consoleConfiguration.StartPosition;
-                }
-                else if (consoleConfiguration.RememberStartPosition)
-                {
-                    position = GetStoredPosition();
-                    //SubscribeToWindowMovement(hWnd);
-                }
+        //        if (consoleConfiguration.StartPosition != null)
+        //        {
+        //            position = consoleConfiguration.StartPosition;
+        //        }
+        //        else if (consoleConfiguration.RememberStartPosition)
+        //        {
+        //            position = GetStoredPosition();
+        //            //SubscribeToWindowMovement(hWnd);
+        //        }
 
-                if (position != null)
-                {
-                    SetWidth(position);
-                    SetHeight(position);
+        //        if (position != null)
+        //        {
+        //            SetWidth(position);
+        //            SetHeight(position);
 
-                    //NOTE: Do not send the window where it cannot be visible. For instance, a secondary screen that is no longer attached.
-                    var monitors = GetMonitors();
-                    var monitor = VisibleOnMonitor(monitors, Offset(position, GetWindowRect()));
-                    if (monitor != null)
-                    {
-                        //OutputEvent($"SetWindowPos {position.Left}:{position.Top}");
-                        ExecuteApiFunction(() => SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW));
-                    }
-                    else
-                    {
-                        OutputWarning("Console location is reset since it otherwise sould appear outside the visual field.");
-                    }
+        //            //NOTE: Do not send the window where it cannot be visible. For instance, a secondary screen that is no longer attached.
+        //            var monitors = GetMonitors();
+        //            var monitor = VisibleOnMonitor(monitors, Offset(position, GetWindowRect()));
+        //            if (monitor != null)
+        //            {
+        //                //OutputEvent($"SetWindowPos {position.Left}:{position.Top}");
+        //                ExecuteApiFunction(() => SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW));
+        //            }
+        //            else
+        //            {
+        //                OutputWarning("Console location is reset since it otherwise sould appear outside the visual field.");
+        //            }
 
-                    //NOTE: This code will reposition the window at startup, the same way as a "scr reset" command will.
-                    //For some reason the "SetWindowPos" does not act the same when run directly when the console starts as it does when the application has been running for a short while.
-                    //Task.Run(() =>
-                    //{
-                    //    var monitors = GetMonitors();
-                    //    var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
-                    //    if (monitor != null)
-                    //    {
-                    //        System.Threading.Thread.Sleep(1000);
-                    //        SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
-                    //    }
-                    //    else
-                    //    {
-                    //        OutputWarning("Console location is reset since it otherwise sould appear outside the visual field.");
-                    //    }
-                    //});
+        //            //NOTE: This code will reposition the window at startup, the same way as a "scr reset" command will.
+        //            //For some reason the "SetWindowPos" does not act the same when run directly when the console starts as it does when the application has been running for a short while.
+        //            //Task.Run(() =>
+        //            //{
+        //            //    var monitors = GetMonitors();
+        //            //    var monitor = VisibleOnMonitor(monitors, Offset(GetWindowRect(), position));
+        //            //    if (monitor != null)
+        //            //    {
+        //            //        System.Threading.Thread.Sleep(1000);
+        //            //        SetWindowPos(hWnd, IntPtr.Zero, position.Left, position.Top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+        //            //    }
+        //            //    else
+        //            //    {
+        //            //        OutputWarning("Console location is reset since it otherwise sould appear outside the visual field.");
+        //            //    }
+        //            //});
 
-                    //System.Console.WriteLine($"set: {position.Left}:{position.Top} {hWnd}");
-                }
-            }
-            catch (Exception exception)
-            {
-                OutputError(exception);
-            }
-        }
+        //            //System.Console.WriteLine($"set: {position.Left}:{position.Top} {hWnd}");
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        OutputError(exception);
+        //    }
+        //}
 
-        private void ExecuteApiFunction(Action apiCall)
-        {
-            try
-            {
-                var pre = GetLastError();
-                apiCall();
-                var aft = GetLastError();
-                if (aft != 0 && pre != aft)
-                {
-                    OutputWarning($"Error {aft} when calling api method {apiCall.Method.Name}.");
-                }
-            }
-            catch (Exception exception)
-            {
-                OutputError(exception);
-            }
-        }
+        //private void ExecuteApiFunction(Action apiCall)
+        //{
+        //    try
+        //    {
+        //        var pre = GetLastError();
+        //        apiCall();
+        //        var aft = GetLastError();
+        //        if (aft != 0 && pre != aft)
+        //        {
+        //            OutputWarning($"Error {aft} when calling api method {apiCall.Method.Name}.");
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        OutputError(exception);
+        //    }
+        //}
 
-        private RECT Offset(Position position, RECT rect)
-        {
-            var height = rect.Bottom - rect.Top;
-            var width = rect.Right - rect.Left;
+        //private RECT Offset(Position position, RECT rect)
+        //{
+        //    var height = rect.Bottom - rect.Top;
+        //    var width = rect.Right - rect.Left;
 
-            var rct = new RECT
-            {
-                Top = position.Top,
-                Left = position.Left,
-                Bottom = position.Top + height,
-                Right = position.Left + width,
-            };
-            return rct;
-        }
+        //    var rct = new RECT
+        //    {
+        //        Top = position.Top,
+        //        Left = position.Left,
+        //        Bottom = position.Top + height,
+        //        Right = position.Left + width,
+        //    };
+        //    return rct;
+        //}
 
-        private int? VisibleOnMonitor(List<RECT> monitors, RECT window)
-        {
-            var index = 0;
-            foreach (var monitor in monitors)
-            {
-                if (window.Right >= monitor.Left && (window.Left <= monitor.Right && (window.Bottom >= monitor.Top && window.Top <= monitor.Bottom)))
-                {
-                    return index;
-                }
+        //private int? VisibleOnMonitor(List<RECT> monitors, RECT window)
+        //{
+        //    var index = 0;
+        //    foreach (var monitor in monitors)
+        //    {
+        //        if (window.Right >= monitor.Left && (window.Left <= monitor.Right && (window.Bottom >= monitor.Top && window.Top <= monitor.Bottom)))
+        //        {
+        //            return index;
+        //        }
 
-                index++;
-            }
+        //        index++;
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
-        private List<RECT> GetMonitors()
-        {
-            var monitors = new List<RECT>();
-            MonitorEnumProc callback = (IntPtr hDesktop, IntPtr hdc, ref RECT prect, int d) => { monitors.Add(prect); return true; };
-            ExecuteApiFunction(() => EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, callback, 0));
-            return monitors;
-        }
+        //private List<RECT> GetMonitors()
+        //{
+        //    var monitors = new List<RECT>();
+        //    MonitorEnumProc callback = (IntPtr hDesktop, IntPtr hdc, ref RECT prect, int d) => { monitors.Add(prect); return true; };
+        //    ExecuteApiFunction(() => EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, callback, 0));
+        //    return monitors;
+        //}
 
-        private Position GetCurrentPosition()
-        {
-            var rct = GetWindowRect();
-            return new Position(rct.Left, rct.Top, ConsoleManager.WindowWidth, ConsoleManager.WindowHeight, ConsoleManager.BufferWidth, ConsoleManager.BufferHeight);
-        }
+        //private Position GetCurrentPosition()
+        //{
+        //    var rct = GetWindowRect();
+        //    return new Position(rct.Left, rct.Top, ConsoleManager.WindowWidth, ConsoleManager.WindowHeight, ConsoleManager.BufferWidth, ConsoleManager.BufferHeight);
+        //}
 
-        private RECT GetWindowRect()
-        {
-            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+        //private RECT GetWindowRect()
+        //{
+        //    var hWnd = Process.GetCurrentProcess().MainWindowHandle;
 
-            var rct = new RECT();
-            ExecuteApiFunction(() => GetWindowRect(hWnd, out rct));
+        //    var rct = new RECT();
+        //    ExecuteApiFunction(() => GetWindowRect(hWnd, out rct));
 
-            //Trace.TraceInformation($"GetWindowRect {hWnd} {rct.Left}:{rct.Top}.");
-            //OutputEvent($"GetWindowRect {hWnd} {rct.Left}:{rct.Top}.");
+        //    //Trace.TraceInformation($"GetWindowRect {hWnd} {rct.Left}:{rct.Top}.");
+        //    //OutputEvent($"GetWindowRect {hWnd} {rct.Left}:{rct.Top}.");
 
-            //var wp = new WINDOWPLACEMENT();
-            //GetWindowPlacement(hWnd, ref wp);
-            //ExecuteApiFunction();
-            //System.Console.WriteLine($"get: {wp.rcNormalPosition.Left}:{wp.rcNormalPosition.Top}");
+        //    //var wp = new WINDOWPLACEMENT();
+        //    //GetWindowPlacement(hWnd, ref wp);
+        //    //ExecuteApiFunction();
+        //    //System.Console.WriteLine($"get: {wp.rcNormalPosition.Left}:{wp.rcNormalPosition.Top}");
 
-            return rct;
-        }
+        //    return rct;
+        //}
 
-        private Position GetStoredPosition()
-        {
-            //try
-            //{
-            //    var val = Registry.GetSetting("StartPosition", Registry.RegistryHKey.CurrentUser, string.Empty);
-            //    if (string.IsNullOrEmpty(val)) return null;
-            //    var segments = val.Split('|');
-            //    var pos = segments[0].Split(':');
-            //    var wz = segments[1].Split(':');
-            //    var bz = segments[2].Split(':');
-            //    return new Position(int.Parse(pos[0]), int.Parse(pos[1]), int.Parse(wz[0]), int.Parse(wz[1]), int.Parse(bz[0]), int.Parse(bz[1]));
-            //}
-            //catch (Exception exception)
-            //{
-            //    OutputError(exception);
-            //    return null;
-            //}
-            return null;
-        }
+        //private Position GetStoredPosition()
+        //{
+        //    //try
+        //    //{
+        //    //    var val = Registry.GetSetting("StartPosition", Registry.RegistryHKey.CurrentUser, string.Empty);
+        //    //    if (string.IsNullOrEmpty(val)) return null;
+        //    //    var segments = val.Split('|');
+        //    //    var pos = segments[0].Split(':');
+        //    //    var wz = segments[1].Split(':');
+        //    //    var bz = segments[2].Split(':');
+        //    //    return new Position(int.Parse(pos[0]), int.Parse(pos[1]), int.Parse(wz[0]), int.Parse(wz[1]), int.Parse(bz[0]), int.Parse(bz[1]));
+        //    //}
+        //    //catch (Exception exception)
+        //    //{
+        //    //    OutputError(exception);
+        //    //    return null;
+        //    //}
+        //    return null;
+        //}
 
-        private void StoreCurrentPosition()
-        {
-            //try
-            //{
-            //    var position = GetCurrentPosition();
+        //private void StoreCurrentPosition()
+        //{
+        //    //try
+        //    //{
+        //    //    var position = GetCurrentPosition();
 
-            //    var val = $"{position.Left}:{position.Top}|{position.Width}:{position.Height}|{position.BufferWidth}:{position.BufferHeight}";
-            //    //ConsoleManager.WriteLine(val);
-            //    Trace.TraceInformation($"StoreCurrentPosition {val}.");
+        //    //    var val = $"{position.Left}:{position.Top}|{position.Width}:{position.Height}|{position.BufferWidth}:{position.BufferHeight}";
+        //    //    //ConsoleManager.WriteLine(val);
+        //    //    Trace.TraceInformation($"StoreCurrentPosition {val}.");
 
-            //    Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
-            //}
-            //catch (Exception exception)
-            //{
-            //    OutputError(exception);
-            //}
-        }
+        //    //    Registry.SetSetting("StartPosition", val, Registry.RegistryHKey.CurrentUser);
+        //    //}
+        //    //catch (Exception exception)
+        //    //{
+        //    //    OutputError(exception);
+        //    //}
+        //}
 
-        private void SetWidth(Position position)
-        {
-            try
-            {
-                if (position.Width != null && position.Width.Value > 0)
-                    ConsoleManager.WindowWidth = position.Width.Value;
+        //private void SetWidth(Position position)
+        //{
+        //    try
+        //    {
+        //        if (position.Width != null && position.Width.Value > 0)
+        //            ConsoleManager.WindowWidth = position.Width.Value;
 
-                if (position.BufferWidth != null)
-                    ConsoleManager.BufferWidth = position.BufferWidth.Value;
-                else if (ConsoleManager.WindowWidth > 0)
-                    ConsoleManager.BufferWidth = ConsoleManager.WindowWidth;
-            }
-            catch (Exception exception)
-            {
-                OutputError(exception);
-            }
-        }
+        //        if (position.BufferWidth != null)
+        //            ConsoleManager.BufferWidth = position.BufferWidth.Value;
+        //        else if (ConsoleManager.WindowWidth > 0)
+        //            ConsoleManager.BufferWidth = ConsoleManager.WindowWidth;
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        OutputError(exception);
+        //    }
+        //}
 
-        private void SetHeight(Position position)
-        {
-            try
-            {
-                if (position.Height != null)
-                    ConsoleManager.WindowHeight = position.Height.Value;
+        //private void SetHeight(Position position)
+        //{
+        //    try
+        //    {
+        //        if (position.Height != null)
+        //            ConsoleManager.WindowHeight = position.Height.Value;
 
-                if (position.BufferHeight != null)
-                    ConsoleManager.BufferHeight = position.BufferHeight.Value;
-            }
-            catch (Exception exception)
-            {
-                OutputError(exception);
-            }
-        }
+        //        if (position.BufferHeight != null)
+        //            ConsoleManager.BufferHeight = position.BufferHeight.Value;
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        OutputError(exception);
+        //    }
+        //}
 
         private void SetColor(IConsoleConfiguration consoleConfiguration)
         {
@@ -304,117 +300,117 @@ namespace Tharga.Toolkit.Console.Consoles
             }
         }
 
-        private void SetTopMost(bool value)
-        {
-            if (value == _topMost) return;
-            _topMost = value;
+        //private void SetTopMost(bool value)
+        //{
+        //    if (value == _topMost) return;
+        //    _topMost = value;
 
-            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
-            if (value)
-            {
-                ExecuteApiFunction(() => SetWindowPos(hWnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE));
-            }
-            else
-            {
-                ExecuteApiFunction(() => SetWindowPos(hWnd, new IntPtr(HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE));
-            }
-        }
+        //    var hWnd = Process.GetCurrentProcess().MainWindowHandle;
+        //    if (value)
+        //    {
+        //        ExecuteApiFunction(() => SetWindowPos(hWnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE));
+        //    }
+        //    else
+        //    {
+        //        ExecuteApiFunction(() => SetWindowPos(hWnd, new IntPtr(HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE));
+        //    }
+        //}
 
-        protected internal override string GetInfo()
-        {
-            var sb = new StringBuilder();
+        //protected internal override string GetInfo()
+        //{
+        //    var sb = new StringBuilder();
 
-            var current = GetCurrentPosition();
-            if (current != null)
-                sb.Append($"Current position: {current.Left}:{current.Top}\n");
-            else
-                sb.Append($"Current position: n/a\n");
+        //    var current = GetCurrentPosition();
+        //    if (current != null)
+        //        sb.Append($"Current position: {current.Left}:{current.Top}\n");
+        //    else
+        //        sb.Append($"Current position: n/a\n");
 
-            var stored = GetStoredPosition();
-            if (stored != null)
-                sb.Append($"Stored position: {stored.Left}:{stored.Top} (path: {Registry.GetFullPath(null)})");
-            else
-                sb.Append($"Stored position: n/a (path: {Registry.GetFullPath(null)})");
+        //    var stored = GetStoredPosition();
+        //    if (stored != null)
+        //        sb.Append($"Stored position: {stored.Left}:{stored.Top} (path: {Registry.GetFullPath(null)})");
+        //    else
+        //        sb.Append($"Stored position: n/a (path: {Registry.GetFullPath(null)})");
 
-            return sb.ToString();
-        }
+        //    return sb.ToString();
+        //}
 
-        protected internal override string SavePosition()
-        {
-            StoreCurrentPosition();
-            return GetInfo();
-        }
+        //protected internal override string SavePosition()
+        //{
+        //    StoreCurrentPosition();
+        //    return GetInfo();
+        //}
 
-        protected internal override void Reset()
-        {
-            Registry.ClearAllSettings();
-            ConsoleManager.Clear();
+        //protected internal override void Reset()
+        //{
+        //    Registry.ClearAllSettings();
+        //    ConsoleManager.Clear();
 
-            var consoleConfiguration = new ConsoleConfiguration
-            {
-                BackgroundColor = _consoleConfiguration.BackgroundColor,
-                RememberStartPosition = _consoleConfiguration.RememberStartPosition,
-                TopMost = _consoleConfiguration.TopMost,
-                SplashScreen = _consoleConfiguration.SplashScreen,
-                Title = _consoleConfiguration.Title,
-                DefaultTextColor = _consoleConfiguration.DefaultTextColor,
-                ShowAssemblyInfo = _consoleConfiguration.ShowAssemblyInfo,
-                StartPosition = _consoleConfiguration.StartPosition ?? _initialPosition ?? new Position(100, 100),
-            };
+        //    var consoleConfiguration = new ConsoleConfiguration
+        //    {
+        //        BackgroundColor = _consoleConfiguration.BackgroundColor,
+        //        RememberStartPosition = _consoleConfiguration.RememberStartPosition,
+        //        TopMost = _consoleConfiguration.TopMost,
+        //        SplashScreen = _consoleConfiguration.SplashScreen,
+        //        Title = _consoleConfiguration.Title,
+        //        DefaultTextColor = _consoleConfiguration.DefaultTextColor,
+        //        ShowAssemblyInfo = _consoleConfiguration.ShowAssemblyInfo,
+        //        //StartPosition = _consoleConfiguration.StartPosition ?? _initialPosition ?? new Position(100, 100),
+        //    };
 
-            Initiate(consoleConfiguration);
-        }
+        //    Initiate(consoleConfiguration);
+        //}
 
         #region User32
 
-        private const int HWND_TOPMOST = -1;
-        private static readonly int HWND_NOTOPMOST = -2;
-        private const int SWP_NOMOVE = 0x0002;
-        private const int SWP_NOSIZE = 0x0001;
-        private const short SWP_NOZORDER = 0X4;
-        private const int SWP_SHOWWINDOW = 0x0040;
+        //private const int HWND_TOPMOST = -1;
+        //private static readonly int HWND_NOTOPMOST = -2;
+        //private const int SWP_NOMOVE = 0x0002;
+        //private const int SWP_NOSIZE = 0x0001;
+        //private const short SWP_NOZORDER = 0X4;
+        //private const int SWP_SHOWWINDOW = 0x0040;
 
-        public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
-        private delegate bool MonitorEnumProc(IntPtr hDesktop, IntPtr hdc, ref RECT pRect, int dwData);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
+        //public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+        //private delegate bool MonitorEnumProc(IntPtr hDesktop, IntPtr hdc, ref RECT pRect, int dwData);
 
         //[DllImport("user32.dll", SetLastError = true)]
-        //static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int Width, int Height, bool Repaint);
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        //private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
 
-        [DllImport("user32", SetLastError = true)]
-        private static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lpRect, MonitorEnumProc callback, int dwData);
+        ////[DllImport("user32.dll", SetLastError = true)]
+        ////static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int Width, int Height, bool Repaint);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+        //[DllImport("user32", SetLastError = true)]
+        //private static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lpRect, MonitorEnumProc callback, int dwData);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+        //[DllImport("user32.dll", SetLastError = true)]
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        //private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
+        //[DllImport("user32.dll", SetLastError = true)]
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        //internal static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
 
-        [DllImport("kernel32.dll")]
-        static extern uint GetLastError();
+        //[DllImport("user32.dll", SetLastError = true)]
+        //public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
 
-        public struct RECT
-        {
-            public int Left; // x position of upper-left corner
-            public int Top; // y position of upper-left corner
-            public int Right; // x position of lower-right corner
-            public int Bottom; // y position of lower-right corner
-        }
+        //[DllImport("kernel32.dll")]
+        //static extern uint GetLastError();
 
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct Pt
-        {
-            public int X;
-            public int Y;
-        }
+        //public struct RECT
+        //{
+        //    public int Left; // x position of upper-left corner
+        //    public int Top; // y position of upper-left corner
+        //    public int Right; // x position of lower-right corner
+        //    public int Bottom; // y position of lower-right corner
+        //}
+
+        //[StructLayout(LayoutKind.Sequential)]
+        //internal struct Pt
+        //{
+        //    public int X;
+        //    public int Y;
+        //}
 
         //internal struct Rc
         //{
@@ -424,25 +420,25 @@ namespace Tharga.Toolkit.Console.Consoles
         //    public int Height;
         //}
 
-        [Serializable]
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct WINDOWPLACEMENT
-        {
-            public int length;
-            public int flags;
-            public ShowWindowCommands showCmd;
-            public Pt ptMinPosition;
-            public Pt ptMaxPosition;
-            public RECT rcNormalPosition;
-        }
+        //[Serializable]
+        //[StructLayout(LayoutKind.Sequential)]
+        //internal struct WINDOWPLACEMENT
+        //{
+        //    public int length;
+        //    public int flags;
+        //    public ShowWindowCommands showCmd;
+        //    public Pt ptMinPosition;
+        //    public Pt ptMaxPosition;
+        //    public RECT rcNormalPosition;
+        //}
 
-        internal enum ShowWindowCommands : int
-        {
-            Hide = 0,
-            Normal = 1,
-            Minimized = 2,
-            Maximized = 3,
-        }
+        //internal enum ShowWindowCommands : int
+        //{
+        //    Hide = 0,
+        //    Normal = 1,
+        //    Minimized = 2,
+        //    Maximized = 3,
+        //}
 
         //private const int HWND_TOPMOST = -1;
         //private const int SWP_NOMOVE = 0x0002;
@@ -451,51 +447,51 @@ namespace Tharga.Toolkit.Console.Consoles
         #endregion
         #region  Show and hide console
 
-        public static void ShowConsoleWindow()
-        {
-            var handle = GetConsoleWindow();
+        //public static void ShowConsoleWindow()
+        //{
+        //    var handle = GetConsoleWindow();
 
-            if (handle == IntPtr.Zero)
-            {
-                AllocConsole();
-            }
-            else
-            {
-                ShowWindow(handle, SW_SHOW);
-            }
-        }
+        //    if (handle == IntPtr.Zero)
+        //    {
+        //        AllocConsole();
+        //    }
+        //    else
+        //    {
+        //        ShowWindow(handle, SW_SHOW);
+        //    }
+        //}
 
-        public static void HideConsoleWindow()
-        {
-            var handle = GetConsoleWindow();
+        //public static void HideConsoleWindow()
+        //{
+        //    var handle = GetConsoleWindow();
 
-            ShowWindow(handle, SW_HIDE);
-        }
+        //    ShowWindow(handle, SW_HIDE);
+        //}
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool AllocConsole();
+        //[DllImport("kernel32.dll", SetLastError = true)]
+        //static extern bool AllocConsole();
 
-        [DllImport("kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
+        //[DllImport("kernel32.dll")]
+        //static extern IntPtr GetConsoleWindow();
 
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        //[DllImport("user32.dll")]
+        //static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        const int SW_HIDE = 0;
-        const int SW_SHOW = 5;
+        //const int SW_HIDE = 0;
+        //const int SW_SHOW = 5;
 
         #endregion
         #region Window movement subscription
 
-        private IntPtr _target;
-        private uint _processId, _threadId;
-        private readonly Position _initialPosition;
+        //private IntPtr _target;
+        //private uint _processId, _threadId;
+        //private readonly Position _initialPosition;
 
-        const int EVENT_SYSTEM_MOVESIZESTART = 0x000A; //An MSAA event indicating that a window is being moved or resized.
-        const int EVENT_SYSTEM_MOVESIZEEND = 0x000B; //An MSAA event indicating that the movement or resizing of a window is finished.
-        const int EVENT_SYSTEM_MINIMIZESTART = 0x0016; //An MSAA event indicating that a window object is about to be minimized or maximized.
-        const int EVENT_SYSTEM_MINIMIZEEND = 0x0017; //An MSAA event indicating that a window object was minimized or maximized.
-        const int EVENT_SYSTEM_FOREGROUND = 0x0003; //An MSAA event indicating that the foreground window changed.
+        //const int EVENT_SYSTEM_MOVESIZESTART = 0x000A; //An MSAA event indicating that a window is being moved or resized.
+        //const int EVENT_SYSTEM_MOVESIZEEND = 0x000B; //An MSAA event indicating that the movement or resizing of a window is finished.
+        //const int EVENT_SYSTEM_MINIMIZESTART = 0x0016; //An MSAA event indicating that a window object is about to be minimized or maximized.
+        //const int EVENT_SYSTEM_MINIMIZEEND = 0x0017; //An MSAA event indicating that a window object was minimized or maximized.
+        //const int EVENT_SYSTEM_FOREGROUND = 0x0003; //An MSAA event indicating that the foreground window changed.
 
         /*
 Global Const $EVENT_SYSTEM_SOUND = 0x0001 ;An MSAA event indicating that a sound was played.
@@ -548,49 +544,49 @@ Global $EVENT_Max = $EVENT_SYSTEM_DRAGDROPEND
 
              */
 
-        private void SubscribeToWindowMovement(IntPtr hWnd)
-        {
-            _target = hWnd;
+        //private void SubscribeToWindowMovement(IntPtr hWnd)
+        //{
+        //    _target = hWnd;
 
-            Trace.TraceInformation($"SubscribeToWindowMovement({hWnd})");
+        //    Trace.TraceInformation($"SubscribeToWindowMovement({hWnd})");
 
-            //TODO: Fis this line of code, it makes the console crash when running on some versions of windows.
-            ExecuteApiFunction(() => SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, _target, WindowMoved, _processId, _threadId, 0));
-        }
+        //    //TODO: Fis this line of code, it makes the console crash when running on some versions of windows.
+        //    ExecuteApiFunction(() => SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZEEND, _target, WindowMoved, _processId, _threadId, 0));
+        //}
 
-        private void WindowHook(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
-        {
-            if (hwnd != _target)
-                return;
+        //private void WindowHook(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        //{
+        //    if (hwnd != _target)
+        //        return;
 
-            //if (eventType == 32779 ||eventType == 32780)
-            //    return;
+        //    //if (eventType == 32779 ||eventType == 32780)
+        //    //    return;
 
-            Trace.TraceInformation($"Hook on {hwnd}, event {eventType}.");
-        }
+        //    Trace.TraceInformation($"Hook on {hwnd}, event {eventType}.");
+        //}
 
-        private void WindowMoved(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
-        {
-            Trace.TraceInformation($"WindowMoved eventType={eventType} hwnd={hwnd} _target={_target}.");
-            try
-            {
-                if (hwnd != _target)
-                    return;
+        //private void WindowMoved(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        //{
+        //    Trace.TraceInformation($"WindowMoved eventType={eventType} hwnd={hwnd} _target={_target}.");
+        //    try
+        //    {
+        //        if (hwnd != _target)
+        //            return;
 
-                switch (eventType)
-                {
-                    case EVENT_SYSTEM_MOVESIZESTART:
-                        break;
-                    case EVENT_SYSTEM_MOVESIZEEND:
-                        StoreCurrentPosition();
-                        break;
-                }
-            }
-            catch (Exception exception)
-            {
-                OutputError(exception);
-            }
-        }
+        //        switch (eventType)
+        //        {
+        //            case EVENT_SYSTEM_MOVESIZESTART:
+        //                break;
+        //            case EVENT_SYSTEM_MOVESIZEEND:
+        //                StoreCurrentPosition();
+        //                break;
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        OutputError(exception);
+        //    }
+        //}
 
         #endregion
     }
