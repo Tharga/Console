@@ -15,6 +15,8 @@ namespace Tharga.Toolkit.Console.Consoles
         {
         }
 
+        public override bool SupportsInput => false;
+
         public override void Output(IOutput output)
         {
         }

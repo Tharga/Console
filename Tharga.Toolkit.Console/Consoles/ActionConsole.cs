@@ -18,6 +18,8 @@ namespace Tharga.Toolkit.Console.Consoles
             _action = action;
         }
 
+        public override bool SupportsInput => false;
+
         public override void Output(IOutput output)
         {
             if (output == null) throw new ArgumentNullException(nameof(output), "No output parameter provided.");

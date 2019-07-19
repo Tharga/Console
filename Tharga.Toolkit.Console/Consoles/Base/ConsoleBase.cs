@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -36,6 +35,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public int CursorLeft => ConsoleManager.CursorLeft;
         public int CursorTop => ConsoleManager.CursorTop;
+        public virtual bool SupportsInput => true;
         public int BufferWidth => ConsoleManager.BufferWidth;
         public int BufferHeight => ConsoleManager.BufferHeight;
 

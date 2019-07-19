@@ -1,11 +1,34 @@
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Helpers
 {
+    internal class KeyInputEngine2 : IKeyInputEngine
+    {
+        private readonly TextReader _textReader;
+
+        public KeyInputEngine2(TextReader textReader)
+        {
+            _textReader = textReader;
+        }
+
+        public void Feed(string data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
+        {
+            var buffer = new char[1];
+            var c = _textReader.Read(buffer, 0, 1);
+            return new ConsoleKeyInfo(buffer[0], ConsoleKey.A, false, false, false);
+        }
+    }
+
     internal class KeyInputEngine : IKeyInputEngine
     {
         private readonly BlockingCollection<ConsoleKeyInfo> _buffer = new BlockingCollection<ConsoleKeyInfo>();

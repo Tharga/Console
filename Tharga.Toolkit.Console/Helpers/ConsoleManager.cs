@@ -64,14 +64,21 @@ namespace Tharga.Toolkit.Console.Helpers
         {
             get
             {
+                var defaultWidth = 80;
                 try
                 {
+                    if (System.Console.BufferWidth == 0)
+                    {
+                        Trace.TraceError($"Console buffer width is 0, using {defaultWidth} instead.");
+                        return defaultWidth;
+                    }
+
                     return System.Console.BufferWidth;
                 }
                 catch (IOException exception)
                 {
-                    Trace.TraceError($"Cannot get console buffer width. Using 80 as default. {exception.Message}");
-                    return 80;
+                    Trace.TraceError($"Cannot get console buffer width. Using {defaultWidth} as default. {exception.Message}");
+                    return defaultWidth;
                 }
             }
             set { System.Console.BufferWidth = value; }
@@ -148,14 +155,21 @@ namespace Tharga.Toolkit.Console.Helpers
         {
             get
             {
+                var defaultHeight = 300;
                 try
                 {
+                    if (System.Console.BufferHeight == 0)
+                    {
+                        Trace.TraceError($"Console buffer height is 0, using {defaultHeight} instead.");
+                        return defaultHeight;
+                    }
+
                     return System.Console.BufferHeight;
                 }
                 catch (IOException exception)
                 {
-                    Trace.TraceError($"Cannot get console buffer height. Using 80 as default. {exception.Message}");
-                    return 300;
+                    Trace.TraceError($"Cannot get console buffer height. Using {defaultHeight} as default. {exception.Message}");
+                    return defaultHeight;
                 }
             }
             set { System.Console.BufferHeight = value; }
@@ -182,6 +196,10 @@ namespace Tharga.Toolkit.Console.Helpers
             catch (ArgumentOutOfRangeException exception)
             {
                 Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
+                throw;
+            }
+            catch (Exception exception)
+            {
                 throw;
             }
         }

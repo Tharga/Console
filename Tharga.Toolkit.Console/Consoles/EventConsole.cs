@@ -17,6 +17,8 @@ namespace Tharga.Toolkit.Console.Consoles
         {
         }
 
+        public override bool SupportsInput => false;
+
         public override void Output(IOutput output)
         {
             OutputEvent?.Invoke(this,new OutputEventArgs(output.Message, output.OutputLevel));

@@ -10,6 +10,7 @@ namespace Tharga.Toolkit.Console.Interfaces
         event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
         int CursorLeft { get; }
         int CursorTop { get; }
+        bool SupportsInput { get; }
         ConsoleKeyInfo ReadKey(CancellationToken cancellationToken);
         void Clear();
         void SetCursorPosition(int left, int top);

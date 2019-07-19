@@ -26,7 +26,9 @@ namespace SampleConsole
                 //Part 1. Console.
                 using (
                     //NOTE: Enable the type of console you want to use for the sample.
-                    console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
+                    console = new DockerConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
+                //console = new ClientConsole2(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
+                //console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
                 //console = new VoiceConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
                 //console = new NullConsole();
                 //console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });

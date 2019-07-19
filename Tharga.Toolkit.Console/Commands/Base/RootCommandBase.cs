@@ -66,6 +66,15 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public string QueryInput()
         {
+            if (!Console.SupportsInput)
+            {
+                while (!RootCommand.CommandEngine.CancellationToken.IsCancellationRequested)
+                {
+                    System.Threading.Thread.Sleep(1000);
+                }
+                return null;
+            }
+
             var tabTree = Build(SubCommands, null);
             return QueryParam(Constants.Prompt, null, tabTree, false, false);
         }

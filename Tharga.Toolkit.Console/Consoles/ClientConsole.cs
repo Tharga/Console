@@ -283,7 +283,9 @@ namespace Tharga.Toolkit.Console.Consoles
         private void ShowSplashScreen(IConsoleConfiguration consoleConfiguration)
         {
             if (string.IsNullOrEmpty(consoleConfiguration.SplashScreen))
+            {
                 return;
+            }
 
             Output(new WriteEventArgs(consoleConfiguration.SplashScreen));
         }
@@ -295,7 +297,7 @@ namespace Tharga.Toolkit.Console.Consoles
                 var info = AssemblyHelper.GetAssemblyInfo();
                 if (!string.IsNullOrEmpty(info))
                 {
-                    Output(new WriteEventArgs(info, OutputLevel.Default));
+                    Output(new WriteEventArgs(info));
                 }
             }
         }
@@ -445,6 +447,7 @@ namespace Tharga.Toolkit.Console.Consoles
         //private const int SWP_NOSIZE = 0x0001;
 
         #endregion
+
         #region  Show and hide console
 
         //public static void ShowConsoleWindow()
@@ -481,6 +484,7 @@ namespace Tharga.Toolkit.Console.Consoles
         //const int SW_SHOW = 5;
 
         #endregion
+
         #region Window movement subscription
 
         //private IntPtr _target;
