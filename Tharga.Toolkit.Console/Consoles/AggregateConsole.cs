@@ -34,13 +34,17 @@ namespace Tharga.Toolkit.Console.Consoles
         {
             var enumerable = commandKeys as string[] ?? commandKeys.ToArray();
             foreach (var console in _consoles)
+            {
                 console.Initiate(enumerable);
+            }
         }
 
         public override void Output(IOutput output)
         {
             foreach (var console in _consoles)
+            {
                 console.Output(output);
+            }
         }
     }
 }

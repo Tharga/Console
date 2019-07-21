@@ -33,7 +33,9 @@ namespace Tharga.Toolkit.Console.Helpers
         private static int[] GetColumnSizes(string[][] data)
         {
             if (data.Length == 0)
+            {
                 return new int[] { };
+            }
 
             var length = new int[data.Max(y => y.Length)];
             foreach (var line in data)

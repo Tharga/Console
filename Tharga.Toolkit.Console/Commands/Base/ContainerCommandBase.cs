@@ -13,16 +13,17 @@ namespace Tharga.Toolkit.Console.Commands.Base
         private readonly List<ICommand> _subCommands = new List<ICommand>();
         protected readonly List<Type> SubCommandTypes = new List<Type>();
 
-        public IEnumerable<ICommand> SubCommands => _subCommands.OrderBy(x => x.Name);
-
-        public event EventHandler<CommandRegisteredEventArgs> CommandRegisteredEvent;
-
         protected ContainerCommandBase(string name, string description = null, bool hidden = false)
             : base(name, description, hidden)
         {
         }
 
-        public override IEnumerable<HelpLine> HelpText { get { yield break; } }
+        public IEnumerable<ICommand> SubCommands => _subCommands.OrderBy(x => x.Name);
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield break; }
+        }
 
         protected virtual IEnumerable<string> CommandKeys
         {
@@ -51,6 +52,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 }
             }
         }
+
+        public event EventHandler<CommandRegisteredEventArgs> CommandRegisteredEvent;
 
         protected void RegisterCommand<T>()
         {
@@ -154,7 +157,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             {
                 if (command.Name == "root")
                 {
-                    helpCommand.AddLine($"Type \"help\" for more information.", foreColor: ConsoleColor.DarkYellow);
+                    helpCommand.AddLine("Type \"help\" for more information.", foreColor: ConsoleColor.DarkYellow);
                 }
                 else
                 {
@@ -209,6 +212,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                             {
                                 return false;
                             }
+
                             return canExecute;
                         });
                     }
@@ -233,6 +237,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                             {
                                 return false;
                             }
+
                             return canExecute;
                         });
                     }
@@ -242,7 +247,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (anyHidden)
             {
                 helpCommand.AddLine(string.Empty);
-                helpCommand.AddLine($"* = Hidden command");
+                helpCommand.AddLine("* = Hidden command");
             }
         }
 
@@ -275,7 +280,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
             {
                 return GetHelpCommand(subCommand + " details");
             }
-            else if (entry.EndsWith("-?") || entry.EndsWith("/?") || entry.EndsWith("--help"))
+
+            if (entry.EndsWith("-?") || entry.EndsWith("/?") || entry.EndsWith("--help"))
             {
                 entry = entry.Replace("-?", string.Empty);
                 entry = entry.Replace("/?", string.Empty);
@@ -291,7 +297,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
             //If there is a command, take the next parameter and look for a sub-command
             string nextSub;
-            var x1 = ((ContainerCommandBase)command).GetSubCommand(subCommand, out nextSub);
+            var x1 = ((ContainerCommandBase) command).GetSubCommand(subCommand, out nextSub);
             if (x1 == null) return command; //If there is no sub-command, return the command found
             subCommand = nextSub;
             if (x1 is ActionCommandBase)
@@ -301,15 +307,16 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 var b = command.CanExecute(out reasonMessage);
                 if (a && !b)
                 {
-                    ((ActionCommandBase)x1).SetCanExecute(() => $"{reasonMessage} Inherited by parent.");
+                    ((ActionCommandBase) x1).SetCanExecute(() => $"{reasonMessage} Inherited by parent.");
                 }
             }
+
             return x1;
         }
 
         public override void Invoke(string[] param)
         {
-            var enumerable = param as string[] ?? param.ToArray();
+            var enumerable = param ?? param.ToArray();
             var paramList = enumerable.ToParamString(); //TODO: Do not convert, use input all the way
 
             string reasonMessage;

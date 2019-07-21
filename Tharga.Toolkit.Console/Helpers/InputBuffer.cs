@@ -7,12 +7,11 @@ namespace Tharga.Toolkit.Console.Helpers
 {
     internal class InputBuffer
     {
-        public event EventHandler<InputBufferChangedEventArgs> InputBufferChangedEvent;
-
         private readonly List<char> _inputBuffer = new List<char>();
 
         public int Length => _inputBuffer.Count;
         public bool IsEmpty => !_inputBuffer.Any();
+        public event EventHandler<InputBufferChangedEventArgs> InputBufferChangedEvent;
 
         protected virtual void InvokeInputBufferChangedEvent()
         {

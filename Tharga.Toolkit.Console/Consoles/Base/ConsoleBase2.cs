@@ -18,19 +18,29 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
             ConsoleManager = consoleManager;
             ConsoleManager.Intercept(this);
-            
+
             if (Instance.Console == null)
             {
                 Instance.Setup(this, _cancellationTokenSource.Token);
             }
         }
 
+        public int CursorLeft => ConsoleManager.CursorLeft;
+        public int CursorTop => ConsoleManager.CursorTop;
+        public virtual bool SupportsInput => true;
+        public int BufferWidth => ConsoleManager.BufferWidth;
+        public int BufferHeight => ConsoleManager.BufferHeight;
+
         public virtual void Output(IOutput output)
         {
             if (output.LineFeed)
+            {
                 ConsoleManager.WriteLine(output.Message);
+            }
             else
+            {
                 ConsoleManager.Write(output.Message);
+            }
         }
 
         public void OutputError(Exception exception, bool includeStackTrace = false)
@@ -55,11 +65,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public event EventHandler<PushBufferDownEventArgs> PushBufferDownEvent;
         public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
-        public int CursorLeft => ConsoleManager.CursorLeft;
-        public int CursorTop => ConsoleManager.CursorTop;
-        public virtual bool SupportsInput => true;
-        public int BufferWidth => ConsoleManager.BufferWidth;
-        public int BufferHeight => ConsoleManager.BufferHeight;
+
         public ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
             var consoleKeyInfo = ConsoleManager.KeyInputEngine.ReadKey(cancellationToken);
@@ -98,6 +104,11 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         }
 
         public void Close()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OutputEvent(string message)
         {
             throw new NotImplementedException();
         }

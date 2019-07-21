@@ -12,25 +12,20 @@ namespace Tharga.Toolkit.Console.Helpers
 {
     internal class InputInstance : IDisposable
     {
+        private static readonly Dictionary<string, List<string>> _commandHistory = new Dictionary<string, List<string>>();
+
+        private static int _currentBufferLineCount;
         private readonly object _locationLock = new object();
-        private bool _finished;
         private readonly string _paramName;
         private readonly char? _passwordChar;
 
         private readonly IConsole _console;
-        private static readonly Dictionary<string, List<string>> _commandHistory = new Dictionary<string, List<string>>();
+        private readonly CancellationToken _cancellationToken;
+        private bool _finished;
         private int _commandHistoryIndex = -1;
         private Location _startLocation;
         private object _selection;
-
-        private static int _currentBufferLineCount;
-        private static int _cursorLineOffset;
         private InputBuffer _inputBuffer;
-        private readonly CancellationToken _cancellationToken;
-
-        //TODO: Theese values should be read from the instance, not as a static value!
-        public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
-        public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
         public InputInstance(IConsole console, string paramName, char? passwordChar, CancellationToken cancellationToken)
         {
@@ -45,6 +40,15 @@ namespace Tharga.Toolkit.Console.Helpers
             _console.LinesInsertedEvent += LinesInsertedEvent;
             _startLocation = new Location(CursorLeft, CursorTop);
         }
+
+        //TODO: Theese values should be read from the instance, not as a static value!
+        public static int CurrentBufferLineCount
+        {
+            get { return _currentBufferLineCount == 0 ? 1 : _currentBufferLineCount + 1; }
+            private set { _currentBufferLineCount = value; }
+        }
+
+        public static int CursorLineOffset { get; set; }
 
         private int CursorLeft => _console.CursorLeft;
         private int CursorTop => _console.CursorTop;
@@ -68,7 +72,9 @@ namespace Tharga.Toolkit.Console.Helpers
 
             //Step3: Insert lines
             for (var i = 0; i < e.LineCount; i++)
+            {
                 System.Console.WriteLine(string.Empty);
+            }
 
             //Step4: Move cursor back to position
             SetCursorPosition(location.Left, location.Top - 1);
@@ -124,7 +130,7 @@ namespace Tharga.Toolkit.Console.Helpers
                             }
                         }
 
-                        var currentBufferPosition = ((currentScreenLocation.Top - _startLocation.Top) * BufferWidth) + currentScreenLocation.Left - _startLocation.Left;
+                        var currentBufferPosition = (currentScreenLocation.Top - _startLocation.Top) * BufferWidth + currentScreenLocation.Left - _startLocation.Left;
                         //Debug.WriteLine($"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}");
                         //System.Console.Title = $"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}";
                         if (currentBufferPosition < 0)
@@ -161,9 +167,13 @@ namespace Tharga.Toolkit.Console.Helpers
                                         var leftOfCursor = _inputBuffer.ToString().Substring(0, currentBufferPosition).TrimEnd(' ');
                                         var last = leftOfCursor.LastIndexOf(' ');
                                         if (last != -1)
+                                        {
                                             SetCursorPosition(last + _startLocation.Left + 1, CursorTop);
+                                        }
                                         else
+                                        {
                                             SetCursorPosition(_startLocation.Left, CursorTop);
+                                        }
                                     }
 
                                     break;
@@ -173,7 +183,10 @@ namespace Tharga.Toolkit.Console.Helpers
                                     if (l2 != -1)
                                     {
                                         while (_inputBuffer.ToString().Length > l2 + 1 && _inputBuffer.ToString()[l2 + 1] == ' ')
+                                        {
                                             l2++;
+                                        }
+
                                         SetCursorPosition(l2 + _startLocation.Left + 1, CursorTop);
                                     }
                                     else
@@ -222,7 +235,7 @@ namespace Tharga.Toolkit.Console.Helpers
                                     if (currentBufferPosition == _inputBuffer.Length) continue;
                                     MoveBufferLeft(new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top), _inputBuffer, _startLocation);
                                     _inputBuffer.RemoveAt(currentBufferPosition);
-                                    CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                    CurrentBufferLineCount = (int) Math.Ceiling((decimal) (_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                     break;
 
                                 case ConsoleKey.Backspace:
@@ -230,7 +243,7 @@ namespace Tharga.Toolkit.Console.Helpers
                                     MoveBufferLeft(currentScreenLocation, _inputBuffer, _startLocation);
                                     _inputBuffer.RemoveAt(currentBufferPosition - 1);
                                     MoveCursorLeft();
-                                    CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                    CurrentBufferLineCount = (int) Math.Ceiling((decimal) (_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                     break;
 
                                 case ConsoleKey.Escape:
@@ -241,9 +254,6 @@ namespace Tharga.Toolkit.Console.Helpers
                                             _console.Output(new WriteEventArgs(null));
                                             throw new CommandEscapeException();
                                         }
-                                    }
-                                    else
-                                    {
                                     }
 
                                     Clear(_inputBuffer);
@@ -260,9 +270,13 @@ namespace Tharga.Toolkit.Console.Helpers
                                         else
                                         {
                                             if (readKey.Modifiers == ConsoleModifiers.Shift)
+                                            {
                                                 s = selection.Previous(_selection as CommandTreeNode<T>);
+                                            }
                                             else
+                                            {
                                                 s = selection.Next(_selection as CommandTreeNode<T>);
+                                            }
                                         }
 
                                         if (s != null)
@@ -270,7 +284,7 @@ namespace Tharga.Toolkit.Console.Helpers
                                             Clear(_inputBuffer);
                                             _console.Output(new WriteEventArgs(s.FullValuePath, OutputLevel.Default, null, null, false, false));
                                             _inputBuffer.Add(s.FullValuePath);
-                                            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                            CurrentBufferLineCount = (int) Math.Ceiling((decimal) (_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                             _selection = s;
                                         }
                                     }
@@ -336,7 +350,9 @@ namespace Tharga.Toolkit.Console.Helpers
         private bool IsOutputKey(ConsoleKeyInfo readKey)
         {
             if (readKey.Modifiers == ConsoleModifiers.Control)
+            {
                 return false;
+            }
 
             switch (readKey.Key)
             {
@@ -449,7 +465,7 @@ namespace Tharga.Toolkit.Console.Helpers
             _console.Output(new WriteEventArgs(new string(' ', inputBuffer.Length), OutputLevel.Default, null, null, false, false));
             MoveCursorToStart(_startLocation);
             inputBuffer.Clear();
-            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+            CurrentBufferLineCount = (int) Math.Ceiling((decimal) (inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
         }
 
         private T GetResponse<T>(CommandTreeNode<T> selection, InputBuffer inputBuffer)
@@ -472,8 +488,8 @@ namespace Tharga.Toolkit.Console.Helpers
                     {
                         try
                         {
-                            response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
-                            _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+                            response = (T) TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
+                            _console.Output(new WriteEventArgs(null));
                         }
                         catch (FormatException exception)
                         {
@@ -491,14 +507,14 @@ namespace Tharga.Toolkit.Console.Helpers
                             throw new EntryException("There are several matches to the entry.");
                         }
 
-                        _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+                        _console.Output(new WriteEventArgs(null));
                         response = items.Single().Key;
                     }
                 }
             }
             else
             {
-                response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
+                response = (T) TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
                 _console.Output(new WriteEventArgs(null));
             }
 
@@ -520,7 +536,7 @@ namespace Tharga.Toolkit.Console.Helpers
             var bufferToTheRight = BufferWidth - currentScreenLocation.Left - startLocation.Left + 1;
             if (charsToTheRight > bufferToTheRight)
             {
-                var lines = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + startLocation.Left + 1) / BufferWidth);
+                var lines = (int) Math.Ceiling((decimal) (inputBuffer.Length - BufferWidth + startLocation.Left + 1) / BufferWidth);
                 for (var i = lines; i > 0; i--)
                 {
                     _console.MoveBufferArea(0, currentScreenLocation.Top + i - 1 + 1, BufferWidth - 1, 1, 1, currentScreenLocation.Top + i - 1 + 1);
@@ -531,7 +547,7 @@ namespace Tharga.Toolkit.Console.Helpers
             _console.MoveBufferArea(currentScreenLocation.Left, currentScreenLocation.Top, BufferWidth - currentScreenLocation.Left, 1, currentScreenLocation.Left + 1, currentScreenLocation.Top);
             if (input == 9)
             {
-                _console.Output(new WriteEventArgs(((char)26).ToString(CultureInfo.InvariantCulture), OutputLevel.Default, null, null, false, false));
+                _console.Output(new WriteEventArgs(((char) 26).ToString(CultureInfo.InvariantCulture), OutputLevel.Default, null, null, false, false));
             }
             else
             {
@@ -539,7 +555,7 @@ namespace Tharga.Toolkit.Console.Helpers
             }
 
             inputBuffer.Insert(currentBufferPosition, input.ToString(CultureInfo.InvariantCulture));
-            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+            CurrentBufferLineCount = (int) Math.Ceiling((decimal) (inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
         }
 
         private void MoveBufferLeft(Location currentScreenLocation, InputBuffer inputBuffer, Location startLocation)
@@ -580,10 +596,14 @@ namespace Tharga.Toolkit.Console.Helpers
                 pos -= BufferWidth;
             }
 
-            if(pos == BufferWidth)
+            if (pos == BufferWidth)
+            {
                 SetCursorPosition(0, startLocation.Top + ln + 1);
+            }
             else
+            {
                 SetCursorPosition(pos, startLocation.Top + ln);
+            }
         }
 
         private void MoveCursorRight()

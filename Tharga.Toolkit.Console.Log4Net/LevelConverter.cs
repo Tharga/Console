@@ -8,13 +8,19 @@ namespace Tharga.Toolkit.Console.Log4Net
         public static OutputLevel ToLevel(this Level level)
         {
             if (level <= Level.Debug)
+            {
                 return OutputLevel.Default;
+            }
 
             if (level <= Level.Info)
+            {
                 return OutputLevel.Information;
+            }
 
             if (level <= Level.Warn)
+            {
                 return OutputLevel.Warning;
+            }
 
             return OutputLevel.Error;
         }

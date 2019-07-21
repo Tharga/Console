@@ -8,7 +8,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
     internal class UnmuteCommand : ActionCommandBase
     {
         public UnmuteCommand()
-            : base("unmute", "Unmute output.", false)
+            : base("unmute", "Unmute output.")
         {
         }
 

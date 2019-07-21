@@ -10,11 +10,12 @@ namespace Tharga.Toolkit.Console.Helpers
     {
         private static readonly Lazy<VariableStore> _instanceLoader = new Lazy<VariableStore>(() => new VariableStore());
         private readonly List<Variable> _variables = new List<Variable>();
-        public static VariableStore Instance => _instanceLoader.Value;
 
         private VariableStore()
         {
         }
+
+        public static VariableStore Instance => _instanceLoader.Value;
 
         public void Add(Variable variable)
         {
@@ -26,7 +27,7 @@ namespace Tharga.Toolkit.Console.Helpers
         {
             var var = _variables.SingleOrDefault(x => string.Compare(x.Name, value, StringComparison.InvariantCultureIgnoreCase) == 0);
             var stringVar = var.Value.ToString();
-            return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(stringVar);
+            return (T) TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(stringVar);
         }
     }
 }

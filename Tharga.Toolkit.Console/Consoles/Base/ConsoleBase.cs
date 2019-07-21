@@ -28,16 +28,16 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             }
         }
 
-        public event EventHandler<PushBufferDownEventArgs> PushBufferDownEvent;
-        public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
-        public event EventHandler<KeyReadEventArgs> KeyReadEvent;
-        protected event EventHandler<EventArgs> DisposeEvent;
-
         public int CursorLeft => ConsoleManager.CursorLeft;
         public int CursorTop => ConsoleManager.CursorTop;
         public virtual bool SupportsInput => true;
         public int BufferWidth => ConsoleManager.BufferWidth;
         public int BufferHeight => ConsoleManager.BufferHeight;
+
+        public event EventHandler<PushBufferDownEventArgs> PushBufferDownEvent;
+        public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
+        public event EventHandler<KeyReadEventArgs> KeyReadEvent;
+        protected event EventHandler<EventArgs> DisposeEvent;
 
         public virtual void Attach(IRootCommand command)
         {
@@ -113,9 +113,14 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             {
                 var dk = GetConsoleColor(level);
                 if (textColor == null)
+                {
                     textColor = dk.Item1;
+                }
+
                 if (textBackgroundColor == null)
+                {
                     textBackgroundColor = dk.Item2;
+                }
             }
 
             if (textColor != null)
@@ -140,6 +145,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 {
                     ConsoleManager.ForegroundColor = defaultColor;
                 }
+
                 if (textBackgroundColor != null)
                 {
                     ConsoleManager.BackgroundColor = defaultBack;
@@ -220,6 +226,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                     ConsoleManager?.WriteLine(line);
                 }
             }
+
             OnLineWrittenEvent(new LineWrittenEventArgs(value, level));
             return endOfTextLocation;
         }
@@ -244,15 +251,19 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             try
             {
                 if (string.IsNullOrEmpty(value))
+                {
                     return 1;
+                }
 
                 var lns = value.Split('\n');
                 var l = 0;
                 foreach (var ln in lns)
                 {
-                    l += (int)Math.Ceiling(((decimal)ln.Length + 1) / BufferWidth);
+                    l += (int) Math.Ceiling(((decimal) ln.Length + 1) / BufferWidth);
                     if (ln.Length % BufferWidth == 0 && !string.IsNullOrEmpty(ln))
+                    {
                         l--;
+                    }
                 }
 
                 return l;
@@ -295,7 +306,9 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                     var cursorMovement = CursorTop - cursorTop;
                     var linesNeeded = inputBufferLines + CursorTop + linesToInsert - ConsoleManager.BufferHeight - cursorMovement;
                     for (var i = 0; i < linesNeeded; i++)
+                    {
                         ConsoleManager?.WriteLine(null);
+                    }
 
                     MoveBufferArea(0, CursorTop - linesToInsert, BufferWidth, inputBufferLines, 0, CursorTop);
                     SetCursorPosition(0, CursorTop - inputBufferLines - linesToInsert + 1);
@@ -322,7 +335,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public void OutputDefault(string message)
         {
-            Output(new WriteEventArgs(message, OutputLevel.Default));
+            Output(new WriteEventArgs(message));
         }
 
         public void OutputWarning(string message)
@@ -355,7 +368,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
             var tag = output.Tag ?? string.Empty;
             var outputLevel = output.OutputLevel;
-            var message = output.TrunkateSingleLine ? (output.Message?.Truncate() ?? string.Empty) : output.Message;
+            var message = output.TrunkateSingleLine ? output.Message?.Truncate() ?? string.Empty : output.Message;
 
             lock (CommandEngine.SyncRoot)
             {
@@ -389,7 +402,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                         else
                         {
                             var prognosis = _tagLocalLocation[tag].Move(ConsoleManager, message);
-                            for(var i = 0; i < prognosis.Top - _tagLocalLocation[tag].Top; i++)
+                            for (var i = 0; i < prognosis.Top - _tagLocalLocation[tag].Top; i++)
                             {
                                 WriteLine(string.Empty);
                             }
@@ -408,9 +421,13 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         private void SetLocation(string tag, Location location)
         {
             if (_tagLocalLocation.ContainsKey(tag))
+            {
                 _tagLocalLocation[tag] = location;
+            }
             else
+            {
                 _tagLocalLocation.Add(tag, location);
+            }
         }
 
         public void OutputError(Exception exception, bool includeStackTrace = false)
@@ -425,7 +442,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data)
         {
-            OutputTable(new[] { title }.Union(data));
+            OutputTable(new[] {title}.Union(data));
         }
 
         protected internal Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(OutputLevel outputLevel)
@@ -462,7 +479,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 color = defaultColor;
             }
 
-            ConsoleColor? color3 = defaultTextBackgroundColor;
+            var color3 = defaultTextBackgroundColor;
             if (cols.Length > 1)
             {
                 ConsoleColor color2;

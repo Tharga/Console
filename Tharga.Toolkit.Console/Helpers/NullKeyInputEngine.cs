@@ -15,12 +15,13 @@ namespace Tharga.Toolkit.Console.Helpers
                 {
                     Thread.Sleep(10000);
                 }
+
                 return new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false);
             }).Result;
         }
 
         public void Feed(string data)
-        {            
+        {
         }
     }
 }

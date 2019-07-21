@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
@@ -10,12 +11,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 {
     public abstract class RootCommandBase : ContainerCommandBase, IRootCommand
     {
-        public IConsole Console { get; }
         internal CommandEngine CommandEngine;
         internal ICommandResolver CommandResolver;
-
-        public event EventHandler<EventArgs> RequestCloseEvent;
-        public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
 
         protected RootCommandBase(IConsole console)
             : base("root")
@@ -43,6 +40,16 @@ namespace Tharga.Toolkit.Console.Commands.Base
             CommandResolver = commandResolver;
         }
 
+        public IConsole Console { get; }
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield return new HelpLine("Root command."); }
+        }
+
+        public event EventHandler<EventArgs> RequestCloseEvent;
+        public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
+
         public new void RegisterCommand<T>()
         {
             SubCommandTypes.Add(typeof(T));
@@ -52,16 +59,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             base.RegisterCommand(command);
         }
-        
+
         protected virtual void OnExceptionOccuredEvent(ExceptionOccuredEventArgs e)
         {
             var handler = ExceptionOccuredEvent;
             handler?.Invoke(this, e);
-        }
-
-        public override IEnumerable<HelpLine> HelpText
-        {
-            get { yield return new HelpLine("Root command."); }
         }
 
         public string QueryInput()
@@ -70,8 +72,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
             {
                 while (!RootCommand.CommandEngine.CancellationToken.IsCancellationRequested)
                 {
-                    System.Threading.Thread.Sleep(1000);
+                    Thread.Sleep(1000);
                 }
+
                 return null;
             }
 
@@ -90,12 +93,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                 if (cc != null)
                 {
-                    var l = (lead != null ? (lead + " ") : "") + cc.Name;
+                    var l = (lead != null ? lead + " " : "") + cc.Name;
                     subTree = Build(cc.SubCommands, l).ToArray();
                 }
                 else if (ac != null)
                 {
-                    var l = (lead != null ? (lead + " ") : "") + ac.Name;
+                    var l = (lead != null ? lead + " " : "") + ac.Name;
                     var sub = ac.GetOptionList().ToArray();
                     subTree = Build(sub, l).ToArray();
                 }
@@ -108,7 +111,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             foreach (var command in commands[0])
             {
-                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command}" : command, command, null);
+                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command}" : command, command);
             }
         }
 
@@ -151,10 +154,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     return true;
                 }
-                else
-                {
-                    OutputWarning($"Unknown command '{entry}'.");
-                }
+
+                OutputWarning($"Unknown command '{entry}'.");
             }
             catch (CommandFailedException)
             {
@@ -167,20 +168,22 @@ namespace Tharga.Toolkit.Console.Commands.Base
             catch (SystemException exception)
             {
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception, false);
+                OutputError(exception);
             }
             catch (AggregateException exception)
             {
                 if (exception.InnerException is CommandEscapeException)
+                {
                     return false;
+                }
 
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception, false);
+                OutputError(exception);
             }
             catch (Exception exception)
             {
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception, false);
+                OutputError(exception);
                 OutputWarning("Terminating application...");
                 throw;
             }

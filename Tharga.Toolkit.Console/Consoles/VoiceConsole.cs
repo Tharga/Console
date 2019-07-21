@@ -83,7 +83,6 @@
 //            OutputInformation(e.Result.Text);
 //            ConsoleManager.KeyInputEngine.Feed(e.Result.Text);
 
-
 //            //        throw new NotImplementedException();
 //            //        //if (_reading)
 //            //        //{
@@ -323,3 +322,4 @@
 //        //    //}
 //    }
 //}
+

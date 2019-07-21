@@ -15,29 +15,29 @@ namespace Tharga.Toolkit.Console.Commands.Base
         private Dictionary<string, object> _param = new Dictionary<string, object>();
         private Func<string> _canExecute;
 
-        public override IEnumerable<HelpLine> HelpText { get { yield break; } }
-
         protected ActionCommandBase(string name, string description = null, bool hidden = false)
             : base(name, description, hidden)
         {
         }
 
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield break; }
+        }
+
         protected void RegisterQuery<T>(string key, string paramName, Func<IEnumerable<KeyValuePair<T, string>>> selectionDelegate)
         {
-            _registeredQuery.Add((param) =>
+            _registeredQuery.Add(param =>
             {
                 var result = QueryParam(paramName, param, selectionDelegate());
                 return new KeyValuePair<string, object>(key, result);
             });
-            _selectionDelegate.Add(() =>
-            {
-                return selectionDelegate().Select(x => x.Value).ToArray();
-            });
+            _selectionDelegate.Add(() => { return selectionDelegate().Select(x => x.Value).ToArray(); });
         }
 
         protected T GetParam<T>(string key)
         {
-            return (T)_param[key];
+            return (T) _param[key];
         }
 
         internal override void InvokeEx(string[] param)
@@ -47,8 +47,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
             foreach (var query in _registeredQuery)
             {
                 var result = query.Invoke(param);
-                _param.Add(result.Key, result.Value); 
+                _param.Add(result.Key, result.Value);
             }
+
             Invoke(param);
         }
 
@@ -65,6 +66,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 {
                     helpCommand.AddLine(helpText.Text, foreColor: helpText.ForeColor);
                 }
+
                 helpCommand.AddLine(string.Empty);
             }
 
@@ -89,7 +91,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected static Func<List<KeyValuePair<string, string>>> SelectionTrueFalse()
         {
-            return () => new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(true.ToString(CultureInfo.InvariantCulture), true.ToString(CultureInfo.InvariantCulture)), new KeyValuePair<string, string>(false.ToString(CultureInfo.InvariantCulture), false.ToString(CultureInfo.InvariantCulture)) };
+            return () => new List<KeyValuePair<string, string>> {new KeyValuePair<string, string>(true.ToString(CultureInfo.InvariantCulture), true.ToString(CultureInfo.InvariantCulture)), new KeyValuePair<string, string>(false.ToString(CultureInfo.InvariantCulture), false.ToString(CultureInfo.InvariantCulture))};
         }
 
         protected void AssignVariables(object entity, string paramList)
@@ -121,6 +123,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     l.Add(v);
                 }
             }
+
             yield return l;
         }
     }

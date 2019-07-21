@@ -6,7 +6,7 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Helpers
 {
-    class ConsoleManager : IConsoleManager
+    internal class ConsoleManager : IConsoleManager
     {
         private readonly TextWriter _textWriter;
         private TextWriterInterceptor _textWriterInterceptor;
@@ -19,30 +19,8 @@ namespace Tharga.Toolkit.Console.Helpers
             _textWriter = textWriter;
         }
 
-        public void Intercept(IConsole console)
-        {
-            _textWriterInterceptor = new TextWriterInterceptor(this, console);
-            _textReaderInterceptor = new TextReaderInterceptor(this, console);
-            _errorInterceptor = new TextWriterInterceptor(this, console);
-        }
-
         public Encoding Encoding => _textWriter.Encoding;
         public IKeyInputEngine KeyInputEngine => _keyInputEngine ?? (_keyInputEngine = new KeyInputEngine());
-
-        public void WriteLine(string value)
-        {
-            _textWriter.WriteLine(value);
-        }
-
-        public void Write(string value)
-        {
-            _textWriter.Write(value);
-        }
-
-        public void Dispose()
-        {
-            _textWriter.Dispose();
-        }
 
         public int CursorLeft
         {
@@ -187,6 +165,28 @@ namespace Tharga.Toolkit.Console.Helpers
             set { System.Console.BackgroundColor = value; }
         }
 
+        public void Intercept(IConsole console)
+        {
+            _textWriterInterceptor = new TextWriterInterceptor(this, console);
+            _textReaderInterceptor = new TextReaderInterceptor(this, console);
+            _errorInterceptor = new TextWriterInterceptor(this, console);
+        }
+
+        public void WriteLine(string value)
+        {
+            _textWriter.WriteLine(value);
+        }
+
+        public void Write(string value)
+        {
+            _textWriter.Write(value);
+        }
+
+        public void Dispose()
+        {
+            _textWriter.Dispose();
+        }
+
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
             try
@@ -196,10 +196,6 @@ namespace Tharga.Toolkit.Console.Helpers
             catch (ArgumentOutOfRangeException exception)
             {
                 Trace.TraceError($"{exception.Message} @{exception.StackTrace}");
-                throw;
-            }
-            catch (Exception exception)
-            {
                 throw;
             }
         }

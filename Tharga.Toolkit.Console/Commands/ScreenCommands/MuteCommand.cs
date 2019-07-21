@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         private readonly IConsole _console;
 
         public MuteCommand()
-            : base("mute", "Mute output.", false)
+            : base("mute", "Mute output.")
         {
         }
 
@@ -22,7 +22,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 
             var type = QueryParam("Type", param, EnumExtensions.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
 
-            ((ConsoleBase)_console).Mute(type);
+            ((ConsoleBase) _console).Mute(type);
         }
     }
 }

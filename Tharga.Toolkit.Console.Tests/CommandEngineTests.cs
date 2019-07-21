@@ -15,26 +15,10 @@ namespace Tharga.Toolkit.Console.Tests
         public void When_providing_the_exit_command_the_command_engine_should_exit()
         {
             //Arrange
-            var command = new RootCommand(new ClientConsole(new ConsoleConfiguration { RememberStartPosition = false }));
+            var command = new RootCommand(new ClientConsole(new ConsoleConfiguration {RememberStartPosition = false}));
 
             //Act
-            new CommandEngine(command).Start(new[] { "exit" });
-
-            //Assert
-            Assert.True(true);
-        }
-
-        [Test]
-        public void When_typing_the_exit_command_the_command_engine_should_exit()
-        {
-            //Arrange
-            var input = new[] { ConsoleKey.E, ConsoleKey.X, ConsoleKey.I, ConsoleKey.T, ConsoleKey.Enter };
-            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
-            var console = new TestConsole(consoleManager);
-            var command = new RootCommand(console);
-
-            //Act
-            new CommandEngine(command).Start(new string[] { });
+            new CommandEngine(command).Start(new[] {"exit"});
 
             //Assert
             Assert.True(true);
@@ -44,14 +28,14 @@ namespace Tharga.Toolkit.Console.Tests
         public void When_registering_two_commands_with_the_same_name()
         {
             //Arrange
-            var console = new ClientConsole(new ConsoleConfiguration { RememberStartPosition = false });
+            var console = new ClientConsole(new ConsoleConfiguration {RememberStartPosition = false});
             var command = new RootCommand(console);
             var cmd1 = new Mock<ICommand>(MockBehavior.Strict);
             cmd1.Setup(x => x.Name).Returns("A");
-            cmd1.Setup(x => x.Names).Returns(new string[]{});
+            cmd1.Setup(x => x.Names).Returns(new string[] { });
             var cmd2 = new Mock<ICommand>(MockBehavior.Strict);
             cmd2.Setup(x => x.Name).Returns("A");
-            cmd2.Setup(x => x.Names).Returns(new[] { "A" });
+            cmd2.Setup(x => x.Names).Returns(new[] {"A"});
             command.RegisterCommand(cmd1.Object);
             Exception exceptionThrown = null;
 
@@ -68,6 +52,22 @@ namespace Tharga.Toolkit.Console.Tests
             //Assert
             Assert.That(exceptionThrown, Is.Not.Null);
             Assert.That(exceptionThrown.GetType(), Is.EqualTo(typeof(CommandAlreadyRegisteredException)));
+        }
+
+        [Test]
+        public void When_typing_the_exit_command_the_command_engine_should_exit()
+        {
+            //Arrange
+            var input = new[] {ConsoleKey.E, ConsoleKey.X, ConsoleKey.I, ConsoleKey.T, ConsoleKey.Enter};
+            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
+            var console = new TestConsole(consoleManager);
+            var command = new RootCommand(console);
+
+            //Act
+            new CommandEngine(command).Start(new string[] { });
+
+            //Assert
+            Assert.True(true);
         }
     }
 }

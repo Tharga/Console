@@ -21,12 +21,6 @@ namespace Tharga.Toolkit.Console.Helpers
             _textReader = textReader;
         }
 
-        public void Dispose()
-        {
-            _textReader.Dispose();
-            _textWriter.Dispose();
-        }
-
         public Encoding Encoding => Encoding.UTF8;
 
         public int CursorLeft
@@ -111,6 +105,18 @@ namespace Tharga.Toolkit.Console.Helpers
 
         public int WindowWidth { get; set; }
         public int WindowHeight { get; set; }
+
+        public ConsoleColor ForegroundColor { get; set; }
+        public ConsoleColor BackgroundColor { get; set; }
+        public IKeyInputEngine KeyInputEngine => _keyInputEngine ?? (_keyInputEngine = new KeyInputEngine2(_textReader));
+        public string Title { get; set; }
+
+        public void Dispose()
+        {
+            _textReader.Dispose();
+            _textWriter.Dispose();
+        }
+
         public void WriteLine(string value)
         {
             _textWriter.WriteLine(value);
@@ -121,10 +127,6 @@ namespace Tharga.Toolkit.Console.Helpers
             _textWriter.Write(value);
         }
 
-        public ConsoleColor ForegroundColor { get; set; }
-        public ConsoleColor BackgroundColor { get; set; }
-        public IKeyInputEngine KeyInputEngine => _keyInputEngine ?? (_keyInputEngine = new KeyInputEngine2(_textReader));
-        public string Title { get; set; }
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
             throw new NotImplementedException();

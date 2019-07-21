@@ -5,7 +5,6 @@ using Moq;
 using NUnit.Framework;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Tests
@@ -13,44 +12,6 @@ namespace Tharga.Toolkit.Console.Tests
     [TestFixture]
     public class When_running_engine
     {
-        [Test]
-        public void Should_prompt_cursor()
-        {
-            //Arrange
-            var consoleManager = new FakeConsoleManager();
-            var console = new TestConsole(consoleManager);
-            var command = new RootCommand(console);
-            var commandEngine = new CommandEngine(command);
-
-            //Act
-            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
-
-            //Assert
-            //TODO: Fix on build server! Assert.That(consoleManager.LineOutput[0], Is.EqualTo("> "));
-            //TODO: Fix on build server! Assert.That(consoleManager.CursorTop, Is.EqualTo(0));
-            //TODO: Fix on build server! Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));
-        }
-
-        [Test]
-        public void Should_prompt_cursor_after_line_output()
-        {
-            //Arrange
-            var consoleManager = new FakeConsoleManager();
-            var console = new TestConsole(consoleManager);
-            var command = new RootCommand(console);
-            var commandEngine = new CommandEngine(command);
-            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
-
-            //Act
-            console.Output(new WriteEventArgs("A"));
-
-            //Assert
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo("A"));
-            //TODO: Fix on build server! Assert.That(consoleManager.LineOutput[1], Is.EqualTo("> "));
-            //TODO: Fix on build server! Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
-            //TODO: Fix on build server! Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));
-        }
-
         [Test]
         [Ignore("Need to fix the buffer move function in FakeConsoleManager.")]
         public void Should_keep_buffer_after_line_output()
@@ -75,6 +36,24 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
+        public void Should_prompt_cursor()
+        {
+            //Arrange
+            var consoleManager = new FakeConsoleManager();
+            var console = new TestConsole(consoleManager);
+            var command = new RootCommand(console);
+            var commandEngine = new CommandEngine(command);
+
+            //Act
+            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
+
+            //Assert
+            //TODO: Fix on build server! Assert.That(consoleManager.LineOutput[0], Is.EqualTo("> "));
+            //TODO: Fix on build server! Assert.That(consoleManager.CursorTop, Is.EqualTo(0));
+            //TODO: Fix on build server! Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));
+        }
+
+        [Test]
         public void Should_prompt_cursor_after_full_line_output()
         {
             //Arrange
@@ -89,6 +68,26 @@ namespace Tharga.Toolkit.Console.Tests
 
             //Assert
             Assert.That(consoleManager.LineOutput[0], Is.EqualTo(new string('A', console.BufferWidth)));
+            //TODO: Fix on build server! Assert.That(consoleManager.LineOutput[1], Is.EqualTo("> "));
+            //TODO: Fix on build server! Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
+            //TODO: Fix on build server! Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Should_prompt_cursor_after_line_output()
+        {
+            //Arrange
+            var consoleManager = new FakeConsoleManager();
+            var console = new TestConsole(consoleManager);
+            var command = new RootCommand(console);
+            var commandEngine = new CommandEngine(command);
+            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
+
+            //Act
+            console.Output(new WriteEventArgs("A"));
+
+            //Assert
+            Assert.That(consoleManager.LineOutput[0], Is.EqualTo("A"));
             //TODO: Fix on build server! Assert.That(consoleManager.LineOutput[1], Is.EqualTo("> "));
             //TODO: Fix on build server! Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
             //TODO: Fix on build server! Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));

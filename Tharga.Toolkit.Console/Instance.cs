@@ -31,7 +31,7 @@ namespace Tharga.Toolkit.Console
                         }
                         else if (item is WriteEventArgs)
                         {
-                            Console.Output((WriteEventArgs)item);
+                            Console.Output((WriteEventArgs) item);
                         }
                     }
                     catch (OperationCanceledException)

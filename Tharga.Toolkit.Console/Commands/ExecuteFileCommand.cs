@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 
@@ -9,7 +10,7 @@ namespace Tharga.Toolkit.Console.Commands
         private readonly RootCommandBase _rootCommand;
 
         internal ExecuteFileCommand(RootCommandBase rootCommand)
-            : base("file", "Execute script file.", false)
+            : base("file", "Execute script file.")
         {
             _rootCommand = rootCommand;
         }
@@ -31,12 +32,12 @@ namespace Tharga.Toolkit.Console.Commands
         {
             var filename = QueryParam<string>("Filename", GetParam(param, 0));
 
-            if (!System.IO.File.Exists(filename))
+            if (!File.Exists(filename))
             {
                 throw new CommandFailedException($"File {filename} does not exist.");
             }
 
-            var fileLines = System.IO.File.ReadAllLines(filename);
+            var fileLines = File.ReadAllLines(filename);
 
             OutputInformation($"There are {fileLines.Length} commands in file {filename}.");
 

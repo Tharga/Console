@@ -27,6 +27,9 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
             }
         }
 
-        public override IEnumerable<HelpLine> HelpText { get { yield return new HelpLine("Commands to manage the screen."); } }
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield return new HelpLine("Commands to manage the screen."); }
+        }
     }
 }

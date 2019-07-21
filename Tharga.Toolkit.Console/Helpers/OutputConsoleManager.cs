@@ -62,7 +62,6 @@ namespace Tharga.Toolkit.Console.Helpers
                 {
                     if (System.Console.BufferWidth == 0)
                     {
-                        Trace.TraceError($"Console buffer width is 0, using {defaultWidth} instead.");
                         return defaultWidth;
                     }
 
@@ -86,7 +85,6 @@ namespace Tharga.Toolkit.Console.Helpers
                 {
                     if (System.Console.BufferHeight == 0)
                     {
-                        Trace.TraceError($"Console buffer height is 0, using {defaultHeight} instead.");
                         return defaultHeight;
                     }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NUnit.Framework;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Entities;
@@ -9,6 +8,27 @@ namespace Tharga.Toolkit.Console.Tests
     [TestFixture]
     public class When_running_in_parallel
     {
+        [Test]
+        public void Should_work_with_commands()
+        {
+            //Arrange
+            var console1 = new TestConsole(new FakeConsoleManager());
+            var console2 = new TestConsole(new FakeConsoleManager());
+            var command1 = new RootCommand(console1);
+            var command2 = new RootCommand(console2);
+            var commandEngine1 = new CommandEngine(command1);
+            var commandEngine2 = new CommandEngine(command2);
+
+            //Act
+            command1.Execute("help");
+
+            //Assert
+            Assert.That(console1.CursorLeft, Is.EqualTo(0));
+            Assert.That(console2.CursorLeft, Is.EqualTo(0));
+            Assert.That(console1.CursorTop, Is.EqualTo(26));
+            Assert.That(console2.CursorTop, Is.EqualTo(0));
+        }
+
         [Test]
         public void Should_work_with_consoles()
         {
@@ -40,27 +60,6 @@ namespace Tharga.Toolkit.Console.Tests
             Assert.That(console1.CursorLeft, Is.EqualTo(1));
             Assert.That(console2.CursorLeft, Is.EqualTo(0));
             Assert.That(console1.CursorTop, Is.EqualTo(0));
-            Assert.That(console2.CursorTop, Is.EqualTo(0));
-        }
-
-        [Test]
-        public void Should_work_with_commands()
-        {
-            //Arrange
-            var console1 = new TestConsole(new FakeConsoleManager());
-            var console2 = new TestConsole(new FakeConsoleManager());
-            var command1 = new RootCommand(console1);
-            var command2 = new RootCommand(console2);
-            var commandEngine1 = new CommandEngine(command1);
-            var commandEngine2 = new CommandEngine(command2);
-
-            //Act
-            command1.Execute("help");
-
-            //Assert
-            Assert.That(console1.CursorLeft, Is.EqualTo(0));
-            Assert.That(console2.CursorLeft, Is.EqualTo(0));
-            Assert.That(console1.CursorTop, Is.EqualTo(26));
             Assert.That(console2.CursorTop, Is.EqualTo(0));
         }
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-//using log4net;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
@@ -12,8 +11,9 @@ using Tharga.Toolkit.Console.Consoles;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 using Timer = System.Timers.Timer;
+//using log4net;
 
-namespace SampleConsole
+namespace SampleCoreConsole
 {
     internal class Program
     {
@@ -26,18 +26,18 @@ namespace SampleConsole
                 //Part 1. Console.
                 using (
                     //NOTE: Enable the type of console you want to use for the sample.
-                    console = new DockerConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
-                //console = new ClientConsole2(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
-                //console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
-                //console = new VoiceConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
-                //console = new NullConsole();
-                //console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });
-                //console = new EventConsole();
-                //console.OutputEvent += (sender, e) => { System.Diagnostics.Debug.WriteLine(e.Message); };
-                //console = new AggregateConsole(new ClientConsole(), new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); }));
+                    //console = new DockerConsole(new ConsoleConfiguration {SplashScreen = Constants.SplashScreen})
+                    console = new LogglyConsole(new ConsoleConfiguration {SplashScreen = Constants.SplashScreen})
+                    //console = new ClientConsole2(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
+                    //console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
+                    //console = new VoiceConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
+                    //console = new NullConsole();
+                    //console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });
+                    //console = new EventConsole();
+                    //console.OutputEvent += (sender, e) => { System.Diagnostics.Debug.WriteLine(e.Message); };
+                    //console = new AggregateConsole(new ClientConsole(), new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); }));
                 )
                 {
-
                     //Part 2. Commands
                     //NOTE: Creating the command object and registering some commands
                     var command = new RootCommand(console);
@@ -45,7 +45,8 @@ namespace SampleConsole
                     command.RegisterCommand(new MathContainerCommand());
                     command.RegisterCommand(new StatusCommand());
                     command.RegisterCommand(new SomeContainerWithDisabledSubs());
-                    command.RegisterCommand(new OutputContainerCommand());
+                    var outputContainerCommand = new OutputContainerCommand();
+                    command.RegisterCommand(outputContainerCommand);
 
                     //Part 3. Engine
                     var commandEngine = new CommandEngine(command)
@@ -53,25 +54,26 @@ namespace SampleConsole
                         //If you want the console to run some managed background process, they can be created here.
                         TaskRunners = new[]
                         {
-                            new TaskRunner((c, a) =>
+                            //new TaskRunner((c, a) =>
+                            //NOTE: You can add a runner that runs until the application exits.
+                            new TaskRunner(e =>
                             {
-                            }),
-                            //    //NOTE: You can add a runner that runs until the application exits.
-                            //    new TaskRunner(e =>
-                            //    {
-                            //        var i = 0;
-                            //        var intervalSeconds = 15;
-                            //        while (!e.IsCancellationRequested)
-                            //        {
-                            //            if (i % (10 * intervalSeconds) == 0)
-                            //            {
-                            //                Instance.WriteLine($"First taskrunner is alive in the background. Repporting every {intervalSeconds} seconds.", OutputLevel.Information);
-                            //            }
-                            //            Thread.Sleep(100);
-                            //            i++;
-                            //        }
-                            //        Instance.WriteLine("First taskrunner is exiting.", OutputLevel.Information);
-                            //    }),
+                                var i = 0;
+                                var intervalSeconds = 15;
+                                while (!e.IsCancellationRequested)
+                                {
+                                    if (i % (10 * intervalSeconds) == 0)
+                                    {
+                                        //Instance.WriteLine($"First taskrunner is alive in the background. Repporting every {intervalSeconds} seconds.", OutputLevel.Information);
+                                        console.Output(new WriteEventArgs($"First taskrunner is alive in the background. Repporting every {intervalSeconds} seconds.", OutputLevel.Information));
+                                    }
+
+                                    Thread.Sleep(100);
+                                    i++;
+                                }
+
+                                Instance.WriteLine("First taskrunner is exiting.", OutputLevel.Information);
+                            })
 
                             //    //NOTE: You can add a runner that contains an AutoResetEvent that triggers when the application exits.
                             //    new TaskRunner(e =>
@@ -82,7 +84,6 @@ namespace SampleConsole
                             //    }),
                         }
                     };
-
 
                     ////Log4Net
                     ////Enable this section to try out the Log4Net appender provided in the nuget package "Tharga.Toolkit.Log4Net".
@@ -106,7 +107,6 @@ namespace SampleConsole
                     //    ex.Data.Add("AAA", "AAA1"); //Append data to the exception
                     //    logger.Error("this Error msg,中文测试", ex);
                     //}
-
 
                     //NOTE: This part starts the console engine.
                     commandEngine.Start(args);
@@ -165,20 +165,20 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(string[] param)
-        {
-            for (var i = 0; i < 5; i++)
-            {
-                OutputInformation($"Some data {i}");
-            }
-        }
-
         public override IEnumerable<HelpLine> HelpText
         {
             get
             {
                 yield return new HelpLine("The list commands basicly displays text as information.");
                 yield return new HelpLine("This command is triggered by typing 'some list' in the console.");
+            }
+        }
+
+        public override void Invoke(string[] param)
+        {
+            for (var i = 0; i < 5; i++)
+            {
+                OutputInformation($"Some data {i}");
             }
         }
     }
@@ -190,13 +190,6 @@ namespace SampleConsole
         {
         }
 
-        public override void Invoke(string[] param)
-        {
-            var id = QueryParam<string>("Some Id", param);
-
-            OutputInformation($"Some data for {id}");
-        }
-
         public override IEnumerable<HelpLine> HelpText
         {
             get
@@ -206,6 +199,13 @@ namespace SampleConsole
                 yield return new HelpLine("You can provide parameters directly inline. (Ex Type 'some item A')");
             }
         }
+
+        public override void Invoke(string[] param)
+        {
+            var id = QueryParam<string>("Some Id", param);
+
+            OutputInformation($"Some data for {id}");
+        }
     }
 
     internal class SomeOptionCommand : ActionCommandBase
@@ -214,25 +214,6 @@ namespace SampleConsole
             : base("option", "Gets a single item from a list of options.")
         {
             RegisterQuery("Id", "Some Id", GetSelection);
-        }
-
-        public override void Invoke(string[] param)
-        {
-            OutputInformation($"Some data for {GetParam<Guid>("Id")}");
-        }
-
-        private IDictionary<Guid, string> GetSelection()
-        {
-            //Options to choose from
-            return new Dictionary<Guid, string>
-            {
-                { Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A" },
-                { Guid.NewGuid(), "BB" },
-                { Guid.NewGuid(), "D" },
-                { Guid.NewGuid(), "EEEEE" },
-                { Guid.NewGuid(), "F" },
-                { Guid.NewGuid(), "CCC" }
-            };
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -245,6 +226,25 @@ namespace SampleConsole
                 yield return new HelpLine("The selection contains of a key and a display text. When the text is entered the key is returned.");
             }
         }
+
+        public override void Invoke(string[] param)
+        {
+            OutputInformation($"Some data for {GetParam<Guid>("Id")}");
+        }
+
+        private IDictionary<Guid, string> GetSelection()
+        {
+            //Options to choose from
+            return new Dictionary<Guid, string>
+            {
+                {Guid.Parse("4779177e-2c27-432a-825d-22f9f151391e"), "A"},
+                {Guid.NewGuid(), "BB"},
+                {Guid.NewGuid(), "D"},
+                {Guid.NewGuid(), "EEEEE"},
+                {Guid.NewGuid(), "F"},
+                {Guid.NewGuid(), "CCC"}
+            };
+        }
     }
 
     internal class SomeTableCommand : ActionCommandBase
@@ -252,18 +252,6 @@ namespace SampleConsole
         public SomeTableCommand()
             : base("table", "Output information in a table.")
         {
-        }
-
-        public override void Invoke(string[] param)
-        {
-            var table = new List<string[]> { new[] { "Index", "Guid" } };
-            for (var i = 0; i < 5; i++)
-            {
-                var line = new[] { i.ToString(), Guid.NewGuid().ToString() };
-                table.Add(line);
-            }
-
-            OutputTable(table);
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -274,6 +262,18 @@ namespace SampleConsole
                 yield return new HelpLine("This command is triggered by typing 'some table' in the console.");
             }
         }
+
+        public override void Invoke(string[] param)
+        {
+            var table = new List<string[]> {new[] {"Index", "Guid"}};
+            for (var i = 0; i < 5; i++)
+            {
+                var line = new[] {i.ToString(), Guid.NewGuid().ToString()};
+                table.Add(line);
+            }
+
+            OutputTable(table);
+        }
     }
 
     internal class SomePasswordCommand : ActionCommandBase
@@ -281,12 +281,6 @@ namespace SampleConsole
         public SomePasswordCommand()
             : base("password", "Command with password entry.")
         {
-        }
-
-        public override void Invoke(string[] param)
-        {
-            var password = QueryPassword("Some password", GetNextParam(param));
-            OutputInformation($"Entered password was: {password}");
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -298,6 +292,12 @@ namespace SampleConsole
                 yield return new HelpLine("You can provide parameters directly inline, but then the password will not be protected from showing on screen. (Ex Type 'some password A')");
             }
         }
+
+        public override void Invoke(string[] param)
+        {
+            var password = QueryPassword("Some password", GetNextParam(param));
+            OutputInformation($"Entered password was: {password}");
+        }
     }
 
     internal class SomeDisabledCommand : ActionCommandBase
@@ -305,17 +305,6 @@ namespace SampleConsole
         public SomeDisabledCommand()
             : base("disabled", "Command that is always disabled.")
         {
-        }
-
-        public override bool CanExecute(out string reasonMesage)
-        {
-            reasonMesage = "Because it is manually disabled. Always!";
-            return false;
-        }
-
-        public override void Invoke(string[] param)
-        {
-            throw new NotSupportedException("Should not be able to execute this!");
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -328,12 +317,21 @@ namespace SampleConsole
                 yield return new HelpLine("You can still get help from a command that is disabled.");
             }
         }
+
+        public override bool CanExecute(out string reasonMesage)
+        {
+            reasonMesage = "Because it is manually disabled. Always!";
+            return false;
+        }
+
+        public override void Invoke(string[] param)
+        {
+            throw new NotSupportedException("Should not be able to execute this!");
+        }
     }
 
     internal class SomeEnumCommand : ActionCommandBase
     {
-        enum MyEnum { One, Two, Three }
-
         public SomeEnumCommand()
             : base("enum", "Enum option selection.")
         {
@@ -343,6 +341,13 @@ namespace SampleConsole
         {
             var selection = QueryParam<MyEnum>("Select", param);
             OutputInformation(selection.ToString());
+        }
+
+        private enum MyEnum
+        {
+            One,
+            Two,
+            Three
         }
     }
 
@@ -361,6 +366,7 @@ namespace SampleConsole
     }
 
     #endregion
+
     #region Math commands (parameter example)
 
     public class MathContainerCommand : ContainerCommandBase
@@ -374,10 +380,7 @@ namespace SampleConsole
 
         public override IEnumerable<HelpLine> HelpText
         {
-            get
-            {
-                yield return new HelpLine("The math commands demonstrates how to handle some user query parameters in different ways.");
-            }
+            get { yield return new HelpLine("The math commands demonstrates how to handle some user query parameters in different ways."); }
         }
     }
 
@@ -386,6 +389,15 @@ namespace SampleConsole
         public MathAddCommand()
             : base("add", "Adds two values together.")
         {
+        }
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get
+            {
+                yield return new HelpLine("The 'math add' command demonstrates how to read parameters from the inline query in different ways.");
+                yield return new HelpLine("Try triggering by typing 'math add 1 2 3 4', 'math add 1 2 3' or by just typing 'math add'.");
+            }
         }
 
         public override void Invoke(string[] param)
@@ -404,15 +416,6 @@ namespace SampleConsole
 
             OutputInformation($"{val1} + {val2} + {val3} + {val4} = {val1 + val2 + val3 + val4}");
         }
-
-        public override IEnumerable<HelpLine> HelpText
-        {
-            get
-            {
-                yield return new HelpLine("The 'math add' command demonstrates how to read parameters from the inline query in different ways.");
-                yield return new HelpLine("Try triggering by typing 'math add 1 2 3 4', 'math add 1 2 3' or by just typing 'math add'.");
-            }
-        }
     }
 
     public class MathAddMultipleCommand : ActionCommandBase
@@ -420,6 +423,15 @@ namespace SampleConsole
         public MathAddMultipleCommand()
             : base("addm", "Adds multiple values together.")
         {
+        }
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get
+            {
+                yield return new HelpLine("The 'math addm' command demonstrates how to query infinite number of parameters from the user.");
+                yield return new HelpLine("Try triggering by typing 'math addm 1 2 3 4', 'math addm 1 2 3' or by just typing 'math addm'.");
+            }
         }
 
         public override void Invoke(string[] param)
@@ -438,18 +450,10 @@ namespace SampleConsole
 
             OutputInformation($"Sum: {vals.Sum()}");
         }
-
-        public override IEnumerable<HelpLine> HelpText
-        {
-            get
-            {
-                yield return new HelpLine("The 'math addm' command demonstrates how to query infinite number of parameters from the user.");
-                yield return new HelpLine("Try triggering by typing 'math addm 1 2 3 4', 'math addm 1 2 3' or by just typing 'math addm'.");
-            }
-        }
     }
 
     #endregion
+
     #region Status commands
 
     public class StatusCommand : ContainerCommandBase
@@ -465,10 +469,7 @@ namespace SampleConsole
 
         public override IEnumerable<HelpLine> HelpText
         {
-            get
-            {
-                yield return new HelpLine("Commands for showing different methods of outputing data.");
-            }
+            get { yield return new HelpLine("Commands for showing different methods of outputing data."); }
         }
     }
 
@@ -505,6 +506,11 @@ namespace SampleConsole
         {
         }
 
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield return new HelpLine("This commands throws, catches and outputs an exception."); }
+        }
+
         public override void Invoke(string[] param)
         {
             try
@@ -517,14 +523,6 @@ namespace SampleConsole
                 OutputError(e);
             }
         }
-
-        public override IEnumerable<HelpLine> HelpText
-        {
-            get
-            {
-                yield return new HelpLine("This commands throws, catches and outputs an exception.");
-            }
-        }
     }
 
     public class CrashExceptionCommand : ActionCommandBase
@@ -532,6 +530,11 @@ namespace SampleConsole
         public CrashExceptionCommand()
             : base("crash", "A command that throws an exception.")
         {
+        }
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield return new HelpLine("This command throws an exception."); }
         }
 
         public override void Invoke(string[] param)
@@ -548,17 +551,10 @@ namespace SampleConsole
 
             throw invalidOperationException;
         }
-
-        public override IEnumerable<HelpLine> HelpText
-        {
-            get
-            {
-                yield return new HelpLine("This command throws an exception.");
-            }
-        }
     }
 
     #endregion
+
     #region Disable commands
 
     internal class SomeContainerWithDisabledSubs : ContainerCommandBase
@@ -581,10 +577,7 @@ namespace SampleConsole
 
         public override IEnumerable<HelpLine> HelpText
         {
-            get
-            {
-                yield return new HelpLine("This container command contains sub-commands that are all disabled. Therefore the group command is also disabled.");
-            }
+            get { yield return new HelpLine("This container command contains sub-commands that are all disabled. Therefore the group command is also disabled."); }
         }
     }
 
@@ -597,22 +590,20 @@ namespace SampleConsole
             RegisterCommand(new SomeItemCommand());
         }
 
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield return new HelpLine("This container command is manually disabled. That makes all sub-commands disabled by inheritance."); }
+        }
+
         public override bool CanExecute(out string reasonMessage)
         {
             reasonMessage = "Manually disabled container command and all sub commands.";
             return false;
         }
-
-        public override IEnumerable<HelpLine> HelpText
-        {
-            get
-            {
-                yield return new HelpLine("This container command is manually disabled. That makes all sub-commands disabled by inheritance.");
-            }
-        }
     }
 
     #endregion
+
     #region Output commands
 
     public class OutputContainerCommand : ContainerCommandBase
@@ -631,7 +622,7 @@ namespace SampleConsole
         public TimerOutputCommand()
             : base("timer", "An engine outputs examples on a timer.")
         {
-            var timer = new Timer { Interval = 3000 };
+            var timer = new Timer {Interval = 3000};
             timer.Elapsed += Timer_Elapsed;
 
             RegisterCommand(new TimerStartCommand(timer));

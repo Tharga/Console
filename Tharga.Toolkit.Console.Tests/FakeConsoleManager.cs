@@ -18,23 +18,25 @@ namespace Tharga.Toolkit.Console.Tests
             KeyInputEngine = keyInputEngine ?? new KeyInputEngine();
         }
 
-        public void Dispose()
-        {
-        }
-
         public Encoding Encoding { get; }
         public int CursorLeft { get; private set; }
 
         public int CursorTop
         {
-            get { return _cursorTop; }
+            get => _cursorTop;
             private set
             {
                 if (value == CbufferHeight)
+                {
                     for (var i = 0; i < CbufferHeight - 1; i++)
+                    {
                         LineOutput[i] = LineOutput[i + 1];
+                    }
+                }
                 else
+                {
                     _cursorTop = value;
+                }
             }
         }
 
@@ -43,14 +45,24 @@ namespace Tharga.Toolkit.Console.Tests
 
         public int BufferWidth
         {
-            get { return CbufferWidth; }
-            set { throw new NotSupportedException(); }
+            get => CbufferWidth;
+            set => throw new NotSupportedException();
         }
 
         public int BufferHeight
         {
-            get { return CbufferHeight; }
-            set { throw new NotSupportedException(); }
+            get => CbufferHeight;
+            set => throw new NotSupportedException();
+        }
+
+        public ConsoleColor ForegroundColor { get; set; }
+        public ConsoleColor BackgroundColor { get; set; }
+
+        public IKeyInputEngine KeyInputEngine { get; }
+        public string Title { get; set; }
+
+        public void Dispose()
+        {
         }
 
         public void WriteLine(string value)
@@ -63,12 +75,9 @@ namespace Tharga.Toolkit.Console.Tests
             DoWriteLine(value, false);
         }
 
-        public ConsoleColor ForegroundColor { get; set; }
-        public ConsoleColor BackgroundColor { get; set; }
-
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
-            if (sourceLeft == 0 && (sourceWidth == BufferWidth && (targetLeft == 0 && sourceHeight == 1)))
+            if (sourceLeft == 0 && sourceWidth == BufferWidth && targetLeft == 0 && sourceHeight == 1)
             {
                 LineOutput[targetTop] = LineOutput[sourceTop];
                 LineOutput[sourceTop] = null;
@@ -110,9 +119,6 @@ namespace Tharga.Toolkit.Console.Tests
         {
         }
 
-        public IKeyInputEngine KeyInputEngine { get; }
-        public string Title { get; set; }
-
         private void DoWriteLine(string value, bool lineFeed)
         {
             if (string.IsNullOrEmpty(value))
@@ -129,7 +135,7 @@ namespace Tharga.Toolkit.Console.Tests
             }
             else
             {
-                var lineCount = (int)Math.Ceiling(value.Length / (decimal)BufferWidth);
+                var lineCount = (int) Math.Ceiling(value.Length / (decimal) BufferWidth);
 
                 //TODO: If this is longer thant the buffer, separate to several lines
                 if (value.Length > BufferWidth)
@@ -138,7 +144,10 @@ namespace Tharga.Toolkit.Console.Tests
                     {
                         var left = value.Length - i * BufferWidth;
                         if (left == 0)
+                        {
                             break;
+                        }
+
                         if (left > BufferWidth) left = BufferWidth;
                         var input = value.Substring(i * BufferWidth, left);
                         LineOutput[CursorTop] = input;

@@ -35,17 +35,19 @@ namespace Tharga.Toolkit.Console.Helpers
                     //NOTE: Make it configurable if to include stacktrace or not
                     sb.AppendLine();
                     sb.AppendLine("Stack trace:");
-                    var stackTrace = exception.StackTrace.Split(new[] { " at " }, StringSplitOptions.None);
+                    var stackTrace = exception.StackTrace.Split(new[] {" at "}, StringSplitOptions.None);
                     foreach (var line in stackTrace.Where(x => !string.IsNullOrWhiteSpace(x)))
                     {
-                        var pair = line.Split(new[] { " in " }, StringSplitOptions.None);
+                        var pair = line.Split(new[] {" in "}, StringSplitOptions.None);
                         if (pair.Length == 2)
                         {
                             sb.AppendLine(pair[0].Trim());
                             sb.AppendLine($"  {pair[1].Trim()}");
                         }
                         else
+                        {
                             sb.AppendLine(line);
+                        }
                     }
                 }
                 catch (Exception e)

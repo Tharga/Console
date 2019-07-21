@@ -7,11 +7,6 @@ namespace Tharga.Toolkit.Console.Entities
     public class CommandTreeNode<T>
     {
         private readonly CommandTreeNode<T> _parent;
-        public T Key { get; }
-        public string Value { get; }
-        public List<CommandTreeNode<T>> Subs { get; }
-
-        public string FullValuePath => _parent?._parent == null ? Value : $"{_parent.FullValuePath} {Value}";
 
         private CommandTreeNode(CommandTreeNode<T> parent, T key, string value, IEnumerable<CommandTreeNode<T>> subs)
         {
@@ -31,6 +26,12 @@ namespace Tharga.Toolkit.Console.Entities
         {
         }
 
+        public T Key { get; }
+        public string Value { get; }
+        public List<CommandTreeNode<T>> Subs { get; }
+
+        public string FullValuePath => _parent?._parent == null ? Value : $"{_parent.FullValuePath} {Value}";
+
         public CommandTreeNode<T> Select(string entry)
         {
             return FindNode(entry, Subs);
@@ -45,7 +46,9 @@ namespace Tharga.Toolkit.Console.Entities
                 if (hits.Length == 1 && string.Equals(hits.First().Value, segment, StringComparison.CurrentCultureIgnoreCase))
                 {
                     if (string.Equals(entry, segment, StringComparison.InvariantCultureIgnoreCase))
+                    {
                         return hits.First();
+                    }
 
                     var subEntry = entry.Substring(segment.Length + 1);
                     return FindNode(subEntry, hits.First().Subs);
@@ -90,6 +93,7 @@ namespace Tharga.Toolkit.Console.Entities
                     return p;
                 }
             }
+
             return null;
         }
     }

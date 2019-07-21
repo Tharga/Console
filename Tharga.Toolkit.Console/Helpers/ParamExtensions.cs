@@ -9,11 +9,15 @@ namespace Tharga.Toolkit.Console.Helpers
         public static IEnumerable<string> ToInput(this string paramList)
         {
             if (string.IsNullOrEmpty(paramList))
+            {
                 return new List<string>();
+            }
 
             var verbs = GetDelimiteredVerbs(ref paramList, '\"');
             if (verbs.Any())
+            {
                 return verbs.Select(x => x.Key);
+            }
 
             var paramArray = paramList.Split(' ');
             return paramArray;
@@ -34,9 +38,13 @@ namespace Tharga.Toolkit.Console.Helpers
                     //yield break;
                 }
                 else if (i.Contains(" "))
+                {
                     yield return $"\"{i}\"";
+                }
                 else
+                {
                     yield return i;
+                }
             }
         }
 

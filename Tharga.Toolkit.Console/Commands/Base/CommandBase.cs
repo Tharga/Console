@@ -12,6 +12,16 @@ namespace Tharga.Toolkit.Console.Commands.Base
     {
         private readonly Dictionary<string, string> _names;
 
+        protected RootCommandBase RootCommand;
+        protected int ParamIndex;
+
+        internal CommandBase(string name, string description = null, bool hidden = false)
+        {
+            IsHidden = hidden;
+            _names = new Dictionary<string, string> {{name.ToLower(), name}};
+            Description = description ?? $"Command that manages {name}.";
+        }
+
         public string Name => _names.Keys.First();
         public IEnumerable<string> Names => _names.Select(x => x.Key);
         public string Description { get; }
@@ -20,16 +30,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
         public abstract IEnumerable<HelpLine> HelpText { get; }
 
         public event EventHandler<WriteEventArgs> WriteEvent;
-
-        protected RootCommandBase RootCommand;
-        protected int ParamIndex;
-
-        internal CommandBase(string name, string description = null, bool hidden = false)
-        {
-            IsHidden = hidden;
-            _names = new Dictionary<string, string> { { name.ToLower(), name } };
-            Description = description ?? $"Command that manages {name}.";
-        }
 
         public abstract void Invoke(string[] param);
 
@@ -42,7 +42,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected void AddName(string name)
         {
             if (!_names.ContainsKey(name.ToLower()))
+            {
                 _names.Add(name.ToLower(), name);
+            }
         }
 
         protected abstract ICommand GetHelpCommand(string paramList);
@@ -98,11 +100,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
             {
                 if (!string.IsNullOrEmpty(defaultValue))
                 {
-                    value = QueryParam(paramName, (string)null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, true);
+                    value = QueryParam(paramName, (string) null, new List<KeyValuePair<string, string>> {new KeyValuePair<string, string>(defaultValue, defaultValue)}, true);
                 }
                 else
                 {
-                    value = QueryParam(paramName, (string)null, (List<KeyValuePair<string, string>>)null, true);
+                    value = QueryParam(paramName, (string) null, (List<KeyValuePair<string, string>>) null, true);
                 }
             }
 
@@ -116,12 +118,13 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 if (default(T) is Enum)
                 {
                     var selection = Enum.GetValues(typeof(T)).Cast<T>().ToDictionary(x => x, x => x.ToString());
-                    return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
+                    return QueryParam(paramName, GetNextParam(autoParam), selection);
                 }
+
                 if (default(T) is bool)
                 {
-                    var selection = new Dictionary<T, string> { { (T)(object)true, true.ToString() }, { (T)(object)false, false.ToString() } };
-                    return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
+                    var selection = new Dictionary<T, string> {{(T) (object) true, true.ToString()}, {(T) (object) false, false.ToString()}};
+                    return QueryParam(paramName, GetNextParam(autoParam), selection);
                 }
             }
 
@@ -142,15 +145,15 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 {
                     if (!string.IsNullOrEmpty(defaultValue))
                     {
-                        value = QueryParam(paramName, (string)null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, false);
+                        value = QueryParam(paramName, (string) null, new List<KeyValuePair<string, string>> {new KeyValuePair<string, string>(defaultValue, defaultValue)});
                     }
                     else
                     {
-                        value = QueryParam(paramName, (string)null, (List<KeyValuePair<string, string>>)null);
+                        value = QueryParam(paramName, (string) null, (List<KeyValuePair<string, string>>) null);
                     }
                 }
 
-                var response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(value);
+                var response = (T) TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(value);
                 return response;
             }
             catch (Exception exception)
@@ -159,6 +162,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 {
                     throw exception.InnerException;
                 }
+
                 throw;
             }
         }
@@ -175,7 +179,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
         {
-            return QueryParam<T>(paramName, GetNextParam(autoParam), selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
+            return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
         }
 
         protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
@@ -183,7 +187,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return QueryParam(paramName, autoProvideValue, selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
         }
 
-        internal protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, bool passwordEntry)
+        protected internal T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, bool passwordEntry)
         {
             if (RootCommand.CommandEngine == null) throw new InvalidOperationException("The command engine has not been assigned yet.");
 
@@ -195,8 +199,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
 
             var inputManager = RootCommand.CommandEngine.InputManager;
-            var prompt = paramName + ((!sel.Subs.Any() || paramName == Constants.Prompt) ? string.Empty : " [Tab]");
-            var response = inputManager.ReadLine(prompt, sel, allowEscape, RootCommand.CommandEngine.CancellationToken, passwordEntry ? '*' : (char?)null, null);
+            var prompt = paramName + (!sel.Subs.Any() || paramName == Constants.Prompt ? string.Empty : " [Tab]");
+            var response = inputManager.ReadLine(prompt, sel, allowEscape, RootCommand.CommandEngine.CancellationToken, passwordEntry ? '*' : (char?) null, null);
             return response;
         }
 
@@ -221,7 +225,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                 try
                 {
-                    var r = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(autoProvideValue);
+                    var r = (T) TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(autoProvideValue);
                     return new CommandTreeNode<T>(r, autoProvideValue);
                 }
                 catch (FormatException exception)
@@ -260,7 +264,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected void OutputDefault(string message)
         {
-            OnWriteEvent(this, new WriteEventArgs(message, OutputLevel.Default));
+            OnWriteEvent(this, new WriteEventArgs(message));
         }
 
         protected void OutputHelp(string message)
@@ -281,7 +285,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data)
         {
-            OutputTable(new[] { title }.Union(data));
+            OutputTable(new[] {title}.Union(data));
         }
     }
 }

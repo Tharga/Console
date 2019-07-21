@@ -18,7 +18,10 @@ namespace Tharga.Toolkit.Console
         {
             var maxLength = System.Console.BufferWidth; //TODO: Access through Console Manager
             if (value.Length > maxLength)
+            {
                 value = value.Substring(0, maxLength);
+            }
+
             return value;
         }
     }

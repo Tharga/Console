@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         private readonly IConsoleManager _consoleManager;
 
         public BackgroundColorCommand(IConsoleManager consoleManager)
-            : base("background", "Sets the background color.", false)
+            : base("background", "Sets the background color.")
         {
             _consoleManager = consoleManager;
             AddName("bg");

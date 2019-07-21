@@ -11,33 +11,15 @@ namespace Tharga.Toolkit.Console.Tests
     public class Tab_command_recall_tests
     {
         [Test]
-        public void Should_recall_nothing_when_pressing_Tab_and_no_commands_are_provided()
-        {
-            //Arrange
-            var input = new[] { ConsoleKey.Tab, ConsoleKey.Enter };
-            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
-            var console = new TestConsole(consoleManager);
-
-            var cancellationToken = new CancellationToken();
-            var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-
-            //Act
-            var r = inputInstance.ReadLine<string>(null, true);
-
-            //Assert
-            Assert.That(r, Is.EqualTo(string.Empty));
-        }
-
-        [Test]
         public void Should_recall_first_command_when_pressing_Tab()
         {
             //Arrange
-            var input = new[] { ConsoleKey.Tab, ConsoleKey.Enter };
+            var input = new[] {ConsoleKey.Tab, ConsoleKey.Enter};
             var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
             var console = new TestConsole(consoleManager);
             var cancellationToken = new CancellationToken();
             var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-            var selection = new CommandTreeNode<string>( new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
+            var selection = new CommandTreeNode<string>(new[] {new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x")});
 
             //Act
             var r = inputInstance.ReadLine(selection, true);
@@ -52,12 +34,12 @@ namespace Tharga.Toolkit.Console.Tests
         public void Should_recall_last_command_when_pressing_Shift_Tab()
         {
             //Arrange
-            var input = new[] { new ConsoleKeyInfo('\t', ConsoleKey.Tab, true, false, false), new ConsoleKeyInfo((char)13, ConsoleKey.Enter, false, false, false) };
+            var input = new[] {new ConsoleKeyInfo('\t', ConsoleKey.Tab, true, false, false), new ConsoleKeyInfo((char) 13, ConsoleKey.Enter, false, false, false)};
             var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
             var console = new TestConsole(consoleManager);
             var cancellationToken = new CancellationToken();
             var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-            var selection = new CommandTreeNode<string>(new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
+            var selection = new CommandTreeNode<string>(new[] {new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x")});
 
             //Act
             var r = inputInstance.ReadLine(selection, true);
@@ -68,15 +50,33 @@ namespace Tharga.Toolkit.Console.Tests
         }
 
         [Test]
+        public void Should_recall_nothing_when_pressing_Tab_and_no_commands_are_provided()
+        {
+            //Arrange
+            var input = new[] {ConsoleKey.Tab, ConsoleKey.Enter};
+            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
+            var console = new TestConsole(consoleManager);
+
+            var cancellationToken = new CancellationToken();
+            var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
+
+            //Act
+            var r = inputInstance.ReadLine<string>(null, true);
+
+            //Assert
+            Assert.That(r, Is.EqualTo(string.Empty));
+        }
+
+        [Test]
         public void Should_recall_second_command_when_pressing_Tab_Twise()
         {
             //Arrange
-            var input = new[] { ConsoleKey.Tab, ConsoleKey.Tab, ConsoleKey.Enter };
+            var input = new[] {ConsoleKey.Tab, ConsoleKey.Tab, ConsoleKey.Enter};
             var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
             var console = new TestConsole(consoleManager);
             var cancellationToken = new CancellationToken();
             var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-            var selection = new CommandTreeNode<string>( new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
+            var selection = new CommandTreeNode<string>(new[] {new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x")});
 
             //Act
             var r = inputInstance.ReadLine(selection, true);

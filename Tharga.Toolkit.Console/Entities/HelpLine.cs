@@ -4,10 +4,6 @@ namespace Tharga.Toolkit.Console.Entities
 {
     public class HelpLine
     {
-        public string Text { get; }
-        public Func<bool> CanExecute { get; }
-        public ConsoleColor ForeColor { get; }
-
         public HelpLine(string text, ConsoleColor foreColor = ConsoleColor.DarkMagenta)
         {
             Text = text;
@@ -21,5 +17,9 @@ namespace Tharga.Toolkit.Console.Entities
             CanExecute = canExecute;
             ForeColor = foreColor;
         }
+
+        public string Text { get; }
+        public Func<bool> CanExecute { get; }
+        public ConsoleColor ForeColor { get; }
     }
 }

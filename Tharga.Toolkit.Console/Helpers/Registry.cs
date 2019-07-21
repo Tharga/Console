@@ -56,7 +56,9 @@ namespace Tharga.Toolkit.Console.Helpers
         public static string GetFullPath(string subPath)
         {
             if (!string.IsNullOrEmpty(subPath))
+            {
                 subPath = "\\" + subPath;
+            }
 
             var fullPath = $@"Software\{GetPath(Assembly.GetEntryAssembly())}{subPath}";
             return fullPath;
@@ -99,7 +101,7 @@ namespace Tharga.Toolkit.Console.Helpers
 
         private static T ConvertValue<T>(string value)
         {
-            return (T)Convert.ChangeType(value, typeof(T));
+            return (T) Convert.ChangeType(value, typeof(T));
         }
     }
 }
