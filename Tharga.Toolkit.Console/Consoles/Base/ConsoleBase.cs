@@ -435,6 +435,11 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             OutputError(exception.ToFormattedString(includeStackTrace));
         }
 
+        public void OutputError(string prefix, Exception exception, bool includeStackTrace = false)
+        {
+            OutputError($"{prefix} {exception.ToFormattedString(includeStackTrace)}");
+        }
+
         public void OutputTable(IEnumerable<IEnumerable<string>> data)
         {
             OutputInformation(data.ToFormattedString());
