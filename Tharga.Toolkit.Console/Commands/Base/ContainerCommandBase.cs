@@ -57,6 +57,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
             SubCommandTypes.Add(typeof(T));
         }
 
+        protected void RegisterCommand(Type type)
+        {
+            SubCommandTypes.Add(type);
+        }
+
         protected void RegisterCommand(ICommand command)
         {
             if (command.Names.Any(x => GetCommand(x) != null)) throw new CommandAlreadyRegisteredException(command.Name, Name);
