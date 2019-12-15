@@ -48,6 +48,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
             SubCommandTypes.Add(typeof(T));
         }
 
+        public new void RegisterCommand(Type type)
+        {
+            SubCommandTypes.Add(type);
+        }
+
         public new void RegisterCommand(ICommand command)
         {
             base.RegisterCommand(command);
