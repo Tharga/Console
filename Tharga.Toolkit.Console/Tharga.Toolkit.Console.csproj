@@ -1,16 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>3.0.1</Version>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>1.0.0</Version>
+    <Authors>Daniel Bohlin</Authors>
+    <Company>Thargelion AB</Company>
+    <Product>Tharga Console</Product>
+    <PackageTags>console poc posh powershell</PackageTags>
     <PackageLicenseUrl>https://github.com/poxet/tharga-console/blob/master/License.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/poxet/tharga-console</PackageProjectUrl>
-    <PackageIconUrl>http://www.thargelion.se/Images/Logotype/Thargelion-White-Icon-48.png</PackageIconUrl>
-    <PackageTags>console poc posh powershell</PackageTags>
-    <Description></Description>
-    <Product>Tharga Console</Product>
-    <Company>Thargelion AB</Company>
-    <Authors>Daniel Bohlin</Authors>
+    <PackageIconUrl>http://thargelion.se/wp-content/uploads/2019/11/Thargelion-White-Icon-150.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/poxet/tharga-console.git</RepositoryUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 </Project>
