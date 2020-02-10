@@ -233,9 +233,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return null;
         }
 
-        protected void OutputError(Exception exception, bool includeStackTrace = false)
+        protected void OutputError(Exception exception, bool includeStackTrace = false, string prefix = null)
         {
-            OutputError(exception.ToFormattedString(includeStackTrace));
+            OutputError(exception.ToFormattedString(includeStackTrace, prefix));
         }
 
         protected void OutputError(string message)

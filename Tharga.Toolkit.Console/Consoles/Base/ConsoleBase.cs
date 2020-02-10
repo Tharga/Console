@@ -413,9 +413,9 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                 _tagLocalLocation.Add(tag, location);
         }
 
-        public void OutputError(Exception exception, bool includeStackTrace = false)
+        public void OutputError(Exception exception, bool includeStackTrace = false, string prefix = null)
         {
-            OutputError(exception.ToFormattedString(includeStackTrace));
+            OutputError(exception.ToFormattedString(includeStackTrace, prefix));
         }
 
         public void OutputTable(IEnumerable<IEnumerable<string>> data)
