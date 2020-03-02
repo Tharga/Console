@@ -40,6 +40,7 @@ namespace SampleConsole
                     //NOTE: Creating the command object and registering some commands
                     var command = new RootCommand(console);
                     command.RegisterCommand(new SomeContainerCommand());
+                    command.RegisterCommand(new SomeMoreCommand());
                     command.RegisterCommand(new MathContainerCommand());
                     command.RegisterCommand(new StatusCommand());
                     command.RegisterCommand(new SomeContainerWithDisabledSubs());
@@ -129,6 +130,19 @@ namespace SampleConsole
     }
 
     #region Some basic commands
+
+    internal class SomeMoreCommand : ActionCommandBase
+    {
+        public SomeMoreCommand()
+            : base("somemore")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            OutputInformation("Yee!");
+        }
+    }
 
     internal class SomeContainerCommand : ContainerCommandBase
     {

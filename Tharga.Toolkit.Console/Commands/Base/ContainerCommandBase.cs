@@ -45,7 +45,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                         var commandKeys = subContainer.CommandKeys;
                         foreach (var key in commandKeys)
                         {
-                            yield return name + " " + key;
+                            yield return $"{name} {key}";
                         }
                     }
                 }

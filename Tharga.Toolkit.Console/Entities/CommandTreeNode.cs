@@ -41,12 +41,18 @@ namespace Tharga.Toolkit.Console.Entities
             var segments = entry.Split(' ');
             foreach (var segment in segments)
             {
+                var exactHit = nodes.FirstOrDefault(x => x.Value.Equals(segment, StringComparison.InvariantCultureIgnoreCase));
                 var hits = nodes.Where(x => x.Value.StartsWith(segment, StringComparison.InvariantCultureIgnoreCase)).ToArray();
                 if (hits.Length == 1 && string.Equals(hits.First().Value, segment, StringComparison.CurrentCultureIgnoreCase))
                 {
                     if (string.Equals(entry, segment, StringComparison.InvariantCultureIgnoreCase))
                         return hits.First();
 
+                    var subEntry = entry.Substring(segment.Length + 1);
+                    return FindNode(subEntry, hits.First().Subs);
+                }
+                else if (segments.Length > 1 && exactHit != null)
+                {
                     var subEntry = entry.Substring(segment.Length + 1);
                     return FindNode(subEntry, hits.First().Subs);
                 }

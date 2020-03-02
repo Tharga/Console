@@ -57,7 +57,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             base.RegisterCommand(command);
         }
-        
+
         protected virtual void OnExceptionOccuredEvent(ExceptionOccuredEventArgs e)
         {
             var handler = ExceptionOccuredEvent;
