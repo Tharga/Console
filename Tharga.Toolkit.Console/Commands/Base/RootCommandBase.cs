@@ -48,7 +48,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), null));
         }
 
-        public void RegisterCommand<T, TContainer>()
+        public new void RegisterCommand<T, TContainer>()
             where TContainer : IContainerCommand
         {
             SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), typeof(TContainer)));

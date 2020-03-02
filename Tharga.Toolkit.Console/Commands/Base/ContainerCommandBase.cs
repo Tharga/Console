@@ -52,9 +52,15 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
         }
 
-        internal void RegisterCommand<T>()
+        protected void RegisterCommand<T>()
         {
             SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), null));
+        }
+
+        protected void RegisterCommand<T, TContainer>()
+            where TContainer : IContainerCommand
+        {
+            SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), typeof(TContainer)));
         }
 
         protected void RegisterCommand(Type type)
