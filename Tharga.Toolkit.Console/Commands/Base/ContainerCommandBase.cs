@@ -11,7 +11,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
     public abstract class ContainerCommandBase : CommandBase, IContainerCommand
     {
         private readonly List<ICommand> _subCommands = new List<ICommand>();
-        protected readonly List<Type> SubCommandTypes = new List<Type>();
+        protected readonly List<Tuple<Type, Type>> SubCommandTypes = new List<Tuple<Type, Type>>();
 
         public IEnumerable<ICommand> SubCommands => _subCommands.OrderBy(x => x.Name);
 
@@ -52,14 +52,14 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
         }
 
-        protected void RegisterCommand<T>()
+        internal void RegisterCommand<T>()
         {
-            SubCommandTypes.Add(typeof(T));
+            SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), null));
         }
 
         protected void RegisterCommand(Type type)
         {
-            SubCommandTypes.Add(type);
+            SubCommandTypes.Add(new Tuple<Type, Type>(type, null));
         }
 
         protected void RegisterCommand(ICommand command)
@@ -338,25 +338,35 @@ namespace Tharga.Toolkit.Console.Commands.Base
             RootCommand.Console.Output(e);
         }
 
-        protected internal override void Attach(RootCommandBase rootCommand)
+        protected internal override void Attach(RootCommandBase rootCommand, List<Tuple<Type, Type>> subCommandTypes)
         {
-            base.Attach(rootCommand);
+            base.Attach(rootCommand, null);
 
-            if (SubCommandTypes.Any())
+            subCommandTypes = SubCommandTypes.Union(subCommandTypes ?? new List<Tuple<Type, Type>>()).ToList();
+            var subCommandsToPassOn = new List<Tuple<Type, Type>>();
+
+            if (subCommandTypes.Any())
             {
-                if (RootCommand.CommandResolver == null) throw new InvalidOperationException("No CommandResolver has been defined.");
+                if (RootCommand.CommandResolver == null) throw new InvalidOperationException("No CommandResolver has been defined in the root command.");
 
-                foreach (var subCommandType in SubCommandTypes)
+                foreach (var subCommandType in subCommandTypes)
                 {
-                    var command = RootCommand.CommandResolver.Resolve(subCommandType);
-                    RegisterCommand(command);
+                    if (subCommandType.Item2 == null || subCommandType.Item2 == this.GetType())
+                    {
+                        var command = RootCommand.CommandResolver.Resolve(subCommandType.Item1);
+                        RegisterCommand(command);
+                    }
+                    else if (subCommandType.Item2 != null)
+                    {
+                        subCommandsToPassOn.Add(subCommandType);
+                    }
                 }
             }
 
             foreach (var cmd in SubCommands)
             {
                 var c = cmd as CommandBase;
-                c?.Attach(rootCommand);
+                c?.Attach(rootCommand, subCommandsToPassOn);
             }
         }
     }

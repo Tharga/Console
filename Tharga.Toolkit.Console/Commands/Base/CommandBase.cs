@@ -47,7 +47,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected abstract ICommand GetHelpCommand(string paramList);
 
-        protected internal virtual void Attach(RootCommandBase rootCommand)
+        protected internal virtual void Attach(RootCommandBase rootCommand, List<Tuple<Type, Type>> subCommandTypes)
         {
             if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No rootCommand provided");
             if (RootCommand != null) throw new InvalidOperationException("The command is already attached.");

@@ -45,12 +45,23 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         public new void RegisterCommand<T>()
         {
-            SubCommandTypes.Add(typeof(T));
+            SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), null));
+        }
+
+        public void RegisterCommand<T, TContainer>()
+            where TContainer : IContainerCommand
+        {
+            SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), typeof(TContainer)));
         }
 
         public new void RegisterCommand(Type type)
         {
-            SubCommandTypes.Add(type);
+            SubCommandTypes.Add(new Tuple<Type, Type>(type, null));
+        }
+
+        public void RegisterCommand(Type type, Type containerType)
+        {
+            SubCommandTypes.Add(new Tuple<Type, Type>(type, containerType));
         }
 
         public new void RegisterCommand(ICommand command)
@@ -187,7 +198,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected internal void Initiate(CommandEngine commandEngine)
         {
             CommandEngine = commandEngine;
-            Attach(this);
+            Attach(this, null);
         }
     }
 }
