@@ -1,15 +1,18 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace Tharga.Toolkit.Console.Helpers
 {
     internal static class ExceptionExtension
     {
-        public static string ToFormattedString(this Exception exception, bool includeStackTrace)
+        public static string ToFormattedString(this Exception exception, bool includeStackTrace, string prefix)
         {
-            return ToFormattedString(exception, 0, includeStackTrace).TrimEnd(Environment.NewLine.ToCharArray());
+            var data = ToFormattedString(exception, 0, includeStackTrace).TrimEnd(Environment.NewLine.ToCharArray());
+            return $"{prefix}{data}";
         }
 
         private static string ToFormattedString(this Exception exception, int indentationLevel, bool includeStackTrace)
@@ -23,7 +26,16 @@ namespace Tharga.Toolkit.Console.Helpers
                 sb.AppendLine($"{indentation}{data.Key}: {data.Value}");
             }
 
-            if (exception.InnerException != null)
+            var aggregateException = exception as AggregateException;
+            if (aggregateException != null)
+            {
+                indentationLevel++;
+                foreach (var exp in aggregateException.InnerExceptions)
+                {
+                    sb.AppendLine(exp.ToFormattedString(indentationLevel, false));
+                }
+            }
+            else if (exception.InnerException != null)
             {
                 sb.AppendLine(exception.InnerException.ToFormattedString(++indentationLevel, false));
             }
@@ -50,7 +62,7 @@ namespace Tharga.Toolkit.Console.Helpers
                 }
                 catch (Exception e)
                 {
-                    //TODO: Oups, unable to parse 
+                    //TODO: Oups, unable to parse
                 }
             }
 

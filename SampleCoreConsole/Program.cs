@@ -40,6 +40,7 @@ namespace SampleConsole
                     //NOTE: Creating the command object and registering some commands
                     var command = new RootCommand(console);
                     command.RegisterCommand(new SomeContainerCommand());
+                    command.RegisterCommand(new SomeMoreCommand());
                     command.RegisterCommand(new MathContainerCommand());
                     command.RegisterCommand(new StatusCommand());
                     command.RegisterCommand(new SomeContainerWithDisabledSubs());
@@ -129,6 +130,19 @@ namespace SampleConsole
     }
 
     #region Some basic commands
+
+    internal class SomeMoreCommand : ActionCommandBase
+    {
+        public SomeMoreCommand()
+            : base("somemore")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            OutputInformation("Yee!");
+        }
+    }
 
     internal class SomeContainerCommand : ContainerCommandBase
     {
@@ -459,6 +473,7 @@ namespace SampleConsole
             RegisterCommand(new StatusFailCommand());
             RegisterCommand(new StatusExceptionCommand());
             RegisterCommand(new CrashExceptionCommand());
+            RegisterCommand(new AggregateCrashExceptionCommand());
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -535,6 +550,44 @@ namespace SampleConsole
         public override void Invoke(string[] param)
         {
             var exception = new Exception("Some even deeper exception.");
+            exception.Data.Add("A1", "B1");
+
+            var innerException = new Exception("Some inner exception.", exception);
+            innerException.Data.Add("A1", "B1");
+            innerException.Data.Add("A2", "B2");
+
+            var invalidOperationException = new InvalidOperationException("Some crash.", innerException);
+            invalidOperationException.Data.Add("xxx", "111");
+
+            throw invalidOperationException;
+        }
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get
+            {
+                yield return new HelpLine("This command throws an exception.");
+            }
+        }
+    }
+
+    public class AggregateCrashExceptionCommand : ActionCommandBase
+    {
+        public AggregateCrashExceptionCommand()
+            : base("aggregatecrash", "A command that throws an aggregate exception.")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            var exception1 = new Exception("First aggregate exception.");
+            exception1.Data.Add("AA11", "AB11");
+            exception1.Data.Add("AA12", "AB12");
+            var exception2 = new Exception("Second aggregate exception.");
+            exception2.Data.Add("AA21", "AB21");
+
+            var exception = new AggregateException(new[] { exception1, exception2, });
+            //var exception = new Aggregate("Some even deeper exception.");
             exception.Data.Add("A1", "B1");
 
             var innerException = new Exception("Some inner exception.", exception);

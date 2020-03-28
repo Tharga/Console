@@ -149,7 +149,7 @@ namespace Tharga.Toolkit.Console.Tests
                 {
                     if (CursorLeft < (LineOutput[CursorTop]?.Length ?? 0))
                     {
-                        LineOutput[CursorTop] = LineOutput[CursorTop].Substring(0, CursorLeft - 1);
+                        LineOutput[CursorTop] = LineOutput[CursorTop].Substring(0, CursorLeft);
                     }
 
                     LineOutput[CursorTop] += value;
