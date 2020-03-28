@@ -44,7 +44,7 @@ Try
 
 	#Push to nuget
 	if (-NOT $prerelease)
-	{	
+	{
 		if ([System.Convert]::ToBoolean($label))
 		{
 			#Tag git repository
