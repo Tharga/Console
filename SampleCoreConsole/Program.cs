@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-//using log4net;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
@@ -45,6 +44,7 @@ namespace SampleConsole
                     command.RegisterCommand(new StatusCommand());
                     command.RegisterCommand(new SomeContainerWithDisabledSubs());
                     command.RegisterCommand(new OutputContainerCommand());
+                    command.RegisterCommand(new ReadKeyLoop());
 
                     //Part 3. Engine
                     var commandEngine = new CommandEngine(command)
@@ -803,4 +803,34 @@ namespace SampleConsole
     }
 
     #endregion
+
+    public class ReadKeyLoop : ActionCommandBase
+    {
+        public ReadKeyLoop()
+            : base("Loop")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            OutputInformation("Press Enter or ESC to exit.");
+            var buffer = string.Empty;
+            while (true)
+            {
+                var key = QueryKey();
+                buffer += key.KeyChar;
+                //RootCommand.Console.Output(new WriteEventArgs(key.KeyChar.ToString(), lineFeed: false));
+
+                switch (key.Key)
+                {
+                    case ConsoleKey.Enter:
+                        OutputInformation(buffer);
+                        return;
+                    case ConsoleKey.Escape:
+                        OutputInformation("");
+                        return;
+                }
+            }
+        }
+    }
 }

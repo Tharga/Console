@@ -81,6 +81,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return enumerable[index];
         }
 
+        protected ConsoleKeyInfo QueryKey()
+        {
+            return RootCommand.Console.ReadKey(RootCommand.CommandEngine.CancellationToken);
+        }
+
         protected string QueryPassword(string paramName, IEnumerable<string> autoParam, string defaultValue = null)
         {
             return QueryPassword(paramName, GetNextParam(autoParam), defaultValue);
