@@ -45,6 +45,7 @@ namespace SampleConsole
                     command.RegisterCommand(new SomeContainerWithDisabledSubs());
                     command.RegisterCommand(new OutputContainerCommand());
                     command.RegisterCommand(new ReadKeyLoop());
+                    command.RegisterCommand(new InfiniteLoop());
 
                     //Part 3. Engine
                     var commandEngine = new CommandEngine(command)
@@ -831,6 +832,28 @@ namespace SampleConsole
                         return;
                 }
             }
+        }
+    }
+
+    public class InfiniteLoop : ActionCommandBase
+    {
+        public InfiniteLoop()
+            : base("Infinite")
+        {
+        }
+
+        public override void Invoke(string[] param)
+        {
+            new Thread(() =>
+            {
+                while (true)
+                {
+                    if (CancellationToken.IsCancellationRequested)
+                        return;
+                    OutputInformation("This loop will run forever");
+                    Thread.Sleep(2000);
+                }
+            }).Start();
         }
     }
 }

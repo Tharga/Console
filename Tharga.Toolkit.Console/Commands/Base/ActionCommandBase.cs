@@ -16,6 +16,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
         private Dictionary<string, object> _param = new Dictionary<string, object>();
         private Func<string> _canExecute;
 
+        protected CancellationToken CancellationToken => RootCommand.CommandEngine.CancellationToken;
+
         public override IEnumerable<HelpLine> HelpText { get { yield break; } }
 
         protected ActionCommandBase(string name, string description = null, bool hidden = false)
