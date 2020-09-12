@@ -14,7 +14,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             InvokeAsync(param).GetAwaiter().GetResult();
         }
-        
+
         public abstract Task InvokeAsync(string[] param);
     }
 }

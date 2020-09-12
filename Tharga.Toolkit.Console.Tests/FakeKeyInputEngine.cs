@@ -10,7 +10,7 @@ namespace Tharga.Toolkit.Console.Tests
         private readonly BlockingCollection<ConsoleKeyInfo> _buffer = new BlockingCollection<ConsoleKeyInfo>();
 
         public FakeKeyInputEngine()
-        {            
+        {
         }
 
         public FakeKeyInputEngine(ConsoleKey[] data)

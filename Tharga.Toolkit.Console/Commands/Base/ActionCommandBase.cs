@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
@@ -47,7 +48,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             foreach (var query in _registeredQuery)
             {
                 var result = query.Invoke(param);
-                _param.Add(result.Key, result.Value); 
+                _param.Add(result.Key, result.Value);
             }
             Invoke(param);
         }
