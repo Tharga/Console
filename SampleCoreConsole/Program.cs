@@ -34,9 +34,41 @@ namespace SampleConsole
                 //console = new AggregateConsole(new ClientConsole(), new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); }));
                 )
                 {
-                    //var env = new QueryInput(console).QueryParam<string>("Environment", args);
-                    var env = console.QueryParam<string>("Environment", args);
-                    console.Output(new WriteEventArgs($"Environment: {env}", OutputLevel.Information));
+                    //var environment = new QueryInput(console).QueryParam("Environment", "Dev".AsOption().And("Test").And("Production"));
+                    //console.Output(new WriteEventArgs($"Env: {environment}"));
+
+                    var p1 = new QueryInput(console).QueryParam<bool>("P");
+                    console.Output(new WriteEventArgs($"p1: {p1}"));
+                    //p1 = new QueryInput(console).QueryParam<bool>("P1", args);
+                    //console.Output(new WriteEventArgs($"p1: {p1}"));
+                    //p1 = new QueryInput(console).QueryParam<bool>("P2", args, true.AsOption());
+                    //console.Output(new WriteEventArgs($"p1: {p1}"));
+                    //p1 = new QueryInput(console).QueryParam<bool>("P3", args, true.AsOption().And(false).And(true).And((false, "nej")));
+                    //console.Output(new WriteEventArgs($"p1: {p1}"));
+                    p1 = new QueryInput(console).QueryParam<bool>("P4", args, ParameterExtensions.AsOption<bool>().And(false).And(true));
+                    console.Output(new WriteEventArgs($"p1: {p1}"));
+
+                    //var keyValuePairs = ParameterExtensions.AsOption<bool>().AsNullable().ToArray();
+                    //var p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, keyValuePairs);
+                    //console.Output(new WriteEventArgs($"p2: {p2}"));
+                    //p2 = new QueryInput(console).QueryParam<bool?>("PN2", args, keyValuePairs.And((null, "perhaps")));
+                    //console.Output(new WriteEventArgs($"p2: {p2}"));
+
+                    //var e1 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum>("E1");
+                    //console.Output(new WriteEventArgs($"e1: {e1}"));
+                    //e1 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum>("E2", args);
+                    //console.Output(new WriteEventArgs($"e1: {e1}"));
+                    //e1 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum>("E3", SomeEnumCommand.MyEnum.One.AsOption());
+                    //console.Output(new WriteEventArgs($"e1: {e1}"));
+                    //e1 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum>("E4", ParameterExtensions.AsOption<SomeEnumCommand.MyEnum>());
+                    //console.Output(new WriteEventArgs($"e1: {e1}"));
+
+                    var e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN4", ParameterExtensions.AsOption<SomeEnumCommand.MyEnum>().AsNullable().And((null, "ALL")));
+                    console.Output(new WriteEventArgs($"e2: {e2}"));
+                    e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN4b", new Dictionary<SomeEnumCommand.MyEnum, string>().AsNullable().And((null, "Yee")));
+                    console.Output(new WriteEventArgs($"e2: {e2}"));
+                    e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN5", ParameterExtensions.AsOption<SomeEnumCommand.MyEnum>("any"));
+                    console.Output(new WriteEventArgs($"e2: {e2}"));
 
                     //Part 2. Commands
                     //NOTE: Creating the command object and registering some commands
@@ -350,7 +382,8 @@ namespace SampleConsole
 
     internal class SomeEnumCommand : ActionCommandBase
     {
-        enum MyEnum { One, Two, Three }
+        //TODO: IMPLEMENT: Make private
+        public enum MyEnum { One, Two, Three }
 
         public SomeEnumCommand()
             : base("enum", "Enum option selection.")

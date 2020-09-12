@@ -15,11 +15,13 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected abstract string GetNextParam(IEnumerable<string> param);
 
+        //TODO: Convert
         protected string QueryPassword(string paramName, IEnumerable<string> autoParam, string defaultValue = null)
         {
             return QueryPassword(paramName, GetNextParam(autoParam), defaultValue);
         }
 
+        //TODO: Convert
         protected string QueryPassword(string paramName, string autoProvideValue = null, string defaultValue = null)
         {
             string value;
@@ -43,25 +45,92 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return value;
         }
 
-        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam, string defaultValue = null)
+        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam = null)
         {
-            if (defaultValue == null)
-            {
-                if (default(T) is Enum)
-                {
-                    var selection = Enum.GetValues(typeof(T)).Cast<T>().ToDictionary(x => x, x => x.ToString());
-                    return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
-                }
-                if (default(T) is bool)
-                {
-                    var selection = new Dictionary<T, string> { { (T)(object)true, true.ToString() }, { (T)(object)false, false.ToString() } };
-                    return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
-                }
-            }
-
-            return QueryParam<T>(paramName, GetNextParam(autoParam), defaultValue);
+            var selection = GenerateSelection<T>();
+            var autoProvideValue = GetNextParam(autoParam);
+            return QueryParam<T>(paramName, autoProvideValue, selection, true, false);
         }
 
+        private static IEnumerable<CommandTreeNode<T>> GenerateSelection<T>()
+        {
+            var selection = ParameterExtensions.AsOption<T>();
+            return selection?.Select(x => new CommandTreeNode<T>(x.Key, x.Value));
+
+            //if (default(T) is Enum)
+            //{
+            //    return Enum.GetValues(typeof(T)).Cast<T>().Select(x => new CommandTreeNode<T>(x, x.ToString()));
+            //}
+
+            //if (default(T) is bool)
+            //{
+            //    var selection = new Dictionary<T, string> { { (T)(object)true, true.ToString() }, { (T)(object)false, false.ToString() } };
+            //    return selection.Select(x => new CommandTreeNode<T>(x.Key, x.Value));
+            //}
+
+            //return null;
+        }
+
+        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IDictionary<T, string> options)
+        {
+            var selection = options?.Select(x => new CommandTreeNode<T>(x.Key, x.Value));
+            var autoProvideValue = GetNextParam(autoParam);
+            return QueryParam(paramName, autoProvideValue, selection, true, false);
+        }
+
+        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<KeyValuePair<T,string>> options)
+        {
+            var selection = options?.Select(x => new CommandTreeNode<T>(x.Key, x.Value));
+            var autoProvideValue = GetNextParam(autoParam);
+            return QueryParam(paramName, autoProvideValue, selection, true, false);
+        }
+
+        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<(T, string)> options)
+        {
+            var selection = options?.Select(x => new CommandTreeNode<T>(x.Item1, x.Item2));
+            var autoProvideValue = GetNextParam(autoParam);
+            return QueryParam(paramName, autoProvideValue, selection, true, false);
+        }
+
+        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<Tuple<T, string>> options)
+        {
+            var selection = options?.Select(x => new CommandTreeNode<T>(x.Item1, x.Item2));
+            var autoProvideValue = GetNextParam(autoParam);
+            return QueryParam(paramName, autoProvideValue, selection, true, false);
+        }
+
+        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<T> options)
+        {
+            var selection = options?.Select(x => new CommandTreeNode<T>(x, x.ToString()));
+            var autoProvideValue = GetNextParam(autoParam);
+            return QueryParam(paramName, autoProvideValue, selection, true, false);
+        }
+
+        public T QueryParam<T>(string paramName, IDictionary<T, string> options)
+        {
+            var selection = options?.Select(x => new CommandTreeNode<T>(x.Key, x.Value));
+            return QueryParam(paramName, null, selection, true, false);
+        }
+
+        public T QueryParam<T>(string paramName, IEnumerable<KeyValuePair<T, string>> options)
+        {
+            var selection = options?.Select(x => new CommandTreeNode<T>(x.Key, x.Value));
+            return QueryParam(paramName, null, selection, true, false);
+        }
+
+        public T QueryParam<T>(string paramName, IEnumerable<(T, string)> options)
+        {
+            var selection = options?.Select(x => new CommandTreeNode<T>(x.Item1, x.Item2));
+            return QueryParam(paramName, null, selection, true, false);
+        }
+
+        public T QueryParam<T>(string paramName, IEnumerable<Tuple<T, string>> options)
+        {
+            var selection = options?.Select(x => new CommandTreeNode<T>(x.Item1, x.Item2));
+            return QueryParam(paramName, null, selection, true, false);
+        }
+
+        //TODO: Check if Needed
         protected T QueryParam<T>(string paramName, string autoProvideValue = null, string defaultValue = null)
         {
             try
@@ -97,21 +166,23 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
         }
 
-        protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IDictionary<T, string> selectionDelegate)
-        {
-            return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
-        }
+        //protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IDictionary<T, string> selectionDelegate)
+        //{
+        //    return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
+        //}
 
-        protected T QueryParam<T>(string paramName, string autoProvideValue, IDictionary<T, string> selectionDelegate)
-        {
-            return QueryParam(paramName, autoProvideValue, selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
-        }
+        //protected T QueryParam<T>(string paramName, string autoProvideValue, IDictionary<T, string> selectionDelegate)
+        //{
+        //    return QueryParam(paramName, autoProvideValue, selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
+        //}
 
+        //TODO: Check if Needed
         protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
         {
             return QueryParam<T>(paramName, GetNextParam(autoParam), selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
         }
 
+        //TODO: Check if Needed
         protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
         {
             return QueryParam(paramName, autoProvideValue, selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
