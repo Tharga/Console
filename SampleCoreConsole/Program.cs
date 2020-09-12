@@ -26,32 +26,83 @@ namespace SampleConsole
                 using (
                     //NOTE: Enable the type of console you want to use for the sample.
                     console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen })
-                //console = new VoiceConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
-                //console = new NullConsole();
-                //console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });
-                //console = new EventConsole();
-                //console.OutputEvent += (sender, e) => { System.Diagnostics.Debug.WriteLine(e.Message); };
-                //console = new AggregateConsole(new ClientConsole(), new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); }));
+                    //console = new VoiceConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
+                    //console = new NullConsole();
+                    //console = new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); });
+                    //console = new EventConsole();
+                    //console.OutputEvent += (sender, e) => { System.Diagnostics.Debug.WriteLine(e.Message); };
+                    //console = new AggregateConsole(new ClientConsole(), new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); }));
                 )
                 {
                     //var environment = new QueryInput(console).QueryParam("Environment", "Dev".AsOption().And("Test").And("Production"));
                     //console.Output(new WriteEventArgs($"Env: {environment}"));
 
-                    var p1 = new QueryInput(console).QueryParam<bool>("P");
-                    console.Output(new WriteEventArgs($"p1: {p1}"));
+                    //var s1 = new QueryInput(console).QueryParam<string>("Basic string");
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", args);
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", args, new Dictionary<string, string> { { "A", "A" } });
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", new Dictionary<string, string> { { "A", "A" } });
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", Param.Build<string>());
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", Param.Build<string>("n"));
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", Param.Build<string>("n").And("x"));
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", Param.Build<string>(null).And("x"));
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", new Dictionary<string, string> { { "A", "a" } }.And("x"));
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", new Dictionary<string, string> { { "A", "a" } }.And(("S", "s")));
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", new[] { "A", "B", "X" }.And("yyy"));
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", new[] { ("A", "a"), ("B", "b") }.And(("C", "c")));
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", ("A", "a").AsOption());
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", "A".And("B"));
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+                    //s1 = new QueryInput(console).QueryParam<string>("S1", ("A", "a").And(("B", "b")));
+                    //console.Output(new WriteEventArgs($"s1: {s1}"));
+
+                    //var p1 = new QueryInput(console).QueryParam<bool>("P");
+                    //console.Output(new WriteEventArgs($"p1: {p1}"));
                     //p1 = new QueryInput(console).QueryParam<bool>("P1", args);
                     //console.Output(new WriteEventArgs($"p1: {p1}"));
                     //p1 = new QueryInput(console).QueryParam<bool>("P2", args, true.AsOption());
                     //console.Output(new WriteEventArgs($"p1: {p1}"));
                     //p1 = new QueryInput(console).QueryParam<bool>("P3", args, true.AsOption().And(false).And(true).And((false, "nej")));
                     //console.Output(new WriteEventArgs($"p1: {p1}"));
-                    p1 = new QueryInput(console).QueryParam<bool>("P4", args, ParameterExtensions.AsOption<bool>().And(false).And(true));
-                    console.Output(new WriteEventArgs($"p1: {p1}"));
+                    //p1 = new QueryInput(console).QueryParam<bool>("P4", args, Param.AsOption<bool>().And(false).And(true));
+                    //console.Output(new WriteEventArgs($"p1: {p1}"));
+                    //p1 = new QueryInput(console).QueryParam<bool>("P4", args, Param.Build<bool>());
+                    //console.Output(new WriteEventArgs($"p1: {p1}"));
 
-                    //var keyValuePairs = ParameterExtensions.AsOption<bool>().AsNullable().ToArray();
-                    //var p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, keyValuePairs);
+                    //var p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, Param.AsOption<bool>().AsNullable().ToArray());
                     //console.Output(new WriteEventArgs($"p2: {p2}"));
-                    //p2 = new QueryInput(console).QueryParam<bool?>("PN2", args, keyValuePairs.And((null, "perhaps")));
+                    //p2 = new QueryInput(console).QueryParam<bool?>("P4", aa1);
+                    //console.Output(new WriteEventArgs($"p1: {p1}"));
+                    //p2 = new QueryInput(console).QueryParam<bool?>("PN2", args, aa1.And((null, "perhaps")));
+                    //console.Output(new WriteEventArgs($"p2: {p2}"));
+                    //p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, true.AsOption().And(false).AsNullable().And((null, "Any")));
+                    //console.Output(new WriteEventArgs($"p2: {p2}"));
+                    //var a1 = ((bool?)null, "perhaps").And((false, "no")).And((true, "yes"));
+                    //p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, a1);
+                    //console.Output(new WriteEventArgs($"p2: {p2}"));
+                    //var a5 = new[] { ((bool?)null, "Perhaps"), (true, "Ja"), (false, "Nej") };
+                    //p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, a5);
+                    //console.Output(new WriteEventArgs($"p2: {p2}"));
+                    //var a4 = ((bool?)null).AsOption().And(false).And(true);
+                    //p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, a4);
+                    //console.Output(new WriteEventArgs($"p2: {p2}"));
+                    //p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, Param.Build<bool?>());
+                    //console.Output(new WriteEventArgs($"p2: {p2}"));
+                    //p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, Param.Build<bool?>("any"));
+                    //console.Output(new WriteEventArgs($"p2: {p2}"));
+                    //p2 = new QueryInput(console).QueryParam<bool?>("PN1", args, Param.Build<bool?>().And(((bool?)null, "all")));
                     //console.Output(new WriteEventArgs($"p2: {p2}"));
 
                     //var e1 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum>("E1");
@@ -60,15 +111,21 @@ namespace SampleConsole
                     //console.Output(new WriteEventArgs($"e1: {e1}"));
                     //e1 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum>("E3", SomeEnumCommand.MyEnum.One.AsOption());
                     //console.Output(new WriteEventArgs($"e1: {e1}"));
-                    //e1 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum>("E4", ParameterExtensions.AsOption<SomeEnumCommand.MyEnum>());
+                    //e1 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum>("E4", Param.AsOption<SomeEnumCommand.MyEnum>());
                     //console.Output(new WriteEventArgs($"e1: {e1}"));
 
-                    var e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN4", ParameterExtensions.AsOption<SomeEnumCommand.MyEnum>().AsNullable().And((null, "ALL")));
-                    console.Output(new WriteEventArgs($"e2: {e2}"));
-                    e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN4b", new Dictionary<SomeEnumCommand.MyEnum, string>().AsNullable().And((null, "Yee")));
-                    console.Output(new WriteEventArgs($"e2: {e2}"));
-                    e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN5", ParameterExtensions.AsOption<SomeEnumCommand.MyEnum>("any"));
-                    console.Output(new WriteEventArgs($"e2: {e2}"));
+                    //var e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN4", Param.AsOption<SomeEnumCommand.MyEnum>().AsNullable().And((null, "ALL")));
+                    //console.Output(new WriteEventArgs($"e2: {e2}"));
+                    //e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN4b", new Dictionary<SomeEnumCommand.MyEnum, string>().AsNullable().And((null, "Yee")));
+                    //console.Output(new WriteEventArgs($"e2: {e2}"));
+                    //e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN4", Param.Build<SomeEnumCommand.MyEnum?>());
+                    //console.Output(new WriteEventArgs($"e2: {e2}"));
+                    //e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN4", Param.Build<SomeEnumCommand.MyEnum?>("any"));
+                    //console.Output(new WriteEventArgs($"e2: {e2}"));
+                    //e2 = new QueryInput(console).QueryParam<SomeEnumCommand.MyEnum?>("EN4", Param.Build<SomeEnumCommand.MyEnum?>().And((null, "all")));
+                    //console.Output(new WriteEventArgs($"e2: {e2}"));
+
+                    console.Output(new WriteEventArgs("Setup complete", OutputLevel.Event));
 
                     //Part 2. Commands
                     //NOTE: Creating the command object and registering some commands
@@ -382,8 +439,7 @@ namespace SampleConsole
 
     internal class SomeEnumCommand : ActionCommandBase
     {
-        //TODO: IMPLEMENT: Make private
-        public enum MyEnum { One, Two, Three }
+        enum MyEnum { One, Two, Three }
 
         public SomeEnumCommand()
             : base("enum", "Enum option selection.")

@@ -82,7 +82,7 @@ namespace Tharga.Toolkit.Console.Tests
             }
             else
             {
-                //TODO: Implement fuffer move and remove this feature.
+                //TODO: Implement buffer move and remove this feature.
                 //if (!_bufferMoveEnabled) return; //NOTE: This feature is just becuase Im lazy and do not want to implement this function
                 throw new NotImplementedException("Move partial buffer, is not yet implemented.");
             }

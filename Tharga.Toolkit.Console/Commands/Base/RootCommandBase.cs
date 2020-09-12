@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
     {
         public IConsole Console { get; }
         internal CommandEngine CommandEngine;
-        internal ICommandResolver CommandResolver;
+        internal readonly ICommandResolver CommandResolver;
 
         public event EventHandler<EventArgs> RequestCloseEvent;
         public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
@@ -20,9 +20,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected RootCommandBase(IConsole console)
             : base("root")
         {
-            if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
-
-            Console = console;
+            Console = console ?? throw new ArgumentNullException(nameof(console), "No console provided.");
 
             RegisterCommand(new ExitCommand(() => { RequestCloseEvent?.Invoke(this, new EventArgs()); }));
             RegisterCommand(new ClearCommand());
