@@ -34,6 +34,9 @@ namespace SampleConsole
                 //console = new AggregateConsole(new ClientConsole(), new ActionConsole(e => { System.Diagnostics.Debug.WriteLine(e.Message); }));
                 )
                 {
+                    //var env = new QueryInput(console).QueryParam<string>("Environment", args);
+                    var env = console.QueryParam<string>("Environment", args);
+                    console.Output(new WriteEventArgs($"Environment: {env}", OutputLevel.Information));
 
                     //Part 2. Commands
                     //NOTE: Creating the command object and registering some commands
@@ -150,6 +153,8 @@ namespace SampleConsole
         public SomeContainerCommand()
             : base("some")
         {
+            //var x = QueryParam<bool>("");
+
             RegisterCommand(new SomeListCommand());
             RegisterCommand(new SomeItemCommand());
             RegisterCommand(new SomeOptionCommand());
