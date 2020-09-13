@@ -17,7 +17,12 @@ namespace Tharga.Toolkit.Console
             return new QueryInput(console).QueryPassword(paramName, autoProvideValue, defaultValue);
         }
 
-        public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<string> autoParam = null)
+        public static T QueryParam<T>(this IConsole console, string paramName)
+        {
+            return new QueryInput(console).QueryParam<T>(paramName);
+        }
+
+        public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<string> autoParam)
         {
             return new QueryInput(console).QueryParam<T>(paramName, autoParam);
         }

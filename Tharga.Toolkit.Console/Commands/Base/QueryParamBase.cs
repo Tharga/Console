@@ -23,33 +23,15 @@ namespace Tharga.Toolkit.Console.Commands.Base
         public string QueryPassword(string paramName, string autoProvideValue = null, string defaultValue = null)
         {
             return QueryParam<string>(paramName, autoProvideValue, defaultValue, true);
-
-            //string value;
-
-            //if (!string.IsNullOrEmpty(autoProvideValue))
-            //{
-            //    value = autoProvideValue;
-            //}
-            //else
-            //{
-            //    if (!string.IsNullOrEmpty(defaultValue))
-            //    {
-            //        //value = QueryParam(paramName, (string)null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, true);
-            //        var p1 = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) };
-            //        var p2 = p1?.Select(x => new CommandTreeNode<string>(x.Key, x.Value));
-            //        value = QueryParam(paramName, (string)null, p2, true, true);
-            //    }
-            //    else
-            //    {
-            //        //value = QueryParam(paramName, (string)null, (List<KeyValuePair<string, string>>)null, true);
-            //        value = QueryParam(paramName, (string)null, (IEnumerable<CommandTreeNode<string>>)null, true, true);
-            //    }
-            //}
-
-            //return value;
         }
 
-        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam = null)
+        public T QueryParam<T>(string paramName)
+        {
+            var selection = GenerateSelection<T>();
+            return QueryParam<T>(paramName, null, selection, true, false);
+        }
+
+        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam)
         {
             var selection = GenerateSelection<T>();
             var autoProvideValue = GetNextParam(autoParam);
