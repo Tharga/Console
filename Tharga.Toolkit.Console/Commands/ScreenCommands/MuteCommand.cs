@@ -9,7 +9,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
 {
     internal class MuteCommand : ActionCommandBase
     {
-        private readonly IConsole _console;
+        //private readonly IConsole _console;
 
         public MuteCommand()
             : base("mute", "Mute output.", false)
@@ -20,9 +20,9 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         {
             throw new NotImplementedException("Fire event that mutes the console.");
 
-            var type = QueryParam("Type", param, EnumExtensions.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
+            //var type = QueryParam("Type", param, EnumExtensions.GetValues<OutputLevel>().ToDictionary(x => x, x => x.ToString()));
 
-            ((ConsoleBase)_console).Mute(type);
+            //((ConsoleBase)_console).Mute(type);
         }
     }
 }

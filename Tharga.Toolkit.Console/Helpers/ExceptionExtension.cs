@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 
 namespace Tharga.Toolkit.Console.Helpers
@@ -62,7 +60,7 @@ namespace Tharga.Toolkit.Console.Helpers
                 }
                 catch (Exception e)
                 {
-                    //TODO: Oups, unable to parse
+                    sb.AppendLine($"Oups, internal error. {e.Message}.");
                 }
             }
 

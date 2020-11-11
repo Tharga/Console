@@ -10,7 +10,7 @@ namespace Tharga.Toolkit.Console.Consoles
 {
     public class EventConsole : ConsoleBase
     {
-        public event EventHandler<OutputEventArgs> OutputEvent;
+        public event EventHandler<OutputEventArgs> OutputEv;
 
         public EventConsole()
             : base(new ConsoleManager(System.Console.Out, System.Console.In))
@@ -19,7 +19,7 @@ namespace Tharga.Toolkit.Console.Consoles
 
         public override void Output(IOutput output)
         {
-            OutputEvent?.Invoke(this,new OutputEventArgs(output.Message, output.OutputLevel));
+            OutputEv?.Invoke(this,new OutputEventArgs(output.Message, output.OutputLevel));
         }
 
         public override void Attach(IRootCommand command)
@@ -37,11 +37,6 @@ namespace Tharga.Toolkit.Console.Consoles
             return base.ToString();
         }
 
-        //public override ConsoleKeyInfo ReadKey()
-        //{
-        //    return base.ReadKey();
-        //}
-
         public override ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
             return base.ReadKey(cancellationToken);
@@ -54,7 +49,7 @@ namespace Tharga.Toolkit.Console.Consoles
 
         protected internal override Location WriteLineEx(string value, OutputLevel level)
         {
-            OutputEvent?.Invoke(this, new OutputEventArgs(value, level));
+            OutputEv?.Invoke(this, new OutputEventArgs(value, level));
             return new Location(0, 0);
         }
 

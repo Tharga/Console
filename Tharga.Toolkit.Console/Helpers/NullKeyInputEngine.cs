@@ -9,18 +9,16 @@ namespace Tharga.Toolkit.Console.Helpers
     {
         public ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
-            return Task.Run(() =>
+            Task.Run(() =>
             {
-                while (true)
-                {
-                    Thread.Sleep(10000);
-                }
-                return new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false);
-            }).Result;
+                while (true) Thread.Sleep(10000);
+            });
+
+            return new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false);
         }
 
         public void Feed(string data)
-        {            
+        {
         }
     }
 }
