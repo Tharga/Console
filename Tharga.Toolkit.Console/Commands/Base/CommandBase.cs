@@ -23,7 +23,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected RootCommandBase RootCommand;
         protected int ParamIndex;
-        //private QueryInput _queryParamManager;
 
         internal CommandBase(string name, string description = null, bool hidden = false)
         {
@@ -90,115 +89,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return RootCommand.Console.ReadKey(RootCommand.CommandEngine.CancellationToken);
         }
 
-        //TODO: Theese are to be exposed in several places, can we use some synergy effect?
-        //protected string QueryPassword(string paramName, IEnumerable<string> autoParam, string defaultValue = null)
-        //{
-        //    return QueryPassword(paramName, GetNextParam(autoParam), defaultValue);
-        //}
-
-        //protected string QueryPassword(string paramName, string autoProvideValue = null, string defaultValue = null)
-        //{
-        //    string value;
-
-        //    if (!string.IsNullOrEmpty(autoProvideValue))
-        //    {
-        //        value = autoProvideValue;
-        //    }
-        //    else
-        //    {
-        //        if (!string.IsNullOrEmpty(defaultValue))
-        //        {
-        //            value = QueryParam(paramName, (string)null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, true);
-        //        }
-        //        else
-        //        {
-        //            value = QueryParam(paramName, (string)null, (List<KeyValuePair<string, string>>)null, true);
-        //        }
-        //    }
-
-        //    return value;
-        //}
-
-        //protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, string defaultValue = null)
-        //{
-        //    if (defaultValue == null)
-        //    {
-        //        if (default(T) is Enum)
-        //        {
-        //            var selection = Enum.GetValues(typeof(T)).Cast<T>().ToDictionary(x => x, x => x.ToString());
-        //            return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
-        //        }
-        //        if (default(T) is bool)
-        //        {
-        //            var selection = new Dictionary<T, string> { { (T)(object)true, true.ToString() }, { (T)(object)false, false.ToString() } };
-        //            return QueryParam<T>(paramName, GetNextParam(autoParam), selection);
-        //        }
-        //    }
-
-        //    return QueryParam<T>(paramName, GetNextParam(autoParam), defaultValue);
-        //}
-
-        //protected T QueryParam<T>(string paramName, string autoProvideValue = null, string defaultValue = null)
-        //{
-        //    try
-        //    {
-        //        string value;
-
-        //        if (!string.IsNullOrEmpty(autoProvideValue))
-        //        {
-        //            value = autoProvideValue;
-        //        }
-        //        else
-        //        {
-        //            if (!string.IsNullOrEmpty(defaultValue))
-        //            {
-        //                value = QueryParam(paramName, (string)null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, false);
-        //            }
-        //            else
-        //            {
-        //                value = QueryParam(paramName, (string)null, (List<KeyValuePair<string, string>>)null);
-        //            }
-        //        }
-
-        //        var response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(value);
-        //        return response;
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        if (exception.InnerException?.GetType() == typeof(FormatException))
-        //        {
-        //            throw exception.InnerException;
-        //        }
-        //        throw;
-        //    }
-        //}
-
-        //protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IDictionary<T, string> selectionDelegate)
-        //{
-        //    return QueryParam(paramName, GetNextParam(autoParam), selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
-        //}
-
-        //protected T QueryParam<T>(string paramName, string autoProvideValue, IDictionary<T, string> selectionDelegate)
-        //{
-        //    return QueryParam(paramName, autoProvideValue, selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, false);
-        //}
-
-        //protected T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
-        //{
-        //    return QueryParam<T>(paramName, GetNextParam(autoParam), selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
-        //}
-
-        //protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<KeyValuePair<T, string>> selectionDelegate, bool passwordEntry = false)
-        //{
-        //    //return QueryParamManager.QueryParam<T>(paramName, autoProvideValue, selectionDelegate, passwordEntry);
-        //    return QueryParam(paramName, autoProvideValue, selectionDelegate?.Select(x => new CommandTreeNode<T>(x.Key, x.Value)), true, passwordEntry);
-        //}
-
-        //internal protected T QueryParam<T>(string paramName, string autoProvideValue, IEnumerable<CommandTreeNode<T>> selection, bool allowEscape, bool passwordEntry)
-        //{
-        //    return QueryParamManager.QueryParam(paramName, autoProvideValue, selection, allowEscape, passwordEntry);
-        //}
-
         protected void OutputError(Exception exception, bool includeStackTrace = false, string prefix = null)
         {
             OutputError(exception.ToFormattedString(includeStackTrace, prefix));
@@ -226,7 +116,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
         protected void OutputDefault(string message)
         {
-            OnWriteEvent(this, new WriteEventArgs(message, OutputLevel.Default));
+            OnWriteEvent(this, new WriteEventArgs(message));
         }
 
         protected void OutputHelp(string message)

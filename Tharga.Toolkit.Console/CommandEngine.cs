@@ -22,19 +22,19 @@ namespace Tharga.Toolkit.Console
         private readonly CancellationTokenSource _cancellationTokenSource;
         private bool _commandMode;
 
-        public CommandEngine(IRootCommand rootCommand)
-            : this(rootCommand, new InputManager(rootCommand.Console))
+        public CommandEngine(IRootCommand rootCommand, CancellationTokenSource cancellationTokenSource = null)
+            : this(rootCommand, new InputManager(rootCommand.Console), cancellationTokenSource)
         {
         }
 
-        internal CommandEngine(IRootCommand rootCommand, IInputManager inputManager)
+        internal CommandEngine(IRootCommand rootCommand, IInputManager inputManager, CancellationTokenSource cancellationTokenSource)
         {
             if (rootCommand == null) throw new ArgumentNullException(nameof(rootCommand), "No root command provided.");
             if (rootCommand.Console == null) throw new ArgumentNullException(nameof(rootCommand.Console), "No console for root command provided.");
 
             RootCommand = rootCommand;
             InputManager = inputManager;
-            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource();
             RootCommand.RequestCloseEvent += (sender, e) => { Stop(); };
 
             //TODO: Try reversing the dependency, so that the root command has an engine instead of the engine having a root command.
@@ -134,8 +134,7 @@ namespace Tharga.Toolkit.Console
         {
             if (HasFlag(flags, FlagReset))
             {
-                var consoleBase = RootCommand.Console as ConsoleBase;
-                if (consoleBase != null)
+                if (RootCommand.Console is ConsoleBase consoleBase)
                 {
                     consoleBase.Reset();
                     RootCommand.Console.Output(new WriteEventArgs("Reset performed, triggered by the reset flag '/r' provide as a parameter.", OutputLevel.Information));
@@ -176,7 +175,6 @@ namespace Tharga.Toolkit.Console
                 else
                 {
                     Stop();
-                    //_cancellationTokenSource.Cancel();
                 }
             }
 
