@@ -89,6 +89,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return RootCommand.Console.ReadKey(RootCommand.CommandEngine.CancellationToken);
         }
 
+        protected void Output(string message, OutputLevel level)
+        {
+            OnWriteEvent(this, new WriteEventArgs(message, level));
+        }
+
         protected void OutputError(Exception exception, bool includeStackTrace = false, string prefix = null)
         {
             OutputError(exception.ToFormattedString(includeStackTrace, prefix));
