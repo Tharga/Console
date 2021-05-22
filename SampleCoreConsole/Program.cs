@@ -8,7 +8,7 @@ using System.Timers;
 using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using SampleConsole;
+using SampleCoreConsole.Business;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
@@ -38,6 +38,8 @@ namespace SampleCoreConsole
                         //.Configure(x => System.Diagnostics.Debug.WriteLine($"Registered in IOC: {x.Implementation.Name}"))
                         .Configure(x => x.LifeStyle.Is(LifestyleType.Transient)));
 
+                    container.Register(Component.For<SingletonBusiness, ISingletonBusiness>().LifeStyle.Singleton);
+                    container.Register(Component.For<TransientBusiness, ITransientBusiness>().LifeStyle.Transient);
 
                     var command = new RootCommand(console, new CommandResolver(type => (ICommand)container.Resolve(type)));
 
@@ -49,6 +51,7 @@ namespace SampleCoreConsole
                     command.RegisterCommand<OutputContainerCommand>();
                     command.RegisterCommand<ReadKeyLoop>();
                     command.RegisterCommand<InfiniteLoop>();
+                    command.RegisterCommand<InjectBusinessCommand>();
 
                     var commandEngine = new CommandEngine(command)
                     {
@@ -323,7 +326,6 @@ namespace SampleCoreConsole
     }
 
     #endregion
-
     #region Math commands (parameter example)
 
     public class MathContainerCommand : ContainerCommandBase
@@ -410,7 +412,6 @@ namespace SampleCoreConsole
     }
 
     #endregion
-
     #region Status commands
 
     public class StatusCommand : ContainerCommandBase
@@ -547,7 +548,6 @@ namespace SampleCoreConsole
     }
 
     #endregion
-
     #region Disable commands
 
     internal class SomeContainerWithDisabledSubs : ContainerCommandBase
@@ -596,7 +596,6 @@ namespace SampleCoreConsole
     }
 
     #endregion
-
     #region Output commands
 
     public class OutputContainerCommand : ContainerCommandBase
@@ -736,6 +735,53 @@ namespace SampleCoreConsole
     }
 
     #endregion
+    #region Inject commands
+
+    public class InjectBusinessCommand : ContainerCommandBase
+    {
+        public InjectBusinessCommand()
+            : base("Inject")
+        {
+            RegisterCommand<InjectTransientCommand>();
+            RegisterCommand<InjectSingletonCommand>();
+        }
+    }
+
+    public class InjectTransientCommand : ActionCommandBase
+    {
+        private readonly ITransientBusiness _transientBusiness;
+
+        public InjectTransientCommand(ITransientBusiness transientBusiness)
+            : base("Transient")
+        {
+            _transientBusiness = transientBusiness;
+        }
+
+        public override void Invoke(string[] param)
+        {
+            OutputInformation($"T: {_transientBusiness.GetValue()}");
+        }
+    }
+
+    internal class InjectSingletonCommand : AsyncActionCommandBase
+    {
+        private readonly ISingletonBusiness _singletonBusiness;
+
+        public InjectSingletonCommand(ISingletonBusiness singletonBusiness)
+            : base("Singleton")
+        {
+            _singletonBusiness = singletonBusiness;
+        }
+
+        public override Task InvokeAsync(string[] param)
+        {
+            OutputInformation($"S: {_singletonBusiness.GetValue()}");
+            return Task.CompletedTask;
+        }
+    }
+
+    #endregion
+    #region Loop Command
 
     public class ReadKeyLoop : ActionCommandBase
     {
@@ -788,4 +834,6 @@ namespace SampleCoreConsole
             }).Start();
         }
     }
+
+    #endregion
 }

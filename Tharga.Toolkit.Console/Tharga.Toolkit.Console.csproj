@@ -12,4 +12,7 @@
     <RepositoryUrl>https://github.com/poxet/tharga-console.git</RepositoryUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Tharga.Toolkit.Console.csproj.DotSettings" />
+  </ItemGroup>
 </Project>

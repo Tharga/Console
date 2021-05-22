@@ -113,7 +113,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             foreach (var command in commands[0])
             {
-                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command}" : command, command, null);
+                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command}" : command, command);
             }
         }
 
@@ -121,8 +121,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             try
             {
-                string subCommand;
-                var command = GetSubCommand(entry, out subCommand);
+                var command = GetSubCommand(entry, out var subCommand);
                 if (command != null)
                 {
                     var bc = command as CommandBase;
@@ -131,8 +130,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     if (cc == null)
                     {
-                        string reason;
-                        if (!command.CanExecute(out reason))
+                        if (!command.CanExecute(out var reason))
                         {
                             OutputWarning(GetCanExecuteFailMessage(reason));
                             return false;
@@ -143,7 +141,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     if (ac != null)
                     {
-                        ac.InvokeEx(param);
+                        var instance = (ActionCommandBase)CommandResolver.Resolve(ac.GetType());
+                        instance.WriteEvent += OnOutputEvent;
+                        instance.Attach(RootCommand, null);
+                        instance.InvokeEx(param);
                     }
                     else if (bc != null)
                     {
@@ -172,7 +173,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             catch (SystemException exception)
             {
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception, false);
+                OutputError(exception);
             }
             catch (AggregateException exception)
             {
@@ -180,12 +181,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     return false;
 
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception, false);
+                OutputError(exception);
             }
             catch (Exception exception)
             {
                 OnExceptionOccuredEvent(new ExceptionOccuredEventArgs(exception));
-                OutputError(exception, false);
+                OutputError(exception);
                 OutputWarning("Terminating application...");
                 throw;
             }

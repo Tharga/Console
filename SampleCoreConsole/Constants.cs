@@ -1,4 +1,4 @@
-﻿namespace SampleConsole
+﻿namespace SampleCoreConsole
 {
     internal static class Constants
     {
