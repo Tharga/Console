@@ -7,7 +7,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
     internal class ClearCommand : ActionCommandBase
     {
         internal ClearCommand()
-            : base("cls", "Clears the display.", false)
+            : base("cls", "Clears the display.")
         {
             AddName("clear");
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Tharga.Toolkit.Console.Commands.ScreenCommands;
 using Tharga.Toolkit.Console.Entities;
@@ -121,7 +122,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             try
             {
-                var command = GetSubCommand(entry, out var subCommand);
+                var command = GetSubCommand(entry, out var subCommand, out var typeRegistration);
                 if (command != null)
                 {
                     var bc = command as CommandBase;
@@ -141,10 +142,28 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     if (ac != null)
                     {
-                        var instance = (ActionCommandBase)CommandResolver.Resolve(ac.GetType());
-                        instance.WriteEvent += OnOutputEvent;
-                        instance.Attach(RootCommand, null);
-                        instance.InvokeEx(param);
+                        if (typeRegistration)
+                        {
+                            try
+                            {
+                                var instance = (ActionCommandBase)CommandResolver?.Resolve(ac.GetType());
+                                if (instance != null)
+                                {
+                                    instance.WriteEvent += OnOutputEvent;
+                                    instance.Attach(RootCommand, null);
+                                    ac = instance;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Trace.TraceWarning(e.Message);
+                            }
+                        }
+                        else
+                        {
+                        }
+
+                        ac.InvokeEx(param);
                     }
                     else if (bc != null)
                     {
