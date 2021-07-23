@@ -43,6 +43,7 @@ namespace SampleCoreConsole
 
                     var command = new RootCommand(console, new CommandResolver(type => (ICommand)container.Resolve(type)));
 
+                    //command.UnregisterCommand("command");
                     command.RegisterCommand<SomeContainerCommand>();
                     command.RegisterCommand<SomeMoreCommand>();
                     command.RegisterCommand<MathContainerCommand>();

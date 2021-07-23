@@ -78,9 +78,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
             CommandRegisteredEvent?.Invoke(this, new CommandRegisteredEventArgs(command));
         }
 
-        protected void UnregisterCommand(string commandName)
+        public void UnregisterCommand(string commandName)
         {
             _subCommands.RemoveAll(x => string.Compare(x.Name, commandName, StringComparison.InvariantCultureIgnoreCase) == 0);
+            _subCommands.RemoveAll(x => x.Names.Any(y => string.Compare(y, commandName, StringComparison.InvariantCultureIgnoreCase) == 0));
         }
 
         protected ICommand GetCommand(string commandName)
