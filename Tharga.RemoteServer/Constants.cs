@@ -2,6 +2,7 @@
 {
     internal static class Constants
     {
-        public const string HubName = "Client";
+        public const string ClientHubName = "Client";
+        public const string ConsoleHubName = "Console";
     }
 }

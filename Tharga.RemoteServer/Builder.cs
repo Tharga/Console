@@ -21,7 +21,13 @@ namespace Tharga.RemoteServer
         {
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<ClientHub>($"/{Constants.HubName}", options =>
+                endpoints.MapHub<ClientHub>($"/{Constants.ClientHubName}", options =>
+                {
+                    options.ApplicationMaxBufferSize = 0;
+                    options.TransportMaxBufferSize = 0;
+                });
+
+                endpoints.MapHub<ConsoleHub>($"/{Constants.ConsoleHubName}", options =>
                 {
                     options.ApplicationMaxBufferSize = 0;
                     options.TransportMaxBufferSize = 0;

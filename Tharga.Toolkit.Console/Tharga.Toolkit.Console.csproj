@@ -15,4 +15,7 @@
   <ItemGroup>
     <None Remove="Tharga.Toolkit.Console.csproj.DotSettings" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.12" />
+  </ItemGroup>
 </Project>
