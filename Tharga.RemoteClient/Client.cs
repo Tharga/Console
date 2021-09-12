@@ -41,7 +41,10 @@ namespace Tharga.RemoteClient
             //_connection.Closed += OnClosed;
             //_connection.Reconnecting += OnReconnecting;
             //_connection.Reconnected += OnReconnected;
-            //_connection.On<Notification>(Constants.NotificationSignalRMethodName, OnNotification);
+            _connection.On<string>(Remote.Common.Constants.OnConsoleConnected, x =>
+            {
+                Console.WriteLine($"Console connected. {x}");
+            });
         }
 
         public Task ConnectAsync()

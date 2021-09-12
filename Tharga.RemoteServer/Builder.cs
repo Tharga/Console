@@ -14,6 +14,9 @@ namespace Tharga.RemoteServer
                 hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(3);
             });
 
+            services.AddSingleton<IClientService, ClientService>();
+            services.AddSingleton<IConsoleService, ConsoleService>();
+
             return services;
         }
 
