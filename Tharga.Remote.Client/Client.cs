@@ -17,8 +17,8 @@ namespace Tharga.Remote.Client
             _connection = new HubConnectionBuilder()
                 .ConfigureLogging(logging =>
                 {
-                    logging.AddFilter("Microsoft.AspNetCore.SignalR", Microsoft.Extensions.Logging.LogLevel.Debug);
-                    logging.AddFilter("Microsoft.AspNetCore.Http.Connections", Microsoft.Extensions.Logging.LogLevel.Debug);
+                    logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
+                    logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
                 })
                 .WithUrl(address, options =>
                 {
@@ -41,10 +41,7 @@ namespace Tharga.Remote.Client
             //_connection.Closed += OnClosed;
             //_connection.Reconnecting += OnReconnecting;
             //_connection.Reconnected += OnReconnected;
-            _connection.On<string>(Remote.Common.Constants.OnConsoleConnected, x =>
-            {
-                Console.WriteLine($"Console connected. {x}");
-            });
+            _connection.On<string>(Common.Constants.OnConsoleConnected, x => { Console.WriteLine($"Console connected. {x}"); });
         }
 
         public Task ConnectAsync()

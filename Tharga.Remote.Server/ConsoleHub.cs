@@ -6,8 +6,8 @@ namespace Tharga.Remote.Server
 {
     internal class ConsoleHub : Hub
     {
-        private readonly IConsoleService _consoleService;
         private readonly IClientService _clientService;
+        private readonly IConsoleService _consoleService;
 
         public ConsoleHub(IConsoleService consoleService, IClientService clientService)
         {
@@ -46,16 +46,12 @@ namespace Tharga.Remote.Server
 
         public async Task RegisterAsync(HubCallerContext hubCallerContext)
         {
-            await _consoleHub.Clients.All.SendCoreAsync(Tharga.Remote.Common.Constants.OnConsoleConnected, new[] { "x" });
+            await _consoleHub.Clients.All.SendCoreAsync(Common.Constants.OnConsoleConnected, new[] { "x" });
         }
     }
 
     internal class ClientService : IClientService
     {
-        public ClientService()
-        {
-        }
-
         public Task RegisterAsync(HubCallerContext hubCallerContext)
         {
             return Task.CompletedTask;

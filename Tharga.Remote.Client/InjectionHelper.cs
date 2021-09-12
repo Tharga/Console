@@ -2,6 +2,7 @@
 using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Remote.Client
 {
@@ -15,7 +16,7 @@ namespace Tharga.Remote.Client
 
             container.Register(Classes.FromAssemblyInThisApplication(Assembly.GetAssembly(typeof(Program)))
                 .IncludeNonPublicTypes()
-                .BasedOn<Toolkit.Console.Interfaces.ICommand>()
+                .BasedOn<ICommand>()
                 //.Configure(x => System.Diagnostics.Debug.WriteLine($"Registered in IOC: {x.Implementation.Name}"))
                 .Configure(x => x.LifeStyle.Is(LifestyleType.Transient)));
 
