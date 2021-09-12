@@ -15,7 +15,7 @@
       "Projects": {
         "SampleCoreConsole": {},
         "Tharga.RemoteServer": {},
-        "Tharga.RemoteConsole": {}
+        "Tharga.RemoteClient": {}
       }
     }
   }
