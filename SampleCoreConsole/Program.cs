@@ -28,7 +28,7 @@ namespace SampleCoreConsole
             IConsole console = null;
             try
             {
-                using (console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen }))
+                using (console = new RemoteConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen }))
                 {
                     var container = new WindsorContainer();
 
