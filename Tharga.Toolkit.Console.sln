@@ -31,9 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Remote.Api", "Tharga
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Remote.Server", "Tharga.Remote.Server\Tharga.Remote.Server.csproj", "{BC89BA6F-A78A-4C48-959F-7A2BC1AFE5A3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Remote.Common", "Tharga.Remote.Common\Tharga.Remote.Common.csproj", "{B21B6260-EA53-4F31-BF45-00E396EA91FB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Toolkit.Remote.Console", "Tharga.Toolkit.Remote.Console\Tharga.Toolkit.Remote.Console.csproj", "{6A6ABB4A-B659-4F38-9FE0-748FFCE5293C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Toolkit.Remote.Console", "Tharga.Toolkit.Remote.Console\Tharga.Toolkit.Remote.Console.csproj", "{6A6ABB4A-B659-4F38-9FE0-748FFCE5293C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,12 +76,6 @@ Global
 		{BC89BA6F-A78A-4C48-959F-7A2BC1AFE5A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC89BA6F-A78A-4C48-959F-7A2BC1AFE5A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC89BA6F-A78A-4C48-959F-7A2BC1AFE5A3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B21B6260-EA53-4F31-BF45-00E396EA91FB}.CI|Any CPU.ActiveCfg = Debug|Any CPU
-		{B21B6260-EA53-4F31-BF45-00E396EA91FB}.CI|Any CPU.Build.0 = Debug|Any CPU
-		{B21B6260-EA53-4F31-BF45-00E396EA91FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B21B6260-EA53-4F31-BF45-00E396EA91FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B21B6260-EA53-4F31-BF45-00E396EA91FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B21B6260-EA53-4F31-BF45-00E396EA91FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6A6ABB4A-B659-4F38-9FE0-748FFCE5293C}.CI|Any CPU.ActiveCfg = Debug|Any CPU
 		{6A6ABB4A-B659-4F38-9FE0-748FFCE5293C}.CI|Any CPU.Build.0 = Debug|Any CPU
 		{6A6ABB4A-B659-4F38-9FE0-748FFCE5293C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -99,7 +91,6 @@ Global
 		{5632ADD5-E6D1-47E8-9E30-C7803BD889FC} = {8A889D81-2672-4D6D-8BF4-2D4001028BDD}
 		{2545D98E-76BF-4FC6-AD4E-8016C73D1699} = {8A889D81-2672-4D6D-8BF4-2D4001028BDD}
 		{BC89BA6F-A78A-4C48-959F-7A2BC1AFE5A3} = {8A889D81-2672-4D6D-8BF4-2D4001028BDD}
-		{B21B6260-EA53-4F31-BF45-00E396EA91FB} = {8A889D81-2672-4D6D-8BF4-2D4001028BDD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D7D7391C-196D-44E1-8966-28CBD0872CE5}

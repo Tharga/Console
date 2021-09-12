@@ -10,8 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tharga.Remote.Common\Tharga.Remote.Common.csproj" />
-    <ProjectReference Include="..\Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj" />
+    <ProjectReference Include="..\Tharga.Toolkit.Remote.Console\Tharga.Toolkit.Remote.Console.csproj" />
   </ItemGroup>
 
   <ItemGroup>

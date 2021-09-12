@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Tharga.Remote.Client.ConsoleCommands;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Consoles;
@@ -15,6 +16,9 @@ namespace Tharga.Remote.Client
             using var console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
             var container = InjectionHelper.Register();
             var command = new RootCommand(console, new CommandResolver(type => (ICommand)container.Resolve(type)));
+
+            command.RegisterCommand<RemoteConsoleCommands>();
+
             var commandEngine = new CommandEngine(command)
             {
                 TaskRunners = new[]

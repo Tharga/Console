@@ -100,7 +100,10 @@ namespace Tharga.Toolkit.Console
                     }
                 }
 
-                if (TaskRunners != null) Parallel.ForEach(TaskRunners, x => x.Close());
+                if (TaskRunners != null)
+                {
+                    Parallel.ForEach(TaskRunners, x => x.Close());
+                }
             }
             catch (Exception exception)
             {

@@ -44,7 +44,7 @@ namespace Tharga.Toolkit.Console.Helpers
             finally
             {
                 task?.Dispose();
-                inputInstance?.Dispose();
+                //inputInstance?.Dispose();
             }
         }
 

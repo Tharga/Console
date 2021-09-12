@@ -5,24 +5,13 @@ using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Tharga.Toolkit.Console.Consoles;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Remote.Console
 {
-    public class RemoteConsoleConfiguration : ConsoleConfiguration, IRemoteConsoleConfiguration
-    {
-        public Uri ServerAddress { get; set; }
-    }
-
-    public interface IRemoteConsoleConfiguration : IConsoleConfiguration
-    {
-        Uri ServerAddress { get; }
-    }
-
     public class RemoteConsole : ClientConsole
     {
         private readonly HubConnection _connection;
+        private bool _subscribing;
 
         public RemoteConsole(IRemoteConsoleConfiguration consoleConfiguration = null)
             : base(consoleConfiguration)
@@ -60,6 +49,38 @@ namespace Tharga.Toolkit.Remote.Console
                 await _connection.StartAsync();
                 OutputInformation("Connected to server.");
             });
+
+            //TODO: Add pattern for reconnect
+            //_connection.Closed += OnClosed;
+            //_connection.Reconnecting += OnReconnecting;
+            //_connection.Reconnected += OnReconnected;
+            _connection.On(Constants.OnSubscribe, () =>
+            {
+                //TODO: Start sending output to server.
+                //TODO: Send initial buffer (the first x lines, from startup of the service)
+                //TODO: Display something to show there is an external subscription opened.
+                _subscribing = true;
+            });
+            _connection.On(Constants.OnUnsubscribe, () =>
+            {
+                //TODO: Stop subscription
+                _subscribing = false;
+            });
+
+            this.LineWrittenEvent += async (s, e) =>
+            {
+                if (_subscribing)
+                {
+                    await _connection.SendAsync(Constants.LineWritten, e);
+                }
+            };
+        }
+
+        public override void Dispose()
+        {
+            _connection?.StopAsync().GetAwaiter().GetResult();
+            _connection?.DisposeAsync();
+            base.Dispose();
         }
     }
 }

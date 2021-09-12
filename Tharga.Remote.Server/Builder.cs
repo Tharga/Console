@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Tharga.Remote.Server.Client;
+using Tharga.Remote.Server.Console;
 
 namespace Tharga.Remote.Server
 {
@@ -14,8 +16,10 @@ namespace Tharga.Remote.Server
                 hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(3);
             });
 
-            services.AddSingleton<IClientService, ClientService>();
-            services.AddSingleton<IConsoleService, ConsoleService>();
+            services.AddTransient<IClientService, ClientService>();
+            services.AddTransient<IConsoleService, ConsoleService>();
+            services.AddSingleton<IConsoleStore, ConsoleStore>();
+            services.AddSingleton<ISelectStore, SelectStore>();
 
             return services;
         }

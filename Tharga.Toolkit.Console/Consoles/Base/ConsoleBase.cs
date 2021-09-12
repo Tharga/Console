@@ -133,7 +133,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             OutputTable(new[] { title }.Union(data));
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             DisposeEvent?.Invoke(this, new EventArgs());
             ConsoleManager?.Dispose();

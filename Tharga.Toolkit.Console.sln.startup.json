@@ -14,8 +14,8 @@
     "Remote": {
       "Projects": {
         "SampleCoreConsole": {},
-        "Tharga.RemoteApi": {},
-        "Tharga.RemoteClient": {}
+        "Tharga.Remote.Api": {},
+        "Tharga.Remote.Client": {}
       }
     }
   }
