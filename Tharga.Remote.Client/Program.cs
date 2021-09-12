@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Tharga.Remote.Client.ConsoleCommands;
+﻿using Tharga.Remote.Client.ConsoleCommands;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Consoles;
@@ -14,7 +13,7 @@ namespace Tharga.Remote.Client
         private static void Main(string[] args)
         {
             using var console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen });
-            var container = InjectionHelper.Register();
+            var container = InjectionHelper.Register(console);
             var command = new RootCommand(console, new CommandResolver(type => (ICommand)container.Resolve(type)));
 
             command.RegisterCommand<RemoteConsoleCommands>();
@@ -23,13 +22,12 @@ namespace Tharga.Remote.Client
             {
                 TaskRunners = new[]
                 {
-                    new TaskRunner(async (c, a) =>
+                    new TaskRunner(async (_, a) =>
                     {
                         var client = container.Resolve<IClient>();
                         await client.ConnectAsync();
                         a.WaitOne();
-                        //TODO: This is not triggered on the exit command. Fix this issue.
-                        Debug.WriteLine("Closing...");
+                        await client.DisconnectAsync();
                     })
                 }
             };

@@ -17,6 +17,7 @@ namespace Tharga.Remote.Client.ConsoleCommands
         public override async Task InvokeAsync(string[] param)
         {
             var consoles = await _client.GetListAsync();
+            //TODO: Only list consoles that have not been selected.
             var console = QueryParam("Console", param, consoles.ToDictionary(x => x, x => x.Name));
 
             await _client.SelectAsync(console.Key);

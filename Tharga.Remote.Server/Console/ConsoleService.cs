@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.SignalR;
 using Tharga.Remote.Server.Client;
 using Tharga.Toolkit.Remote.Console;
@@ -23,18 +25,9 @@ namespace Tharga.Remote.Server.Console
 
         public async Task UnRegisterAsync(HubCallerContext hubCallerContext, Exception exception)
         {
-            var consoleInfo = new ConsoleInfo
-            {
-                Key = hubCallerContext.ConnectionId,
-                Name = "?",
-                Status = new ConnectionStatus
-                {
-                    Message = exception?.Message ?? "Disconnected"
-                }
-            };
-
-            _consoleStore.Remove(consoleInfo);
-
+            var consoleInfo = _consoleStore.Remove(hubCallerContext.ConnectionId);
+            if (consoleInfo == default) return;
+            consoleInfo.Status.Message = exception?.Message ?? "Disconnected";
             await _clientHub.Clients.All.SendCoreAsync(Toolkit.Remote.Console.Constants.OnConsoleDisconnected, new[] { consoleInfo });
         }
 
@@ -56,11 +49,31 @@ namespace Tharga.Remote.Server.Console
 
         public async Task RegisterAsync(HubCallerContext hubCallerContext)
         {
+            var header = new ConsoleHeader
+            {
+                MachineName = hubCallerContext.GetHttpContext().Request.Headers["MachineName"].ToString(),
+                AppName = hubCallerContext.GetHttpContext().Request.Headers["AppName"].ToString(),
+                Version = hubCallerContext.GetHttpContext().Request.Headers["Version"].ToString(),
+                Tags = new string[0]
+            };
+
+            if (hubCallerContext.GetHttpContext().Request.Headers.TryGetValue("Tags", out var tags))
+            {
+                header.Tags = tags.ToString().Split(",").ToArray();
+            }
+
+            if (!hubCallerContext.GetHttpContext().Request.Headers.TryGetValue("Name", out var name))
+                name = $"{header.MachineName}.{header.AppName}";
+
             var consoleInfo = new ConsoleInfo
             {
                 Key = hubCallerContext.ConnectionId,
-                Name = "?",
-                Status = new ConnectionStatus()
+                Name = name,
+                Header = header,
+                Status = new ConnectionStatus
+                {
+                    Message = "Connected"
+                }
             };
 
             _consoleStore.Add(consoleInfo);

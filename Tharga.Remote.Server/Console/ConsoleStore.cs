@@ -13,9 +13,10 @@ namespace Tharga.Remote.Server.Console
             _store.TryAdd(consoleInfo.Key, consoleInfo);
         }
 
-        public void Remove(ConsoleInfo consoleInfo)
+        public ConsoleInfo Remove(string consoleKey)
         {
-            _store.TryRemove(consoleInfo.Key, out _);
+            _store.TryRemove(consoleKey, out var consoleInfo);
+            return consoleInfo;
         }
 
         public ConsoleInfo[] GetAll()

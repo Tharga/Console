@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Tharga.Remote.Server.Client;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Remote.Console;
 
 namespace Tharga.Remote.Server.Console
 {
@@ -28,9 +29,9 @@ namespace Tharga.Remote.Server.Console
         }
 
         [HubMethodName(Toolkit.Remote.Console.Constants.LineWritten)]
-        public Task SelectConsole(LineWrittenEventArgs lineWrittenEventArgs)
+        public Task SelectConsole(LineWrittenInfo lineWrittenInfo)
         {
-            return _clientService.SendLineWrittenAsync(Context.ConnectionId, lineWrittenEventArgs);
+            return _clientService.SendLineWrittenAsync(Context.ConnectionId, lineWrittenInfo);
         }
     }
 }

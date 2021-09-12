@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
+using Tharga.Toolkit.Console.Consoles;
 using Tharga.Toolkit.Remote.Console;
 using Tharga.Toolkit.Console.Entities;
 
@@ -13,11 +14,13 @@ namespace Tharga.Remote.Client
 {
     internal class Client : IClient
     {
+        private readonly ClientConsole _clientConsole;
         private readonly HubConnection _connection;
         private readonly ConcurrentDictionary<string, ConsoleInfo> _store = new();
 
-        public Client()
+        public Client(ClientConsole clientConsole)
         {
+            _clientConsole = clientConsole;
             var address = "https://localhost:44315/Client";
             _connection = new HubConnectionBuilder()
                 .ConfigureLogging(logging =>
@@ -43,22 +46,23 @@ namespace Tharga.Remote.Client
                 })
                 .Build();
 
+            //TODO: Create reconnect pattern.
             //_connection.Closed += OnClosed;
             //_connection.Reconnecting += OnReconnecting;
             //_connection.Reconnected += OnReconnected;
-            _connection.On<ConsoleInfo>(Tharga.Toolkit.Remote.Console.Constants.OnConsoleConnected, item =>
+            _connection.On<ConsoleInfo>(Toolkit.Remote.Console.Constants.OnConsoleConnected, item =>
             {
                 _store.AddOrUpdate(item.Key, item, (_, _) => item);
-                Console.WriteLine($"Console connected. {item.Name}");
+                _clientConsole.OutputInformation($"Console '{item.Name}' connected.");
             });
 
-            _connection.On<ConsoleInfo>(Tharga.Toolkit.Remote.Console.Constants.OnConsoleDisconnected, item =>
+            _connection.On<ConsoleInfo>(Toolkit.Remote.Console.Constants.OnConsoleDisconnected, item =>
             {
                 _store.AddOrUpdate(item.Key, item, (_, _) => item);
-                Console.WriteLine($"Console disconnected. {item.Name}");
+                _clientConsole.OutputWarning($"Console '{item.Name}' disconnected.");
             });
 
-            _connection.On<ConsoleInfo[]>(Tharga.Toolkit.Remote.Console.Constants.OnConsoleList, items =>
+            _connection.On<ConsoleInfo[]>(Toolkit.Remote.Console.Constants.OnConsoleList, items =>
             {
                 foreach (var item in items)
                 {
@@ -66,16 +70,21 @@ namespace Tharga.Remote.Client
                 }
             });
 
-            _connection.On<LineWrittenEventArgs>(Tharga.Toolkit.Remote.Console.Constants.OnLineWritten, data =>
+            _connection.On<LineWrittenInfo>(Toolkit.Remote.Console.Constants.OnLineWritten, data =>
             {
-                //TODO: Use nicer output
-                Console.WriteLine($"{data.Level}: {data.Value}");
+                //TODO: Show what console created the output
+                _clientConsole.Output(new WriteEventArgs(data.Value, data.Level));
             });
         }
 
         public Task ConnectAsync()
         {
             return _connection.StartAsync();
+        }
+
+        public Task DisconnectAsync()
+        {
+            return _connection.StopAsync();
         }
 
         public Task<ConsoleInfo[]> GetListAsync()

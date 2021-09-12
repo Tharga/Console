@@ -5,5 +5,6 @@ namespace Tharga.Toolkit.Remote.Console
         public string Key { get; set; }
         public string Name { get; set; }
         public ConnectionStatus Status { get; set; }
+        public ConsoleHeader Header { get; set; }
     }
 }

@@ -68,7 +68,10 @@ namespace Tharga.Toolkit.Console
                 if (TaskRunners != null)
                     Task.Run(() =>
                     {
-                        foreach (var runner in TaskRunners) runner.Start();
+                        foreach (var runner in TaskRunners)
+                        {
+                            runner.Start();
+                        }
                     }, CancellationToken);
 
                 if (flags.Any()) HandleFlags(flags);

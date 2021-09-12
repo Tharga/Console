@@ -31,7 +31,9 @@ namespace SampleCoreConsole
                 using (console = new RemoteConsole(new RemoteConsoleConfiguration
                 {
                     SplashScreen = Constants.SplashScreen,
-                    ServerAddress = new Uri("https://localhost:44315")
+                    ServerAddress = new Uri("https://localhost:44315"),
+                    Tags = new []{"A", "B"},
+                    ConsoleName = "MyConsole"
                 }))
                 {
                     var container = new WindsorContainer();

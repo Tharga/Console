@@ -21,12 +21,18 @@ namespace Tharga.Remote.Client.ConsoleCommands
             {
                 "Name",
                 "Status",
-                "Selected"
+                "Machine",
+                "Version",
+                "Tags",
+                "Selected",
             }, items.Select(x => new[]
             {
                 x.Name,
                 x.Status?.Message,
-                "?"
+                x.Header.MachineName,
+                x.Header.Version,
+                string.Join(",", x.Header.Tags),
+                "?",
             }));
         }
     }

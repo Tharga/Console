@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Tharga.Remote.Server.Console;
 using Tharga.Toolkit.Console.Entities;
+using Tharga.Toolkit.Remote.Console;
 
 namespace Tharga.Remote.Server.Client
 {
@@ -24,13 +25,13 @@ namespace Tharga.Remote.Server.Client
             await _clientHub.Clients.Client(hubCallerContext.ConnectionId).SendAsync(Toolkit.Remote.Console.Constants.OnConsoleList, consoles);
         }
 
-        public async Task SendLineWrittenAsync(string consoleKey, LineWrittenEventArgs lineWrittenEventArgs)
+        public async Task SendLineWrittenAsync(string consoleKey, LineWrittenInfo lineWrittenInfo)
         {
             //TODO: Send this information to all subscribers
             //If there are no subscribers, tell the client to stop sending stuff.
             foreach (var subscriber in _selectStore.GetSubscribers(consoleKey))
             {
-                await _clientHub.Clients.Client(subscriber).SendAsync(Toolkit.Remote.Console.Constants.OnLineWritten, lineWrittenEventArgs);
+                await _clientHub.Clients.Client(subscriber).SendAsync(Toolkit.Remote.Console.Constants.OnLineWritten, lineWrittenInfo);
             }
         }
     }

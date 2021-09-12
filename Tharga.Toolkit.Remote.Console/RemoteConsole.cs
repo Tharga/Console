@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -20,6 +21,7 @@ namespace Tharga.Toolkit.Remote.Console
                 ? $"{consoleConfiguration.ServerAddress.AbsoluteUri}Console"
                 : "https://localhost:44315/Console";
 
+            //TODO: Provide header data for this specific client.
             _connection = new HubConnectionBuilder()
                 .ConfigureLogging(logging =>
                 {
@@ -41,44 +43,76 @@ namespace Tharga.Toolkit.Remote.Console
                     //    options.Transports = HttpTransportType.LongPolling;
                     //    options.HttpMessageHandlerFactory = x => handler;
                     //}
+
+                    if (!string.IsNullOrEmpty(consoleConfiguration?.ConsoleName))
+                    {
+                        options.Headers.Add("Name", consoleConfiguration?.ConsoleName);
+                    }
+
+                    //TODO: Append optional Tags
+
+                    options.Headers.Add("MachineName", Environment.MachineName);
+
+                    var assemblyName = Assembly.GetExecutingAssembly().GetName();
+                    options.Headers.Add("AppName", assemblyName.Name);
+                    options.Headers.Add("Version", assemblyName.Version.ToString());
+
+                    if (consoleConfiguration?.Tags != null)
+                    {
+                        options.Headers.Add("Tags", string.Join(",", consoleConfiguration.Tags));
+                    }
                 })
                 .Build();
 
             Task.Run(async () =>
             {
                 await _connection.StartAsync();
-                OutputInformation("Connected to server.");
+                OutputInformation("Connected.");
             });
 
             //TODO: Add pattern for reconnect
-            //_connection.Closed += OnClosed;
-            //_connection.Reconnecting += OnReconnecting;
-            //_connection.Reconnected += OnReconnected;
+            _connection.Closed += e =>
+            {
+                OutputInformation($"Connection closed. ({e?.Message})");
+                return Task.CompletedTask;
+            };
+            _connection.Reconnecting += (e) =>
+            {
+                OutputInformation($"Reconnecting. ({e?.Message})");
+                return Task.CompletedTask;
+            };
+            _connection.Reconnected += (e) =>
+            {
+                OutputInformation($"Reconnected. ({e})");
+                return Task.CompletedTask;
+            };
+
             _connection.On(Constants.OnSubscribe, () =>
             {
-                //TODO: Start sending output to server.
-                //TODO: Send initial buffer (the first x lines, from startup of the service)
-                //TODO: Display something to show there is an external subscription opened.
                 _subscribing = true;
             });
             _connection.On(Constants.OnUnsubscribe, () =>
             {
-                //TODO: Stop subscription
                 _subscribing = false;
             });
-
-            this.LineWrittenEvent += async (s, e) =>
+            LineWrittenEvent += async (s, e) =>
             {
                 if (_subscribing)
                 {
-                    await _connection.SendAsync(Constants.LineWritten, e);
+                    var lineWrittenInfo = new LineWrittenInfo
+                    {
+                        Value = e.Value,
+                        Level = e.Level,
+                    };
+                    await _connection.SendAsync(Constants.LineWritten, lineWrittenInfo);
                 }
             };
         }
 
         public override void Dispose()
         {
-            _connection?.StopAsync().GetAwaiter().GetResult();
+            if (_connection.State == HubConnectionState.Connected)
+                _connection?.StopAsync().GetAwaiter().GetResult();
             _connection?.DisposeAsync();
             base.Dispose();
         }
