@@ -7,8 +7,8 @@ namespace Tharga.Toolkit.Console.Entities
     public class TaskRunner
     {
         private readonly Action<CancellationToken, AutoResetEvent> _action;
-        private readonly CancellationTokenSource _cancellationToken;
         private readonly AutoResetEvent _autoResetEvent;
+        private readonly CancellationTokenSource _cancellationToken;
         private Task _task;
 
         private TaskRunner()

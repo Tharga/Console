@@ -10,11 +10,12 @@ namespace Tharga.Toolkit.Console.Helpers
     {
         private static readonly Lazy<VariableStore> _instanceLoader = new Lazy<VariableStore>(() => new VariableStore());
         private readonly List<Variable> _variables = new List<Variable>();
-        public static VariableStore Instance => _instanceLoader.Value;
 
         private VariableStore()
         {
         }
+
+        public static VariableStore Instance => _instanceLoader.Value;
 
         public void Add(Variable variable)
         {

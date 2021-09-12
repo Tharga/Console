@@ -12,9 +12,9 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 {
     public abstract class ConsoleBase : IConsole
     {
-        internal readonly IConsoleManager ConsoleManager;
-        private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
+        internal readonly IConsoleManager ConsoleManager;
         private Dictionary<string, Location> _tagLocalLocation = new Dictionary<string, Location>();
 
         protected ConsoleBase(IConsoleManager consoleManager)
@@ -22,16 +22,11 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             ConsoleManager = consoleManager;
             ConsoleManager.Intercept(this);
 
-            if (Instance.Console == null)
-            {
-                Instance.Setup(this, _cancellationTokenSource.Token);
-            }
+            if (Instance.Console == null) Instance.Setup(this, _cancellationTokenSource.Token);
         }
 
         public event EventHandler<PushBufferDownEventArgs> PushBufferDownEvent;
         public event EventHandler<LinesInsertedEventArgs> LinesInsertedEvent;
-        public event EventHandler<KeyReadEventArgs> KeyReadEvent;
-        protected event EventHandler<EventArgs> DisposeEvent;
 
         public int CursorLeft => ConsoleManager.CursorLeft;
         public int CursorTop => ConsoleManager.CursorTop;
@@ -63,6 +58,89 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         {
             ConsoleManager.SetCursorPosition(left, top);
         }
+
+        public void Clear()
+        {
+            _tagLocalLocation = new Dictionary<string, Location>();
+            ConsoleManager.Clear();
+        }
+
+        public virtual void Output(IOutput output)
+        {
+            if (output == null) throw new ArgumentNullException(nameof(output), "No output parameter provided.");
+
+            if (_mutedTypes.Contains(output.OutputLevel)) return;
+
+            var textColor = output.TextColor; // ?? ConsoleColor.White;
+            var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
+            var tag = output.Tag ?? string.Empty;
+            var outputLevel = output.OutputLevel;
+            var message = output.TrunkateSingleLine ? output.Message?.Truncate() ?? string.Empty : output.Message;
+
+            lock (CommandEngine.SyncRoot)
+            {
+                if (string.IsNullOrEmpty(tag))
+                {
+                    if (output.LineFeed)
+                        WriteLine(message, outputLevel, textColor, textBackgroundColor);
+                    else
+                        Write(message, outputLevel, textColor, textBackgroundColor);
+                }
+                else
+                {
+                    if (output.LineFeed)
+                    {
+                        var location = new Location(0, CursorTop).Move(ConsoleManager, message);
+                        WriteLine(message, outputLevel, textColor, textBackgroundColor);
+                        SetLocation(tag, location);
+                    }
+                    else
+                    {
+                        if (!_tagLocalLocation.ContainsKey(tag))
+                        {
+                            var location = new Location(0, CursorTop).Move(ConsoleManager, message);
+                            WriteLine(message, outputLevel, textColor, textBackgroundColor);
+                            SetLocation(tag, location);
+                        }
+                        else
+                        {
+                            var prognosis = _tagLocalLocation[tag].Move(ConsoleManager, message);
+                            for (var i = 0; i < prognosis.Top - _tagLocalLocation[tag].Top; i++) WriteLine(string.Empty);
+
+                            var cursor = new Location(CursorLeft, CursorTop);
+                            SetCursorPosition(_tagLocalLocation[tag].Left, _tagLocalLocation[tag].Top);
+                            Write(message, outputLevel, textColor, textBackgroundColor);
+                            _tagLocalLocation[tag] = new Location(CursorLeft, CursorTop);
+                            SetCursorPosition(cursor.Left, cursor.Top);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void OutputError(Exception exception, bool includeStackTrace = false, string prefix = null)
+        {
+            OutputError(exception.ToFormattedString(includeStackTrace, prefix));
+        }
+
+        public void OutputTable(IEnumerable<IEnumerable<string>> data)
+        {
+            OutputInformation(data.ToFormattedString());
+        }
+
+        public void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data)
+        {
+            OutputTable(new[] { title }.Union(data));
+        }
+
+        public void Dispose()
+        {
+            DisposeEvent?.Invoke(this, new EventArgs());
+            ConsoleManager?.Dispose();
+        }
+
+        public event EventHandler<KeyReadEventArgs> KeyReadEvent;
+        protected event EventHandler<EventArgs> DisposeEvent;
 
         //TODO: Merge Write and WriteLine to be the same method
         private void Write(string value, OutputLevel level = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
@@ -135,21 +213,9 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             }
             finally
             {
-                if (textColor != null)
-                {
-                    ConsoleManager.ForegroundColor = defaultColor;
-                }
-                if (textBackgroundColor != null)
-                {
-                    ConsoleManager.BackgroundColor = defaultBack;
-                }
+                if (textColor != null) ConsoleManager.ForegroundColor = defaultColor;
+                if (textBackgroundColor != null) ConsoleManager.BackgroundColor = defaultBack;
             }
-        }
-
-        public void Clear()
-        {
-            _tagLocalLocation = new Dictionary<string, Location>();
-            ConsoleManager.Clear();
         }
 
         public virtual void Initiate(IEnumerable<string> commandKeys)
@@ -181,10 +247,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         private void WriteEx(string value)
         {
             //TODO: Duplicated code here and in WriteLineEx
-            if (ConsoleManager.ForegroundColor == ConsoleManager.BackgroundColor)
-            {
-                ConsoleManager.ForegroundColor = ConsoleManager.ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
-            }
+            if (ConsoleManager.ForegroundColor == ConsoleManager.BackgroundColor) ConsoleManager.ForegroundColor = ConsoleManager.ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
 
             ConsoleManager?.Write(value);
         }
@@ -192,10 +255,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
         //TODO: All outputs should go via this method! (Entry to this method is from different methods, should only be one, or)
         protected internal virtual Location WriteLineEx(string value, OutputLevel level)
         {
-            if (ConsoleManager.ForegroundColor == ConsoleManager.BackgroundColor)
-            {
-                ConsoleManager.ForegroundColor = ConsoleManager.ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
-            }
+            if (ConsoleManager.ForegroundColor == ConsoleManager.BackgroundColor) ConsoleManager.ForegroundColor = ConsoleManager.ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
 
             var lines = value.Split('\n');
             var endOfTextLocation = new Location(CursorLeft, CursorTop);
@@ -219,6 +279,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                     ConsoleManager?.WriteLine(line);
                 }
             }
+
             OnLineWrittenEvent(new LineWrittenEventArgs(value, level));
             return endOfTextLocation;
         }
@@ -321,7 +382,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public void OutputDefault(string message)
         {
-            Output(new WriteEventArgs(message, OutputLevel.Default));
+            Output(new WriteEventArgs(message));
         }
 
         public void OutputWarning(string message)
@@ -344,87 +405,12 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             Output(new WriteEventArgs(message, OutputLevel.Help));
         }
 
-        public virtual void Output(IOutput output)
-        {
-            if (output == null) throw new ArgumentNullException(nameof(output), "No output parameter provided.");
-
-            if (_mutedTypes.Contains(output.OutputLevel)) return;
-
-            var textColor = output.TextColor; // ?? ConsoleColor.White;
-            var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
-            var tag = output.Tag ?? string.Empty;
-            var outputLevel = output.OutputLevel;
-            var message = output.TrunkateSingleLine ? (output.Message?.Truncate() ?? string.Empty) : output.Message;
-
-            lock (CommandEngine.SyncRoot)
-            {
-                if (string.IsNullOrEmpty(tag))
-                {
-                    if (output.LineFeed)
-                    {
-                        WriteLine(message, outputLevel, textColor, textBackgroundColor);
-                    }
-                    else
-                    {
-                        Write(message, outputLevel, textColor, textBackgroundColor);
-                    }
-                }
-                else
-                {
-                    if (output.LineFeed)
-                    {
-                        var location = new Location(0, CursorTop).Move(ConsoleManager, message);
-                        WriteLine(message, outputLevel, textColor, textBackgroundColor);
-                        SetLocation(tag, location);
-                    }
-                    else
-                    {
-                        if (!_tagLocalLocation.ContainsKey(tag))
-                        {
-                            var location = new Location(0, CursorTop).Move(ConsoleManager, message);
-                            WriteLine(message, outputLevel, textColor, textBackgroundColor);
-                            SetLocation(tag, location);
-                        }
-                        else
-                        {
-                            var prognosis = _tagLocalLocation[tag].Move(ConsoleManager, message);
-                            for(var i = 0; i < prognosis.Top - _tagLocalLocation[tag].Top; i++)
-                            {
-                                WriteLine(string.Empty);
-                            }
-
-                            var cursor = new Location(CursorLeft, CursorTop);
-                            SetCursorPosition(_tagLocalLocation[tag].Left, _tagLocalLocation[tag].Top);
-                            Write(message, outputLevel, textColor, textBackgroundColor);
-                            _tagLocalLocation[tag] = new Location(CursorLeft, CursorTop);
-                            SetCursorPosition(cursor.Left, cursor.Top);
-                        }
-                    }
-                }
-            }
-        }
-
         private void SetLocation(string tag, Location location)
         {
             if (_tagLocalLocation.ContainsKey(tag))
                 _tagLocalLocation[tag] = location;
             else
                 _tagLocalLocation.Add(tag, location);
-        }
-
-        public void OutputError(Exception exception, bool includeStackTrace = false, string prefix = null)
-        {
-            OutputError(exception.ToFormattedString(includeStackTrace, prefix));
-        }
-
-        public void OutputTable(IEnumerable<IEnumerable<string>> data)
-        {
-            OutputInformation(data.ToFormattedString());
-        }
-
-        public void OutputTable(IEnumerable<string> title, IEnumerable<IEnumerable<string>> data)
-        {
-            OutputTable(new[] { title }.Union(data));
         }
 
         protected internal Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(OutputLevel outputLevel)
@@ -456,28 +442,16 @@ namespace Tharga.Toolkit.Console.Consoles.Base
             if (string.IsNullOrEmpty(colorString)) return new Tuple<ConsoleColor?, ConsoleColor?>(defaultColor, defaultTextBackgroundColor);
             var cols = colorString.Split(';');
             ConsoleColor color;
-            if (!Enum.TryParse(cols[0], out color))
-            {
-                color = defaultColor;
-            }
+            if (!Enum.TryParse(cols[0], out color)) color = defaultColor;
 
-            ConsoleColor? color3 = defaultTextBackgroundColor;
+            var color3 = defaultTextBackgroundColor;
             if (cols.Length > 1)
             {
                 ConsoleColor color2;
-                if (Enum.TryParse(cols[1], out color2))
-                {
-                    color3 = color2;
-                }
+                if (Enum.TryParse(cols[1], out color2)) color3 = color2;
             }
 
             return new Tuple<ConsoleColor?, ConsoleColor?>(color, color3);
-        }
-
-        public void Dispose()
-        {
-            DisposeEvent?.Invoke(this, new EventArgs());
-            ConsoleManager?.Dispose();
         }
 
         public void Mute(OutputLevel type)

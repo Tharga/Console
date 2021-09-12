@@ -19,19 +19,13 @@ namespace Tharga.Toolkit.Console.Helpers
 
             var indentation = new string(' ', indentationLevel * 2);
             sb.AppendLine($"{indentation}{exception.Message}");
-            foreach (DictionaryEntry data in exception.Data)
-            {
-                sb.AppendLine($"{indentation}{data.Key}: {data.Value}");
-            }
+            foreach (DictionaryEntry data in exception.Data) sb.AppendLine($"{indentation}{data.Key}: {data.Value}");
 
             var aggregateException = exception as AggregateException;
             if (aggregateException != null)
             {
                 indentationLevel++;
-                foreach (var exp in aggregateException.InnerExceptions)
-                {
-                    sb.AppendLine(exp.ToFormattedString(indentationLevel, false));
-                }
+                foreach (var exp in aggregateException.InnerExceptions) sb.AppendLine(exp.ToFormattedString(indentationLevel, false));
             }
             else if (exception.InnerException != null)
             {
@@ -39,7 +33,6 @@ namespace Tharga.Toolkit.Console.Helpers
             }
 
             if (includeStackTrace)
-            {
                 try
                 {
                     //NOTE: Make it configurable if to include stacktrace or not
@@ -55,14 +48,15 @@ namespace Tharga.Toolkit.Console.Helpers
                             sb.AppendLine($"  {pair[1].Trim()}");
                         }
                         else
+                        {
                             sb.AppendLine(line);
+                        }
                     }
                 }
                 catch (Exception e)
                 {
                     sb.AppendLine($"Oups, internal error. {e.Message}.");
                 }
-            }
 
             var result = sb.ToString();
             return result;

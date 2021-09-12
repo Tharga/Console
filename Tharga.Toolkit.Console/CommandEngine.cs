@@ -66,30 +66,19 @@ namespace Tharga.Toolkit.Console
                 //_rootCommand.Initiate();
 
                 if (TaskRunners != null)
-                {
                     Task.Run(() =>
                     {
-                        foreach (var runner in TaskRunners)
-                        {
-                            runner.Start();
-                        }
+                        foreach (var runner in TaskRunners) runner.Start();
                     }, CancellationToken);
-                }
 
-                if (flags.Any())
-                {
-                    HandleFlags(flags);
-                }
+                if (flags.Any()) HandleFlags(flags);
 
                 while (!_cancellationTokenSource.IsCancellationRequested)
                 {
                     string entry;
                     if (_commandMode)
-                    {
                         entry = GetCommandModeEntry(commands, ref commandIndex, flags);
-                    }
                     else
-                    {
                         try
                         {
                             entry = RootCommand.QueryInput();
@@ -98,7 +87,6 @@ namespace Tharga.Toolkit.Console
                         {
                             continue;
                         }
-                    }
 
                     if (!Execute(entry))
                     {
@@ -112,10 +100,7 @@ namespace Tharga.Toolkit.Console
                     }
                 }
 
-                if (TaskRunners != null)
-                {
-                    Parallel.ForEach(TaskRunners, x => x.Close());
-                }
+                if (TaskRunners != null) Parallel.ForEach(TaskRunners, x => x.Close());
             }
             catch (Exception exception)
             {
@@ -169,13 +154,9 @@ namespace Tharga.Toolkit.Console
             if (commandIndex >= cmds.Length)
             {
                 if (HasFlag(flags, FlagContinueInConsoleMode))
-                {
                     _commandMode = false;
-                }
                 else
-                {
                     Stop();
-                }
             }
 
             RootCommand.Console.Output(new WriteEventArgs($"Command {commandIndex}: {entry}", OutputLevel.Information));

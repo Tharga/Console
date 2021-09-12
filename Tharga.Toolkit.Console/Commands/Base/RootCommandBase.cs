@@ -11,12 +11,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 {
     public abstract class RootCommandBase : ContainerCommandBase, IRootCommand
     {
-        public IConsole Console { get; }
-        internal CommandEngine CommandEngine;
         internal readonly ICommandResolver CommandResolver;
-
-        public event EventHandler<EventArgs> RequestCloseEvent;
-        public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
+        internal CommandEngine CommandEngine;
 
         protected RootCommandBase(IConsole console)
             : base("root")
@@ -42,36 +38,13 @@ namespace Tharga.Toolkit.Console.Commands.Base
             CommandResolver = commandResolver;
         }
 
-        public new void RegisterCommand<T>()
-        {
-            SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), null));
-        }
+        public IConsole Console { get; }
 
-        public new void RegisterCommand<T, TContainer>()
-            where TContainer : IContainerCommand
-        {
-            SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), typeof(TContainer)));
-        }
-
-        public new void RegisterCommand(Type type)
-        {
-            SubCommandTypes.Add(new Tuple<Type, Type>(type, null));
-        }
-
-        public void RegisterCommand(Type type, Type containerType)
-        {
-            SubCommandTypes.Add(new Tuple<Type, Type>(type, containerType));
-        }
+        public event EventHandler<EventArgs> RequestCloseEvent;
 
         public new void RegisterCommand(ICommand command)
         {
             base.RegisterCommand(command);
-        }
-
-        protected virtual void OnExceptionOccuredEvent(ExceptionOccuredEventArgs e)
-        {
-            var handler = ExceptionOccuredEvent;
-            handler?.Invoke(this, e);
         }
 
         public override IEnumerable<HelpLine> HelpText
@@ -83,39 +56,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             var tabTree = Build(SubCommands, null);
             return QueryParam(Constants.Prompt, null, tabTree, false, false);
-        }
-
-        private IEnumerable<CommandTreeNode<string>> Build(IEnumerable<ICommand> commands, string lead)
-        {
-            foreach (var command in commands)
-            {
-                var cc = command as ContainerCommandBase;
-                var ac = command as ActionCommandBase;
-
-                CommandTreeNode<string>[] subTree = null;
-
-                if (cc != null)
-                {
-                    var l = (lead != null ? (lead + " ") : "") + cc.Name;
-                    subTree = Build(cc.SubCommands, l).ToArray();
-                }
-                else if (ac != null)
-                {
-                    var l = (lead != null ? (lead + " ") : "") + ac.Name;
-                    var sub = ac.GetOptionList().ToArray();
-                    subTree = Build(sub, l).ToArray();
-                }
-
-                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command.Name}" : command.Name, command.Name, subTree);
-            }
-        }
-
-        private IEnumerable<CommandTreeNode<string>> Build(IEnumerable<string>[] commands, string lead)
-        {
-            foreach (var command in commands[0])
-            {
-                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command}" : command, command);
-            }
         }
 
         public bool Execute(string entry)
@@ -130,20 +70,17 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     var cc = command as ContainerCommandBase;
 
                     if (cc == null)
-                    {
                         if (!command.CanExecute(out var reason))
                         {
                             OutputWarning(GetCanExecuteFailMessage(reason));
                             return false;
                         }
-                    }
 
                     var param = subCommand.ToInput().ToArray();
 
                     if (ac != null)
                     {
                         if (typeRegistration)
-                        {
                             try
                             {
                                 var instance = (ActionCommandBase)CommandResolver?.Resolve(ac.GetType());
@@ -158,10 +95,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
                             {
                                 Trace.TraceWarning(e.Message);
                             }
-                        }
-                        else
-                        {
-                        }
 
                         ac.InvokeEx(param);
                     }
@@ -176,10 +109,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
 
                     return true;
                 }
-                else
-                {
-                    OutputWarning($"Unknown command '{entry}'.");
-                }
+
+                OutputWarning($"Unknown command '{entry}'.");
             }
             catch (CommandFailedException)
             {
@@ -211,6 +142,65 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
 
             return false;
+        }
+
+        public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
+
+        public new void RegisterCommand<T>()
+        {
+            SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), null));
+        }
+
+        public new void RegisterCommand<T, TContainer>()
+            where TContainer : IContainerCommand
+        {
+            SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), typeof(TContainer)));
+        }
+
+        public new void RegisterCommand(Type type)
+        {
+            SubCommandTypes.Add(new Tuple<Type, Type>(type, null));
+        }
+
+        public void RegisterCommand(Type type, Type containerType)
+        {
+            SubCommandTypes.Add(new Tuple<Type, Type>(type, containerType));
+        }
+
+        protected virtual void OnExceptionOccuredEvent(ExceptionOccuredEventArgs e)
+        {
+            var handler = ExceptionOccuredEvent;
+            handler?.Invoke(this, e);
+        }
+
+        private IEnumerable<CommandTreeNode<string>> Build(IEnumerable<ICommand> commands, string lead)
+        {
+            foreach (var command in commands)
+            {
+                var cc = command as ContainerCommandBase;
+                var ac = command as ActionCommandBase;
+
+                CommandTreeNode<string>[] subTree = null;
+
+                if (cc != null)
+                {
+                    var l = (lead != null ? lead + " " : "") + cc.Name;
+                    subTree = Build(cc.SubCommands, l).ToArray();
+                }
+                else if (ac != null)
+                {
+                    var l = (lead != null ? lead + " " : "") + ac.Name;
+                    var sub = ac.GetOptionList().ToArray();
+                    subTree = Build(sub, l).ToArray();
+                }
+
+                yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command.Name}" : command.Name, command.Name, subTree);
+            }
+        }
+
+        private IEnumerable<CommandTreeNode<string>> Build(IEnumerable<string>[] commands, string lead)
+        {
+            foreach (var command in commands[0]) yield return new CommandTreeNode<string>(lead != null ? $"{lead} {command}" : command, command);
         }
 
         protected internal void Initiate(CommandEngine commandEngine)

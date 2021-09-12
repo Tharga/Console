@@ -29,47 +29,47 @@ namespace Tharga.Toolkit.Console
 
         public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<string> autoParam, IDictionary<T, string> options)
         {
-            return new QueryInput(console).QueryParam<T>(paramName, autoParam, options);
+            return new QueryInput(console).QueryParam(paramName, autoParam, options);
         }
 
         public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<string> autoParam, IEnumerable<KeyValuePair<T, string>> options)
         {
-            return new QueryInput(console).QueryParam<T>(paramName, autoParam, options);
+            return new QueryInput(console).QueryParam(paramName, autoParam, options);
         }
 
         public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<string> autoParam, IEnumerable<(T, string)> options)
         {
-            return new QueryInput(console).QueryParam<T>(paramName, autoParam, options);
+            return new QueryInput(console).QueryParam(paramName, autoParam, options);
         }
 
         public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<string> autoParam, IEnumerable<Tuple<T, string>> options)
         {
-            return new QueryInput(console).QueryParam<T>(paramName, autoParam, options);
+            return new QueryInput(console).QueryParam(paramName, autoParam, options);
         }
 
         public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<string> autoParam, IEnumerable<T> options)
         {
-            return new QueryInput(console).QueryParam<T>(paramName, autoParam, options);
+            return new QueryInput(console).QueryParam(paramName, autoParam, options);
         }
 
         public static T QueryParam<T>(this IConsole console, string paramName, IDictionary<T, string> options)
         {
-            return new QueryInput(console).QueryParam<T>(paramName, options);
+            return new QueryInput(console).QueryParam(paramName, options);
         }
 
         public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<KeyValuePair<T, string>> options)
         {
-            return new QueryInput(console).QueryParam<T>(paramName, options);
+            return new QueryInput(console).QueryParam(paramName, options);
         }
 
         public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<(T, string)> options)
         {
-            return new QueryInput(console).QueryParam<T>(paramName, options);
+            return new QueryInput(console).QueryParam(paramName, options);
         }
 
         public static T QueryParam<T>(this IConsole console, string paramName, IEnumerable<Tuple<T, string>> options)
         {
-            return new QueryInput(console).QueryParam<T>(paramName, options);
+            return new QueryInput(console).QueryParam(paramName, options);
         }
     }
 }

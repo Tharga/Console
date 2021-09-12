@@ -32,7 +32,7 @@ namespace Tharga.Toolkit.Console.Helpers
             foreach (var item in data)
             {
                 ConsoleKey val;
-                ConsoleKey.TryParse(item.ToString(), true, out val);
+                Enum.TryParse(item.ToString(), true, out val);
                 _buffer.Add(new ConsoleKeyInfo(item, val, false, false, false));
             }
 

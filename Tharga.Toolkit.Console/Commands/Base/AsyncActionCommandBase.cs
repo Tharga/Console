@@ -10,11 +10,11 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
         }
 
+        public abstract Task InvokeAsync(string[] param);
+
         public override void Invoke(string[] param)
         {
             InvokeAsync(param).GetAwaiter().GetResult();
         }
-
-        public abstract Task InvokeAsync(string[] param);
     }
 }

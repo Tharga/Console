@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Tharga.Toolkit.Console.Commands.Base;
 using Tharga.Toolkit.Console.Entities;
 
@@ -31,12 +32,9 @@ namespace Tharga.Toolkit.Console.Commands
         {
             var filename = QueryParam<string>("Filename", GetParam(param, 0));
 
-            if (!System.IO.File.Exists(filename))
-            {
-                throw new CommandFailedException($"File {filename} does not exist.");
-            }
+            if (!File.Exists(filename)) throw new CommandFailedException($"File {filename} does not exist.");
 
-            var fileLines = System.IO.File.ReadAllLines(filename);
+            var fileLines = File.ReadAllLines(filename);
 
             OutputInformation($"There are {fileLines.Length} commands in file {filename}.");
 
@@ -47,10 +45,7 @@ namespace Tharga.Toolkit.Console.Commands
                 if (!line.StartsWith("#"))
                 {
                     var success = _rootCommand.Execute(line);
-                    if (!success)
-                    {
-                        throw new CommandFailedException("Terminating command chain.");
-                    }
+                    if (!success) throw new CommandFailedException("Terminating command chain.");
                 }
             }
         }

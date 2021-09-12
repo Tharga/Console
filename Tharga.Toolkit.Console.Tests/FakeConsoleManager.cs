@@ -27,7 +27,7 @@ namespace Tharga.Toolkit.Console.Tests
 
         public int CursorTop
         {
-            get { return _cursorTop; }
+            get => _cursorTop;
             private set
             {
                 if (value == CbufferHeight)
@@ -43,14 +43,14 @@ namespace Tharga.Toolkit.Console.Tests
 
         public int BufferWidth
         {
-            get { return CbufferWidth; }
-            set { throw new NotSupportedException(); }
+            get => CbufferWidth;
+            set => throw new NotSupportedException();
         }
 
         public int BufferHeight
         {
-            get { return CbufferHeight; }
-            set { throw new NotSupportedException(); }
+            get => CbufferHeight;
+            set => throw new NotSupportedException();
         }
 
         public void WriteLine(string value)
@@ -68,17 +68,14 @@ namespace Tharga.Toolkit.Console.Tests
 
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
-            if (sourceLeft == 0 && (sourceWidth == BufferWidth && (targetLeft == 0 && sourceHeight == 1)))
+            if (sourceLeft == 0 && sourceWidth == BufferWidth && targetLeft == 0 && sourceHeight == 1)
             {
                 LineOutput[targetTop] = LineOutput[sourceTop];
                 LineOutput[sourceTop] = null;
             }
             else if (sourceTop == targetTop && sourceHeight == 1)
             {
-                if (LineOutput[targetTop].Length != sourceLeft)
-                {
-                    throw new NotImplementedException("Move buffer on same line, is not yet implemented.");
-                }
+                if (LineOutput[targetTop].Length != sourceLeft) throw new NotImplementedException("Move buffer on same line, is not yet implemented.");
             }
             else
             {
@@ -147,10 +144,7 @@ namespace Tharga.Toolkit.Console.Tests
                 }
                 else
                 {
-                    if (CursorLeft < (LineOutput[CursorTop]?.Length ?? 0))
-                    {
-                        LineOutput[CursorTop] = LineOutput[CursorTop].Substring(0, CursorLeft);
-                    }
+                    if (CursorLeft < (LineOutput[CursorTop]?.Length ?? 0)) LineOutput[CursorTop] = LineOutput[CursorTop].Substring(0, CursorLeft);
 
                     LineOutput[CursorTop] += value;
 

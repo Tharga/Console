@@ -67,10 +67,7 @@ namespace Tharga.Toolkit.Console.Helpers
             var sb = new StringBuilder();
 
             var versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            if (!string.IsNullOrEmpty(versionInfo.CompanyName))
-            {
-                sb.Append(versionInfo.CompanyName + "\\");
-            }
+            if (!string.IsNullOrEmpty(versionInfo.CompanyName)) sb.Append(versionInfo.CompanyName + "\\");
 
             var assemblyName = assembly.GetName().Name;
             sb.Append(assemblyName.Replace(".", "\\"));

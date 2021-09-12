@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
         private readonly IConsoleManager _consoleManager;
 
         public BackgroundColorCommand(IConsoleManager consoleManager)
-            : base("background", "Sets the background color.", false)
+            : base("background", "Sets the background color.")
         {
             _consoleManager = consoleManager;
             AddName("bg");
@@ -26,10 +26,7 @@ namespace Tharga.Toolkit.Console.Commands.ScreenCommands
                 yield return new HelpLine("(Depending on the background, some colors will change to be visible.)");
                 yield return new HelpLine(string.Empty);
 
-                foreach (var color in EnumExtensions.GetValues<ConsoleColor>())
-                {
-                    yield return new HelpLine($"{color}", color);
-                }
+                foreach (var color in EnumExtensions.GetValues<ConsoleColor>()) yield return new HelpLine($"{color}", color);
             }
         }
 

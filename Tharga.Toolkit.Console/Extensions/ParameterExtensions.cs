@@ -6,17 +6,23 @@ namespace Tharga.Toolkit.Console
 {
     public static class Param
     {
+        #region Nullable
+
+        public static IEnumerable<KeyValuePair<T?, string>> AsNullable<T>(this IEnumerable<KeyValuePair<T, string>> item)
+            where T : struct
+        {
+            return item.Select(x => new KeyValuePair<T?, string>(x.Key, x.Value));
+        }
+
+        #endregion
+
         #region Build
 
         public static IEnumerable<KeyValuePair<object, string>> Build(Type type)
         {
             if (type.IsEnum)
-            {
                 foreach (var item in Enum.GetValues(type))
-                {
                     yield return new KeyValuePair<object, string>(item, item.ToString());
-                }
-            }
 
             if (type == typeof(bool) || type == typeof(bool?))
             {
@@ -30,10 +36,7 @@ namespace Tharga.Toolkit.Console
             if (default(T) == null)
             {
                 var tp = Nullable.GetUnderlyingType(typeof(T));
-                if (tp != null)
-                {
-                    return Build(tp).Select(x => new KeyValuePair<T, string>((T)x.Key, x.Value));
-                }
+                if (tp != null) return Build(tp).Select(x => new KeyValuePair<T, string>((T)x.Key, x.Value));
             }
 
             return Build(typeof(T)).Select(x => new KeyValuePair<T, string>((T)x.Key, x.Value));
@@ -49,21 +52,16 @@ namespace Tharga.Toolkit.Console
                 if (tp != null)
                 {
                     var items = Build(tp);
-                    foreach (var item in items)
-                    {
-                        yield return new KeyValuePair<T, string>((T)item.Key, item.Value);
-                    }
+                    foreach (var item in items) yield return new KeyValuePair<T, string>((T)item.Key, item.Value);
                     yield break;
                 }
             }
 
-            foreach (var item in Build<T>())
-            {
-                yield return new KeyValuePair<T, string>(item.Key, item.Value);
-            }
+            foreach (var item in Build<T>()) yield return new KeyValuePair<T, string>(item.Key, item.Value);
         }
 
         #endregion
+
         #region AsOption
 
         public static IEnumerable<KeyValuePair<T, string>> AsOption<T>()
@@ -101,15 +99,7 @@ namespace Tharga.Toolkit.Console
         //}
 
         #endregion
-        #region Nullable
 
-        public static IEnumerable<KeyValuePair<T?, string>> AsNullable<T>(this IEnumerable<KeyValuePair<T, string>> item)
-            where T : struct
-        {
-            return item.Select(x => new KeyValuePair<T?, string>(x.Key, x.Value));
-        }
-
-        #endregion
         #region Append
 
         public static IEnumerable<KeyValuePair<T, string>> And<T>(this IEnumerable<KeyValuePair<T, string>> item, T add)
@@ -124,10 +114,7 @@ namespace Tharga.Toolkit.Console
 
         public static IEnumerable<T> And<T>(this IEnumerable<T> item, T add)
         {
-            foreach (var itm in item)
-            {
-                yield return itm;
-            }
+            foreach (var itm in item) yield return itm;
             yield return add;
         }
 
@@ -139,7 +126,7 @@ namespace Tharga.Toolkit.Console
 
         public static IEnumerable<KeyValuePair<T, string>> And<T>(this IDictionary<T, string> item, T add)
         {
-            return item.Union(new []{ new KeyValuePair<T, string>(add, add.ToString()) });
+            return item.Union(new[] { new KeyValuePair<T, string>(add, add.ToString()) });
         }
 
         //public static IEnumerable<T> And<T>(this T[] item, T add)

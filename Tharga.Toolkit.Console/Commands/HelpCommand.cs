@@ -18,10 +18,7 @@ namespace Tharga.Toolkit.Console.Commands
 
         public override void Invoke(string[] param)
         {
-            foreach (var helpLine in _helpLines)
-            {
-                _commandEngine.RootCommand.Console.Output(new WriteEventArgs(helpLine.Text, OutputLevel.Help, helpLine.CanExecute() ? helpLine.ForeColor : ConsoleColor.DarkGray));
-            }
+            foreach (var helpLine in _helpLines) _commandEngine.RootCommand.Console.Output(new WriteEventArgs(helpLine.Text, OutputLevel.Help, helpLine.CanExecute() ? helpLine.ForeColor : ConsoleColor.DarkGray));
         }
 
         internal void AddLine(string text, Func<bool> canExecute = null, ConsoleColor foreColor = ConsoleColor.Gray)

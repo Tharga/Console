@@ -15,10 +15,7 @@ namespace Tharga.Toolkit.Console.Helpers
             foreach (var line in arr)
             {
                 var sb = new StringBuilder();
-                for (var i = 0; i < line.Length; i++)
-                {
-                    sb.AppendFormat("{0}{1}", line[i] ?? string.Empty, new string(' ', columnLength[i] - (line[i]?.Length ?? 0) + 1));
-                }
+                for (var i = 0; i < line.Length; i++) sb.AppendFormat("{0}{1}", line[i] ?? string.Empty, new string(' ', columnLength[i] - (line[i]?.Length ?? 0) + 1));
 
                 sbO.AppendLine(sb.ToString().TrimEnd());
             }
@@ -37,15 +34,9 @@ namespace Tharga.Toolkit.Console.Helpers
 
             var length = new int[data.Max(y => y.Length)];
             foreach (var line in data)
-            {
                 for (var i = 0; i < line.Length; i++)
-                {
                     if ((line[i]?.Length ?? 0) > length[i])
-                    {
                         length[i] = line[i]?.Length ?? 0;
-                    }
-                }
-            }
 
             return length.ToArray();
         }

@@ -48,7 +48,7 @@ namespace Tharga.Toolkit.Console.Tests
             var command = new RootCommand(console);
             var cmd1 = new Mock<ICommand>(MockBehavior.Strict);
             cmd1.Setup(x => x.Name).Returns("A");
-            cmd1.Setup(x => x.Names).Returns(new string[]{});
+            cmd1.Setup(x => x.Names).Returns(new string[] { });
             var cmd2 = new Mock<ICommand>(MockBehavior.Strict);
             cmd2.Setup(x => x.Name).Returns("A");
             cmd2.Setup(x => x.Names).Returns(new[] { "A" });

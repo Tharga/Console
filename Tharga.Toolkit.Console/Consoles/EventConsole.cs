@@ -10,16 +10,16 @@ namespace Tharga.Toolkit.Console.Consoles
 {
     public class EventConsole : ConsoleBase
     {
-        public event EventHandler<OutputEventArgs> OutputEv;
-
         public EventConsole()
             : base(new ConsoleManager(System.Console.Out, System.Console.In))
         {
         }
 
+        public event EventHandler<OutputEventArgs> OutputEv;
+
         public override void Output(IOutput output)
         {
-            OutputEv?.Invoke(this,new OutputEventArgs(output.Message, output.OutputLevel));
+            OutputEv?.Invoke(this, new OutputEventArgs(output.Message, output.OutputLevel));
         }
 
         public override void Attach(IRootCommand command)

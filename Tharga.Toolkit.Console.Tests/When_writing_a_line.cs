@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
 
 namespace Tharga.Toolkit.Console.Tests
 {
@@ -75,7 +72,7 @@ namespace Tharga.Toolkit.Console.Tests
             //Assert
             Assert.That(consoleManager.LineOutput, Is.Not.Empty);
             Assert.That(consoleManager.LineOutput[0], Is.EqualTo(new string('A', consoleManager.BufferWidth)));
-            Assert.That(consoleManager.LineOutput[consoleManager.BufferHeight-2], Is.EqualTo(new string('A', consoleManager.BufferWidth)));
+            Assert.That(consoleManager.LineOutput[consoleManager.BufferHeight - 2], Is.EqualTo(new string('A', consoleManager.BufferWidth)));
             Assert.That(consoleManager.CursorTop, Is.EqualTo(consoleManager.BufferHeight - 1));
         }
 

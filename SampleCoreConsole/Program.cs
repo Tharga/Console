@@ -12,10 +12,10 @@ using SampleCoreConsole.Business;
 using Tharga.Toolkit.Console;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Consoles;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Toolkit.Remote.Console;
 using Timer = System.Timers.Timer;
 
 namespace SampleCoreConsole
@@ -331,6 +331,7 @@ namespace SampleCoreConsole
     }
 
     #endregion
+
     #region Math commands (parameter example)
 
     public class MathContainerCommand : ContainerCommandBase
@@ -417,6 +418,7 @@ namespace SampleCoreConsole
     }
 
     #endregion
+
     #region Status commands
 
     public class StatusCommand : ContainerCommandBase
@@ -553,6 +555,7 @@ namespace SampleCoreConsole
     }
 
     #endregion
+
     #region Disable commands
 
     internal class SomeContainerWithDisabledSubs : ContainerCommandBase
@@ -601,6 +604,7 @@ namespace SampleCoreConsole
     }
 
     #endregion
+
     #region Output commands
 
     public class OutputContainerCommand : ContainerCommandBase
@@ -740,6 +744,7 @@ namespace SampleCoreConsole
     }
 
     #endregion
+
     #region Inject commands
 
     public class InjectBusinessCommand : ContainerCommandBase
@@ -786,6 +791,7 @@ namespace SampleCoreConsole
     }
 
     #endregion
+
     #region Loop Command
 
     public class ReadKeyLoop : ActionCommandBase

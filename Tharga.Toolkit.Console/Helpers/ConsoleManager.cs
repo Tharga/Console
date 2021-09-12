@@ -6,13 +6,13 @@ using Tharga.Toolkit.Console.Interfaces;
 
 namespace Tharga.Toolkit.Console.Helpers
 {
-    class ConsoleManager : IConsoleManager
+    internal class ConsoleManager : IConsoleManager
     {
         private readonly TextWriter _textWriter;
-        private TextWriterInterceptor _textWriterInterceptor;
-        private TextReaderInterceptor _textReaderInterceptor;
         private TextWriterInterceptor _errorInterceptor;
         private IKeyInputEngine _keyInputEngine;
+        private TextReaderInterceptor _textReaderInterceptor;
+        private TextWriterInterceptor _textWriterInterceptor;
 
         public ConsoleManager(TextWriter textWriter, TextReader textReader)
         {
@@ -74,7 +74,7 @@ namespace Tharga.Toolkit.Console.Helpers
                     return 80;
                 }
             }
-            set { System.Console.BufferWidth = value; }
+            set => System.Console.BufferWidth = value;
         }
 
         public int WindowWidth
@@ -91,7 +91,7 @@ namespace Tharga.Toolkit.Console.Helpers
                     return 80;
                 }
             }
-            set { System.Console.WindowWidth = value; }
+            set => System.Console.WindowWidth = value;
         }
 
         public string Title
@@ -108,7 +108,7 @@ namespace Tharga.Toolkit.Console.Helpers
                     return null;
                 }
             }
-            set { System.Console.Title = value; }
+            set => System.Console.Title = value;
         }
 
         public int WindowHeight
@@ -125,7 +125,7 @@ namespace Tharga.Toolkit.Console.Helpers
                     return 80;
                 }
             }
-            set { System.Console.WindowHeight = value; }
+            set => System.Console.WindowHeight = value;
         }
 
         public int CursorTop
@@ -158,19 +158,19 @@ namespace Tharga.Toolkit.Console.Helpers
                     return 300;
                 }
             }
-            set { System.Console.BufferHeight = value; }
+            set => System.Console.BufferHeight = value;
         }
 
         public ConsoleColor ForegroundColor
         {
-            get { return System.Console.ForegroundColor; }
-            set { System.Console.ForegroundColor = value; }
+            get => System.Console.ForegroundColor;
+            set => System.Console.ForegroundColor = value;
         }
 
         public ConsoleColor BackgroundColor
         {
-            get { return System.Console.BackgroundColor; }
-            set { System.Console.BackgroundColor = value; }
+            get => System.Console.BackgroundColor;
+            set => System.Console.BackgroundColor = value;
         }
 
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)

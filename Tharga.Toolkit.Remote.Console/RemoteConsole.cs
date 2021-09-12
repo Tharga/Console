@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
+using Tharga.Toolkit.Console.Consoles;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Consoles
+namespace Tharga.Toolkit.Remote.Console
 {
     public class RemoteConsoleConfiguration : ConsoleConfiguration, IRemoteConsoleConfiguration
     {
@@ -33,8 +34,8 @@ namespace Tharga.Toolkit.Console.Consoles
             _connection = new HubConnectionBuilder()
                 .ConfigureLogging(logging =>
                 {
-                    logging.AddFilter("Microsoft.AspNetCore.SignalR", Microsoft.Extensions.Logging.LogLevel.Debug);
-                    logging.AddFilter("Microsoft.AspNetCore.Http.Connections", Microsoft.Extensions.Logging.LogLevel.Debug);
+                    logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
+                    logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
                 })
                 .WithUrl(address, options =>
                 {

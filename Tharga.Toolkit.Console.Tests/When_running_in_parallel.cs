@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NUnit.Framework;
 using Tharga.Toolkit.Console.Commands;
 using Tharga.Toolkit.Console.Entities;

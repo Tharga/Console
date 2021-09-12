@@ -16,6 +16,7 @@ namespace Tharga.Toolkit.Console
                 var m = item.Move(consoleManager, ln.Length);
                 item = new Location(0, m.Top + 1);
             }
+
             return new Location(item.Left, item.Top - 1);
         }
 

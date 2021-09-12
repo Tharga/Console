@@ -12,7 +12,7 @@ namespace Tharga.Toolkit.Console.Tests
         public void Should_convert_basic_data()
         {
             //Arrange
-            var data = new List<List<string>> { new List<string> { "A", "B" }, new List<string> { "C", "D" } };
+            var data = new List<List<string>> { new() { "A", "B" }, new() { "C", "D" } };
 
             //Act
             var result = data.ToFormattedString();
@@ -25,7 +25,7 @@ namespace Tharga.Toolkit.Console.Tests
         public void Should_convert_single_line()
         {
             //Arrange
-            var data = new List<List<string>> { new List<string> { "A", "B" } };
+            var data = new List<List<string>> { new() { "A", "B" } };
 
             //Act
             var result = data.ToFormattedString();
@@ -38,7 +38,7 @@ namespace Tharga.Toolkit.Console.Tests
         public void Should_convert_null_content()
         {
             //Arrange
-            var data = new List<List<string>> { new List<string> { null, null }, new List<string> { null, null } };
+            var data = new List<List<string>> { new() { null, null }, new() { null, null } };
 
             //Act
             var result = data.ToFormattedString();
@@ -52,7 +52,7 @@ namespace Tharga.Toolkit.Console.Tests
         {
             //Arrange
             var title = new[] { "A", "B", "C" };
-            var data = new string[][] { new [] { "A1" }, new[] { "A2", "B2" }, };
+            var data = new[] { new[] { "A1" }, new[] { "A2", "B2" } };
             var t = new[] { title }.Union(data);
 
             //Act
@@ -67,7 +67,7 @@ namespace Tharga.Toolkit.Console.Tests
         {
             //Arrange
             var title = new[] { "A", "B", "C" };
-            var data = new string[][] { new[] { "A1" }, new[] { "A2", "B2" }, new[] { "A3", "B3", "C3" }, new[] { "A4", "B4", "C4", "D4" }, };
+            var data = new[] { new[] { "A1" }, new[] { "A2", "B2" }, new[] { "A3", "B3", "C3" }, new[] { "A4", "B4", "C4", "D4" } };
             var t = new[] { title }.Union(data);
 
             //Act

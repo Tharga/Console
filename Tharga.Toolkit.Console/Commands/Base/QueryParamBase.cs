@@ -28,14 +28,14 @@ namespace Tharga.Toolkit.Console.Commands.Base
         public T QueryParam<T>(string paramName)
         {
             var selection = GenerateSelection<T>();
-            return QueryParam<T>(paramName, null, selection, true, false);
+            return QueryParam(paramName, null, selection, true, false);
         }
 
         public T QueryParam<T>(string paramName, IEnumerable<string> autoParam)
         {
             var selection = GenerateSelection<T>();
             var autoProvideValue = GetNextParam(autoParam);
-            return QueryParam<T>(paramName, autoProvideValue, selection, true, false);
+            return QueryParam(paramName, autoProvideValue, selection, true, false);
         }
 
         public T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IDictionary<T, string> options)
@@ -45,7 +45,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             return QueryParam(paramName, autoProvideValue, selection, true, false);
         }
 
-        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<KeyValuePair<T,string>> options)
+        public T QueryParam<T>(string paramName, IEnumerable<string> autoParam, IEnumerable<KeyValuePair<T, string>> options)
         {
             var selection = options?.Select(x => new CommandTreeNode<T>(x.Key, x.Value));
             var autoProvideValue = GetNextParam(autoParam);
@@ -119,12 +119,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
                         //value = QueryParam(paramName, (string)null, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) }, false);
                         var p1 = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(defaultValue, defaultValue) };
                         var p2 = p1?.Select(x => new CommandTreeNode<string>(x.Key, x.Value));
-                        value = QueryParam(paramName, (string)null, p2, true, passwordEntry);
+                        value = QueryParam(paramName, null, p2, true, passwordEntry);
                     }
                     else
                     {
                         //value = QueryParam(paramName, (string)null, (List<KeyValuePair<string, string>>)null);
-                        value = QueryParam(paramName, (string)null, (IEnumerable<CommandTreeNode<string>>)null, true, passwordEntry);
+                        value = QueryParam(paramName, null, (IEnumerable<CommandTreeNode<string>>)null, true, passwordEntry);
                     }
                 }
 
@@ -133,10 +133,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
             catch (Exception exception)
             {
-                if (exception.InnerException?.GetType() == typeof(FormatException))
-                {
-                    throw exception.InnerException;
-                }
+                if (exception.InnerException?.GetType() == typeof(FormatException)) throw exception.InnerException;
 
                 throw;
             }
@@ -173,12 +170,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
         {
             var sel = new CommandTreeNode<T>(selection?.ToArray() ?? new CommandTreeNode<T>[] { });
             var q = GetParamByString(autoProvideValue, sel);
-            if (q != null)
-            {
-                return q.Key;
-            }
+            if (q != null) return q.Key;
 
-            var prompt = paramName + ((!sel.Subs.Any() || paramName == Constants.Prompt) ? string.Empty : " [Tab]");
+            var prompt = paramName + (!sel.Subs.Any() || paramName == Constants.Prompt ? string.Empty : " [Tab]");
             var response = InputManager.ReadLine(prompt, sel, allowEscape, CancellationToken, passwordEntry ? '*' : (char?)null, null);
             return response;
         }
@@ -194,19 +188,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (!string.IsNullOrEmpty(autoProvideValue))
             {
                 var item = selection.Subs.SingleOrDefault(x => string.Compare(x.Value, autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (string.Equals(item?.Value, autoProvideValue, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return item;
-                }
+                if (string.Equals(item?.Value, autoProvideValue, StringComparison.CurrentCultureIgnoreCase)) return item;
 
                 item = selection.Subs.SingleOrDefault(x => string.Compare(x.Key.ToString(), autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
                 if (item != null)
-                {
                     if (item.Key != null && item.Key.ToString() == autoProvideValue)
-                    {
                         return item;
-                    }
-                }
 
                 try
                 {

@@ -57,10 +57,7 @@ namespace Tharga.Toolkit.Console.Consoles
             if (consoleConfiguration.ShowAssemblyInfo)
             {
                 var info = AssemblyHelper.GetAssemblyInfo();
-                if (!string.IsNullOrEmpty(info))
-                {
-                    Output(new WriteEventArgs(info));
-                }
+                if (!string.IsNullOrEmpty(info)) Output(new WriteEventArgs(info));
             }
         }
     }

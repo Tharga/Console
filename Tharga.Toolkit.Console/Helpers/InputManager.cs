@@ -32,10 +32,7 @@ namespace Tharga.Toolkit.Console.Helpers
                 if (timeoutMilliseconds != null)
                 {
                     var hasEntry = task.Wait(timeoutMilliseconds.Value);
-                    if (!hasEntry)
-                    {
-                        inputInstance.Cancel();
-                    }
+                    if (!hasEntry) inputInstance.Cancel();
                 }
 
                 return task.Result;

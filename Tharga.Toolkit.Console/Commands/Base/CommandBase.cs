@@ -11,18 +11,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
     public abstract class CommandBase : QueryParamBase, ICommand
     {
         private readonly Dictionary<string, string> _names;
-
-        public string Name => _names.Keys.First();
-        public IEnumerable<string> Names => _names.Select(x => x.Key);
-        public string Description { get; }
-        public bool IsHidden { get; }
-
-        public abstract IEnumerable<HelpLine> HelpText { get; }
-
-        public event EventHandler<WriteEventArgs> WriteEvent;
+        protected int ParamIndex;
 
         protected RootCommandBase RootCommand;
-        protected int ParamIndex;
 
         internal CommandBase(string name, string description = null, bool hidden = false)
         {
@@ -34,7 +25,22 @@ namespace Tharga.Toolkit.Console.Commands.Base
         protected override CancellationToken CancellationToken => RootCommand.CommandEngine.CancellationToken;
         protected override IInputManager InputManager => RootCommand.CommandEngine.InputManager;
 
+        public string Name => _names.Keys.First();
+        public IEnumerable<string> Names => _names.Select(x => x.Key);
+        public string Description { get; }
+        public bool IsHidden { get; }
+
+        public abstract IEnumerable<HelpLine> HelpText { get; }
+
+        public event EventHandler<WriteEventArgs> WriteEvent;
+
         public abstract void Invoke(string[] param);
+
+        public virtual bool CanExecute(out string reasonMesage)
+        {
+            reasonMesage = string.Empty;
+            return true;
+        }
 
         internal virtual void InvokeEx(string[] param)
         {
@@ -56,12 +62,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
             if (RootCommand != null) throw new InvalidOperationException("The command is already attached.");
 
             RootCommand = rootCommand;
-        }
-
-        public virtual bool CanExecute(out string reasonMesage)
-        {
-            reasonMesage = string.Empty;
-            return true;
         }
 
         protected virtual string GetCanExecuteFailMessage(string reason)

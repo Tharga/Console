@@ -28,16 +28,18 @@ namespace Tharga.Toolkit.Console.Helpers
         private static IEnumerable<string> ToParamList(this string[] param)
         {
             foreach (var i in param)
-            {
                 if (string.IsNullOrEmpty(i))
                 {
                     //yield break;
                 }
                 else if (i.Contains(" "))
+                {
                     yield return $"\"{i}\"";
+                }
                 else
+                {
                     yield return i;
-            }
+                }
         }
 
         private static Dictionary<string, string> GetDelimiteredVerbs(ref string paramList, char delimiter)

@@ -13,42 +13,69 @@ namespace Tharga.Toolkit.Console.Commands.Base
         private readonly List<ICommand> _subCommands = new List<ICommand>();
         protected readonly List<Tuple<Type, Type>> SubCommandTypes = new List<Tuple<Type, Type>>();
 
-        public IEnumerable<ICommand> SubCommands => _subCommands.OrderBy(x => x.Name);
-
-        public event EventHandler<CommandRegisteredEventArgs> CommandRegisteredEvent;
-
         protected ContainerCommandBase(string name, string description = null, bool hidden = false)
             : base(name, description, hidden)
         {
         }
-
-        public override IEnumerable<HelpLine> HelpText { get { yield break; } }
 
         protected virtual IEnumerable<string> CommandKeys
         {
             get
             {
                 foreach (var sub in _subCommands)
+                foreach (var name in sub.Names)
                 {
-                    foreach (var name in sub.Names)
-                    {
-                        if (this is RootCommandBase)
-                        {
-                            yield return "help";
-                        }
+                    if (this is RootCommandBase) yield return "help";
 
-                        yield return name;
+                    yield return name;
 
-                        var subContainer = sub as ContainerCommandBase;
-                        if (subContainer == null) continue;
-                        yield return name + " help";
-                        var commandKeys = subContainer.CommandKeys;
-                        foreach (var key in commandKeys)
-                        {
-                            yield return $"{name} {key}";
-                        }
-                    }
+                    var subContainer = sub as ContainerCommandBase;
+                    if (subContainer == null) continue;
+                    yield return name + " help";
+                    var commandKeys = subContainer.CommandKeys;
+                    foreach (var key in commandKeys) yield return $"{name} {key}";
                 }
+            }
+        }
+
+        public IEnumerable<ICommand> SubCommands => _subCommands.OrderBy(x => x.Name);
+
+        public event EventHandler<CommandRegisteredEventArgs> CommandRegisteredEvent;
+
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield break; }
+        }
+
+        public override bool CanExecute(out string reasonMessage)
+        {
+            string dummy;
+            if (!_subCommands.Any(x => x.CanExecute(out dummy)))
+            {
+                reasonMessage = "There are no executable subcommands.";
+                return false;
+            }
+
+            return base.CanExecute(out reasonMessage);
+        }
+
+        public override void Invoke(string[] param)
+        {
+            var enumerable = param ?? param.ToArray();
+            var paramList = enumerable.ToParamString(); //TODO: Do not convert, use input all the way
+
+            if (!CanExecute(out var reasonMessage))
+            {
+                OutputWarning(GetCanExecuteFailMessage(reasonMessage));
+                GetHelpCommand(paramList).Invoke(enumerable);
+            }
+            else if (string.IsNullOrEmpty(paramList))
+            {
+                GetHelpCommand(paramList).Invoke(enumerable);
+            }
+            else
+            {
+                OutputWarning($"Unknown sub command '{paramList}', for {Name}.");
             }
         }
 
@@ -132,12 +159,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 }
 
                 if (command.HelpText.Any())
-                {
                     foreach (var helpText in command.HelpText)
-                    {
                         helpCommand.AddLine(helpText.Text, foreColor: helpText.ForeColor);
-                    }
-                }
 
                 if (command.Name == "root")
                 {
@@ -164,28 +187,18 @@ namespace Tharga.Toolkit.Console.Commands.Base
             else if (command.HelpText.Any())
             {
                 if (command.Name == "root")
-                {
                     helpCommand.AddLine("Type \"help\" for more information.", foreColor: ConsoleColor.DarkYellow);
-                }
                 else
-                {
                     helpCommand.AddLine($"Type \"{command.Name} -?\" for more information.", foreColor: ConsoleColor.DarkYellow);
-                }
             }
 
-            if (command is ContainerCommandBase containerCommand)
-            {
-                ShowSubCommandHelp(containerCommand._subCommands, helpCommand, reasonMessage, showHidden);
-            }
+            if (command is ContainerCommandBase containerCommand) ShowSubCommandHelp(containerCommand._subCommands, helpCommand, reasonMessage, showHidden);
 
             if (command.Names.Count() > 1)
             {
                 helpCommand.AddLine(string.Empty);
                 helpCommand.AddLine("Alternative names:", foreColor: ConsoleColor.DarkCyan);
-                foreach (var name in command.Names)
-                {
-                    helpCommand.AddLine($"{name}");
-                }
+                foreach (var name in command.Names) helpCommand.AddLine($"{name}");
             }
 
             return helpCommand;
@@ -206,7 +219,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 helpCommand.AddLine(string.Empty);
                 helpCommand.AddLine($"Sections for {Name}:", foreColor: ConsoleColor.DarkCyan);
                 foreach (var command in containerCommands)
-                {
                     if (!command.IsHidden || showHidden)
                     {
                         var hidden = command.IsHidden ? "*" : "";
@@ -214,14 +226,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
                         helpCommand.AddLine($"{(hidden + command.Name).PadStringAfter(padLength)} {command.Description}", () =>
                         {
                             var canExecute = command.CanExecute(out _);
-                            if (canExecute && !string.IsNullOrEmpty(parentReasonMesage))
-                            {
-                                return false;
-                            }
+                            if (canExecute && !string.IsNullOrEmpty(parentReasonMesage)) return false;
                             return canExecute;
                         });
                     }
-                }
             }
 
             if (actionCommands.Any(x => !x.IsHidden || showHidden))
@@ -229,7 +237,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 helpCommand.AddLine(string.Empty);
                 helpCommand.AddLine($"Commands for {Name}:", foreColor: ConsoleColor.DarkCyan);
                 foreach (var command in actionCommands)
-                {
                     if (!command.IsHidden || showHidden)
                     {
                         var hidden = command.IsHidden ? "*" : "";
@@ -237,14 +244,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
                         helpCommand.AddLine($"{(hidden + command.Name).PadStringAfter(padLength)} {command.Description}", () =>
                         {
                             var canExecute = command.CanExecute(out _);
-                            if (canExecute && !string.IsNullOrEmpty(parentReasonMesage))
-                            {
-                                return false;
-                            }
+                            if (canExecute && !string.IsNullOrEmpty(parentReasonMesage)) return false;
                             return canExecute;
                         });
                     }
-                }
             }
 
             if (anyHidden)
@@ -254,27 +257,12 @@ namespace Tharga.Toolkit.Console.Commands.Base
             }
         }
 
-        public override bool CanExecute(out string reasonMessage)
-        {
-            string dummy;
-            if (!_subCommands.Any(x => x.CanExecute(out dummy)))
-            {
-                reasonMessage = "There are no executable subcommands.";
-                return false;
-            }
-
-            return base.CanExecute(out reasonMessage);
-        }
-
         protected internal ICommand GetSubCommand(string entry, out string subCommand, out bool typeRegistration)
         {
             typeRegistration = false;
             subCommand = null;
 
-            if (string.IsNullOrEmpty(entry))
-            {
-                return this;
-            }
+            if (string.IsNullOrEmpty(entry)) return this;
 
             var arr = entry.Split(' ');
             if (arr.Length > 1) subCommand = entry.Substring(entry.IndexOf(' ') + 1);
@@ -284,7 +272,8 @@ namespace Tharga.Toolkit.Console.Commands.Base
             {
                 return GetHelpCommand(subCommand + " details");
             }
-            else if (entry.EndsWith("-?") || entry.EndsWith("/?") || entry.EndsWith("--help"))
+
+            if (entry.EndsWith("-?") || entry.EndsWith("/?") || entry.EndsWith("--help"))
             {
                 entry = entry.Replace("-?", string.Empty);
                 entry = entry.Replace("/?", string.Empty);
@@ -310,33 +299,10 @@ namespace Tharga.Toolkit.Console.Commands.Base
             {
                 var a = x1.CanExecute(out var reasonMessage);
                 var b = command.CanExecute(out reasonMessage);
-                if (a && !b)
-                {
-                    actionCommandBase.SetCanExecute(() => $"{reasonMessage} Inherited by parent.");
-                }
+                if (a && !b) actionCommandBase.SetCanExecute(() => $"{reasonMessage} Inherited by parent.");
             }
 
             return x1;
-        }
-
-        public override void Invoke(string[] param)
-        {
-            var enumerable = param as string[] ?? param.ToArray();
-            var paramList = enumerable.ToParamString(); //TODO: Do not convert, use input all the way
-
-            if (!CanExecute(out var reasonMessage))
-            {
-                OutputWarning(GetCanExecuteFailMessage(reasonMessage));
-                GetHelpCommand(paramList).Invoke(enumerable);
-            }
-            else if (string.IsNullOrEmpty(paramList))
-            {
-                GetHelpCommand(paramList).Invoke(enumerable);
-            }
-            else
-            {
-                OutputWarning($"Unknown sub command '{paramList}', for {Name}.");
-            }
         }
 
         protected void OnOutputEvent(object sender, WriteEventArgs e)
@@ -356,7 +322,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 if (RootCommand.CommandResolver == null) throw new InvalidOperationException("No CommandResolver has been defined in the root command.");
 
                 foreach (var subCommandType in subCommandTypes)
-                {
                     if (subCommandType.Item2 == null || subCommandType.Item2 == GetType())
                     {
                         //TODO: Have a feature, so that the command does not have to be initiated before execution.
@@ -367,7 +332,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
                     {
                         subCommandsToPassOn.Add(subCommandType);
                     }
-                }
             }
 
             foreach (var cmd in SubCommands)

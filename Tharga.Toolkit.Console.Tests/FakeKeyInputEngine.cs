@@ -7,7 +7,7 @@ namespace Tharga.Toolkit.Console.Tests
 {
     internal class FakeKeyInputEngine : IKeyInputEngine
     {
-        private readonly BlockingCollection<ConsoleKeyInfo> _buffer = new BlockingCollection<ConsoleKeyInfo>();
+        private readonly BlockingCollection<ConsoleKeyInfo> _buffer = new();
 
         public FakeKeyInputEngine()
         {
@@ -15,23 +15,17 @@ namespace Tharga.Toolkit.Console.Tests
 
         public FakeKeyInputEngine(ConsoleKey[] data)
         {
-            foreach (var item in data)
-            {
-                _buffer.Add(new ConsoleKeyInfo((char)item, item, false, false, false));
-            }
+            foreach (var item in data) _buffer.Add(new ConsoleKeyInfo((char)item, item, false, false, false));
         }
 
         public FakeKeyInputEngine(ConsoleKeyInfo[] data)
         {
-            foreach (var item in data)
-            {
-                _buffer.Add(item);
-            }
+            foreach (var item in data) _buffer.Add(item);
         }
 
         public void Feed(string data)
         {
-            foreach (char item in data)
+            foreach (var item in data)
             {
                 ConsoleKey key;
                 switch (item)
@@ -46,6 +40,7 @@ namespace Tharga.Toolkit.Console.Tests
                             throw new InvalidOperationException($"Cannot parse {item} to key.");
                         break;
                 }
+
                 var k = new ConsoleKeyInfo(item, key, false, false, false);
                 _buffer.Add(k);
             }

@@ -18,7 +18,6 @@ namespace Tharga.Toolkit.Console
             Task.Run(() =>
             {
                 while (!cancellationToken.IsCancellationRequested)
-                {
                     try
                     {
                         var item = _queue.Take(cancellationToken);
@@ -26,19 +25,13 @@ namespace Tharga.Toolkit.Console
 
                         var exception = item as Exception;
                         if (exception != null)
-                        {
                             Console.OutputError(exception);
-                        }
-                        else if (item is WriteEventArgs)
-                        {
-                            Console.Output((WriteEventArgs)item);
-                        }
+                        else if (item is WriteEventArgs) Console.Output((WriteEventArgs)item);
                     }
                     catch (OperationCanceledException)
                     {
                         break;
                     }
-                }
             }, cancellationToken);
         }
 

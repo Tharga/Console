@@ -5,8 +5,8 @@ namespace Tharga.Toolkit.Console.Helpers
 {
     internal sealed class TextReaderInterceptor : TextReader
     {
-        private readonly IConsoleManager _consoleWriter;
         private readonly IConsole _console;
+        private readonly IConsoleManager _consoleWriter;
 
         public TextReaderInterceptor(IConsoleManager consoleWriter, IConsole console)
         {

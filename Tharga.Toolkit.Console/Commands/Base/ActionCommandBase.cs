@@ -12,27 +12,38 @@ namespace Tharga.Toolkit.Console.Commands.Base
     {
         private readonly List<Func<string[], KeyValuePair<string, object>>> _registeredQuery = new List<Func<string[], KeyValuePair<string, object>>>();
         private readonly List<Func<string[]>> _selectionDelegate = new List<Func<string[]>>();
-        private Dictionary<string, object> _param = new Dictionary<string, object>();
         private Func<string> _canExecute;
-
-        public override IEnumerable<HelpLine> HelpText { get { yield break; } }
+        private Dictionary<string, object> _param = new Dictionary<string, object>();
 
         protected ActionCommandBase(string name, string description = null, bool hidden = false)
             : base(name, description, hidden)
         {
         }
 
+        public override IEnumerable<HelpLine> HelpText
+        {
+            get { yield break; }
+        }
+
+        public override bool CanExecute(out string reasonMessage)
+        {
+            if (_canExecute != null)
+            {
+                reasonMessage = _canExecute();
+                return string.IsNullOrEmpty(reasonMessage);
+            }
+
+            return base.CanExecute(out reasonMessage);
+        }
+
         protected void RegisterQuery<T>(string key, string paramName, Func<IEnumerable<KeyValuePair<T, string>>> selectionDelegate)
         {
-            _registeredQuery.Add((param) =>
+            _registeredQuery.Add(param =>
             {
                 var result = QueryParam(paramName, param, selectionDelegate());
                 return new KeyValuePair<string, object>(key, result);
             });
-            _selectionDelegate.Add(() =>
-            {
-                return selectionDelegate().Select(x => x.Value).ToArray();
-            });
+            _selectionDelegate.Add(() => { return selectionDelegate().Select(x => x.Value).ToArray(); });
         }
 
         protected T GetParam<T>(string key)
@@ -49,6 +60,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 var result = query.Invoke(param);
                 _param.Add(result.Key, result.Value);
             }
+
             Invoke(param);
         }
 
@@ -61,10 +73,7 @@ namespace Tharga.Toolkit.Console.Commands.Base
                 //var c = ((SystemConsoleBase)((CommandBase)this).Console).GetConsoleColor(OutputLevel.Title);
                 //var col = ((SystemConsoleBase)Console).GetConsoleColor(OutputLevel.Title);
                 helpCommand.AddLine($"Help for command {Name}.", foreColor: ConsoleColor.DarkCyan);
-                foreach (var helpText in HelpText)
-                {
-                    helpCommand.AddLine(helpText.Text, foreColor: helpText.ForeColor);
-                }
+                foreach (var helpText in HelpText) helpCommand.AddLine(helpText.Text, foreColor: helpText.ForeColor);
                 helpCommand.AddLine(string.Empty);
             }
 
@@ -74,17 +83,6 @@ namespace Tharga.Toolkit.Console.Commands.Base
         public void SetCanExecute(Func<string> canExecute)
         {
             _canExecute = canExecute;
-        }
-
-        public override bool CanExecute(out string reasonMessage)
-        {
-            if (_canExecute != null)
-            {
-                reasonMessage = _canExecute();
-                return string.IsNullOrEmpty(reasonMessage);
-            }
-
-            return base.CanExecute(out reasonMessage);
         }
 
         protected static Func<List<KeyValuePair<string, string>>> SelectionTrueFalse()
@@ -116,11 +114,9 @@ namespace Tharga.Toolkit.Console.Commands.Base
             foreach (var x in _selectionDelegate)
             {
                 var r = x.Invoke().ToArray();
-                foreach (var v in r)
-                {
-                    l.Add(v);
-                }
+                foreach (var v in r) l.Add(v);
             }
+
             yield return l;
         }
     }

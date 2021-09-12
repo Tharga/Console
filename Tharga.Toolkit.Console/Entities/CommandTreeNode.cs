@@ -7,11 +7,6 @@ namespace Tharga.Toolkit.Console.Entities
     public class CommandTreeNode<T>
     {
         private readonly CommandTreeNode<T> _parent;
-        public T Key { get; }
-        public string Value { get; }
-        public List<CommandTreeNode<T>> Subs { get; }
-
-        public string FullValuePath => _parent?._parent == null ? Value : $"{_parent.FullValuePath} {Value}";
 
         private CommandTreeNode(CommandTreeNode<T> parent, T key, string value, IEnumerable<CommandTreeNode<T>> subs)
         {
@@ -22,7 +17,7 @@ namespace Tharga.Toolkit.Console.Entities
         }
 
         public CommandTreeNode(IEnumerable<CommandTreeNode<T>> subs)
-            : this(null, default(T), "root", subs)
+            : this(null, default, "root", subs)
         {
         }
 
@@ -30,6 +25,12 @@ namespace Tharga.Toolkit.Console.Entities
             : this(null, key, value, subs)
         {
         }
+
+        public T Key { get; }
+        public string Value { get; }
+        public List<CommandTreeNode<T>> Subs { get; }
+
+        public string FullValuePath => _parent?._parent == null ? Value : $"{_parent.FullValuePath} {Value}";
 
         public CommandTreeNode<T> Select(string entry)
         {
@@ -51,16 +52,14 @@ namespace Tharga.Toolkit.Console.Entities
                     var subEntry = entry.Substring(segment.Length + 1);
                     return FindNode(subEntry, hits.First().Subs);
                 }
-                else if (segments.Length > 1 && exactHit != null)
+
+                if (segments.Length > 1 && exactHit != null)
                 {
                     var subEntry = entry.Substring(segment.Length + 1);
                     return FindNode(subEntry, hits.First().Subs);
                 }
 
-                if (hits.Length >= 1)
-                {
-                    return hits.First();
-                }
+                if (hits.Length >= 1) return hits.First();
             }
 
             return nodes.FirstOrDefault();
@@ -85,17 +84,12 @@ namespace Tharga.Toolkit.Console.Entities
             var ns = nodes.ToArray();
             for (var i = 0; i < ns.Length; i++)
             {
-                if (ReferenceEquals(ns[i], selection))
-                {
-                    return new Tuple<CommandTreeNode<T>, int>(ns[i]._parent, i);
-                }
+                if (ReferenceEquals(ns[i], selection)) return new Tuple<CommandTreeNode<T>, int>(ns[i]._parent, i);
 
                 var p = FindParentLocation(selection, ns[i].Subs);
-                if (p != null)
-                {
-                    return p;
-                }
+                if (p != null) return p;
             }
+
             return null;
         }
     }

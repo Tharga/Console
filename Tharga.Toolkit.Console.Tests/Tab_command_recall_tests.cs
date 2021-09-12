@@ -37,7 +37,7 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var cancellationToken = new CancellationToken();
             var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-            var selection = new CommandTreeNode<string>( new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
+            var selection = new CommandTreeNode<string>(new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
 
             //Act
             var r = inputInstance.ReadLine(selection, true);
@@ -77,7 +77,7 @@ namespace Tharga.Toolkit.Console.Tests
             var console = new TestConsole(consoleManager);
             var cancellationToken = new CancellationToken();
             var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-            var selection = new CommandTreeNode<string>( new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
+            var selection = new CommandTreeNode<string>(new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
 
             //Act
             var r = inputInstance.ReadLine(selection, true);
@@ -124,11 +124,11 @@ namespace Tharga.Toolkit.Console.Tests
             var selection = new CommandTreeNode<string>(new[]
             {
                 new CommandTreeNode<string>("First", "One"),
-                new CommandTreeNode<string>("Second", "Two", new []
+                new CommandTreeNode<string>("Second", "Two", new[]
                 {
                     new CommandTreeNode<string>("FirstSub", "SubOne"),
                     new CommandTreeNode<string>("SecondSub", "SubTwo"),
-                    new CommandTreeNode<string>("LastSub", "SubX"),
+                    new CommandTreeNode<string>("LastSub", "SubX")
                 }),
                 new CommandTreeNode<string>("Last", "x")
             });
@@ -154,11 +154,11 @@ namespace Tharga.Toolkit.Console.Tests
             var selection = new CommandTreeNode<string>(new[]
             {
                 new CommandTreeNode<string>("First", "One"),
-                new CommandTreeNode<string>("Second", "Two", new []
+                new CommandTreeNode<string>("Second", "Two", new[]
                 {
                     new CommandTreeNode<string>("FirstSub", "SubOne"),
                     new CommandTreeNode<string>("SecondSub", "SubTwo"),
-                    new CommandTreeNode<string>("LastSub", "SubX"),
+                    new CommandTreeNode<string>("LastSub", "SubX")
                 }),
                 new CommandTreeNode<string>("Last", "x")
             });
@@ -185,11 +185,11 @@ namespace Tharga.Toolkit.Console.Tests
             var selection = new CommandTreeNode<string>(new[]
             {
                 new CommandTreeNode<string>("First", "One"),
-                new CommandTreeNode<string>("Second", "Two", new []
+                new CommandTreeNode<string>("Second", "Two", new[]
                 {
                     match,
                     new CommandTreeNode<string>("SecondSub", "SubTwo"),
-                    new CommandTreeNode<string>("LastSub", "SubX"),
+                    new CommandTreeNode<string>("LastSub", "SubX")
                 }),
                 new CommandTreeNode<string>("Last", "x")
             });
@@ -215,11 +215,11 @@ namespace Tharga.Toolkit.Console.Tests
             var selection = new CommandTreeNode<string>(new[]
             {
                 new CommandTreeNode<string>("First", "One"),
-                new CommandTreeNode<string>("Second", "Two", new []
+                new CommandTreeNode<string>("Second", "Two", new[]
                 {
                     match,
                     new CommandTreeNode<string>("SecondSub", "SubTwo"),
-                    new CommandTreeNode<string>("LastSub", "SubX"),
+                    new CommandTreeNode<string>("LastSub", "SubX")
                 }),
                 new CommandTreeNode<string>("Last", "x")
             });
@@ -245,11 +245,11 @@ namespace Tharga.Toolkit.Console.Tests
             var selection = new CommandTreeNode<string>(new[]
             {
                 new CommandTreeNode<string>("First", "One"),
-                new CommandTreeNode<string>("Second", "Two", new []
+                new CommandTreeNode<string>("Second", "Two", new[]
                 {
                     match,
                     new CommandTreeNode<string>("SecondSub", "SubTwo"),
-                    new CommandTreeNode<string>("LastSub", "SubX"),
+                    new CommandTreeNode<string>("LastSub", "SubX")
                 }),
                 new CommandTreeNode<string>("SecondOther", "TwoOther"),
                 new CommandTreeNode<string>("Last", "x")
@@ -301,16 +301,16 @@ namespace Tharga.Toolkit.Console.Tests
             var selection = new CommandTreeNode<string>(new[]
             {
                 new CommandTreeNode<string>("First", "One"),
-                new CommandTreeNode<string>("Second", "Two", new []
+                new CommandTreeNode<string>("Second", "Two", new[]
                 {
-                    new CommandTreeNode<string>("First", "One", new []
+                    new CommandTreeNode<string>("First", "One", new[]
                     {
                         new CommandTreeNode<string>("FirstSub", "ThirdOne"),
                         match,
-                        new CommandTreeNode<string>("LastSub", "ThirdX"),
+                        new CommandTreeNode<string>("LastSub", "ThirdX")
                     }),
                     new CommandTreeNode<string>("SecondSub", "SubTwo"),
-                    new CommandTreeNode<string>("LastSub", "SubX"),
+                    new CommandTreeNode<string>("LastSub", "SubX")
                 }),
                 new CommandTreeNode<string>("Last", "x")
             });
@@ -336,16 +336,16 @@ namespace Tharga.Toolkit.Console.Tests
             var selection = new CommandTreeNode<string>(new[]
             {
                 new CommandTreeNode<string>("First", "One"),
-                new CommandTreeNode<string>("Second", "Two", new []
+                new CommandTreeNode<string>("Second", "Two", new[]
                 {
-                    new CommandTreeNode<string>("FirstA", "One", new []
+                    new CommandTreeNode<string>("FirstA", "One", new[]
                     {
                         new CommandTreeNode<string>("FirstSub", "ThirdOne"),
                         match,
-                        new CommandTreeNode<string>("LastSub", "ThirdX"),
+                        new CommandTreeNode<string>("LastSub", "ThirdX")
                     }),
                     new CommandTreeNode<string>("SecondSub", "SubTwo"),
-                    new CommandTreeNode<string>("LastSub", "SubX"),
+                    new CommandTreeNode<string>("LastSub", "SubX")
                 }),
                 new CommandTreeNode<string>("Last", "x")
             });
