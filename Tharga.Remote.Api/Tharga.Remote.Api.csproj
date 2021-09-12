@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tharga.RemoteServer\Tharga.RemoteServer.csproj" />
+    <ProjectReference Include="..\Tharga.Remote.Server\Tharga.Remote.Server.csproj" />
   </ItemGroup>
 
 </Project>
