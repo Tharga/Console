@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Tharga.RemoteServer
+namespace Tharga.Remote.Server
 {
     internal class ConsoleHub : Hub
     {

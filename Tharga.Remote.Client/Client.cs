@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 
-namespace Tharga.RemoteClient
+namespace Tharga.Remote.Client
 {
     internal class Client : IClient
     {

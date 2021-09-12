@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Tharga.RemoteServer
+namespace Tharga.Remote.Server
 {
     public static class Builder
     {

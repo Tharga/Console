@@ -6,7 +6,7 @@ using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
 
-namespace Tharga.RemoteClient
+namespace Tharga.Remote.Client
 {
     internal class Program
     {

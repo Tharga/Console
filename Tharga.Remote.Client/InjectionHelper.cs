@@ -3,7 +3,7 @@ using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 
-namespace Tharga.RemoteClient
+namespace Tharga.Remote.Client
 {
     internal class InjectionHelper
     {

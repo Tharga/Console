@@ -1,6 +1,6 @@
 using System;
 
-namespace Tharga.RemoteApi
+namespace Tharga.Remote.Api
 {
     public class WeatherForecast
     {

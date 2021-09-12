@@ -1,4 +1,4 @@
-﻿namespace Tharga.RemoteServer
+﻿namespace Tharga.Remote.Server
 {
     internal static class Constants
     {

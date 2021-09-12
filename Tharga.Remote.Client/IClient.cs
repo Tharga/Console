@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Tharga.RemoteClient
+namespace Tharga.Remote.Client
 {
     public interface IClient
     {
