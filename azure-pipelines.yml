@@ -1,7 +1,7 @@
 trigger:
 - master
 
-name: 3.0.$(BuildID)
+name: 3.1.$(Rev:r)
 
 pool:
   vmImage: 'windows-latest'
@@ -10,11 +10,19 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  #BQC.ForceNewBaseline: false
 
 steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET 6'
+  inputs:
+    version: 6.0.x
+    includePreviewVersions: false
+
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
+  displayName: 'Restore nuget packages'
   inputs:
     restoreSolution: '$(solution)'
 
@@ -22,7 +30,7 @@ steps:
   displayName: 'Build'
   inputs:
     solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:Version=$(Build.BuildNumber) /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:Version=$(Build.BuildNumber) /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site" /p:NoWarn=0618'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
