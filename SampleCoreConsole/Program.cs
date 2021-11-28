@@ -58,7 +58,10 @@ namespace SampleCoreConsole
                     {
                         TaskRunners = new[]
                         {
-                            new TaskRunner((c, a) => { })
+                            new TaskRunner(async (c, a) =>
+                            {
+                                await Task.Delay(1000, c);
+                            })
                         }
                     };
 

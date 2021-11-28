@@ -6,7 +6,7 @@ namespace Tharga.Toolkit.Console.Entities
 {
     public class TaskRunner
     {
-        private readonly Action<CancellationToken, AutoResetEvent> _action;
+        private readonly Func<CancellationToken, AutoResetEvent, Task> _action;
         private readonly CancellationTokenSource _cancellationToken;
         private readonly AutoResetEvent _autoResetEvent;
         private Task _task;
@@ -20,22 +20,44 @@ namespace Tharga.Toolkit.Console.Entities
         public TaskRunner(Action action)
             : this()
         {
-            _action = (c, a) => { action(); };
+            _action = (c, a) =>
+            {
+                action();
+                return Task.CompletedTask;
+            };
         }
 
         public TaskRunner(Action<CancellationToken> action)
             : this()
         {
-            _action = (c, a) => { action(c); };
+            _action = (c, a) =>
+            {
+                action(c);
+                return Task.CompletedTask;
+            };
         }
 
         public TaskRunner(Action<AutoResetEvent> action)
             : this()
         {
-            _action = (c, a) => { action(a); };
+            _action = (c, a) =>
+            {
+                action(a);
+                return Task.CompletedTask;
+            };
         }
 
         public TaskRunner(Action<CancellationToken, AutoResetEvent> action)
+            : this()
+        {
+            _action = (c, a) =>
+            {
+                action(c, a);
+                return Task.CompletedTask;
+            };
+        }
+
+        public TaskRunner(Func<CancellationToken, AutoResetEvent, Task> action)
             : this()
         {
             _action = action;
