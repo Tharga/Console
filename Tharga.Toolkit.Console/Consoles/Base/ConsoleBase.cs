@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Tharga.Toolkit.Console.Entities;
 using Tharga.Toolkit.Console.Helpers;
 using Tharga.Toolkit.Console.Interfaces;
@@ -346,9 +347,24 @@ namespace Tharga.Toolkit.Console.Consoles.Base
 
         public virtual void Output(IOutput output)
         {
+            try
+            {
+                Task.Delay(20); //Makes the exception less probable
+                OutputInternal(output);
+            }
+            catch (NullReferenceException)
+            {
+                //TODO: Find when this happens and solve it the right way. It only happens randomly at startup)
+                Task.Delay(100);
+                OutputInternal(output);
+            }
+        }
+
+        private void OutputInternal(IOutput output)
+        {
             if (output == null) throw new ArgumentNullException(nameof(output), "No output parameter provided.");
 
-            if (_mutedTypes.Contains(output.OutputLevel)) return;
+            if (_mutedTypes?.Contains(output.OutputLevel) ?? false) return;
 
             var textColor = output.TextColor; // ?? ConsoleColor.White;
             var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
@@ -388,7 +404,7 @@ namespace Tharga.Toolkit.Console.Consoles.Base
                         else
                         {
                             var prognosis = _tagLocalLocation[tag].Move(ConsoleManager, message);
-                            for(var i = 0; i < prognosis.Top - _tagLocalLocation[tag].Top; i++)
+                            for (var i = 0; i < prognosis.Top - _tagLocalLocation[tag].Top; i++)
                             {
                                 WriteLine(string.Empty);
                             }
