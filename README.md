@@ -1,14 +1,12 @@
 # Tharga Console
 
-Tharga Toolkit Console is used to simplify construction of advanced console applications.
+Tharga Console is used to simplify construction of advanced console applications.
 
 Perfect for hosting local services where you want to be able to perform some extra features.
 
-The development platform is .NET C#.
-
 ## NuGet
 
-To get started you can download the prebuilt [NuGet package](https://www.nuget.org/packages/Tharga.Toolkit.Console/).
+To get started you can download the prebuilt [NuGet package](https://www.nuget.org/packages/Tharga.Console/).
 
 ## Engine, Command and Console
 
@@ -17,59 +15,59 @@ Here are some basic examples on how to get started.
 
 #### Simplest core application
 ```
-    internal static class Program
+internal static class Program
+{
+    [STAThread]
+    private static void Main(string[] args)
     {
-        [STAThread]
-        private static void Main(string[] args)
+        using (var console = new ClientConsole())
         {
-            using (var console = new ClientConsole())
-            {
-                var command = new RootCommand(console);
-                var engine = new CommandEngine(command);
-                engine.Start(args);
-            }
+            var command = new RootCommand(console);
+            var engine = new CommandEngine(command);
+            engine.Start(args);
         }
     }
+}
 ```
 
 #### Adding custom commands
 ```
-    internal static class Program
+internal static class Program
+{
+    [STAThread]
+    private static void Main(string[] args)
     {
-        [STAThread]
-        private static void Main(string[] args)
+        using (var console = new ClientConsole())
         {
-            using (var console = new ClientConsole())
-            {
-                var command = new RootCommand(console);
-                command.RegisterCommand(new FooCommand());
-                var engine = new CommandEngine(command);
-                engine.Start(args);
-            }
+            var command = new RootCommand(console);
+            command.RegisterCommand(new FooCommand());
+            var engine = new CommandEngine(command);
+            engine.Start(args);
         }
     }
+}
 
-    public class FooCommand : ContainerCommandBase
+public class FooCommand : ContainerCommandBase
+{
+    public FooCommand()
+        : base("Foo")
     {
-        public FooCommand()
-            : base("Foo")
-        {
-            RegisterCommand(new BarCommand());
-        }
+        RegisterCommand(new BarCommand());
+    }
+}
+
+public class BarCommand : ActionCommandBase
+{
+    public BarCommand()
+        : base("Bar")
+    {
     }
 
-    public class BarCommand : ActionCommandBase
+    public override void Invoke(string[] param)
     {
-        public BarCommand()
-            : base("Bar")
-        {
-        }
-
-        public override void Invoke(string[] param)
-        {
-            OutputInformation("Foo Bar command executed successfully.");
-        }
+        OutputInformation("Foo Bar command executed successfully.");
     }
+}
 ```
 
 #### Adding custom commands using IOC container
@@ -79,48 +77,48 @@ You can use interfaces for the commands and dependencies, if you do not want to 
 The commands are resolved and instantiated once when the program starts.
 In this example we are using *castle windsor*.
 ```
-    internal static class Program
+internal static class Program
+{
+    [STAThread]
+    private static void Main(string[] args)
     {
-        [STAThread]
-        private static void Main(string[] args)
+        var container = new WindsorContainer();
+        container.Register(Component.For<FooCommand>().LifestyleTransient());
+        container.Register(Component.For<BarCommand>().LifestyleTransient());
+
+        var commandResolver = new CommandResolver(type => (ICommand)container.Resolve(type));
+
+        using (var console = new ClientConsole())
         {
-            var container = new WindsorContainer();
-            container.Register(Component.For<FooCommand>().LifestyleTransient());
-            container.Register(Component.For<BarCommand>().LifestyleTransient());
-
-            var commandResolver = new CommandResolver(type => (ICommand)container.Resolve(type));
-
-            using (var console = new ClientConsole())
-            {
-                var command = new RootCommand(console, commandResolver);
-                command.RegisterCommand<FooCommand>();
-                var engine = new CommandEngine(command);
-                engine.Start(args);
-            }
+            var command = new RootCommand(console, commandResolver);
+            command.RegisterCommand<FooCommand>();
+            var engine = new CommandEngine(command);
+            engine.Start(args);
         }
     }
+}
 
-    public class FooCommand : ContainerCommandBase
+public class FooCommand : ContainerCommandBase
+{
+    public FooCommand()
+        : base("Foo")
     {
-        public FooCommand()
-            : base("Foo")
-        {
-            RegisterCommand<BarCommand>();
-        }
+        RegisterCommand<BarCommand>();
+    }
+}
+
+public class BarCommand : ActionCommandBase
+{
+    public BarCommand()
+        : base("Bar")
+    {
     }
 
-    public class BarCommand : ActionCommandBase
+    public override void Invoke(string[] param)
     {
-        public BarCommand()
-            : base("Bar")
-        {
-        }
-
-        public override void Invoke(string[] param)
-        {
-            OutputInformation("Foo Bar command executed successfully.");
-        }
+        OutputInformation("Foo Bar command executed successfully.");
     }
+}
 ```
 
 You can also use this to register all commands at once.
@@ -134,33 +132,33 @@ container.Register(Classes.FromAssemblyInThisApplication()
 
 #### Adding stuff that should start automatically and run in background
 ```
-    internal static class Program
+internal static class Program
+{
+    [STAThread]
+    private static void Main(string[] args)
     {
-        [STAThread]
-        private static void Main(string[] args)
+        using (var console = new ClientConsole())
         {
-            using (var console = new ClientConsole())
+            var command = new RootCommand(console);
+            var engine = new CommandEngine(command)
             {
-                var command = new RootCommand(console);
-                var engine = new CommandEngine(command)
+                TaskRunners = new[]
                 {
-                    TaskRunners = new[]
+                    new TaskRunner((c, a) =>
                     {
-                        new TaskRunner((c, a) =>
+                        while (!c.IsCancellationRequested)
                         {
-                            while (!c.IsCancellationRequested)
-                            {
-                                console.OutputInformation("Running...");
-                                Thread.Sleep(3000);
-                            }
-                        }),
-                    },
-                };
+                            console.OutputInformation("Running...");
+                            Thread.Sleep(3000);
+                        }
+                    }),
+                },
+            };
 
-                engine.Start(args);
-            }
+            engine.Start(args);
         }
     }
+}
 ```
 
 #### Basic text input
@@ -170,94 +168,94 @@ You can also provide commands in a single line by typeing *Input ABC 123 qwerty*
 
 The third way is to start the console program with a provided parameter *"Input ABC 123 qwerty" /c*. (The /c parameter will keep the console open after execution.)
 ```
-    internal static class Program
+internal static class Program
+{
+    [STAThread]
+    private static void Main(string[] args)
     {
-        [STAThread]
-        private static void Main(string[] args)
+        using (var console = new ClientConsole())
         {
-            using (var console = new ClientConsole())
-            {
-                var command = new RootCommand(console);
-                command.RegisterCommand(new InputCommand());
-                var engine = new CommandEngine(command);
+            var command = new RootCommand(console);
+            command.RegisterCommand(new InputCommand());
+            var engine = new CommandEngine(command);
 
-                engine.Start(args);
-            }
+            engine.Start(args);
         }
     }
+}
 
-    internal class InputCommand : ActionCommandBase
+internal class InputCommand : ActionCommandBase
+{
+    public InputCommand()
+        : base("Input")
     {
-        public InputCommand()
-            : base("Input")
-        {
-        }
-
-        public override void Invoke(string[] param)
-        {
-            //Query the user for input
-            var stringInput = QueryParam<string>("Enter a string", param);
-            var intInput = QueryParam<int>("Enter an int", param);
-            var passwordInput = QueryPassword("Enter a password", param);
-
-            //Show the result
-            OutputInformation(stringInput);
-            OutputInformation(intInput.ToString());
-            OutputInformation(passwordInput);
-        }
     }
+
+    public override void Invoke(string[] param)
+    {
+        //Query the user for input
+        var stringInput = QueryParam<string>("Enter a string", param);
+        var intInput = QueryParam<int>("Enter an int", param);
+        var passwordInput = QueryPassword("Enter a password", param);
+
+        //Show the result
+        OutputInformation(stringInput);
+        OutputInformation(intInput.ToString());
+        OutputInformation(passwordInput);
+    }
+}
 ```
 
 #### Input with options
 In this example the user can choose between three inputs using the *tab*-key.
 It is also possible to manually enter (or provide) any of the named options *First*, *Second* or *Third*, ither as a parameter (Try to type *Input First*) to the command, or to the program (*"Input First" /c*)
 ```
-    internal static class Program
+internal static class Program
+{
+    [STAThread]
+    private static void Main(string[] args)
     {
-        [STAThread]
-        private static void Main(string[] args)
+        using (var console = new ClientConsole())
         {
-            using (var console = new ClientConsole())
-            {
-                var command = new RootCommand(console);
-                command.RegisterCommand(new InputCommand());
-                var engine = new CommandEngine(command);
+            var command = new RootCommand(console);
+            command.RegisterCommand(new InputCommand());
+            var engine = new CommandEngine(command);
 
-                engine.Start(args);
-            }
+            engine.Start(args);
         }
     }
+}
 
-    internal class InputCommand : ActionCommandBase
+internal class InputCommand : ActionCommandBase
+{
+    public InputCommand()
+        : base("Input")
     {
-        public InputCommand()
-            : base("Input")
-        {
-        }
-
-        public override void Invoke(string[] param)
-        {
-            //Prepare the selection to choose from
-            var selection = new Dictionary<Guid, string>
-            {
-                { Guid.NewGuid(), "First" },
-                { Guid.NewGuid(), "Second" },
-                { Guid.NewGuid(), "Third" }
-            };
-
-            //Query the user for input
-            var someKey = QueryParam("Enter a key", param, selection);
-
-            //Show the result
-            OutputInformation(someKey.ToString());
-        }
     }
+
+    public override void Invoke(string[] param)
+    {
+        //Prepare the selection to choose from
+        var selection = new Dictionary<Guid, string>
+        {
+            { Guid.NewGuid(), "First" },
+            { Guid.NewGuid(), "Second" },
+            { Guid.NewGuid(), "Third" }
+        };
+
+        //Query the user for input
+        var someKey = QueryParam("Enter a key", param, selection);
+
+        //Show the result
+        OutputInformation(someKey.ToString());
+    }
+}
 ```
 
 ## Sample
 
 A good sample to look at can be found here.
-[Sample code](https://github.com/poxet/tharga-console/blob/master/Samples/SampleConsole/Program.cs)
+[Sample code](https://github.com/Tharga/Console/blob/master/SampleCoreConsole/Program.cs)
 
 ## Arguments
 
@@ -377,31 +375,6 @@ There are four types of output, the colors for theese can be configured using th
 - WarningColor - Default Yellow
 - ErrorColor - Default Red
 - EventColor - Default Cyan
-
-## Log4net appender
-Add the nuget package *Tharga.Toolkit.Console.Log4Net* to get *Tharga Console* and a *log4net appender*.
-
-Remember to add ```[assembly: log4net.Config.XmlConfigurator(Watch = true)]``` to your *AssemblyInfo.cs*-file for the configuration to load.
-
-##### App.config example
-```
-<configuration>
-  <configSections>
-    <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net" />
-  </configSections>
-  <log4net debug="false">
-    <appender name="ThargaConsoleAppender" type="Tharga.Toolkit.Console.Log4Net.ThargaConsoleAppender, Tharga.Toolkit.Console.Log4Net">
-      <layout type="log4net.Layout.PatternLayout">
-        <conversionPattern value="%d [%t] %-5p %c %m" />
-      </layout>
-    </appender>
-    <root>
-      <level value="DEBUG" />
-      <appender-ref ref="ThargaConsoleAppender" />
-    </root>
-  </log4net>
-</configuration>
-```
 
 ## License
 Tharga Console goes under The MIT License (MIT).
