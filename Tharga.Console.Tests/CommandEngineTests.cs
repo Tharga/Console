@@ -1,17 +1,17 @@
 ﻿using System;
+using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 using Tharga.Console.Commands;
 using Tharga.Console.Consoles;
 using Tharga.Console.Entities;
 using Tharga.Console.Interfaces;
+using Xunit;
 
 namespace Tharga.Console.Tests
 {
-    [TestFixture]
     public class CommandEngineTests
     {
-        [Test]
+        [Fact]
         public void When_providing_the_exit_command_the_command_engine_should_exit()
         {
             //Arrange
@@ -24,7 +24,7 @@ namespace Tharga.Console.Tests
             Assert.True(true);
         }
 
-        [Test]
+        [Fact]
         public void When_typing_the_exit_command_the_command_engine_should_exit()
         {
             //Arrange
@@ -40,7 +40,7 @@ namespace Tharga.Console.Tests
             Assert.True(true);
         }
 
-        [Test]
+        [Fact]
         public void When_registering_two_commands_with_the_same_name()
         {
             //Arrange
@@ -66,8 +66,8 @@ namespace Tharga.Console.Tests
             }
 
             //Assert
-            Assert.That(exceptionThrown, Is.Not.Null);
-            Assert.That(exceptionThrown.GetType(), Is.EqualTo(typeof(CommandAlreadyRegisteredException)));
+            exceptionThrown.Should().NotBeNull();
+            exceptionThrown.GetType().Should().Be(typeof(CommandAlreadyRegisteredException));
         }
     }
 }

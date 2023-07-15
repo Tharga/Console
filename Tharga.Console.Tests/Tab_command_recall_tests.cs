@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using NUnit.Framework;
+using FluentAssertions;
 using Tharga.Console.Entities;
 using Tharga.Console.Helpers;
+using Xunit;
 
 namespace Tharga.Console.Tests
 {
-    [TestFixture]
     public class Tab_command_recall_tests
     {
-        [Test]
+        [Fact]
         public void Should_recall_nothing_when_pressing_Tab_and_no_commands_are_provided()
         {
             //Arrange
@@ -25,10 +25,10 @@ namespace Tharga.Console.Tests
             var r = inputInstance.ReadLine<string>(null, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(string.Empty));
+            r.Should().BeEmpty();
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_first_command_when_pressing_Tab()
         {
             //Arrange
@@ -43,12 +43,11 @@ namespace Tharga.Console.Tests
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(selection.Subs.First().Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + selection.Subs.First().Value));
+            r.Should().Be(selection.Subs.First().Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + selection.Subs.First().Value);
         }
 
-        [Test]
-        [Ignore("Fix this issue")]
+        [Fact(Skip = "Fix this issue")]
         public void Should_recall_last_command_when_pressing_Shift_Tab()
         {
             //Arrange
@@ -64,11 +63,11 @@ namespace Tharga.Console.Tests
 
             //Assert
             var match = selection.Subs.Last();
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + match.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_second_command_when_pressing_Tab_Twise()
         {
             //Arrange
@@ -83,11 +82,11 @@ namespace Tharga.Console.Tests
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(selection.Subs[1].Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + selection.Subs[1].Value));
+            r.Should().Be(selection.Subs[1].Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + selection.Subs[1].Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_first_command_with_a_specific_letter_when_pressing_Tab()
         {
             //Arrange
@@ -108,11 +107,11 @@ namespace Tharga.Console.Tests
 
             //Assert
             var match = selection.Subs.ToArray()[1];
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + match.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_first_command_with_a_specific_part_when_pressing_Tab()
         {
             //Arrange
@@ -138,11 +137,11 @@ namespace Tharga.Console.Tests
 
             //Assert
             var match = selection.Subs.ToArray()[1];
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + match.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_first_command_with_a_specific_command_when_pressing_Tab()
         {
             //Arrange
@@ -168,11 +167,11 @@ namespace Tharga.Console.Tests
 
             //Assert
             var match = selection.Subs.ToArray()[1];
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + match.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_first_command_with_a_specific_command_with_trailing_space_when_pressing_Tab()
         {
             //Arrange
@@ -198,11 +197,11 @@ namespace Tharga.Console.Tests
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + "Two " + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + "Two " + match.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_first_sub_command_when_matching_a_sub_part_pressing_Tab()
         {
             //Arrange
@@ -228,11 +227,11 @@ namespace Tharga.Console.Tests
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + "Two " + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + "Two " + match.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_first_sub_command_when_matching_a_sub_part_with_similar_root_name_pressing_Tab()
         {
             //Arrange
@@ -259,11 +258,11 @@ namespace Tharga.Console.Tests
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + "Two " + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + "Two " + match.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_first_command_when_invalid_letter_letter_when_pressing_Tab()
         {
             //Arrange
@@ -284,11 +283,11 @@ namespace Tharga.Console.Tests
 
             //Assert
             var match = selection.Subs.First();
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + match.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_command_in_several_layers_when_pressing_Tab()
         {
             //Arrange
@@ -319,11 +318,11 @@ namespace Tharga.Console.Tests
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + "Two One " + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + "Two One " + match.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_recall_command_in_several_layers_when_navigating_with_Tab()
         {
             //Arrange
@@ -354,8 +353,8 @@ namespace Tharga.Console.Tests
             var r = inputInstance.ReadLine(selection, true);
 
             //Assert
-            Assert.That(r, Is.EqualTo(match.Key));
-            Assert.That(consoleManager.LineOutput.First(), Is.EqualTo(Constants.Prompt + "Two One " + match.Value));
+            r.Should().Be(match.Key);
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + "Two One " + match.Value);
         }
     }
 }

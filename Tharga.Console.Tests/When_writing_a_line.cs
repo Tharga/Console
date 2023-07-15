@@ -1,13 +1,13 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
 using Tharga.Console.Commands;
 using Tharga.Console.Entities;
+using Xunit;
 
 namespace Tharga.Console.Tests
 {
-    [TestFixture]
     public class When_writing_a_line
     {
-        [Test]
+        [Fact]
         public void Should_write_short_string()
         {
             //Arrange
@@ -18,13 +18,13 @@ namespace Tharga.Console.Tests
             console.Output(new WriteEventArgs("A"));
 
             //Assert
-            Assert.That(consoleManager.LineOutput, Is.Not.Empty);
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo("A"));
-            Assert.That(consoleManager.LineOutput[1], Is.Null);
-            Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
+            consoleManager.LineOutput.Should().NotBeEmpty();
+            consoleManager.LineOutput[0].Should().Be("A");
+            consoleManager.LineOutput[1].Should().BeNull();
+            consoleManager.CursorTop.Should().Be(1);
         }
 
-        [Test]
+        [Fact]
         public void Should_write_a_string_long_as_the_buffer_width()
         {
             //Arrange
@@ -35,13 +35,13 @@ namespace Tharga.Console.Tests
             console.Output(new WriteEventArgs(new string('A', consoleManager.BufferWidth)));
 
             //Assert
-            Assert.That(consoleManager.LineOutput, Is.Not.Empty);
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo(new string('A', consoleManager.BufferWidth)));
-            Assert.That(consoleManager.LineOutput[1], Is.Null);
-            Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
+            consoleManager.LineOutput.Should().NotBeEmpty();
+            consoleManager.LineOutput[0].Should().Be(new string('A', consoleManager.BufferWidth));
+            consoleManager.LineOutput[1].Should().BeNull();
+            consoleManager.CursorTop.Should().Be(1);
         }
 
-        [Test]
+        [Fact]
         public void Should_write_a_string_longer_than_the_buffer_width()
         {
             //Arrange
@@ -52,14 +52,14 @@ namespace Tharga.Console.Tests
             console.Output(new WriteEventArgs(new string('A', consoleManager.BufferWidth + 1)));
 
             //Assert
-            Assert.That(consoleManager.LineOutput, Is.Not.Empty);
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo(new string('A', consoleManager.BufferWidth)));
-            Assert.That(consoleManager.LineOutput[1], Is.EqualTo("A"));
-            Assert.That(consoleManager.LineOutput[2], Is.Null);
-            Assert.That(consoleManager.CursorTop, Is.EqualTo(2));
+            consoleManager.LineOutput.Should().NotBeEmpty();
+            consoleManager.LineOutput[0].Should().Be(new string('A', consoleManager.BufferWidth));
+            consoleManager.LineOutput[1].Should().Be("A");
+            consoleManager.LineOutput[2].Should().BeNull();
+            consoleManager.CursorTop.Should().Be(2);
         }
 
-        [Test]
+        [Fact]
         public void Should_write_a_string_as_long_as_the_buffer_height()
         {
             //Arrange
@@ -70,13 +70,13 @@ namespace Tharga.Console.Tests
             console.Output(new WriteEventArgs(new string('A', consoleManager.BufferWidth * (consoleManager.BufferHeight - 1))));
 
             //Assert
-            Assert.That(consoleManager.LineOutput, Is.Not.Empty);
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo(new string('A', consoleManager.BufferWidth)));
-            Assert.That(consoleManager.LineOutput[consoleManager.BufferHeight-2], Is.EqualTo(new string('A', consoleManager.BufferWidth)));
-            Assert.That(consoleManager.CursorTop, Is.EqualTo(consoleManager.BufferHeight - 1));
+            consoleManager.LineOutput.Should().NotBeEmpty();
+            consoleManager.LineOutput[0].Should().Be(new string('A', consoleManager.BufferWidth));
+            consoleManager.LineOutput[consoleManager.BufferHeight - 2].Should().Be(new string('A', consoleManager.BufferWidth));
+            consoleManager.CursorTop.Should().Be(consoleManager.BufferHeight - 1);
         }
 
-        [Test]
+        [Fact]
         public void Should_write_line_feeds_as_long_as_the_buffer_height()
         {
             //Arrange
@@ -87,13 +87,13 @@ namespace Tharga.Console.Tests
             console.Output(new WriteEventArgs(new string('\n', consoleManager.BufferHeight - 2)));
 
             //Assert
-            Assert.That(consoleManager.LineOutput, Is.Not.Empty);
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo(string.Empty));
-            Assert.That(consoleManager.LineOutput[consoleManager.BufferHeight - 2], Is.EqualTo(string.Empty));
-            Assert.That(consoleManager.CursorTop, Is.EqualTo(consoleManager.BufferHeight - 1));
+            consoleManager.LineOutput.Should().NotBeEmpty();
+            consoleManager.LineOutput[0].Should().Be(string.Empty);
+            consoleManager.LineOutput[consoleManager.BufferHeight - 2].Should().Be(string.Empty);
+            consoleManager.CursorTop.Should().Be(consoleManager.BufferHeight - 1);
         }
 
-        [Test]
+        [Fact]
         //TODO: There is an issue with this case, find a good way to set up the test for this.
         public void Should_output_on_new_line_when_entering_a_long_query_line_with_cursor_at_end()
         {
@@ -118,7 +118,7 @@ namespace Tharga.Console.Tests
             //Assert
         }
 
-        [Test]
+        [Fact]
         //TODO: There is an issue with this case, find a good way to set up the test for this.
         public void Should_output_on_new_line_when_entering_a_long_query_line_with_cursor_at_beginning()
         {

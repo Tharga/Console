@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using NUnit.Framework;
 using Tharga.Console.Commands;
 using Tharga.Console.Commands.Base;
+using Xunit;
 
 namespace Tharga.Console.Tests
 {
@@ -28,7 +28,6 @@ namespace Tharga.Console.Tests
         }
     }
 
-    [TestFixture]
     public class With_command_line
     {
         private TestAction simple;
@@ -36,8 +35,7 @@ namespace Tharga.Console.Tests
         private CommandEngine commandEngine;
         private RootCommand command;
 
-        [SetUp]
-        public void SetUp()
+        public With_command_line()
         {
             this.simple = new TestAction("Simple");
             this.containerCommand = new TestContainerCommand();
@@ -47,7 +45,7 @@ namespace Tharga.Console.Tests
             command.RegisterCommand(this.containerCommand);
         }
 
-        [Test]
+        [Fact]
         public void With_no_args()
         {
             Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
@@ -56,7 +54,7 @@ namespace Tharga.Console.Tests
             Assert.False(containerCommand.inner.WasRun);
         }
 
-        [Test]
+        [Fact]
         public void With_top_level_command()
         {
             var args = new string[] { "Simple" };
@@ -66,7 +64,7 @@ namespace Tharga.Console.Tests
             Assert.False(containerCommand.inner.WasRun, "EXPECTED INNER NOT TO BE RUN");
         }
 
-        [Test]
+        [Fact]
         public void With_subcommand()
         {
             var args = new string[] { "Outer Inner" };

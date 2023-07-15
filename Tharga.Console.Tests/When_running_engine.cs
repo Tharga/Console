@@ -1,18 +1,18 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 using Tharga.Console.Commands;
 using Tharga.Console.Entities;
 using Tharga.Console.Interfaces;
+using Xunit;
 
 namespace Tharga.Console.Tests
 {
-    [TestFixture]
     public class When_running_engine
     {
-        [Test]
+        [Fact]
         public void Should_prompt_cursor()
         {
             //Arrange
@@ -30,7 +30,7 @@ namespace Tharga.Console.Tests
             //TODO: Fix on build server! Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));
         }
 
-        [Test]
+        [Fact]
         public void Should_prompt_cursor_after_line_output()
         {
             //Arrange
@@ -44,14 +44,13 @@ namespace Tharga.Console.Tests
             console.Output(new WriteEventArgs("A"));
 
             //Assert
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo("A"));
+            consoleManager.LineOutput[0].Should().Be("A");
             //TODO: Fix on build server! Assert.That(consoleManager.LineOutput[1], Is.EqualTo("> "));
             //TODO: Fix on build server! Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
             //TODO: Fix on build server! Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));
         }
 
-        [Test]
-        [Ignore("Need to fix the buffer move function in FakeConsoleManager.")]
+        [Fact(Skip = "Need to fix the buffer move function in FakeConsoleManager.")]
         public void Should_keep_buffer_after_line_output()
         {
             //Arrange
@@ -67,13 +66,13 @@ namespace Tharga.Console.Tests
             console.Output(new WriteEventArgs("A"));
 
             //Assert
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo("A"));
-            Assert.That(consoleManager.LineOutput[1], Is.EqualTo($"{Constants.Prompt}A"));
-            Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
-            Assert.That(consoleManager.CursorLeft, Is.EqualTo(5));
+            consoleManager.LineOutput[0].Should().Be("A");
+            consoleManager.LineOutput[1].Should().Be($"{Constants.Prompt}A");
+            consoleManager.CursorTop.Should().Be(1);
+            consoleManager.CursorLeft.Should().Be(5);
         }
 
-        [Test]
+        [Fact]
         public void Should_prompt_cursor_after_full_line_output()
         {
             //Arrange
@@ -87,13 +86,13 @@ namespace Tharga.Console.Tests
             console.Output(new WriteEventArgs(new string('A', console.BufferWidth)));
 
             //Assert
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo(new string('A', console.BufferWidth)));
+            consoleManager.LineOutput[0].Should().Be(new string('A', console.BufferWidth));
             //TODO: Fix on build server! Assert.That(consoleManager.LineOutput[1], Is.EqualTo("> "));
             //TODO: Fix on build server! Assert.That(consoleManager.CursorTop, Is.EqualTo(1));
             //TODO: Fix on build server! Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));
         }
 
-        [Test]
+        [Fact]
         public void Should_prompt_cursor_after_more_than_full_line_output()
         {
             //Arrange
@@ -107,8 +106,8 @@ namespace Tharga.Console.Tests
             console.Output(new WriteEventArgs(new string('A', console.BufferWidth + 1)));
 
             //Assert
-            Assert.That(consoleManager.LineOutput[0], Is.EqualTo(new string('A', console.BufferWidth)));
-            Assert.That(consoleManager.LineOutput[1], Is.EqualTo("A"));
+            consoleManager.LineOutput[0].Should().Be(new string('A', console.BufferWidth));
+            consoleManager.LineOutput[1].Should().Be("A");
             //TODO: Fix on build server! Assert.That(consoleManager.LineOutput[2], Is.EqualTo("> "));
             //TODO: Fix on build server! Assert.That(consoleManager.CursorTop, Is.EqualTo(2));
             //TODO: Fix on build server! Assert.That(consoleManager.CursorLeft, Is.EqualTo(2));

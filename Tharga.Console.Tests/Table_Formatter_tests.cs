@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
+using FluentAssertions;
 using Tharga.Console.Helpers;
+using Xunit;
 
 namespace Tharga.Console.Tests
 {
-    [TestFixture]
     public class Table_Formatter_tests
     {
-        [Test]
+        [Fact]
         public void Should_convert_basic_data()
         {
             //Arrange
@@ -18,10 +18,10 @@ namespace Tharga.Console.Tests
             var result = data.ToFormattedString();
 
             //Assert
-            Assert.That(result, Is.EqualTo("A B\r\nC D\r\n1 lines."));
+            result.Should().Be("A B\r\nC D\r\n1 lines.");
         }
 
-        [Test]
+        [Fact]
         public void Should_convert_single_line()
         {
             //Arrange
@@ -31,10 +31,10 @@ namespace Tharga.Console.Tests
             var result = data.ToFormattedString();
 
             //Assert
-            Assert.That(result, Is.EqualTo("A B\r\n0 lines."));
+            result.Should().Be("A B\r\n0 lines.");
         }
 
-        [Test]
+        [Fact]
         public void Should_convert_null_content()
         {
             //Arrange
@@ -44,10 +44,10 @@ namespace Tharga.Console.Tests
             var result = data.ToFormattedString();
 
             //Assert
-            Assert.That(result, Is.EqualTo("\r\n\r\n1 lines."));
+            result.Should().Be("\r\n\r\n1 lines.");
         }
 
-        [Test]
+        [Fact]
         public void Should_not_crash_if_title_is_larger_than_data()
         {
             //Arrange
@@ -59,10 +59,10 @@ namespace Tharga.Console.Tests
             var result = t.ToFormattedString();
 
             //Assert
-            Assert.That(result, Is.EqualTo("A  B  C\r\nA1\r\nA2 B2\r\n2 lines."));
+            result.Should().Be("A  B  C\r\nA1\r\nA2 B2\r\n2 lines.");
         }
 
-        [Test]
+        [Fact]
         public void Should_not_crash_if_data_is_larger_than_title()
         {
             //Arrange
@@ -74,7 +74,7 @@ namespace Tharga.Console.Tests
             var result = t.ToFormattedString();
 
             //Assert
-            Assert.That(result, Is.EqualTo("A  B  C\r\nA1\r\nA2 B2\r\nA3 B3 C3\r\nA4 B4 C4 D4\r\n4 lines."));
+            result.Should().Be("A  B  C\r\nA1\r\nA2 B2\r\nA3 B3 C3\r\nA4 B4 C4 D4\r\n4 lines.");
         }
     }
 }

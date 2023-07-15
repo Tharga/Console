@@ -1,14 +1,14 @@
 ﻿using System.Threading.Tasks;
-using NUnit.Framework;
+using FluentAssertions;
 using Tharga.Console.Commands;
 using Tharga.Console.Entities;
+using Xunit;
 
 namespace Tharga.Console.Tests
 {
-    [TestFixture]
     public class When_running_in_parallel
     {
-        [Test]
+        [Fact]
         public void Should_work_with_consoles()
         {
             //Arrange
@@ -19,13 +19,13 @@ namespace Tharga.Console.Tests
             console1.Output(new WriteEventArgs("A"));
 
             //Assert
-            Assert.That(console1.CursorLeft, Is.EqualTo(0));
-            Assert.That(console2.CursorLeft, Is.EqualTo(0));
-            Assert.That(console1.CursorTop, Is.EqualTo(1));
-            Assert.That(console2.CursorTop, Is.EqualTo(0));
+            console1.CursorLeft.Should().Be(0);
+            console2.CursorLeft.Should().Be(0);
+            console1.CursorTop.Should().Be(1);
+            console2.CursorTop.Should().Be(0);
         }
 
-        [Test]
+        [Fact]
         public void Should_work_with_consoles_v2()
         {
             //Arrange
@@ -36,13 +36,13 @@ namespace Tharga.Console.Tests
             console1.Output(new WriteEventArgs("A", lineFeed: false));
 
             //Assert
-            Assert.That(console1.CursorLeft, Is.EqualTo(1));
-            Assert.That(console2.CursorLeft, Is.EqualTo(0));
-            Assert.That(console1.CursorTop, Is.EqualTo(0));
-            Assert.That(console2.CursorTop, Is.EqualTo(0));
+            console1.CursorLeft.Should().Be(1);
+            console2.CursorLeft.Should().Be(0);
+            console1.CursorTop.Should().Be(0);
+            console2.CursorTop.Should().Be(0);
         }
 
-        [Test]
+        [Fact]
         public void Should_work_with_commands()
         {
             //Arrange
@@ -57,13 +57,13 @@ namespace Tharga.Console.Tests
             command1.Execute("help");
 
             //Assert
-            Assert.That(console1.CursorLeft, Is.EqualTo(0));
-            Assert.That(console2.CursorLeft, Is.EqualTo(0));
-            Assert.That(console1.CursorTop, Is.EqualTo(26));
-            Assert.That(console2.CursorTop, Is.EqualTo(0));
+            console1.CursorLeft.Should().Be(0);
+            console2.CursorLeft.Should().Be(0);
+            console1.CursorTop.Should().Be(26);
+            console2.CursorTop.Should().Be(0);
         }
 
-        [Test]
+        [Fact]
         public void Should_work_with_engines()
         {
             //Arrange
@@ -84,15 +84,15 @@ namespace Tharga.Console.Tests
             console1.Output(new WriteEventArgs("B"));
 
             //Assert
-            Assert.That(consoleManager1.LineOutput[0], Is.EqualTo(new string('A', consoleManager1.BufferWidth)));
-            Assert.That(consoleManager1.LineOutput[consoleManager1.BufferHeight - 3], Is.EqualTo(new string('A', consoleManager1.BufferWidth)));
-            Assert.That(consoleManager1.LineOutput[consoleManager1.BufferHeight - 2], Is.EqualTo("B"));
+            consoleManager1.LineOutput[0].Should().Be(new string('A', consoleManager1.BufferWidth));
+            consoleManager1.LineOutput[consoleManager1.BufferHeight - 3].Should().Be(new string('A', consoleManager1.BufferWidth));
+            consoleManager1.LineOutput[consoleManager1.BufferHeight - 2].Should().Be("B");
             //Assert.That(consoleManager1.LineOutput[consoleManager1.BufferHeight - 1], Is.EqualTo("> "));
             //Assert.That(consoleManager1.CursorTop, Is.EqualTo(consoleManager1.BufferHeight - 1));
             //Assert.That(consoleManager1.CursorLeft, Is.EqualTo(2));
 
-            Assert.That(consoleManager2.LineOutput[0], Is.EqualTo(new string('C', consoleManager1.BufferWidth)));
-            Assert.That(consoleManager2.LineOutput[consoleManager1.BufferHeight - 3], Is.EqualTo(new string('C', consoleManager1.BufferWidth)));
+            consoleManager2.LineOutput[0].Should().Be(new string('C', consoleManager1.BufferWidth));
+            consoleManager2.LineOutput[consoleManager1.BufferHeight - 3].Should().Be(new string('C', consoleManager1.BufferWidth));
             //Assert.That(consoleManager2.LineOutput[0], Is.EqualTo("> "));
         }
     }

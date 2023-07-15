@@ -1,15 +1,12 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
 
-namespace Tharga.Console.Tests
+namespace Tharga.Console.Tests;
+
+public class Arrow_command_recall_tests
 {
-    [TestFixture]
-    public class Arrow_command_recall_tests
+    [Fact(Skip = "Implement!")]
+    public void Should_recall_last_executed_when_pressing_arrow_up()
     {
-        [Test]
-        [Ignore("Implement!")]
-        public void Should_recall_last_executed_when_pressing_arrow_up()
-        {
-            Assert.Fail("Implement!");
-        }
+        Assert.Fail("Implement!");
     }
 }
