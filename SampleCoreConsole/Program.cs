@@ -9,13 +9,13 @@ using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using SampleCoreConsole.Business;
-using Tharga.Toolkit.Console;
-using Tharga.Toolkit.Console.Commands;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Consoles;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console;
+using Tharga.Console.Commands;
+using Tharga.Console.Commands.Base;
+using Tharga.Console.Consoles;
+using Tharga.Console.Entities;
+using Tharga.Console.Helpers;
+using Tharga.Console.Interfaces;
 using Timer = System.Timers.Timer;
 
 namespace SampleCoreConsole

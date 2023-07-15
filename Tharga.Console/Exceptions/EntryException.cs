@@ -1,6 +1,6 @@
 using System;
 
-namespace Tharga.Toolkit.Console
+namespace Tharga.Console
 {
     internal sealed class EntryException : SystemException
     {

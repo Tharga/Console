@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.Base
+namespace Tharga.Console.Commands.Base
 {
     public abstract class AsyncActionCommandBase : ActionCommandBase, ICommandAsync
     {

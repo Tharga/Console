@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Tharga.Toolkit.Console.Consoles.Base;
-using Tharga.Toolkit.Console.Helpers;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Consoles.Base;
+using Tharga.Console.Helpers;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Consoles
+namespace Tharga.Console.Consoles
 {
     public class AggregateConsole : ConsoleBase
     {

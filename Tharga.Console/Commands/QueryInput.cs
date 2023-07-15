@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Helpers;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Commands.Base;
+using Tharga.Console.Helpers;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands
+namespace Tharga.Console.Commands
 {
     public class QueryInput : QueryParamBase
     {

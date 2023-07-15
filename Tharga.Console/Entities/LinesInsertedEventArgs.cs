@@ -1,6 +1,6 @@
 using System;
 
-namespace Tharga.Toolkit.Console.Entities
+namespace Tharga.Console.Entities
 {
     public class LinesInsertedEventArgs : EventArgs
     {

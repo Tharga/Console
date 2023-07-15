@@ -1,6 +1,6 @@
 using System;
 
-namespace Tharga.Toolkit.Console.Entities
+namespace Tharga.Console.Entities
 {
     internal class InputBufferChangedEventArgs : EventArgs
     {

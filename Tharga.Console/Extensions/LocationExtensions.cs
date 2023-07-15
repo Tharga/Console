@@ -1,7 +1,7 @@
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Entities;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console
+namespace Tharga.Console
 {
     internal static class LocationExtensions
     {

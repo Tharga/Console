@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NUnit.Framework;
-using Tharga.Toolkit.Console.Commands;
-using Tharga.Toolkit.Console.Entities;
+using Tharga.Console.Commands;
+using Tharga.Console.Entities;
 
-namespace Tharga.Toolkit.Console.Tests
+namespace Tharga.Console.Tests
 {
     [TestFixture]
     public class When_running_in_parallel

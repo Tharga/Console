@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Commands.Base;
+using Tharga.Console.Entities;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.ScreenCommands
+namespace Tharga.Console.Commands.ScreenCommands
 {
     internal class ForegroundColorCommand : ActionCommandBase
     {

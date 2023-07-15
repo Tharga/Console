@@ -5,15 +5,9 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Console", "Tharga.Console\Tharga.Console.csproj", "{B8BD1635-042F-4EB3-8018-5CEB7302C31B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{ACE8284E-D920-4FFA-96D1-0C340A02A935}"
-	ProjectSection(SolutionItems) = preProject
-		Build\PushNuget.ps1 = Build\PushNuget.ps1
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{131058FA-7B3E-4359-8A5B-D9BD80D161F6}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
-		License.txt = License.txt
 		README.md = README.md
 	EndProjectSection
 EndProject

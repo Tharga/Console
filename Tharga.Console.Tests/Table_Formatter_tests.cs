@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Tharga.Toolkit.Console.Helpers;
+using Tharga.Console.Helpers;
 
-namespace Tharga.Toolkit.Console.Tests
+namespace Tharga.Console.Tests
 {
     [TestFixture]
     public class Table_Formatter_tests

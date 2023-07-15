@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading;
-using NUnit.Framework;
-using Tharga.Toolkit.Console.Commands;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
+﻿using NUnit.Framework;
+using Tharga.Console.Commands;
+using Tharga.Console.Entities;
 
-namespace Tharga.Toolkit.Console.Tests
+namespace Tharga.Console.Tests
 {
     [TestFixture]
     public class When_writing_a_line

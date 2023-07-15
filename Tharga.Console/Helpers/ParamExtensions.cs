@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tharga.Toolkit.Console.Helpers
+namespace Tharga.Console.Helpers
 {
     public static class ParamExtensions
     {

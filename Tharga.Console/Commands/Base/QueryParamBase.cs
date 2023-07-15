@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Entities;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.Base
+namespace Tharga.Console.Commands.Base
 {
     public abstract class QueryParamBase
     {

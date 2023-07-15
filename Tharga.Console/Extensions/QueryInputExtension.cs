@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Tharga.Toolkit.Console.Commands;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Commands;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console
+namespace Tharga.Console
 {
     public static class QueryInputExtension
     {

@@ -1,16 +1,9 @@
-using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Moq;
 using NUnit.Framework;
-using Tharga.Toolkit.Console.Commands;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Consoles;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Commands;
+using Tharga.Console.Commands.Base;
 
-namespace Tharga.Toolkit.Console.Tests
+namespace Tharga.Console.Tests
 {
 
     class TestAction : ActionCommandBase

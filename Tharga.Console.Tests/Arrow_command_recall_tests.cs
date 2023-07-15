@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace Tharga.Toolkit.Console.Tests
+namespace Tharga.Console.Tests
 {
     [TestFixture]
     public class Arrow_command_recall_tests

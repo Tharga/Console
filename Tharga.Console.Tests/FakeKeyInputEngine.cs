@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Tests
+namespace Tharga.Console.Tests
 {
     internal class FakeKeyInputEngine : IKeyInputEngine
     {

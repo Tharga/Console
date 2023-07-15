@@ -1,7 +1,7 @@
 using System;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Helpers
+namespace Tharga.Console.Helpers
 {
     public class CommandResolver : ICommandResolver
     {

@@ -1,10 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Entities;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Helpers
+namespace Tharga.Console.Helpers
 {
     internal class InputManager : IInputManager
     {

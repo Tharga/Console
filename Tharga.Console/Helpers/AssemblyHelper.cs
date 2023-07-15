@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Tharga.Toolkit.Console.Helpers
+namespace Tharga.Console.Helpers
 {
     internal class AssemblyHelper
     {

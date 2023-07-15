@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Helpers
+namespace Tharga.Console.Helpers
 {
     class ConsoleManager : IConsoleManager
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Entities
+namespace Tharga.Console.Entities
 {
     public class WriteEventArgs : EventArgs, IOutput
     {

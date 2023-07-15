@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
+using Tharga.Console.Entities;
+using Tharga.Console.Helpers;
 
-namespace Tharga.Toolkit.Console.Tests
+namespace Tharga.Console.Tests
 {
     [TestFixture]
     public class Tab_command_recall_tests

@@ -1,7 +1,7 @@
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Commands.Base;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands
+namespace Tharga.Console.Commands
 {
     public sealed class RootCommand : RootCommandBase
     {

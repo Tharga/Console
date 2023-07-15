@@ -1,6 +1,6 @@
 using System;
 
-namespace Tharga.Toolkit.Console
+namespace Tharga.Console
 {
     public sealed class CommandFailedException : SystemException
     {

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Tharga.Toolkit.Console.Interfaces
+namespace Tharga.Console.Interfaces
 {
     public interface ICommandAsync
     {

@@ -2,10 +2,10 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Entities;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console
+namespace Tharga.Console
 {
     public static class Instance
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Tharga.Toolkit.Console.Interfaces
+namespace Tharga.Console.Interfaces
 {
     public interface ICommandResolver
     {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Entities;
+using Tharga.Console.Commands.Base;
+using Tharga.Console.Entities;
 
-namespace Tharga.Toolkit.Console.Commands
+namespace Tharga.Console.Commands
 {
     internal class HelpCommand : ActionCommandBase
     {

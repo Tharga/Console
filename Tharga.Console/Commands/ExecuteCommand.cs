@@ -1,6 +1,6 @@
-using Tharga.Toolkit.Console.Commands.Base;
+using Tharga.Console.Commands.Base;
 
-namespace Tharga.Toolkit.Console.Commands
+namespace Tharga.Console.Commands
 {
     internal class ExecuteCommand : ContainerCommandBase
     {

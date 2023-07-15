@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Entities;
+using Tharga.Console.Helpers;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.Base
+namespace Tharga.Console.Commands.Base
 {
     public abstract class ContainerCommandBase : CommandBase, IContainerCommand
     {

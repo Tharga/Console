@@ -1,7 +1,7 @@
-﻿using Tharga.Toolkit.Console.Consoles.Base;
-using Tharga.Toolkit.Console.Interfaces;
+﻿using Tharga.Console.Consoles.Base;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Tests
+namespace Tharga.Console.Tests
 {
     public class TestConsole : ConsoleBase
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tharga.Toolkit.Console.Interfaces
+namespace Tharga.Console.Interfaces
 {
     public interface IOutputConsole : IDisposable
     {

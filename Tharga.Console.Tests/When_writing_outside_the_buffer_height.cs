@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using Tharga.Toolkit.Console.Entities;
+using Tharga.Console.Entities;
 
-namespace Tharga.Toolkit.Console.Tests
+namespace Tharga.Console.Tests
 {
     [TestFixture]
     public class When_writing_outside_the_buffer_height

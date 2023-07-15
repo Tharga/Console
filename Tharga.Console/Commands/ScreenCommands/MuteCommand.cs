@@ -1,11 +1,7 @@
 using System;
-using System.Linq;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Consoles.Base;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Commands.Base;
 
-namespace Tharga.Toolkit.Console.Commands.ScreenCommands
+namespace Tharga.Console.Commands.ScreenCommands
 {
     internal class MuteCommand : ActionCommandBase
     {

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
+using Tharga.Console.Commands.Base;
+using Tharga.Console.Entities;
+using Tharga.Console.Helpers;
 
-namespace Tharga.Toolkit.Console.Commands
+namespace Tharga.Console.Commands
 {
     internal class CmdCommand : ActionCommandBase
     {

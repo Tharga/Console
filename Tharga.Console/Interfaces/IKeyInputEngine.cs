@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 
-namespace Tharga.Toolkit.Console.Interfaces
+namespace Tharga.Console.Interfaces
 {
     public interface IKeyInputEngine
     {

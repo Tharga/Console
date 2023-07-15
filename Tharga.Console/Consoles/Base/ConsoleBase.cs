@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Entities;
+using Tharga.Console.Helpers;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Consoles.Base
+namespace Tharga.Console.Consoles.Base
 {
     public abstract class ConsoleBase : IConsole
     {

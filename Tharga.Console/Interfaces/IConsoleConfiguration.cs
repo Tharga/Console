@@ -1,7 +1,7 @@
 using System;
-using Tharga.Toolkit.Console.Entities;
+using Tharga.Console.Entities;
 
-namespace Tharga.Toolkit.Console.Interfaces
+namespace Tharga.Console.Interfaces
 {
     public interface IConsoleConfiguration
     {

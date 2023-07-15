@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Entities;
+using Tharga.Console.Commands.Base;
+using Tharga.Console.Entities;
 
-namespace Tharga.Toolkit.Console.Commands.ScreenCommands
+namespace Tharga.Console.Commands.ScreenCommands
 {
     internal class ClearCommand : ActionCommandBase
     {

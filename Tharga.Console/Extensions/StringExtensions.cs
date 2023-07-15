@@ -1,4 +1,4 @@
-namespace Tharga.Toolkit.Console
+namespace Tharga.Console
 {
     public static class StringExtensions
     {

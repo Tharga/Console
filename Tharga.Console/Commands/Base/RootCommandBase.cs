@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Tharga.Toolkit.Console.Commands.ScreenCommands;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Helpers;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Commands.ScreenCommands;
+using Tharga.Console.Entities;
+using Tharga.Console.Helpers;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.Base
+namespace Tharga.Console.Commands.Base
 {
     public abstract class RootCommandBase : ContainerCommandBase, IRootCommand
     {

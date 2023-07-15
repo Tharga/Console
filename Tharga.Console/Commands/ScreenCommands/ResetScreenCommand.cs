@@ -1,7 +1,7 @@
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Consoles.Base;
+using Tharga.Console.Commands.Base;
+using Tharga.Console.Consoles.Base;
 
-namespace Tharga.Toolkit.Console.Commands.ScreenCommands
+namespace Tharga.Console.Commands.ScreenCommands
 {
     internal class ResetScreenCommand : ActionCommandBase
     {

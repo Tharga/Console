@@ -1,8 +1,8 @@
 using System;
 using System.Text;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Helpers
+namespace Tharga.Console.Helpers
 {
     internal class NullConsoleManager : IConsoleManager
     {

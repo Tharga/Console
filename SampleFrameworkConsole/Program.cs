@@ -1,7 +1,7 @@
 ﻿using System;
-using Tharga.Toolkit.Console;
-using Tharga.Toolkit.Console.Commands;
-using Tharga.Toolkit.Console.Consoles;
+using Tharga.Console;
+using Tharga.Console.Commands;
+using Tharga.Console.Consoles;
 
 namespace SampleFrameworkConsole
 {

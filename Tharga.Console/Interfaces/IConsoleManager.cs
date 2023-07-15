@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Tharga.Toolkit.Console.Interfaces
+namespace Tharga.Console.Interfaces
 {
     public interface IConsoleManager : IDisposable
     {

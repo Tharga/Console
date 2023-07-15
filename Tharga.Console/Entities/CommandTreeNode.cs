@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tharga.Toolkit.Console.Entities
+namespace Tharga.Console.Entities
 {
     public class CommandTreeNode<T>
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tharga.Toolkit.Console
+namespace Tharga.Console
 {
     internal static class IntExtensions
     {

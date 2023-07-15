@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Tharga.Toolkit.Console.Commands.Base;
-using Tharga.Toolkit.Console.Consoles.Base;
-using Tharga.Toolkit.Console.Entities;
-using Tharga.Toolkit.Console.Interfaces;
+using Tharga.Console.Commands.Base;
+using Tharga.Console.Consoles.Base;
+using Tharga.Console.Entities;
+using Tharga.Console.Interfaces;
 
-namespace Tharga.Toolkit.Console.Commands.ScreenCommands
+namespace Tharga.Console.Commands.ScreenCommands
 {
     internal class ScreenCommand : ContainerCommandBase
     {

@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Tharga.Toolkit.Console.Entities
+namespace Tharga.Console.Entities
 {
     public class TaskRunner
     {
