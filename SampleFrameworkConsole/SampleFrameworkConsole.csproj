@@ -8,10 +8,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SampleFrameworkConsole</RootNamespace>
     <AssemblyName>SampleFrameworkConsole</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj">
+    <ProjectReference Include="..\Tharga.Console\Tharga.Console.csproj">
       <Project>{b8bd1635-042f-4eb3-8018-5ceb7302c31b}</Project>
-      <Name>Tharga.Toolkit.Console</Name>
+      <Name>Tharga.Console</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

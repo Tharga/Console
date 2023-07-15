@@ -1,50 +1,104 @@
 trigger:
 - master
 
-name: 3.1.$(Rev:r)
+name: 3.2.$(Rev:r)
 
 pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  #BQC.ForceNewBaseline: false
+  BQC.ForceNewBaseline: false
 
-steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET 6'
-  inputs:
-    version: 6.0.x
-    includePreviewVersions: false
+stages:
+- stage: Build
+  displayName: Build
+  jobs:
+  - job: Build
+    displayName: Build and Test
 
-- task: NuGetToolInstaller@1
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET 7'
+      inputs:
+        version: 7.0.x
+        includePreviewVersions: false
 
-- task: NuGetCommand@2
-  displayName: 'Restore nuget packages'
-  inputs:
-    restoreSolution: '$(solution)'
+    - task: NuGetToolInstaller@1
 
-- task: VSBuild@1
-  displayName: 'Build'
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:Version=$(Build.BuildNumber) /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site" /p:NoWarn=0618'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore nuget packages'
+      inputs:
+        command: 'restore'
+        projects: '**/*.csproj'
+        feedsToUse: 'select'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Pack'
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/Tharga.Toolkit.Console.csproj'
-    versioningScheme: 'byBuildNumber'
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+        arguments: '-c Release /p:NoWarn=0618'
+        versioningScheme: 'byBuildNumber'
 
-- task: NuGetCommand@2
-  displayName: 'Push'
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-    nuGetFeedType: 'external'
-    publishFeedCredentials: 'Tharga Console Azure Pipeline'
+    - task: DotNetCoreCLI@2
+      displayName: 'Test'
+      inputs:
+        command: 'test'
+        projects: '**/*.Tests.csproj'
+        arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --filter "Category!=Database"'
+
+    #- task: BuildQualityChecks@8
+    #  displayName: 'Build Quality Checks'
+    #  inputs:
+    #    checkWarnings: true
+    #    warningFailOption: 'build'
+    #    allowWarningVariance: true
+    #    warningVariance: '1'
+    #    checkCoverage: true
+    #    coverageFailOption: 'build'
+    #    coverageType: 'blocks'
+    #    allowCoverageVariance: true
+    #    coverageVariance: '1'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Pack Tharga.Console'
+      inputs:
+        command: 'pack'
+        packagesToPack: '**/Tharga.Console.csproj'
+        versioningScheme: 'byBuildNumber'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifacts'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+
+- stage: Release
+  displayName: Release
+  dependsOn: Build
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  jobs:
+  - job: Release
+    displayName: Release
+
+    steps:
+    - download: current
+      artifact: drop
+    - checkout: self
+      persistCredentials: true
+
+    - task: NuGetCommand@2
+      displayName: 'Push nuget packages to nuget.org'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg;!$(Pipeline.Workspace)/**/*.symbols.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'Nuget.org'
+
+    - script: |
+         git tag $(Build.BuildNumber)
+         git push origin $(Build.BuildNumber)
+      workingDirectory: $(Build.SourcesDirectory)
+      displayName: Tag

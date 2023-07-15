@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29920.165
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Toolkit.Console", "Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj", "{B8BD1635-042F-4EB3-8018-5CEB7302C31B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Console", "Tharga.Console\Tharga.Console.csproj", "{B8BD1635-042F-4EB3-8018-5CEB7302C31B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{ACE8284E-D920-4FFA-96D1-0C340A02A935}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,11 +17,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Toolkit.Console.Tests", "Tharga.Toolkit.Console.Tests\Tharga.Toolkit.Console.Tests.csproj", "{35C71DC9-20D1-4AC2-A9EE-92FD27FF4AF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Console.Tests", "Tharga.Console.Tests\Tharga.Console.Tests.csproj", "{35C71DC9-20D1-4AC2-A9EE-92FD27FF4AF5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleCoreConsole", "SampleCoreConsole\SampleCoreConsole.csproj", "{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{BE6C5C8D-9EF4-4880-A0E7-E2FBFAADEA99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleFrameworkConsole", "SampleFrameworkConsole\SampleFrameworkConsole.csproj", "{63CE1275-CD32-4292-8774-557255BF9E19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,12 +50,19 @@ Global
 		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.CI|Any CPU.ActiveCfg = Debug|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.CI|Any CPU.Build.0 = Debug|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63CE1275-CD32-4292-8774-557255BF9E19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2} = {BE6C5C8D-9EF4-4880-A0E7-E2FBFAADEA99}
+		{63CE1275-CD32-4292-8774-557255BF9E19} = {BE6C5C8D-9EF4-4880-A0E7-E2FBFAADEA99}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D7D7391C-196D-44E1-8966-28CBD0872CE5}

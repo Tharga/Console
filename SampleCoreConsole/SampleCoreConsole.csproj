@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj" />
+    <ProjectReference Include="..\Tharga.Console\Tharga.Console.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,6 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Tharga.Toolkit.Console\Tharga.Toolkit.Console.csproj" />
+    <ProjectReference Include="..\Tharga.Console\Tharga.Console.csproj" />
   </ItemGroup>
 </Project>
