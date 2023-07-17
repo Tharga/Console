@@ -58,7 +58,7 @@ namespace SampleCoreConsole
                     {
                         TaskRunners = new[]
                         {
-                            new TaskRunner(async (c, a) =>
+                            new TaskRunner(async (c, _) =>
                             {
                                 await Task.Delay(1000, c);
                             })
@@ -309,9 +309,9 @@ namespace SampleCoreConsole
 
         private enum MyEnum
         {
-            One,
-            Two,
-            Three
+            B,
+            A,
+            C
         }
     }
 
