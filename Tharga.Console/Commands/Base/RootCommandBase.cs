@@ -23,7 +23,7 @@ namespace Tharga.Console.Commands.Base
         {
             Console = console ?? throw new ArgumentNullException(nameof(console), "No console provided.");
 
-            RegisterCommand(new ExitCommand(() => { RequestCloseEvent?.Invoke(this, new EventArgs()); }));
+            RegisterCommand(new ExitCommand(() => { RequestCloseEvent?.Invoke(this, EventArgs.Empty); }));
             RegisterCommand(new ClearCommand());
             RegisterCommand(new ScreenCommand(console));
             RegisterCommand(new CmdCommand());
@@ -82,7 +82,7 @@ namespace Tharga.Console.Commands.Base
         public string QueryInput()
         {
             var tabTree = Build(SubCommands, null);
-            return QueryParam(Constants.Prompt, null, tabTree, false, false);
+            return QueryParam(Constants.Prompt, null, tabTree, false, false, true);
         }
 
         private IEnumerable<CommandTreeNode<string>> Build(IEnumerable<ICommand> commands, string lead)
