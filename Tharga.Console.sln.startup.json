@@ -1,0 +1,16 @@
+{
+  "Version": 3,
+  "ListAllProjects": false,
+  "MultiProjectConfigurations": {
+    "Sample Voice Console": {
+      "Projects": {
+        "SampleCoreConsole": {}
+      }
+    },
+    "Sample Framework Console": {
+      "Projects": {
+        "SampleFrameworkConsole": {}
+      }
+    }
+  }
+}

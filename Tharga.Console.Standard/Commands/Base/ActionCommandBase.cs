@@ -22,16 +22,24 @@ namespace Tharga.Console.Commands.Base
         {
         }
 
-        protected void RegisterQuery<T>(string key, string paramName, Func<IEnumerable<KeyValuePair<T, string>>> selectionDelegate)
+        protected void RegisterQuery<T>(string key, string paramName, Func<IEnumerable<KeyValuePair<T, string>>> selectionDelegate, bool sortParameters = true)
         {
+            var keyValuePairs = selectionDelegate();
+            if (sortParameters)
+            {
+                keyValuePairs = keyValuePairs.OrderBy(x => x.Value);
+            }
+
             _registeredQuery.Add((param) =>
             {
-                var result = QueryParam(paramName, param, selectionDelegate());
+                var result = QueryParam(paramName, param, keyValuePairs);
                 return new KeyValuePair<string, object>(key, result);
             });
             _selectionDelegate.Add(() =>
             {
-                return selectionDelegate().Select(x => x.Value).ToArray();
+                return keyValuePairs
+                    .Select(x => x.Value)
+                    .ToArray();
             });
         }
 

@@ -39,6 +39,10 @@ namespace Tharga.Console.Consoles.Base
         public int BufferWidth => ConsoleManager.BufferWidth;
         public int BufferHeight => ConsoleManager.BufferHeight;
 
+        public virtual void Attach(CommandEngine commandEngine)
+        {
+        }
+
         public virtual void Attach(IRootCommand command)
         {
         }

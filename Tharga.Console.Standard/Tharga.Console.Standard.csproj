@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RootNamespace>Tharga.Console</RootNamespace>
 		<Version>1.0.0</Version>
 		<Authors>Daniel Bohlin</Authors>
 		<Company>Thargelion AB</Company>
-		<Product>Tharga Console</Product>
+		<Product>Tharga Console Standard</Product>
 		<PackageTags>console poc posh powershell</PackageTags>
 		<PackageIconUrl>http://thargelion.se/wp-content/uploads/2019/11/Thargelion-White-Icon-150.png</PackageIconUrl>
 		<RepositoryUrl>https://github.com/poxet/tharga-console.git</RepositoryUrl>
@@ -23,7 +24,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Tharga.Console.Standard\Tharga.Console.Standard.csproj" />
+		<None Remove="Tharga.Console.csproj.DotSettings" />
+		<None Remove="Tharga.Console.Standard.csproj.DotSettings" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -31,6 +33,13 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="Tharga.Console.Tests" />
+		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+		<InternalsVisibleTo Include="Tharga.Console.Windows" />
+		<InternalsVisibleTo Include="Tharga.Console.Speech" />
 	</ItemGroup>
 
 </Project>

@@ -12,7 +12,6 @@ using SampleCoreConsole.Business;
 using Tharga.Console;
 using Tharga.Console.Commands;
 using Tharga.Console.Commands.Base;
-using Tharga.Console.Consoles;
 using Tharga.Console.Entities;
 using Tharga.Console.Helpers;
 using Tharga.Console.Interfaces;
@@ -28,7 +27,7 @@ namespace SampleCoreConsole
             IConsole console = null;
             try
             {
-                using (console = new ClientConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen }))
+                using (console = new VoiceConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen }))
                 {
                     var container = new WindsorContainer();
 
@@ -41,7 +40,7 @@ namespace SampleCoreConsole
                     container.Register(Component.For<SingletonBusiness, ISingletonBusiness>().LifeStyle.Singleton);
                     container.Register(Component.For<TransientBusiness, ITransientBusiness>().LifeStyle.Transient);
 
-                    var command = new RootCommand(console, new CommandResolver(type => (ICommand)container.Resolve(type)));
+                    var command = new RootCommandWindows(console, new CommandResolver(type => (ICommand)container.Resolve(type)));
 
                     //command.UnregisterCommand("command");
                     command.RegisterCommand<SomeContainerCommand>();
@@ -58,7 +57,7 @@ namespace SampleCoreConsole
                     {
                         TaskRunners = new[]
                         {
-                            new TaskRunner(async (c, a) =>
+                            new TaskRunner(async (c, _) =>
                             {
                                 await Task.Delay(1000, c);
                             })
@@ -309,9 +308,9 @@ namespace SampleCoreConsole
 
         private enum MyEnum
         {
-            One,
-            Two,
-            Three
+            B,
+            A,
+            C
         }
     }
 

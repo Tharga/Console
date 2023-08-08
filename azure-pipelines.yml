@@ -1,7 +1,7 @@
 trigger:
 - master
 
-name: 3.2.$(Rev:r)
+name: 3.3.$(Rev:r)
 
 pool:
   vmImage: 'windows-latest'
@@ -63,10 +63,24 @@ stages:
     #    coverageVariance: '1'
 
     - task: DotNetCoreCLI@2
+      displayName: 'Pack Tharga.Console.Standard'
+      inputs:
+        command: 'pack'
+        packagesToPack: '**/Tharga.Console.Standard.csproj'
+        versioningScheme: 'byBuildNumber'
+
+    - task: DotNetCoreCLI@2
       displayName: 'Pack Tharga.Console'
       inputs:
         command: 'pack'
         packagesToPack: '**/Tharga.Console.csproj'
+        versioningScheme: 'byBuildNumber'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Pack Tharga.Console.Speech'
+      inputs:
+        command: 'pack'
+        packagesToPack: '**/Tharga.Console.Speech.csproj'
         versioningScheme: 'byBuildNumber'
 
     - task: PublishBuildArtifacts@1

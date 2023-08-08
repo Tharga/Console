@@ -51,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Tharga.Console\Tharga.Console.csproj">
-      <Project>{b8bd1635-042f-4eb3-8018-5ceb7302c31b}</Project>
-      <Name>Tharga.Console</Name>
+    <ProjectReference Include="..\Tharga.Console.Standard\Tharga.Console.Standard.csproj">
+      <Project>{92b069b1-455e-471e-9fcf-591b8622db6d}</Project>
+      <Name>Tharga.Console.Standard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

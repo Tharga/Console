@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Castle.Windsor" Version="5.1.1" />
+    <PackageReference Include="Castle.Windsor" Version="5.1.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tharga.Console\Tharga.Console.csproj" />
+    <ProjectReference Include="..\Tharga.Console.Speech\Tharga.Console.Speech.csproj" />
   </ItemGroup>
 
 </Project>
