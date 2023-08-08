@@ -13,7 +13,7 @@ internal class StartupCommand : ContainerCommandBase
     public StartupCommand(IConsole console)
         : base("startup", null, true)
     {
-        if (console is ConsoleBase consoleBase)
+        if (console is ConsoleBase)
         {
             RegisterCommand(new RegisterCommand());
             RegisterCommand(new UnregisterCommand());

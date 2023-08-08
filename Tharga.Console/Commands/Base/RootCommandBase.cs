@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Tharga.Console.Commands.StartupCommands;
 using Tharga.Console.Interfaces;
 
@@ -8,6 +9,11 @@ public abstract class RootCommandWindowsBase : RootCommandBase
     protected RootCommandWindowsBase(IConsole console, ICommandResolver commandResolver = null)
         : base(console, commandResolver)
     {
-        RegisterCommand(new StartupCommand(console));
+        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+        if (isWindows)
+        {
+            RegisterCommand(new StartupCommand(console));
+        }
     }
 }

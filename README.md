@@ -6,7 +6,10 @@ Perfect for hosting local services where you want to be able to perform some ext
 
 ## NuGet
 
-To get started you can download the prebuilt [NuGet package](https://www.nuget.org/packages/Tharga.Console/).
+Nuget packages can be downloaded from here...
+- [.NET Standard](https://www.nuget.org/packages/Tharga.Console.Standard/)
+- [.NET](https://www.nuget.org/packages/Tharga.Console/)
+- [.NET with Speech](https://www.nuget.org/packages/Tharga.Console.Speech/)
 
 ## Engine, Command and Console
 
@@ -291,20 +294,18 @@ There are several different type of consoles to choose from that can be used for
 When building a service that is hosted as a console in development, a good idea is to use the *ClientConsole* when running in development and use the *EventConsole* when running as a service.
 
 ### Client inheritance tree
-```
-IOutputConsole
-	IConsole
-		ConsoleBase
-			ClientConsole
-				VoiceConsole (*Under development*)
-			NullConsole
-			EventConsole
-			ActionConsole
-			AggregateConsole
-	OutputConsoleBase (*Planned*)
-		EventLogConsole (*Planned*)
-		FileLogConsole (*Planned*)
-```
+- IOutputConsole
+    - IConsole
+        - ConsoleBase (*Abstract*)
+			- ClientConsole
+				- VoiceConsole (In nuget *Tharga.Console.Speech*)
+			- NullConsole
+			- EventConsole
+			- ActionConsole
+			- AggregateConsole
+	- OutputConsoleBase (*Planned*)
+		- EventLogConsole (*Planned*)
+		- FileLogConsole (*Planned*)
 
 ### ClientConsole
 Regular console used for normal console applications.
