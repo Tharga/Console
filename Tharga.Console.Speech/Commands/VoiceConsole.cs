@@ -127,10 +127,10 @@ public class VoiceConsole : ClientConsole
         var baseCommands = GetCommands(_rootCommand.SubCommands);
 
         var commands = coreCommands.Union(baseCommands).ToArray();
-        foreach (var command in commands)
-        {
-            OutputInformation(command);
-        }
+        //foreach (var command in commands)
+        //{
+        //    OutputInformation(command);
+        //}
 
         var choices = new Choices();
         choices.Add(commands);
