@@ -19,6 +19,6 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Tharga.Console\Tharga.Console.csproj" />
+	  <ProjectReference Include="..\Tharga.Console.Standard\Tharga.Console.Standard.csproj" />
 	</ItemGroup>
 </Project>

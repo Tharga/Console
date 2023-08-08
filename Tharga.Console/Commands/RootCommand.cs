@@ -1,18 +1,12 @@
 using Tharga.Console.Commands.Base;
 using Tharga.Console.Interfaces;
 
-namespace Tharga.Console.Commands
-{
-    public sealed class RootCommand : RootCommandBase
-    {
-        public RootCommand(IConsole console)
-            : base(console)
-        {
-        }
+namespace Tharga.Console.Commands;
 
-        public RootCommand(IConsole console, ICommandResolver commandResolver)
-            : base(console, commandResolver)
-        {
-        }
+public sealed class RootCommandWindows : RootCommandWindowsBase
+{
+    public RootCommandWindows(IConsole console, ICommandResolver commandResolver = null)
+        : base(console, commandResolver)
+    {
     }
 }

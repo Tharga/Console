@@ -1,12 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
+		<RootNamespace>Tharga.Console</RootNamespace>
 		<Version>1.0.0</Version>
 		<Authors>Daniel Bohlin</Authors>
 		<Company>Thargelion AB</Company>
-		<Product>Tharga Console</Product>
-		<PackageTags>console poc posh powershell</PackageTags>
+		<Product>Tharga Console Speech</Product>
+		<PackageTags>console poc posh powershell speech</PackageTags>
 		<PackageIconUrl>http://thargelion.se/wp-content/uploads/2019/11/Thargelion-White-Icon-150.png</PackageIconUrl>
 		<RepositoryUrl>https://github.com/poxet/tharga-console.git</RepositoryUrl>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -23,7 +24,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Tharga.Console.Standard\Tharga.Console.Standard.csproj" />
+	  <PackageReference Include="System.Speech" Version="7.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Tharga.Console\Tharga.Console.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
