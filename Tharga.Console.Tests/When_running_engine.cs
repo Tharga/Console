@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Tharga.Console.Commands;
 using Tharga.Console.Entities;
 using Tharga.Console.Interfaces;
@@ -54,9 +54,9 @@ namespace Tharga.Console.Tests
         public void Should_keep_buffer_after_line_output()
         {
             //Arrange
-            var inputEngine = new Mock<IKeyInputEngine>(MockBehavior.Strict);
-            inputEngine.Setup(x => x.ReadKey(It.IsAny<CancellationToken>())).Returns(new ConsoleKeyInfo('A', ConsoleKey.A, false, false, false));
-            var consoleManager = new FakeConsoleManager(inputEngine.Object);
+            var inputEngine = NSubstitute.Substitute.For<IKeyInputEngine>();
+            inputEngine.ReadKey(Arg.Any<CancellationToken>()).Returns(new ConsoleKeyInfo('A', ConsoleKey.A, false, false, false));
+            var consoleManager = new FakeConsoleManager(inputEngine);
             var console = new TestConsole(consoleManager);
             var command = new RootCommand(console);
             var commandEngine = new CommandEngine(command);
