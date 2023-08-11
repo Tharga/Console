@@ -27,7 +27,7 @@ namespace SampleCoreConsole
             IConsole console = null;
             try
             {
-                using (console = new VoiceConsole(new ConsoleConfiguration { SplashScreen = Constants.SplashScreen }))
+                using (console = new VoiceConsole(new VoiceConsoleConfiguration { SplashScreen = Constants.SplashScreen }))
                 {
                     var container = new WindsorContainer();
 
