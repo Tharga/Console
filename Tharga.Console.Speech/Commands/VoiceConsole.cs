@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Speech.Recognition;
 using System.Threading.Tasks;
 using Tharga.Console.Consoles;
 using Tharga.Console.Interfaces;
+using System.Speech.Synthesis;
 
 namespace Tharga.Console.Commands;
 
@@ -12,11 +15,13 @@ public class VoiceConsole : ClientConsole
 {
     private readonly SpeechRecognitionEngine _mainSpeechRecognitionEngine = new();
     private IRootCommand _rootCommand;
+    private readonly VoiceConsoleConfiguration _consoleConfiguration;
 
-    public VoiceConsole(IConsoleConfiguration consoleConfiguration = null)
+    public VoiceConsole(VoiceConsoleConfiguration consoleConfiguration = null)
         : base(consoleConfiguration)
     {
         if (_mainSpeechRecognitionEngine == null) throw new InvalidOperationException("Cannot use SpeechRecognitionEngine.");
+        _consoleConfiguration = consoleConfiguration ?? new VoiceConsoleConfiguration();
 
         //_mainSpeechRecognitionEngine.AudioLevelUpdated += _mainSpeechRecognitionEngine_AudioLevelUpdated;
         //_mainSpeechRecognitionEngine.AudioSignalProblemOccurred += _mainSpeechRecognitionEngine_AudioSignalProblemOccurred;
@@ -78,68 +83,73 @@ public class VoiceConsole : ClientConsole
 
     private void _mainSpeechRecognitionEngine_SpeechRecognitionRejected(object sender, SpeechRecognitionRejectedEventArgs e)
     {
+        if (!ApplicationIsActivated() && _consoleConfiguration.OnlyActiveWhenInFocus) return;
+
         var alternates = e.Result?.Alternates.Select(x => x.Text) ?? Array.Empty<string>();
         OutputDefault($"_mainSpeechRecognitionEngine_SpeechRecognitionRejected: {string.Join(",", alternates)}");
     }
 
     private void _mainSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
     {
+        if (!ApplicationIsActivated() && _consoleConfiguration.OnlyActiveWhenInFocus) return;
+
         //TODO: Execute the statement as a command (or input)
         OutputInformation(e.Result.Text);
         ConsoleManager.KeyInputEngine.Feed(e.Result.Text);
-
-        //        throw new NotImplementedException();
-        //        //if (_reading)
-        //        //{
-        //        //    _inputMethod = InputMethod.Voice;
-        //        //    _input = e.Result.Text;
-        //        //    //System.Console.Write(_input);
-        //        //    ConsoleWriter.Write(_input);
-        //        //    _autoResetEvent.Set();
-        //        //}
     }
-
-    //        //    private const int Retrun = 0x0D;
-    //        //    private const int Keydown = 0x100;
-
-    //        //    private enum InputMethod
-    //        //    {
-    //        //        Unknown,
-    //        //        Keyboard,
-    //        //        Voice
-    //        //    }
-
-    //        //    private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
-    //        //    private readonly SpeechRecognitionEngine _subSpeechRecognitionEngine = new SpeechRecognitionEngine();
-    //        //    private string _input;
-    //        //    private InputMethod _inputMethod;
-    //        //    private bool _reading;
-    //        //    private ConsoleKeyInfo _keyInput;
-
-    //        //    public VoiceConsole()
-    //        //        : base(new ConsoleManager(System.Console.Out, System.Console.In))
-    //        //    {
-    //        //    }
 
     public override void Attach(CommandEngine commandEngine)
     {
+        //TODO: When using commanding 'some option' it should be possible to.
+        //- Tab
+        //- Cancel or Escape
+        //- Also start listening for words that are options so the can be selected by voice.
+        //TODO: When using commanding 'some item' it should be possible to.
+        //- Cancel or Escape
+        //- Also start listening for any word freely as input.
         var coreCommands = new[] { "help" };
         var baseCommands = GetCommands(_rootCommand.SubCommands);
 
         var commands = coreCommands.Union(baseCommands).ToArray();
-        foreach (var command in commands)
+        if (Debugger.IsAttached)
         {
-            OutputInformation(command);
+            foreach (var command in commands)
+            {
+                OutputInformation(command);
+            }
         }
 
         var choices = new Choices();
         choices.Add(commands);
-        //foreach (var cmd in commands)
-        //    OutputInformation(cmd);
         var gr = new Grammar(new GrammarBuilder(choices));
         _mainSpeechRecognitionEngine.RequestRecognizerUpdate();
         _mainSpeechRecognitionEngine.LoadGrammar(gr);
-        //_mainSpeechRecognitionEngine.SetInputToWaveFile("helloworld.wav");
+
+        //TODO: Have sound feedback when using the app. (This is just a hello world test)
+        if (_consoleConfiguration.UseOutputSound)
+        {
+            var ss = new SpeechSynthesizer();
+            var c = ss.GetInstalledVoices();
+            OutputInformation("Voices:");
+            foreach (var installedVoice in c)
+            {
+                OutputInformation($"- {installedVoice.VoiceInfo.Name}");
+            }
+
+            ss.SelectVoice(c.Last().VoiceInfo.Name);
+            ss.Speak($"Hello, I am {c.Last().VoiceInfo.Name.Replace("Microsoft ", "").Replace(" Desktop", "")}.");
+
+            //    _mainSpeechRecognitionEngine.SetInputToWaveFile("helloworld.wav");
+            //    synthesizer.Speak(builder);
+
+            //    using (var synthesizer = new SpeechSynthesizer())
+            //        builder.EndSentence();
+            //    builder.AppendText(value);
+            //    builder.StartSentence();
+
+            //    var builder = new PromptBuilder();
+            //    base.WriteLineEx(value, outputLevel);
+        }
 
         try
         {
@@ -161,7 +171,11 @@ public class VoiceConsole : ClientConsole
             //TODO: This is the main recognizer, only use it when waiting for a main command. Not a command parameter input.
             while (true)
             {
-                OutputInformation("Recognize Main Input...");
+                if (!ApplicationIsActivated() && _consoleConfiguration.OnlyActiveWhenInFocus)
+                {
+                    OutputInformation("Recognize Main Input...");
+                }
+
                 _mainSpeechRecognitionEngine.Recognize();
             }
         });
@@ -170,44 +184,6 @@ public class VoiceConsole : ClientConsole
     public override void Attach(IRootCommand rootCommand)
     {
         _rootCommand = rootCommand;
-        //    var coreCommands = new[] { "help" };
-        //    var baseCommands = GetCommands(rootCommand.SubCommands);
-
-        //    var commands = coreCommands.Union(baseCommands).ToArray();
-
-        //    var choices = new Choices();
-        //    choices.Add(commands);
-        //    //foreach (var cmd in commands)
-        //    //    OutputInformation(cmd);
-        //    var gr = new Grammar(new GrammarBuilder(choices));
-        //    _mainSpeechRecognitionEngine.RequestRecognizerUpdate();
-        //    _mainSpeechRecognitionEngine.LoadGrammar(gr);
-        //    //_mainSpeechRecognitionEngine.SetInputToWaveFile("helloworld.wav");
-
-        //    try
-        //    {
-        //        _mainSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        OutputError(exception);
-        //    }
-
-        //    foreach (var x in SpeechRecognitionEngine.InstalledRecognizers())
-        //    {
-        //        OutputInformation(x.Name);
-        //    }
-
-        //    Task.Run(() =>
-        //    {
-        //        //TODO: Terminate when application exists
-        //        //TODO: This is the main recognizer, only use it when waiting for a main command. Not a command parameter input.
-        //        while (true)
-        //        {
-        //            OutputInformation("Recognize Main Input...");
-        //            _mainSpeechRecognitionEngine.Recognize();
-        //        }
-        //    });
     }
 
     private static IEnumerable<string> GetCommands(IEnumerable<ICommand> commands)
@@ -231,129 +207,26 @@ public class VoiceConsole : ClientConsole
         }
     }
 
-    //    //}
-    //    //    //}
-    //    //    //    synthesizer.Speak(builder);
-    //    //    //    synthesizer.SelectVoice("Microsoft Zira Desktop");
-    //    //    //    //synthesizer.SelectVoice("Microsoft Hazel Desktop");
-    //    //    //    //synthesizer.SelectVoice("Microsoft David Desktop");
-    //    //    //{
+    private static bool ApplicationIsActivated()
+    {
+        var activatedHandle = GetForegroundWindow();
+        if (activatedHandle == IntPtr.Zero)
+        {
+            return false;
+        }
 
-    //    //    //using (var synthesizer = new SpeechSynthesizer())
-    //    //    //builder.EndSentence();
-    //    //    //builder.AppendText(value);
-    //    //    //builder.StartSentence();
-
-    //    //    //var builder = new PromptBuilder();
-    //    //    base.WriteLineEx(value, outputLevel);
-
-    //public virtual ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
-    //public override ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
-    //{
-    //    return base.ReadKey(cancellationToken);
-    //}
+        var procId = Process.GetCurrentProcess();
+        GetWindowThreadProcessId(activatedHandle, out var activeProcId);
+        return activeProcId == procId.Id;
+    }
 
     #region User32
 
-    //[DllImport("User32.Dll", EntryPoint = "PostMessageA")]
-    //private static extern bool PostMessage(IntPtr hwnd, uint msg, int wparam, int lparam);
+    [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+    private static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
 
     #endregion
-
-    //    //{
-
-    //    //protected override void WriteLineEx(string value, OutputLevel outputLevel)
-
-    //    private void _subSpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
-    //    {
-    //        if (_reading)
-    //        {
-    //            _inputMethod = InputMethod.Voice;
-    //            _input = e.Result.Text;
-
-    //            var hwnd = Process.GetCurrentProcess().MainWindowHandle;
-
-    //            switch (_input)
-    //            {
-    //                case "tab":
-    //                    PostMessage(hwnd, Keydown, 9, 0);
-    //                    break;
-    //                case "enter":
-    //                    PostMessage(hwnd, Keydown, 13, 0);
-    //                    break;
-    //            }
-    //        }
-    //    }
-
-    //    //public override string ReadLine()
-    //    //{
-    //    //    _inputMethod = InputMethod.Unknown;
-
-    //    //    var task = Task.Factory.StartNew(() =>
-    //    //    {
-    //    //        var s = System.Console.ReadLine();
-    //    //        _inputMethod = InputMethod.Keyboard;
-    //    //        if (!_reading) return;
-    //    //        _input = s;
-    //    //        _autoResetEvent.Set();
-    //    //    });
-
-    //    //    _mainSpeechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
-
-    //    //    _reading = true;
-    //    //    _autoResetEvent.WaitOne();
-    //    //    _reading = false;
-
-    //    //    _mainSpeechRecognitionEngine.RecognizeAsyncCancel();
-
-    //    //    if (_inputMethod == InputMethod.Voice)
-    //    //    {
-    //    //        var hwnd = Process.GetCurrentProcess().MainWindowHandle;
-    //    //        PostMessage(hwnd, Keydown, Retrun, 0);
-    //    //    }
-
-    //    //    task.Wait();
-    //    //    task.Dispose();
-
-    //    //    return _input;
-    //    //}
-
-    //    //public override ConsoleKeyInfo ReadKey()
-    //    //{
-    //    //    _inputMethod = InputMethod.Unknown;
-
-    //    //    var task = Task.Factory.StartNew(() =>
-    //    //    {
-    //    //        var s = System.Console.ReadKey();
-    //    //        //var s = _consoleReader.ReadKey();
-    //    //        _inputMethod = InputMethod.Keyboard;
-    //    //        if (!_reading) return;
-    //    //        _keyInput = s;
-    //    //        _autoResetEvent.Set();
-    //    //    });
-
-    //    //    _subSpeechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
-
-    //    //    _reading = true;
-    //    //    _autoResetEvent.WaitOne();
-    //    //    _reading = false;
-
-    //    //    _subSpeechRecognitionEngine.RecognizeAsyncCancel();
-
-    //    //    ////if (_inputMethod == InputMethod.Voice)
-    //    //    ////{
-    //    //    ////    if (_input == "tab")
-    //    //    ////        _keyInput = new ConsoleKeyInfo((char)10, ConsoleKey.Tab, false, false, false);
-
-    //    //    ////    var hWnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
-    //    //    ////    PostMessage(hWnd, WM_KEYDOWN, _keyInput.KeyChar, 0);
-    //    //    ////}
-
-    //    //    task.Wait();
-    //    //    task.Dispose();
-
-    //    //    //return _keyInput;
-    //    //    _reading = false;
-    //    //    return _keyInput;
-    //    //}
 }
