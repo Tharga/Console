@@ -1,4 +1,4 @@
-using Tharga.Console.Interfaces;
+using Tharga.Console.Commands;
 
 namespace Tharga.Console.Entities
 {

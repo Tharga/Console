@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Console.Standard", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Console.Speech", "Tharga.Console.Speech\Tharga.Console.Speech.csproj", "{3AD5DBA8-32CB-424E-9E29-BC496299B7D8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleConsole", "SampleConsole\SampleConsole.csproj", "{F2DFE3F9-4762-436B-A92B-4078618BE508}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CI|Any CPU = CI|Any CPU
@@ -66,6 +68,12 @@ Global
 		{3AD5DBA8-32CB-424E-9E29-BC496299B7D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AD5DBA8-32CB-424E-9E29-BC496299B7D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AD5DBA8-32CB-424E-9E29-BC496299B7D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2DFE3F9-4762-436B-A92B-4078618BE508}.CI|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2DFE3F9-4762-436B-A92B-4078618BE508}.CI|Any CPU.Build.0 = Debug|Any CPU
+		{F2DFE3F9-4762-436B-A92B-4078618BE508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2DFE3F9-4762-436B-A92B-4078618BE508}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2DFE3F9-4762-436B-A92B-4078618BE508}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2DFE3F9-4762-436B-A92B-4078618BE508}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +81,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{44F42FC1-6455-40AD-9B15-2AE96A1C63A2} = {BE6C5C8D-9EF4-4880-A0E7-E2FBFAADEA99}
 		{63CE1275-CD32-4292-8774-557255BF9E19} = {BE6C5C8D-9EF4-4880-A0E7-E2FBFAADEA99}
+		{F2DFE3F9-4762-436B-A92B-4078618BE508} = {BE6C5C8D-9EF4-4880-A0E7-E2FBFAADEA99}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D7D7391C-196D-44E1-8966-28CBD0872CE5}
