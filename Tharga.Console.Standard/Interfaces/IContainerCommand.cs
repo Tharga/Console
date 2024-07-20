@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Tharga.Console.Commands;
 using Tharga.Console.Entities;
 
 namespace Tharga.Console.Interfaces

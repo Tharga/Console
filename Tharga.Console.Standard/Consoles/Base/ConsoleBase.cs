@@ -349,7 +349,12 @@ namespace Tharga.Console.Consoles.Base
             Output(new WriteEventArgs(message, OutputLevel.Help));
         }
 
-        public virtual void Output(IOutput output)
+        public virtual void Output(string message, OutputLevel outputLevel)
+        {
+	        Output(new WriteEventArgs(message, outputLevel));
+		}
+
+		public virtual void Output(IOutput output)
         {
             try
             {

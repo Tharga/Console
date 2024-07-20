@@ -4,7 +4,6 @@ using Moq;
 using Tharga.Console.Commands;
 using Tharga.Console.Consoles;
 using Tharga.Console.Entities;
-using Tharga.Console.Interfaces;
 using Xunit;
 
 namespace Tharga.Console.Tests

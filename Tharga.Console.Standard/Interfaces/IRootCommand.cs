@@ -1,4 +1,5 @@
 using System;
+using Tharga.Console.Commands;
 
 namespace Tharga.Console.Interfaces
 {

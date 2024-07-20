@@ -13,7 +13,7 @@ namespace Tharga.Console.Commands.Base
     {
         public IConsole Console { get; }
         internal CommandEngine CommandEngine;
-        internal readonly ICommandResolver CommandResolver;
+        private ICommandResolver _commandResolver;
 
         public event EventHandler<EventArgs> RequestCloseEvent;
         public event EventHandler<ExceptionOccuredEventArgs> ExceptionOccuredEvent;
@@ -26,7 +26,6 @@ namespace Tharga.Console.Commands.Base
             RegisterCommand(new ExitCommand(() => { RequestCloseEvent?.Invoke(this, EventArgs.Empty); }));
             RegisterCommand(new ClearCommand());
             RegisterCommand(new ScreenCommand(console));
-            //RegisterCommand(new StartupCommand(console));
             RegisterCommand(new CmdCommand());
             RegisterCommand(new PoshCommand());
             RegisterCommand(new ExecuteProcessCommand());
@@ -40,10 +39,20 @@ namespace Tharga.Console.Commands.Base
         protected RootCommandBase(IConsole console, ICommandResolver commandResolver)
             : this(console)
         {
-            CommandResolver = commandResolver;
+            _commandResolver = commandResolver;
         }
 
-        public new void RegisterCommand<T>()
+        protected virtual ICommandResolver BuildCommandResolver()
+        {
+	        return _commandResolver;
+        }
+
+		internal ICommandResolver GetCommandResolver()
+		{
+			return _commandResolver ?? (_commandResolver = BuildCommandResolver());
+		}
+
+		public new void RegisterCommand<T>()
         {
             SubCommandTypes.Add(new Tuple<Type, Type>(typeof(T), null));
         }
@@ -147,7 +156,7 @@ namespace Tharga.Console.Commands.Base
                         {
                             try
                             {
-                                var instance = (ActionCommandBase)CommandResolver?.Resolve(ac.GetType());
+                                var instance = (ActionCommandBase)GetCommandResolver()?.Resolve(ac.GetType());
                                 if (instance != null)
                                 {
                                     instance.WriteEvent += OnOutputEvent;
