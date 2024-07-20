@@ -1,3 +1,4 @@
+using System;
 using Tharga.Console.Commands.Base;
 using Tharga.Console.Interfaces;
 
@@ -14,5 +15,10 @@ namespace Tharga.Console.Commands
             : base(console, commandResolver)
         {
         }
-    }
+
+        public RootCommand(IConsole console, Func<Type, ICommand> commandResolver)
+	        : base(console, new CommandResolver(commandResolver.Invoke))
+        {
+        }
+	}
 }

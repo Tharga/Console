@@ -353,14 +353,13 @@ namespace Tharga.Console.Commands.Base
 
             if (subCommandTypes.Any())
             {
-                if (RootCommand.CommandResolver == null) throw new InvalidOperationException("No CommandResolver has been defined in the root command.");
+                if (RootCommand.GetCommandResolver() == null) throw new InvalidOperationException("No CommandResolver has been defined in the root command.");
 
                 foreach (var subCommandType in subCommandTypes)
                 {
                     if (subCommandType.Item2 == null || subCommandType.Item2 == GetType())
                     {
-                        //TODO: Have a feature, so that the command does not have to be initiated before execution.
-                        var command = RootCommand.CommandResolver.Resolve(subCommandType.Item1);
+                        var command = RootCommand.GetCommandResolver().Resolve(subCommandType.Item1);
                         RegisterCommand(command);
                     }
                     else if (subCommandType.Item2 != null)
