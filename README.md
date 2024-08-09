@@ -43,7 +43,7 @@ var serviceProvider = serviceCollection.BuildServiceProvider();
 
 using var console = new ClientConsole();
 var command = new RootCommand(console, new CommandResolver(type => (ICommand)serviceProvider.GetService(type)));
-command.RegisterCommand<MyContainer>();
+command.RegisterCommand<MyCommand>();
 var engine = new CommandEngine(command);
 engine.Start(args);
 ```
