@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Tharga.Console.Entities;
 
-namespace Tharga.Console.Interfaces
+namespace Tharga.Console.Commands
 {
     public interface ICommand
     {

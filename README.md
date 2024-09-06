@@ -16,6 +16,54 @@ Nuget packages can be downloaded from here...
 Tharga console has an engine that runs the program. The engine needs a root command and a console to run.
 Here are some basic examples on how to get started.
 
+#### Simplest core application (top-level statement)
+```
+using Tharga.Console;
+using Tharga.Console.Commands;
+using Tharga.Console.Consoles;
+
+using var console = new ClientConsole();
+var command = new RootCommand(console);
+var engine = new CommandEngine(command);
+engine.Start(args);
+```
+
+#### Dependency Injection
+```
+using Microsoft.Extensions.DependencyInjection;
+using SampleConsole;
+using Tharga.Console;
+using Tharga.Console.Commands;
+using Tharga.Console.Consoles;
+using Tharga.Toolkit.TypeService;
+
+var serviceCollection = new ServiceCollection();
+_ = AssemblyService.GetTypes<ICommand>().Select(serviceCollection.AddTransient).ToArray();
+var serviceProvider = serviceCollection.BuildServiceProvider();
+
+using var console = new ClientConsole();
+var command = new RootCommand(console, new CommandResolver(type => (ICommand)serviceProvider.GetService(type)));
+command.RegisterCommand<MyCommand>();
+var engine = new CommandEngine(command);
+engine.Start(args);
+```
+
+#### Build in Dependency Injection
+```
+using SampleConsole;
+using Tharga.Console;
+using Tharga.Console.Commands;
+using Tharga.Console.Consoles;
+
+using var console = new ClientConsole();
+var command = new RootCommandIoc(console);
+command.RegisterCommand<MyCommand>();
+var engine = new CommandEngine(command);
+engine.Start(args);
+```
+
+## Previous versions
+
 #### Simplest core application
 ```
 internal static class Program

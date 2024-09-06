@@ -40,7 +40,7 @@ namespace SampleCoreConsole
                     container.Register(Component.For<SingletonBusiness, ISingletonBusiness>().LifeStyle.Singleton);
                     container.Register(Component.For<TransientBusiness, ITransientBusiness>().LifeStyle.Transient);
 
-                    var command = new RootCommandWindows(console, new CommandResolver(type => (ICommand)container.Resolve(type)));
+                    var command = new RootCommand(console, new CommandResolver(type => (ICommand)container.Resolve(type)));
 
                     //command.UnregisterCommand("command");
                     command.RegisterCommand<SomeContainerCommand>();
