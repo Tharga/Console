@@ -88,3 +88,4 @@ StyleCop.Cache
 *.orig
 *.vs
 /.NCrunch_*/*.cache
+**/nCrunchTemp_*.csproj
