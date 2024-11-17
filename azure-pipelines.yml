@@ -92,7 +92,7 @@ stages:
 - stage: Release
   displayName: Release
   dependsOn: Build
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
   jobs:
   - job: Release
     displayName: Release
