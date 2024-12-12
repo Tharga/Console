@@ -20,9 +20,9 @@ stages:
 
     steps:
     - task: UseDotNet@2
-      displayName: 'Use .NET 8'
+      displayName: 'Use .NET 9'
       inputs:
-        version: 8.0.x
+        version: 9.0.x
         includePreviewVersions: false
 
     - task: NuGetToolInstaller@1
