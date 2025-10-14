@@ -34,8 +34,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
-	  <PackageReference Include="Tharga.Toolkit" Version="1.13.16" />
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
+	  <PackageReference Include="Tharga.Toolkit" Version="1.13.20" />
 	</ItemGroup>
 
 </Project>
