@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using Tharga.Console.Commands.Base;
 using Tharga.Console.Interfaces;
-using Tharga.Toolkit.TypeService;
+using Tharga.Runtime;
 
 namespace Tharga.Console.Commands;
 

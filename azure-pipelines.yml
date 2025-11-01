@@ -1,7 +1,7 @@
 trigger:
 - master
 
-name: 3.5.$(Rev:r)
+name: 3.6.$(Rev:r)
 
 pool:
   vmImage: 'windows-latest'
@@ -39,7 +39,7 @@ stages:
       inputs:
         command: 'build'
         projects: '**/Tharga.Console*.csproj'
-        arguments: '-c Release /p:NoWarn=0618'
+        arguments: '-c Release'
         versioningScheme: 'byBuildNumber'
 
     - task: DotNetCoreCLI@2

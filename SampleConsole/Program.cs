@@ -3,7 +3,7 @@ using SampleConsole;
 using Tharga.Console;
 using Tharga.Console.Commands;
 using Tharga.Console.Consoles;
-using Tharga.Toolkit.TypeService;
+using Tharga.Runtime;
 
 var serviceCollection = new ServiceCollection();
 _ = AssemblyService.GetTypes<ICommand>().Select(serviceCollection.AddTransient).ToArray();
