@@ -1,49 +1,58 @@
-<#
-Starts Aider from repo root, using:
-- .aider.conf.yml automatically (because we run aider from repo root)
-- AIDER.md as the instruction file
-- Adds "everything" via **/*, while honoring .aiderignore with full .gitignore semantics
-#>
-
 $ErrorActionPreference = "Stop"
-
 Set-Location -Path $PSScriptRoot
 
 $InstructionsFile = "AIDER.md"
-$AiderIgnoreFile  = ".aiderignore"
+$IgnoreFile = ".aiderignore"
 
-# Sanity checks
-if (-not (Get-Command aider -ErrorAction SilentlyContinue)) {
-  throw "Could not find 'aider' on PATH."
-}
+if (-not (Get-Command aider -ErrorAction SilentlyContinue)) { throw "aider not found on PATH" }
+if (-not (Get-Command git -ErrorAction SilentlyContinue))   { throw "git not found on PATH" }
 
-if (-not (Test-Path -LiteralPath $InstructionsFile)) {
-  throw "Missing $InstructionsFile in repo root. Create it (or update `$InstructionsFile in this script)."
-}
-
-# Create a starter .aiderignore if missing (optional)
-if (-not (Test-Path -LiteralPath $AiderIgnoreFile)) {
+if (-not (Test-Path -LiteralPath $InstructionsFile)) { throw "Missing $InstructionsFile in repo root." }
+if (-not (Test-Path -LiteralPath $IgnoreFile)) {
   @"
 bin
 obj
-"@ | Set-Content -Encoding ASCII -LiteralPath $AiderIgnoreFile
-  Write-Host "Created $AiderIgnoreFile with default ignores: bin, obj"
+"@ | Set-Content -Encoding ASCII -LiteralPath $IgnoreFile
 }
 
-# Optional: ensure we're in a git repo (helps avoid surprises)
-try {
-  git rev-parse --is-inside-work-tree | Out-Null
-} catch {
-  Write-Host "Warning: This directory doesn't look like a git repo. Aider can still run, but git features may be disabled."
+$repoRoot = (Resolve-Path $PSScriptRoot).Path
+$ignoreAbs = (Resolve-Path (Join-Path $repoRoot $IgnoreFile)).Path
+
+# All files under repo (exclude .git internals)
+$all = Get-ChildItem -Path $repoRoot -Recurse -File -Force |
+  Where-Object { $_.FullName -notmatch "\\.git\\|/\.git/" }
+
+# Repo-relative paths with forward slashes (what git expects)
+$relPaths = $all | ForEach-Object {
+  $_.FullName.Substring($repoRoot.Length).TrimStart('\','/') -replace '\\','/'
 }
 
-# Start aider:
-# - Include AIDER.md first
-# - Add dotfiles in repo root explicitly (globs often skip dotfiles)
-# - Add everything else via **/* and let Aider apply .aiderignore with full gitignore semantics
-# - --aiderignore explicitly points to the file (Aider also auto-detects it, but this is explicit)
-& aider `
-  --aiderignore $AiderIgnoreFile `
-  $InstructionsFile `
-  .gitignore .editorconfig .aider.conf.yml .aiderignore `
-  "**/*"
+# Ask git which paths match .aiderignore (FULL gitignore semantics)
+$ignored = @()
+if ($relPaths.Count -gt 0) {
+  $stdin = ($relPaths -join "`n") + "`n"
+  $ignored = $stdin | git -c core.excludesFile="$ignoreAbs" check-ignore --no-index --stdin 2>$null
+}
+
+$ignoredSet = New-Object 'System.Collections.Generic.HashSet[string]'
+foreach ($p in $ignored) { $null = $ignoredSet.Add(($p.Trim() -replace '\\','/')) }
+
+# Keep everything NOT ignored
+$includedRel = $relPaths | Where-Object { -not $ignoredSet.Contains($_) }
+
+# Always include instructions file first
+$instructionFull = (Resolve-Path -LiteralPath $InstructionsFile).Path
+$finalArgs = New-Object System.Collections.Generic.List[string]
+$finalArgs.Add($InstructionsFile) | Out-Null
+
+foreach ($rp in $includedRel) {
+  if ($rp -eq $InstructionsFile) { continue }
+  $finalArgs.Add(($rp -replace '/','\')) | Out-Null
+}
+
+Write-Host "Total files found : $($relPaths.Count)"
+Write-Host "Files ignored     : $($ignoredSet.Count)"
+Write-Host "Files added       : $($finalArgs.Count)"
+
+# Start aider using .aider.conf.yml, and DO NOT apply repo .gitignore filtering
+& aider --no-gitignore @finalArgs

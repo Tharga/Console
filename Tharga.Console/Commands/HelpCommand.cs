@@ -1,34 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Tharga.Console.Commands;
+using System.Threading.Tasks;
 
 namespace Tharga.Console.Commands;
 
 internal class HelpCommand : ActionCommandBase
 {
-    private readonly Dictionary<string, ICommand> _commands;
+    private RootCommand _rootCommand;
 
-    public HelpCommand(Dictionary<string, ICommand> commands)
+    public HelpCommand(RootCommand rootCommand)
         : base("help", "Displays help text.")
     {
-        _commands = commands;
+        _rootCommand = rootCommand;
     }
 
-    public override async Task Invoke(string[] param)
+    public override Task Invoke(string[] param)
     {
-        var rootCommands = _commands.Values
-            .Where(cmd => cmd.Name != null && !cmd.Name.Contains(' '))
-            .GroupBy(cmd => cmd.Name.Split(' ')[0])
-            .ToDictionary(g => g.Key, g => g.ToList());
-
-        foreach (var group in rootCommands.OrderBy(g => g.Key))
+        var commands = _rootCommand.GetSubCommands();
+        foreach (var command in commands.OrderBy(g => g.Key))
         {
-            Console.WriteLine($"{group.Key}:");
-            foreach (var command in group.Value.OrderBy(c => c.Name))
-            {
-                Console.WriteLine($"  {command.Name}");
-            }
+            System.Console.WriteLine($"{command.Key}:");
+            //TODO: Fetch sub-commandsl
         }
+
+        return Task.CompletedTask;
     }
 }

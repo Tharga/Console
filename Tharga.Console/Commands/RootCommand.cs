@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
+using Tharga.Console.Consoles;
 
 namespace Tharga.Console.Commands;
 
 public class RootCommand : CommandGroup, IRootCommand
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly IConsole _console;
     private readonly ConsoleOptions _options;
-    private readonly Dictionary<string, ICommand> _commands = new();
+    // private readonly Dictionary<string, Type> _commandTypes = new();
 
-    public RootCommand(IConsole console, IOptions<ConsoleOptions> options = default)
+    internal RootCommand(IServiceProvider serviceProvider, IConsole console, IOptions<ConsoleOptions> options = default)
         : base(null)
     {
+        _serviceProvider = serviceProvider;
         _console = console;
         _options = options?.Value ?? new ConsoleOptions();
 
         RegisterCommand<ExitCommand>();
-        RegisterCommand<HelpCommand>(this._commands);
+        RegisterCommand<HelpCommand>();
     }
 
     public string QueryInput()
@@ -29,19 +33,19 @@ public class RootCommand : CommandGroup, IRootCommand
     {
         if (string.IsNullOrEmpty(entry)) entry = "help";
 
-        var commandType = _commands.GetValueOrDefault(entry);
+        var commandType = _command.GetValueOrDefault(entry);
         if (commandType == null) return;
 
-        if (Activator.CreateInstance(commandType) is ActionCommandBase command)
+        if (_serviceProvider.GetService(commandType)is ActionCommandBase command)
         {
             command.Invoke(null);
         }
     }
 
-    private void RegisterCommand<T>(Dictionary<string, ICommand> commands) where T : ActionCommandBase
-    {
-        var instance = Activator.CreateInstance(typeof(T)) as ICommand;
-        if (instance == null) throw new InvalidOperationException($"Cannot create instance of {typeof(T).Name}.");
-        commands.Add(instance.Name, instance);
-    }
+    // private void RegisterCommand<T>(Dictionary<string, ICommand> commands) where T : ActionCommandBase
+    // {
+    //     var instance = Activator.CreateInstance(typeof(T)) as ICommand;
+    //     if (instance == null) throw new InvalidOperationException($"Cannot create instance of {typeof(T).Name}.");
+    //     commands.Add(instance.Name, instance);
+    // }
 }
