@@ -5,7 +5,7 @@ namespace Tharga.Console.Consoles;
 /// <summary>
 /// This is a regular console that can output text to the console as well as execute commands.
 /// </summary>
-public class ClientConsole : IInputOutputConsole
+public class ClientConsole : IClientConsole
 {
     private readonly ConsoleOptions _consoleConfiguration;
 

@@ -2,13 +2,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Sample.Cli;
 
 var builder = new ServiceCollection();
-builder.AddConsole();
+Tharga.Console.ConsoleServiceCollectionExtensions.AddConsole(builder);
 
-var serviceProvider = builder.Build();
+var serviceProvider = builder.BuildServiceProvider();
 
-var console = serviceProvider.GetService<IConsole>();
-var command = new RootCommand(console);
+var console = serviceProvider.GetService<Tharga.Console.Consoles.IClientConsole>();
+var command = new Tharga.Console.Commands.RootCommand(console);
 command.RegisterCommand<SampleCommands>();
 
-var engine = new CommandEngine(command);
+var engine = new Tharga.Console.CommandEngine(command);
 engine.Start(args);

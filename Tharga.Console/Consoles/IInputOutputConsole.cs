@@ -3,3 +3,8 @@
 public interface IInputOutputConsole : IOutputConsole
 {
 }
+
+public interface IClientConsole : IInputOutputConsole
+{
+
+}

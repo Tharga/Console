@@ -18,7 +18,8 @@ internal class ExitCommand : ActionCommandBase
 
     public override async Task Invoke(string[] param)
     {
-        throw new NotImplementedException();
+        Output("Exiting...");
+        Environment.Exit(0);
         //_stopAction();
     }
 }

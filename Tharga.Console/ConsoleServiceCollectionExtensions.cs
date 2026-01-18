@@ -3,13 +3,14 @@ using Tharga.Console;
 using Tharga.Console.Commands;
 using Tharga.Console.Consoles;
 
+namespace Tharga.Console;
+
 public static class ConsoleServiceCollectionExtensions
 {
     public static IServiceCollection AddConsole(this IServiceCollection services)
     {
-        services.AddSingleton<IConsole, ClientConsole>();
+        services.AddSingleton<IClientConsole, ClientConsole>();
         services.AddTransient<RootCommand>();
-        services.AddTransient<SampleCommands>();
 
         return services;
     }
