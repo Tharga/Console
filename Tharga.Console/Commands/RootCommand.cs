@@ -9,6 +9,7 @@ public class RootCommand : CommandGroup, IRootCommand
 {
     private readonly IConsole _console;
     private readonly ConsoleOptions _options;
+    private readonly Dictionary<string, ICommand> _commands = new();
 
     public RootCommand(IConsole console, IOptions<ConsoleOptions> options = default)
         : base(null)
@@ -17,7 +18,7 @@ public class RootCommand : CommandGroup, IRootCommand
         _options = options?.Value ?? new ConsoleOptions();
 
         RegisterCommand<ExitCommand>();
-        RegisterCommand<HelpCommand>();
+        RegisterCommand<HelpCommand>(this._commands);
     }
 
     public string QueryInput()
@@ -37,5 +38,12 @@ public class RootCommand : CommandGroup, IRootCommand
         {
             command.Invoke(null);
         }
+    }
+
+    private void RegisterCommand<T>(Dictionary<string, ICommand> commands) where T : ActionCommandBase
+    {
+        var instance = Activator.CreateInstance(typeof(T)) as ICommand;
+        if (instance == null) throw new InvalidOperationException($"Cannot create instance of {typeof(T).Name}.");
+        commands.Add(instance.Name, instance);
     }
 }

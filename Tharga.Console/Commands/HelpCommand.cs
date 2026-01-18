@@ -1,45 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
+using Tharga.Console.Commands;
 
 namespace Tharga.Console.Commands;
 
-//public class HelpCommand : ActionCommand
-//{
-//    public HelpCommand()
-//        : base("Help")
-//    {
-//    }
-
-//    public override Task Execute()
-//    {
-//        //Show a tree of all registered commands
-//        throw new System.NotImplementedException();
-//    }
-//}
-
 internal class HelpCommand : ActionCommandBase
 {
-    private readonly CommandEngine _commandEngine;
-    //private readonly List<HelpLine> _helpLines = new List<HelpLine>();
+    private readonly Dictionary<string, ICommand> _commands;
 
-    public HelpCommand() //CommandEngine commandEngine)
-        : base("help", "Displays helpt text.")
+    public HelpCommand(Dictionary<string, ICommand> commands)
+        : base("help", "Displays help text.")
     {
-        //_commandEngine = commandEngine;
+        _commands = commands;
     }
 
-    public override Task Invoke(string[] param)
+    public override async Task Invoke(string[] param)
     {
-        //foreach (var helpLine in _helpLines)
-        //{
-        //    _commandEngine.RootCommand.Console.Output(new WriteEventArgs(helpLine.Text, OutputLevel.Help, helpLine.CanExecute() ? helpLine.ForeColor : ConsoleColor.DarkGray));
-        //}
-        throw new NotImplementedException();
-    }
+        var rootCommands = _commands.Values
+            .Where(cmd => cmd.Name != null && !cmd.Name.Contains(' '))
+            .GroupBy(cmd => cmd.Name.Split(' ')[0])
+            .ToDictionary(g => g.Key, g => g.ToList());
 
-    //internal void AddLine(string text, Func<bool> canExecute = null, ConsoleColor foreColor = ConsoleColor.Gray)
-    //{
-    //    _helpLines.Add(new HelpLine(text, canExecute ?? (() => true), foreColor));
-    //}
+        foreach (var group in rootCommands.OrderBy(g => g.Key))
+        {
+            Console.WriteLine($"{group.Key}:");
+            foreach (var command in group.Value.OrderBy(c => c.Name))
+            {
+                Console.WriteLine($"  {command.Name}");
+            }
+        }
+    }
 }
