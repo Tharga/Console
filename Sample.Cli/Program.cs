@@ -1,10 +1,12 @@
-﻿using Sample.Cli;
-using Tharga.Console;
-using Tharga.Console.Commands;
-using Tharga.Console.Consoles;
+using Microsoft.Extensions.DependencyInjection;
+using Sample.Cli;
 
-var console = new ClientConsole();
+var builder = new ServiceCollection();
+builder.AddConsole();
 
+var serviceProvider = builder.Build();
+
+var console = serviceProvider.GetService<IConsole>();
 var command = new RootCommand(console);
 command.RegisterCommand<SampleCommands>();
 
