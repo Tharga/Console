@@ -1,32 +1,41 @@
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using Tharga.Console.Commands.Base;
-using Tharga.Console.Interfaces;
-using Tharga.Runtime;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Options;
+using Tharga.Console.Consoles;
 
 namespace Tharga.Console.Commands;
 
-public sealed class RootCommandIoc : RootCommandBase
+public class RootCommand : CommandGroup, IRootCommand
 {
-	private readonly ServiceCollection _serviceCollection;
-	private ServiceProvider _serviceProvider;
+    private readonly IConsole _console;
+    private readonly ConsoleOptions _options;
 
-	public RootCommandIoc(IConsole console)
-		: base(console)
-	{
-		_serviceCollection = new ServiceCollection();
-		_ = AssemblyService.GetTypes<ICommand>().Select(_serviceCollection.AddTransient).ToArray();
-	}
+    public RootCommand(IConsole console, IOptions<ConsoleOptions> options = default)
+        : base(null)
+    {
+        _console = console;
+        _options = options?.Value ?? new ConsoleOptions();
 
-	public IServiceCollection ServiceCollection => _serviceProvider == null ? _serviceCollection : throw new InvalidOperationException("The service provider has already been built. It is built when the engine is created.");
-	public IServiceProvider ServiceProvider => _serviceProvider ?? throw new InvalidOperationException("The service provider has not been built yet. It is built when the engine is created.");
+        RegisterCommand<ExitCommand>();
+        RegisterCommand<HelpCommand>();
+    }
 
-	protected override ICommandResolver BuildCommandResolver()
-	{
-		if (_serviceProvider != null) throw new InvalidOperationException("The command resolver has already been built.");
+    public string QueryInput()
+    {
+        System.Console.Write(_options.Prompt);
+        return System.Console.ReadLine();
+    }
 
-		_serviceProvider = _serviceCollection.BuildServiceProvider();
-		return new CommandResolver(type => (ICommand)_serviceProvider.GetService(type));
-	}
+    public void Execute(string entry)
+    {
+        if (string.IsNullOrEmpty(entry)) entry = "help";
+
+        var commandType = _commands.GetValueOrDefault(entry);
+        if (commandType == null) return;
+
+        if (Activator.CreateInstance(commandType) is ActionCommandBase command)
+        {
+            command.Invoke(null);
+        }
+    }
 }
