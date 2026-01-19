@@ -1,10 +1,7 @@
 trigger:
 - master
 
-name: 3.7.$(Rev:r)
-
-pool:
-  vmImage: 'windows-latest'
+name: 4.0.pre.$(Rev:r)
 
 variables:
   buildPlatform: 'Any CPU'
@@ -49,25 +46,18 @@ stages:
         projects: '**/Tharga.Console*.Tests.csproj'
         arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --filter "Category!=Database"'
 
-    #- task: BuildQualityChecks@8
-    #  displayName: 'Build Quality Checks'
-    #  inputs:
-    #    checkWarnings: true
-    #    warningFailOption: 'build'
-    #    allowWarningVariance: true
-    #    warningVariance: '1'
-    #    checkCoverage: true
-    #    coverageFailOption: 'build'
-    #    coverageType: 'blocks'
-    #    allowCoverageVariance: true
-    #    coverageVariance: '1'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Pack Tharga.Console.Standard'
-      inputs:
-        command: 'pack'
-        packagesToPack: '**/Tharga.Console.Standard.csproj'
-        versioningScheme: 'byBuildNumber'
+    - task: BuildQualityChecks@8
+     displayName: 'Build Quality Checks'
+     inputs:
+       checkWarnings: true
+       warningFailOption: 'build'
+       allowWarningVariance: true
+       warningVariance: '1'
+       checkCoverage: true
+       coverageFailOption: 'build'
+       coverageType: 'blocks'
+       allowCoverageVariance: true
+       coverageVariance: '1'
 
     - task: DotNetCoreCLI@2
       displayName: 'Pack Tharga.Console'
