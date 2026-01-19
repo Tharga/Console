@@ -1,0 +1,5 @@
+bin
+obj
+
+Tharga.Console.Speech/**
+Tharga.Console.Standard/**
