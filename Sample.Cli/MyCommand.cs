@@ -7,7 +7,7 @@ internal class MyCommand : CommandBase
     private readonly IMyService _myService;
 
     public MyCommand(IMyService myService)
-        : base("my")
+        : base("my", "more info here")
     {
         _myService = myService;
     }

@@ -14,6 +14,8 @@ public sealed class ConsoleApplicationBuilder
         using var provider = Services.BuildServiceProvider();
         AddCommandType(typeof(ExitCommand), _root, provider);
         AddCommandType(typeof(HelpCommand), _root, provider);
+        AddCommandType(typeof(ClearCommand), _root, provider);
+        AddAlias("cls", typeof(ClearCommand), "Clears the console");
     }
 
     public string[] Args { get; }
@@ -37,6 +39,7 @@ public sealed class ConsoleApplicationBuilder
         var command = (ICommand)ActivatorUtilities.CreateInstance(provider, commandType);
         var node = parent.GetOrAddChild(command.Name);
         node.CommandType = commandType;
+        node.Description = command.Description;
         Services.AddTransient(commandType);
 
         if (command is not ICommandGroup group)
@@ -46,5 +49,13 @@ public sealed class ConsoleApplicationBuilder
         {
             AddCommandType(childType, node, provider);
         }
+    }
+
+    private void AddAlias(string alias, Type commandType, string description)
+    {
+        var node = _root.GetOrAddChild(alias);
+        node.CommandType = commandType;
+        node.Description = description ?? string.Empty;
+        Services.AddTransient(commandType);
     }
 }

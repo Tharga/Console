@@ -12,6 +12,8 @@ internal sealed class CommandNode
 
     public string Name { get; }
 
+    public string Description { get; set; } = string.Empty;
+
     public Type CommandType { get; set; }
 
     public Dictionary<string, CommandNode> Children { get; } =

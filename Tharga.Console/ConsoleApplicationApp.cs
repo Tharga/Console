@@ -148,9 +148,12 @@ public sealed class ConsoleApplicationApp
 
     private static void ShowHelp(CommandNode node)
     {
-        foreach (var name in node.Children.Keys.OrderBy(x => x))
+        foreach (var child in node.Children.Values.OrderBy(x => x.Name))
         {
-            System.Console.WriteLine(name);
+            if (string.IsNullOrWhiteSpace(child.Description))
+                System.Console.WriteLine(child.Name);
+            else
+                System.Console.WriteLine($"{child.Name} - {child.Description}");
         }
     }
 }
