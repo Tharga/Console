@@ -8,16 +8,9 @@ internal sealed class BaseCommand : CommandGroupBase
 {
     public BaseCommand()
         : base("base")
-    {
-    }
-
-    public override IEnumerable<ICommand> GetCommands()
-    {
-        return new ICommand[]
-        {
-            new MyCommand(),
-            new MyOtherCommand()
-        };
+    {        
+        AddCommand<MyCommand>();
+        AddCommand<MyOtherCommand>();
     }
 
     public override Task ExecuteAsync()

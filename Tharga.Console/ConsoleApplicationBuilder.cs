@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Tharga.Console;
 
@@ -9,33 +10,41 @@ public sealed class ConsoleApplicationBuilder
     internal ConsoleApplicationBuilder(string[] args)
     {
         Args = args;
-        AddCommandInstance(new ExitCommand(), _root);
-        AddCommandInstance(new HelpCommand(), _root);
+        Services = new ServiceCollection();
+        using var provider = Services.BuildServiceProvider();
+        AddCommandType(typeof(ExitCommand), _root, provider);
+        AddCommandType(typeof(HelpCommand), _root, provider);
     }
 
     public string[] Args { get; }
 
+    public IServiceCollection Services { get; }
+
     public ConsoleApplicationApp Build()
     {
-        return new ConsoleApplicationApp(Args, _root);
+        var serviceProvider = Services.BuildServiceProvider();
+        return new ConsoleApplicationApp(Args, _root, serviceProvider);
     }
 
-    public void AddCommand<T>() where T : ICommand, new()
+    public void AddCommand<T>() where T : ICommand
     {
-        AddCommandInstance(new T(), _root);
+        using var provider = Services.BuildServiceProvider();
+        AddCommandType(typeof(T), _root, provider);
     }
 
-    private static void AddCommandInstance(ICommand command, CommandNode parent)
+    private void AddCommandType(Type commandType, CommandNode parent, IServiceProvider provider)
     {
+        var command = (ICommand)ActivatorUtilities.CreateInstance(provider, commandType);
         var node = parent.GetOrAddChild(command.Name);
-        node.CommandType = command.GetType();
+        node.CommandType = commandType;
+        Services.AddTransient(commandType);
 
-        if (command is ICommandGroup group)
+        if (command is not ICommandGroup group)
+            return;
+
+        foreach (var childType in group.GetCommandTypes())
         {
-            foreach (var child in group.GetCommands())
-            {
-                AddCommandInstance(child, node);
-            }
+            AddCommandType(childType, node, provider);
         }
     }
 }

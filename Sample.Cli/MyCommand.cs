@@ -4,14 +4,18 @@ namespace Sample.Cli;
 
 internal class MyCommand : CommandBase
 {
-    public MyCommand()
+    private readonly IMyService _myService;
+
+    public MyCommand(IMyService myService)
         : base("my")
     {
+        _myService = myService;
     }
 
     public override async Task ExecuteAsync()
     {
-        Console.WriteLine("Yeee");
+        var some = _myService.GetSomeText();
+        Console.WriteLine(some);
     }
 }
 
@@ -26,4 +30,14 @@ internal class MyOtherCommand : CommandBase
     {
         Console.WriteLine("Yeee other");
     }
+}
+
+public interface IMyService
+{
+    string GetSomeText();
+}
+
+internal class MyService : IMyService
+{
+    public string GetSomeText() => Guid.NewGuid().ToString();
 }

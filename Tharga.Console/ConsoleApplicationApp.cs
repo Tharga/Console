@@ -1,15 +1,18 @@
 using System;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Tharga.Console;
 
 public sealed class ConsoleApplicationApp
 {
     private readonly CommandNode _root;
+    private readonly IServiceProvider _serviceProvider;
 
-    internal ConsoleApplicationApp(string[] args, CommandNode root)
+    internal ConsoleApplicationApp(string[] args, CommandNode root, IServiceProvider serviceProvider)
     {
         _root = root;
+        _serviceProvider = serviceProvider;
     }
 
     public void Run()
@@ -48,7 +51,7 @@ public sealed class ConsoleApplicationApp
                 continue;
             }
 
-            var command = (ICommand)Activator.CreateInstance(node.CommandType)!;
+            var command = (ICommand)_serviceProvider.GetRequiredService(node.CommandType);
             command.ExecuteAsync().GetAwaiter().GetResult();
             if (command is ExitCommand)
                 break;
