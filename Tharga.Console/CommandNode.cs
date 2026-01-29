@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tharga.Console;
 
@@ -19,6 +20,11 @@ internal sealed class CommandNode
     public Dictionary<string, CommandNode> Children { get; } =
         new(StringComparer.OrdinalIgnoreCase);
 
+    public Dictionary<string, CommandNode> AliasTargets { get; } =
+        new(StringComparer.OrdinalIgnoreCase);
+
+    public List<string> Aliases { get; } = new();
+
     public bool HasChildren => Children.Count > 0;
 
     public CommandNode GetOrAddChild(string name)
@@ -30,5 +36,15 @@ internal sealed class CommandNode
         }
 
         return node;
+    }
+
+    public void AddAlias(string alias, CommandNode target)
+    {
+        if (string.IsNullOrWhiteSpace(alias))
+            return;
+
+        AliasTargets[alias] = target;
+        if (!target.Aliases.Any(x => string.Equals(x, alias, StringComparison.OrdinalIgnoreCase)))
+            target.Aliases.Add(alias);
     }
 }

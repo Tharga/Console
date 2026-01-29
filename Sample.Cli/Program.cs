@@ -3,6 +3,7 @@ using Sample.Cli;
 using Tharga.Console;
 
 var builder = ConsoleApplication.CreateBuilder(args);
+builder.InputPrompt = ">";
 
 builder.Services.AddTransient<IMyService, MyService>();
 

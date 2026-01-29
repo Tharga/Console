@@ -11,12 +11,14 @@ public sealed class ConsoleApplicationApp
     private readonly CommandNode _root;
     private readonly IServiceProvider _serviceProvider;
     private readonly List<string> _startupCommands;
+    private readonly string _inputPrompt;
 
-    internal ConsoleApplicationApp(string[] args, CommandNode root, IServiceProvider serviceProvider)
+    internal ConsoleApplicationApp(string[] args, CommandNode root, IServiceProvider serviceProvider, string inputPrompt)
     {
         _root = root;
         _serviceProvider = serviceProvider;
         _startupCommands = BuildStartupCommands(args);
+        _inputPrompt = inputPrompt ?? string.Empty;
     }
 
     public void Run()
@@ -31,6 +33,9 @@ public sealed class ConsoleApplicationApp
 
         while (true)
         {
+            if (_inputPrompt.Length > 0)
+                System.Console.Write(_inputPrompt);
+
             var line = System.Console.ReadLine();
             if (line is null)
                 break;
@@ -112,8 +117,11 @@ public sealed class ConsoleApplicationApp
         {
             if (!current.Children.TryGetValue(token, out var next))
             {
-                matchedAll = false;
-                return current;
+                if (!current.AliasTargets.TryGetValue(token, out next))
+                {
+                    matchedAll = false;
+                    return current;
+                }
             }
 
             current = next;
@@ -131,7 +139,7 @@ public sealed class ConsoleApplicationApp
         System.Console.WriteLine("Example:");
         System.Console.WriteLine($"  {appName} \"command one\" \"command two\" exit");
         System.Console.WriteLine();
-        ShowHelp(_root);
+        ShowHelpTree(_root);
     }
 
     private static void ShowAppHeader()
@@ -148,12 +156,55 @@ public sealed class ConsoleApplicationApp
 
     private static void ShowHelp(CommandNode node)
     {
-        foreach (var child in node.Children.Values.OrderBy(x => x.Name))
+        System.Console.WriteLine($"Command: {node.Name}");
+        if (!string.IsNullOrWhiteSpace(node.Description))
+            System.Console.WriteLine(node.Description);
+        System.Console.WriteLine();
+
+        PrintChildren(node.Children.Values.OrderBy(x => x.Name).ToList(), 0);
+    }
+
+    private static void ShowHelpTree(CommandNode node)
+    {
+        PrintTreeChildren(node.Children.Values.OrderBy(x => x.Name).ToList(), string.Empty);
+    }
+
+    private static string FormatCommandLine(CommandNode node)
+    {
+        var text = node.Name;
+        if (!string.IsNullOrWhiteSpace(node.Description))
+            text += $" - {node.Description}";
+
+        if (node.Aliases.Count > 0)
+            text += $" (aliases: {string.Join(", ", node.Aliases.OrderBy(x => x))})";
+
+        return text;
+    }
+
+    private static void PrintChildren(IReadOnlyList<CommandNode> children, int indent)
+    {
+        for (var i = 0; i < children.Count; i++)
         {
-            if (string.IsNullOrWhiteSpace(child.Description))
-                System.Console.WriteLine(child.Name);
-            else
-                System.Console.WriteLine($"{child.Name} - {child.Description}");
+            var isLast = i == children.Count - 1;
+            var branch = isLast ? "└─ " : "├─ ";
+            var prefix = new string(' ', indent * 2);
+            System.Console.WriteLine(prefix + branch + FormatCommandLine(children[i]));
+        }
+    }
+
+    private static void PrintTreeChildren(IReadOnlyList<CommandNode> children, string prefix)
+    {
+        for (var i = 0; i < children.Count; i++)
+        {
+            var isLast = i == children.Count - 1;
+            var branch = isLast ? "└─ " : "├─ ";
+            var linePrefix = prefix + branch;
+            System.Console.WriteLine(linePrefix + FormatCommandLine(children[i]));
+
+            var childPrefix = prefix + (isLast ? "   " : "│  ");
+            var grandChildren = children[i].Children.Values.OrderBy(x => x.Name).ToList();
+            if (grandChildren.Count > 0)
+                PrintTreeChildren(grandChildren, childPrefix);
         }
     }
 }
