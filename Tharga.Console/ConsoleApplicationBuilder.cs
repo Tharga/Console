@@ -8,17 +8,14 @@ public sealed class ConsoleApplicationBuilder
 {
     private readonly CommandNode _root = new(string.Empty);
     private readonly Dictionary<Type, CommandNode> _nodesByType = new();
+    private int _nextOrder;
+    private bool _builtInsAdded;
 
     internal ConsoleApplicationBuilder(string[] args)
     {
         Args = args;
         Services = new ServiceCollection();
         InputPrompt = "> ";
-        using var provider = Services.BuildServiceProvider();
-        AddCommandType(typeof(ExitCommand), _root, provider);
-        AddCommandType(typeof(HelpCommand), _root, provider);
-        AddCommandType(typeof(ClearCommand), _root, provider);
-        AddAlias("cls", typeof(ClearCommand));
     }
 
     public string[] Args { get; }
@@ -29,6 +26,13 @@ public sealed class ConsoleApplicationBuilder
 
     public ConsoleApplicationApp Build()
     {
+        if (!_builtInsAdded)
+        {
+            using var tempProvider = Services.BuildServiceProvider();
+            AddBuiltIns(tempProvider);
+            _builtInsAdded = true;
+        }
+
         var serviceProvider = Services.BuildServiceProvider();
         return new ConsoleApplicationApp(Args, _root, serviceProvider, InputPrompt);
     }
@@ -42,7 +46,9 @@ public sealed class ConsoleApplicationBuilder
     private void AddCommandType(Type commandType, CommandNode parent, IServiceProvider provider)
     {
         var command = (ICommand)ActivatorUtilities.CreateInstance(provider, commandType);
-        var node = parent.GetOrAddChild(command.Name);
+        var node = parent.GetOrAddChild(command.Name, _nextOrder, out var created);
+        if (created)
+            _nextOrder++;
         node.CommandType = commandType;
         node.Description = command.Description;
         Services.AddTransient(commandType);
@@ -63,5 +69,16 @@ public sealed class ConsoleApplicationBuilder
             return;
 
         _root.AddAlias(alias, node);
+    }
+
+    private void AddBuiltIns(IServiceProvider provider)
+    {
+        if (_builtInsAdded)
+            return;
+
+        AddCommandType(typeof(ClearCommand), _root, provider);
+        AddCommandType(typeof(ExitCommand), _root, provider);
+        AddCommandType(typeof(HelpCommand), _root, provider);
+        AddAlias("cls", typeof(ClearCommand));
     }
 }
