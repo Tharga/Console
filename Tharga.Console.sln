@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11205.157 d18.0
+VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Console", "Tharga.Console\Tharga.Console.csproj", "{B8BD1635-042F-4EB3-8018-5CEB7302C31B}"
 EndProject
@@ -19,8 +19,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Console.Speech", "Tharga.Console.Speech\Tharga.Console.Speech.csproj", "{3AD5DBA8-32CB-424E-9E29-BC496299B7D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Cli", "Sample.Cli\Sample.Cli.csproj", "{A2C6B8F8-01FC-4B11-B40B-0FDEA46CB81D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Console.Standard", "Tharga.Console.Standard\Tharga.Console.Standard.csproj", "{131057AE-17AE-B405-E183-4F0ECD91C700}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,12 +51,6 @@ Global
 		{A2C6B8F8-01FC-4B11-B40B-0FDEA46CB81D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2C6B8F8-01FC-4B11-B40B-0FDEA46CB81D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2C6B8F8-01FC-4B11-B40B-0FDEA46CB81D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{131057AE-17AE-B405-E183-4F0ECD91C700}.CI|Any CPU.ActiveCfg = Debug|Any CPU
-		{131057AE-17AE-B405-E183-4F0ECD91C700}.CI|Any CPU.Build.0 = Debug|Any CPU
-		{131057AE-17AE-B405-E183-4F0ECD91C700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{131057AE-17AE-B405-E183-4F0ECD91C700}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{131057AE-17AE-B405-E183-4F0ECD91C700}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{131057AE-17AE-B405-E183-4F0ECD91C700}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
