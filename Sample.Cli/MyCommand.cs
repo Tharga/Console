@@ -15,7 +15,10 @@ internal class MyCommand : CommandBase
     public override async Task ExecuteAsync()
     {
         var some = _myService.GetSomeText();
-        Console.WriteLine(some);
+        Output(some);
+        OutputInfo(some);
+        OutputWarning(some);
+        OutputError(some);
     }
 }
 

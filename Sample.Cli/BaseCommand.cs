@@ -5,7 +5,7 @@ namespace Sample.Cli;
 internal sealed class BaseCommand : CommandGroupBase
 {
     public BaseCommand()
-        : base("base")
+        : base("xxx")
     {        
         AddCommand<MyCommand>();
         AddCommand<MyOtherCommand>();
