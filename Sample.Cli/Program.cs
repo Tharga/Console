@@ -2,7 +2,6 @@
 using Tharga.Console;
 
 var builder = ConsoleApplication.CreateBuilder(args);
-builder.AddCommand<MyCommand>();
-builder.AddCommand<MyOtherCommand>();
+builder.AddCommand<BaseCommand>();
 var app = builder.Build();
 app.Run();

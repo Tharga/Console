@@ -1,15 +1,15 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace Tharga.Console;
 
 public sealed class ConsoleApplicationApp
 {
-    private readonly IReadOnlyDictionary<string, Type> _commandTypes;
+    private readonly CommandNode _root;
 
-    internal ConsoleApplicationApp(string[] args, IReadOnlyDictionary<string, Type> commandTypes)
+    internal ConsoleApplicationApp(string[] args, CommandNode root)
     {
-        _commandTypes = commandTypes;
+        _root = root;
     }
 
     public void Run()
@@ -22,24 +22,62 @@ public sealed class ConsoleApplicationApp
 
             var input = line.Trim();
             if (input.Length == 0)
-                continue;
-
-            if (_commandTypes.TryGetValue(input, out var commandType))
             {
-                var command = commandType == typeof(HelpCommand)
-                    ? new HelpCommand(_commandTypes)
-                    : (ICommand)Activator.CreateInstance(commandType)!;
-
-                if (command is null)
-                    continue;
-
-                command.ExecuteAsync().GetAwaiter().GetResult();
-                if (command is ExitCommand)
-                    break;
+                ShowHelp(_root);
                 continue;
             }
 
-            System.Console.WriteLine($"Unknown command: {input}");
+            var tokens = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var node = ResolveNode(tokens, out var matchedAll);
+
+            if (!matchedAll)
+            {
+                System.Console.WriteLine($"Unknown command: {input}");
+                continue;
+            }
+
+            if (node.HasChildren)
+            {
+                ShowHelp(node);
+                continue;
+            }
+
+            if (node.CommandType == typeof(HelpCommand))
+            {
+                ShowHelp(_root);
+                continue;
+            }
+
+            var command = (ICommand)Activator.CreateInstance(node.CommandType)!;
+            command.ExecuteAsync().GetAwaiter().GetResult();
+            if (command is ExitCommand)
+                break;
+        }
+    }
+
+    private CommandNode ResolveNode(string[] tokens, out bool matchedAll)
+    {
+        var current = _root;
+        foreach (var token in tokens)
+        {
+            if (!current.Children.TryGetValue(token, out var next))
+            {
+                matchedAll = false;
+                return current;
+            }
+
+            current = next;
+        }
+
+        matchedAll = true;
+        return current;
+    }
+
+    private static void ShowHelp(CommandNode node)
+    {
+        foreach (var name in node.Children.Keys.OrderBy(x => x))
+        {
+            System.Console.WriteLine(name);
         }
     }
 }
