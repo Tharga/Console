@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Tharga.Console.Consoles;
 
 namespace Tharga.Console;
 
@@ -13,13 +13,17 @@ public sealed class ConsoleApplicationApp
     private readonly IServiceProvider _serviceProvider;
     private readonly List<string> _startupCommands;
     private readonly string _inputPrompt;
+    private readonly IConsoleInput _input;
+    private readonly IConsoleOutput _output;
 
-    internal ConsoleApplicationApp(string[] args, CommandNode root, IServiceProvider serviceProvider, string inputPrompt)
+    internal ConsoleApplicationApp(string[] args, CommandNode root, IServiceProvider serviceProvider, string inputPrompt, IConsoleInput input, IConsoleOutput output)
     {
         _root = root;
         _serviceProvider = serviceProvider;
         _startupCommands = BuildStartupCommands(args);
         _inputPrompt = inputPrompt ?? string.Empty;
+        _input = input;
+        _output = output;
     }
 
     public void Run()
@@ -32,14 +36,17 @@ public sealed class ConsoleApplicationApp
                 return;
         }
 
-        while (true)
+        if (_input.CanRead)
         {
-            var line = ReadCommandLine(out var eof);
-            if (eof)
-                break;
+            while (true)
+            {
+                var line = ReadCommandLine(out var eof);
+                if (eof)
+                    break;
 
-            if (!ExecuteLine(line))
-                break;
+                if (!ExecuteLine(line))
+                    break;
+            }
         }
     }
 
@@ -57,7 +64,7 @@ public sealed class ConsoleApplicationApp
 
         if (!matchedAll)
         {
-            System.Console.WriteLine($"Unknown command: {input}");
+            _output.WriteLine($"Unknown command: {input}");
             return true;
         }
 
@@ -74,7 +81,15 @@ public sealed class ConsoleApplicationApp
         }
 
         var command = (ICommand)_serviceProvider.GetRequiredService(node.CommandType);
-        command.ExecuteAsync().GetAwaiter().GetResult();
+        ConsoleContext.CurrentOutput = _output;
+        try
+        {
+            command.ExecuteAsync().GetAwaiter().GetResult();
+        }
+        finally
+        {
+            ConsoleContext.CurrentOutput = null;
+        }
         return command is not ExitCommand;
     }
 
@@ -144,14 +159,14 @@ public sealed class ConsoleApplicationApp
     {
         var appName = Assembly.GetEntryAssembly()?.GetName().Name ?? "your-app";
 
-        System.Console.WriteLine("You can pass startup commands as application args.");
-        System.Console.WriteLine("Example:");
-        System.Console.WriteLine($"  {appName} \"command one\" \"command two\" exit");
-        System.Console.WriteLine();
+        _output.WriteLine("You can pass startup commands as application args.");
+        _output.WriteLine("Example:");
+        _output.WriteLine($"  {appName} \"command one\" \"command two\" exit");
+        _output.WriteLine(string.Empty);
         ShowHelpTree(_root);
     }
 
-    private static void ShowAppHeader()
+    private void ShowAppHeader()
     {
         var entryAssembly = Assembly.GetEntryAssembly();
         if (entryAssembly is null)
@@ -160,20 +175,20 @@ public sealed class ConsoleApplicationApp
         var name = entryAssembly.GetName().Name ?? "Application";
         var version = entryAssembly.GetName().Version?.ToString() ?? "unknown";
 
-        System.Console.WriteLine($"{name} {version}");
+        _output.WriteLine($"{name} {version}");
     }
 
-    private static void ShowHelp(CommandNode node)
+    private void ShowHelp(CommandNode node)
     {
-        System.Console.WriteLine($"Command: {node.Name}");
+        _output.WriteLine($"Command: {node.Name}");
         if (!string.IsNullOrWhiteSpace(node.Description))
-            System.Console.WriteLine(node.Description);
-        System.Console.WriteLine();
+            _output.WriteLine(node.Description);
+        _output.WriteLine(string.Empty);
 
         PrintChildren(OrderChildren(node.Children.Values), 0);
     }
 
-    private static void ShowHelpTree(CommandNode node)
+    private void ShowHelpTree(CommandNode node)
     {
         PrintTreeChildren(OrderChildren(node.Children.Values), string.Empty);
     }
@@ -190,24 +205,24 @@ public sealed class ConsoleApplicationApp
         return text;
     }
 
-    private static void PrintChildren(IReadOnlyList<CommandNode> children, int indent)
+    private void PrintChildren(IReadOnlyList<CommandNode> children, int indent)
     {
         for (var i = 0; i < children.Count; i++)
         {
             var branch = "+- ";
             var prefix = new string(' ', indent * 2);
-            System.Console.WriteLine(prefix + branch + FormatCommandLine(children[i]));
+            _output.WriteLine(prefix + branch + FormatCommandLine(children[i]));
         }
     }
 
-    private static void PrintTreeChildren(IReadOnlyList<CommandNode> children, string prefix)
+    private void PrintTreeChildren(IReadOnlyList<CommandNode> children, string prefix)
     {
         for (var i = 0; i < children.Count; i++)
         {
             var isLast = i == children.Count - 1;
             var branch = "+- ";
             var linePrefix = prefix + branch;
-            System.Console.WriteLine(linePrefix + FormatCommandLine(children[i]));
+            _output.WriteLine(linePrefix + FormatCommandLine(children[i]));
 
             var childPrefix = prefix + (isLast ? "   " : "|  ");
             var grandChildren = OrderChildren(children[i].Children.Values);
@@ -226,142 +241,34 @@ public sealed class ConsoleApplicationApp
 
     private string ReadCommandLine(out bool eof)
     {
-        if (System.Console.IsInputRedirected)
-        {
-            var line = System.Console.ReadLine();
-            eof = line is null;
-            return line ?? string.Empty;
-        }
-
-        if (_inputPrompt.Length > 0)
-            System.Console.Write(_inputPrompt);
-        eof = false;
-
-        var buffer = new StringBuilder();
-        var lastCandidates = new List<string>();
-        var lastBase = string.Empty;
-        var lastPrefix = string.Empty;
-        var candidateIndex = -1;
-        var lastRenderLength = 0;
-
-        while (true)
-        {
-            var key = System.Console.ReadKey(true);
-            if (key.Key == ConsoleKey.Enter)
-            {
-                System.Console.WriteLine();
-                return buffer.ToString();
-            }
-
-            if (key.Key == ConsoleKey.Backspace)
-            {
-                if (buffer.Length > 0)
-                {
-                    buffer.Length -= 1;
-                    ResetCompletionState();
-                    RedrawLine(buffer.ToString());
-                }
-                continue;
-            }
-
-            if (key.Key == ConsoleKey.Escape)
-            {
-                buffer.Clear();
-                ResetCompletionState();
-                RedrawLine(buffer.ToString());
-                continue;
-            }
-
-            if (key.Key == ConsoleKey.Tab)
-            {
-                var direction = key.Modifiers.HasFlag(ConsoleModifiers.Shift) ? -1 : 1;
-                var input = buffer.ToString();
-                var endsWithSpace = input.Length > 0 && char.IsWhiteSpace(input[^1]);
-                var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                var context = _root;
-                if (parts.Count > 0)
-                {
-                    var limit = endsWithSpace ? parts.Count : parts.Count - 1;
-                    for (var i = 0; i < limit; i++)
-                    {
-                        if (!TryResolveChild(context, parts[i], out var next))
-                        {
-                            context = _root;
-                            break;
-                        }
-
-                        context = next;
-                    }
-                }
-
-                var prefix = endsWithSpace || parts.Count == 0 ? string.Empty : parts[^1];
-                var baseInput = endsWithSpace ? input : input.Substring(0, input.Length - prefix.Length);
-
-                var canCycle = lastCandidates.Count > 0 &&
-                               candidateIndex >= 0 &&
-                               string.Equals(input, lastBase + lastCandidates[candidateIndex],
-                                   StringComparison.OrdinalIgnoreCase);
-
-                if (!canCycle)
-                {
-                    var candidates = GetCandidates(context, prefix);
-                    if (candidates.Count == 0)
-                        continue;
-
-                    lastCandidates = candidates;
-                    lastBase = baseInput;
-                    lastPrefix = prefix;
-                    candidateIndex = direction > 0 ? 0 : candidates.Count - 1;
-                }
-                else
-                {
-                    if (direction > 0)
-                        candidateIndex = (candidateIndex + 1) % lastCandidates.Count;
-                    else
-                        candidateIndex = (candidateIndex - 1 + lastCandidates.Count) % lastCandidates.Count;
-                }
-
-                var selection = lastCandidates[candidateIndex];
-                buffer.Clear();
-                buffer.Append(lastBase);
-                buffer.Append(selection);
-                RedrawLine(buffer.ToString());
-                continue;
-            }
-
-            if (!char.IsControl(key.KeyChar))
-            {
-                buffer.Append(key.KeyChar);
-                ResetCompletionState();
-                RedrawLine(buffer.ToString());
-            }
-        }
-
-        void ResetCompletionState()
-        {
-            lastCandidates.Clear();
-            lastBase = string.Empty;
-            lastPrefix = string.Empty;
-            candidateIndex = -1;
-        }
-
-        void RedrawLine(string text)
-        {
-            var full = (_inputPrompt ?? string.Empty) + text;
-            var clearLen = Math.Max(lastRenderLength, full.Length);
-
-            System.Console.Write("\r");
-            if (clearLen > 0)
-                System.Console.Write(new string(' ', clearLen));
-            System.Console.Write("\r");
-            System.Console.Write(full);
-            lastRenderLength = full.Length;
-        }
+        var context = new ConsoleReadContext(_inputPrompt, Complete);
+        return _input.ReadLine(context, out eof);
     }
 
-    private List<string> GetCandidates(CommandNode context, string prefix)
+    private CompletionResult Complete(string input)
     {
+        var endsWithSpace = input.Length > 0 && char.IsWhiteSpace(input[^1]);
+        var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        var context = _root;
+        if (parts.Count > 0)
+        {
+            var limit = endsWithSpace ? parts.Count : parts.Count - 1;
+            for (var i = 0; i < limit; i++)
+            {
+                if (!TryResolveChild(context, parts[i], out var next))
+                {
+                    context = _root;
+                    break;
+                }
+
+                context = next;
+            }
+        }
+
+        var prefix = endsWithSpace || parts.Count == 0 ? string.Empty : parts[^1];
+        var baseInput = endsWithSpace ? input : input.Substring(0, input.Length - prefix.Length);
+
         var names = new List<string>();
         foreach (var node in OrderChildren(context.Children.Values))
         {
@@ -376,11 +283,13 @@ public sealed class ConsoleApplicationApp
                 names.Add(alias.Key);
         }
 
-        if (string.IsNullOrWhiteSpace(prefix))
-            return names;
+        if (!string.IsNullOrWhiteSpace(prefix))
+        {
+            names = names
+                .Where(x => x.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
 
-        return names
-            .Where(x => x.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        return new CompletionResult(baseInput, names);
     }
 }

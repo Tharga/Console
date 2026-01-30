@@ -11,7 +11,7 @@ internal sealed class ClearCommand : CommandBase
 
     public override Task ExecuteAsync()
     {
-        System.Console.Clear();
+        ClearOutput();
         return Task.CompletedTask;
     }
 }

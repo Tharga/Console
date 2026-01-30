@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Tharga.Console.Consoles;
 
 namespace Tharga.Console;
 
@@ -38,12 +39,18 @@ public abstract class CommandBase : ICommand
 
     private static void WriteColored(string message, ConsoleColor? color)
     {
-        var previous = System.Console.ForegroundColor;
-        if (color.HasValue)
-            System.Console.ForegroundColor = color.Value;
+        var output = ConsoleContext.CurrentOutput;
+        if (output is null)
+        {
+            System.Console.WriteLine(message);
+            return;
+        }
 
-        System.Console.WriteLine(message);
+        output.WriteLine(message, color);
+    }
 
-        System.Console.ForegroundColor = previous;
+    protected void ClearOutput()
+    {
+        ConsoleContext.CurrentOutput?.Clear();
     }
 }
