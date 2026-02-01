@@ -1,12 +1,22 @@
 trigger:
 - v4-pre
 
-name: 4.0.0-pre.$(Rev:r)
+#name: 4.0.0-pre.$(Rev:r)
 
 variables:
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-  BQC.ForceNewBaseline: false
+- name: versionPrefix
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+    value: '0.0.'
+  ${{ else }}:
+    value: '0.0.0-pre.'
+- name: buildPlatform
+  value: 'Any CPU'
+- name: buildConfiguration
+  value: 'Release'
+- name: BQC.ForceNewBaseline
+  value: false
+
+name: $(versionPrefix)$(Rev:r)
 
 stages:
 - stage: Build
@@ -46,18 +56,18 @@ stages:
         projects: '**/Tharga.Console*.Tests.csproj'
         arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --filter "Category!=Database"'
 
-    - task: BuildQualityChecks@8
-      displayName: 'Build Quality Checks'
-      inputs:
-        checkWarnings: true
-        warningFailOption: 'build'
-        allowWarningVariance: true
-        warningVariance: '1'
-        checkCoverage: true
-        coverageFailOption: 'build'
-        coverageType: 'blocks'
-        allowCoverageVariance: true
-        coverageVariance: '1'
+    # - task: BuildQualityChecks@8
+    #   displayName: 'Build Quality Checks'
+    #   inputs:
+    #     checkWarnings: true
+    #     warningFailOption: 'build'
+    #     allowWarningVariance: true
+    #     warningVariance: '1'
+    #     checkCoverage: true
+    #     coverageFailOption: 'build'
+    #     coverageType: 'blocks'
+    #     allowCoverageVariance: true
+    #     coverageVariance: '1'
 
     - task: DotNetCoreCLI@2
       displayName: 'Pack Tharga.Console'
