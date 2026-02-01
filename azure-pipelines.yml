@@ -1,7 +1,7 @@
 trigger:
-- master
+- v4-pre
 
-name: 4.0.pre.$(Rev:r)
+name: 4.0.0-pre.$(Rev:r)
 
 variables:
   buildPlatform: 'Any CPU'
@@ -47,31 +47,33 @@ stages:
         arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --filter "Category!=Database"'
 
     - task: BuildQualityChecks@8
-     displayName: 'Build Quality Checks'
-     inputs:
-       checkWarnings: true
-       warningFailOption: 'build'
-       allowWarningVariance: true
-       warningVariance: '1'
-       checkCoverage: true
-       coverageFailOption: 'build'
-       coverageType: 'blocks'
-       allowCoverageVariance: true
-       coverageVariance: '1'
+      displayName: 'Build Quality Checks'
+      inputs:
+        checkWarnings: true
+        warningFailOption: 'build'
+        allowWarningVariance: true
+        warningVariance: '1'
+        checkCoverage: true
+        coverageFailOption: 'build'
+        coverageType: 'blocks'
+        allowCoverageVariance: true
+        coverageVariance: '1'
 
     - task: DotNetCoreCLI@2
       displayName: 'Pack Tharga.Console'
       inputs:
         command: 'pack'
         packagesToPack: '**/Tharga.Console.csproj'
-        versioningScheme: 'byBuildNumber'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'BUILD_BUILDNUMBER'
 
     - task: DotNetCoreCLI@2
       displayName: 'Pack Tharga.Console.Speech'
       inputs:
         command: 'pack'
         packagesToPack: '**/Tharga.Console.Speech.csproj'
-        versioningScheme: 'byBuildNumber'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'BUILD_BUILDNUMBER'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
@@ -82,7 +84,7 @@ stages:
 - stage: Release
   displayName: Release
   dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+  # condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
   jobs:
   - job: Release
     displayName: Release
