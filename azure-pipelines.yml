@@ -4,11 +4,11 @@ trigger:
 #name: 4.0.0-pre.$(Rev:r)
 
 variables:
-- name: versionPrefix
+- name: runNamePrefix
   ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
-    value: '0.0.'
+    value: '4.0.'
   ${{ else }}:
-    value: '0.0.0-pre.'
+    value: '4.0.0-pre.'
 - name: buildPlatform
   value: 'Any CPU'
 - name: buildConfiguration
@@ -16,7 +16,7 @@ variables:
 - name: BQC.ForceNewBaseline
   value: false
 
-name: $(versionPrefix)$(Rev:r)
+name: $(runNamePrefix)$(Rev:r)
 
 stages:
 - stage: Build
@@ -76,6 +76,7 @@ stages:
         packagesToPack: '**/Tharga.Console.csproj'
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'BUILD_BUILDNUMBER'
+        arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
 
     - task: DotNetCoreCLI@2
       displayName: 'Pack Tharga.Console.Speech'
@@ -84,6 +85,7 @@ stages:
         packagesToPack: '**/Tharga.Console.Speech.csproj'
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'BUILD_BUILDNUMBER'
+        arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
@@ -105,13 +107,36 @@ stages:
     - checkout: self
       persistCredentials: true
 
-    - task: NuGetCommand@2
-      displayName: 'Push nuget packages to nuget.org'
+    # - task: NuGetCommand@2
+    #   displayName: 'Push nuget packages to nuget.org'
+    #   inputs:
+    #     command: 'push'
+    #     packagesToPush: '$(Pipeline.Workspace)/**/*.symbols.nupkg'
+    #     nuGetFeedType: 'external'
+    #     publishFeedCredentials: 'Nuget.org'
+
+    - bash: |
+        ls -la "$(Pipeline.Workspace)/drop"
+      displayName: List downloaded packages
+
+    - bash: |
+        if [ -z "$(NUGET_API_KEY)" ]; then
+          echo "NUGET_API_KEY is empty (not set / not available to this stage)."
+          exit 1
+        fi
+        echo "NUGET_API_KEY is set."
+      displayName: Check NuGet API key is present
+
+    - task: DotNetCoreCLI@2
+      displayName: Push nuget packages to nuget.org
       inputs:
-        command: 'push'
-        packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg;!$(Pipeline.Workspace)/**/*.symbols.nupkg'
-        nuGetFeedType: 'external'
-        publishFeedCredentials: 'Nuget.org'
+        command: custom
+        custom: nuget
+        arguments: >
+          push "$(Pipeline.Workspace)/drop/*.nupkg"
+          --source https://api.nuget.org/v3/index.json
+          --api-key $(NUGET_API_KEY)
+          --skip-duplicate
 
     - script: |
          git tag $(Build.BuildNumber)

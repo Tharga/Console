@@ -17,4 +17,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Tharga.Console\Tharga.Console.csproj" />
+	</ItemGroup>
 </Project>
