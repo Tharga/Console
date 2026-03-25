@@ -1,22 +1,11 @@
 trigger:
 - v4-pre
 
-#name: 4.0.0-pre.$(Rev:r)
-
 variables:
-- name: runNamePrefix
-  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
-    value: '4.0.'
-  ${{ else }}:
-    value: '4.0.0-pre.'
-- name: buildPlatform
-  value: 'Any CPU'
-- name: buildConfiguration
-  value: 'Release'
-- name: BQC.ForceNewBaseline
-  value: false
-
-name: $(runNamePrefix)$(Rev:r)
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  BQC.ForceNewBaseline: false
+  majorMinor: '4.0'
 
 stages:
 - stage: Build
@@ -26,6 +15,12 @@ stages:
     displayName: Build and Test
 
     steps:
+  - checkout: self
+
+  - template: buildnumber.yml
+    parameters:
+      majorMinor: ${{ variables.majorMinor }}
+
     - task: UseDotNet@2
       displayName: 'Use .NET 10'
       inputs:

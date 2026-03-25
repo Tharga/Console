@@ -1,0 +1,26 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },  
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(cd:*)",
+      "Bash(dotnet:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(rm .claude/feature.md)",
+      "Bash(rm .claude/plan.md)",
+      "Bash(grep -E \"\\\\.cs$|^d\")",
+      "Bash(grep -E \"\\\\.\\(csproj|cs\\)$\")"
+    ],
+    "additionalDirectories": [
+    ]
+  }
+}
