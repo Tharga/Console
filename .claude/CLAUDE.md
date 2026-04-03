@@ -5,19 +5,19 @@
    - If uncommitted changes exist, alert me immediately and stop
    - Do not proceed until I have confirmed how to handle them (commit, stash, or discard)
 2. Check if `.claude/mission.md` exists and read the project mission and context.
-3. Check if `.claude/plan.md` exists.
-   If it does, read it and summarize what has been done and what the next step is.
-   If it does not exist, ask me how I would like to proceed.
-4. Check if `.claude/feature.md` exists and read the current feature scope.
+3. Read the project's plan directory (see mission.md for location).
+   - If `plan.md` exists, summarize what has been done and what the next step is.
+   - If `feature.md` exists, read the current feature scope.
+   - If neither exists, ask me how I would like to proceed.
 
 ### During a session
 After completing each step in the plan:
-- Mark it as `[x]` done in `.claude/plan.md`
+- Mark it as `[x]` done in `plan.md`
 - Add a brief note about what was done and any important decisions made
 - Mark the next step as `[~]` in progress
 
 ### Ending a session
-- Update `.claude/plan.md` with the current status of all steps
+- Update `plan.md` with the current status of all steps
 - Add a "Last session" note summarizing what was completed and what comes next
 - Note any README.md changes that will be needed when the feature is complete
 
@@ -63,22 +63,25 @@ dotnet test -c Release
 - Never commit failing tests
 - Use conventional commits: `feat:`, `fix:`, `test:`, `docs:`
 - Never merge to main — leave that for me to review and merge
+- When merging a completed feature back to the originating branch, use `--no-ff` (no fast-forward) to preserve the feature branch history as a merge commit
 
 ## Feature Workflow
 
-### Planning features
-- Multiple features can be planned ahead in `.claude/features-planned/`
-- Each file represents one feature and they are executed in order (e.g. `01-feature-name.md`, `02-feature-name.md`)
-- When starting a new feature, check `features-planned/` first for the next planned feature
+Feature planning and tracking is stored outside the git repo to avoid unnecessary commits and permission prompts. The plan directory location is defined in `.claude/mission.md` under "Plan directory".
 
 ### Starting a feature
 When told to start a new feature:
 1. Ask for the feature name and goal if not provided
 2. Note the current branch as the originating branch for the feature
 3. Create a new branch: `git checkout -b feature/<feature-name>`
-4. Create `.claude/feature.md` with goal, scope, acceptance criteria, and done condition
-5. Create or update `.claude/plan.md` with the steps to implement the feature
+4. Create `feature.md` in the plan directory with goal, scope, acceptance criteria, and done condition
+5. Create or update `plan.md` in the plan directory with the steps to implement the feature
 6. Confirm the plan before starting any code changes
+
+### During implementation
+- Update `plan.md` continuously as changes are made
+- Commit to the feature branch at logical milestones
+- Run tests before each commit
 
 ### Completing implementation
 When all planned steps are done:
@@ -88,44 +91,21 @@ When all planned steps are done:
 - Do NOT close the feature — wait for the user to confirm it is done
 
 ### Closing a feature (only when the user says it is done)
-- All acceptance criteria in `.claude/feature.md` are met
+- All acceptance criteria in `feature.md` are met
 - All tests pass
 - README.md has been updated to reflect the new feature
-- `.claude/feature.md` is archived to `.claude/features-done/<feature-name>.md` and both `.claude/feature.md` and `.claude/plan.md` should be deleted
-- Remove the corresponding file from `.claude/features-planned/` if one exists
+- Archive `feature.md` to a `done/` subdirectory in the plan directory and delete `plan.md`
 - A final commit is made with message: `feat: <feature-name> complete`
-- Merge to originating branch and delete feature branch only when the user explicitly asks
+- Merge to originating branch with `--no-ff` and delete feature branch only when the user explicitly asks
 
 ## Feature Requests (cross-project)
 
-Projects can request features from each other via `.claude/requests.md`.
+Cross-project requests are handled via `mission.md` — see the "Incoming requests" reference there for the central location.
 
-- Read `~/.claude/projects.md` (or `$OBSIDIAN_VAULT/Tharga/projects.md`) to discover other projects
-- Read `.claude/requests.md` on startup — show pending requests and new notifications to the user
-- Writing feature requests to other projects is **exempt from the cross-project guard**
-- For mono-repos: requests go to the root, not sub-projects (see projects.md for details)
+- On startup, check `mission.md` for the requests location and show pending requests to the user
+- Writing feature requests is **exempt from the cross-project guard**
 - Never mark a request as done without user confirmation
-- When a request is completed: update status to Done and write a notification back to the requester's `.claude/requests.md`
-
-### Request format
-```markdown
-## Pending
-
-### <short description>
-- **From:** <project name> (`<project path>`)
-- **Date:** <YYYY-MM-DD>
-- **Priority:** <High/Medium/Low>
-- **Description:** <what is needed and why>
-- **Status:** Pending
-
-## Notifications
-
-### <short description> — DONE
-- **From:** <project name> (`<project path>`)
-- **Completed:** <YYYY-MM-DD>
-- **Summary:** <what was done>
-- **Branch/Version:** <branch or version>
-```
+- When a request is completed: update its status to Done in the central file, add completion date and summary
 
 ## Backlog Hygiene
 - When a task from the backlog (in `mission.md` or linked external files) is completed, mark it as done or remove it
