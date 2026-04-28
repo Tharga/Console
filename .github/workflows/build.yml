@@ -46,8 +46,8 @@ jobs:
             exit 1
           fi
 
-      - name: Test with coverage
-        run: dotnet test -c Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "Category!=Database"
+      - name: Test
+        run: dotnet test -c Release --no-build --verbosity normal --filter "Category!=Database" --blame-hang-timeout 90s --blame-hang-dump-type none
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
