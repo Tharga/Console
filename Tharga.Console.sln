@@ -7,8 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tharga.Console", "Tharga.Co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{131058FA-7B3E-4359-8A5B-D9BD80D161F6}"
 	ProjectSection(SolutionItems) = preProject
-		azure-pipelines.yml = azure-pipelines.yml
-		buildnumber.yml = buildnumber.yml
+		.github\workflows\build.yml = .github\workflows\build.yml
 		LICENSE = LICENSE
 		.claude\mission.md = .claude\mission.md
 		README.md = README.md
