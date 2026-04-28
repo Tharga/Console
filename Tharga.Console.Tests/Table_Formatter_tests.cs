@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Tharga.Console.Helpers;
@@ -8,6 +9,8 @@ namespace Tharga.Console.Tests
 {
     public class Table_Formatter_tests
     {
+        private static readonly string NL = Environment.NewLine;
+
         [Fact]
         public void Should_convert_basic_data()
         {
@@ -18,7 +21,7 @@ namespace Tharga.Console.Tests
             var result = data.ToFormattedString();
 
             //Assert
-            result.Should().Be("A B\r\nC D\r\n1 lines.");
+            result.Should().Be($"A B{NL}C D{NL}1 lines.");
         }
 
         [Fact]
@@ -31,7 +34,7 @@ namespace Tharga.Console.Tests
             var result = data.ToFormattedString();
 
             //Assert
-            result.Should().Be("A B\r\n0 lines.");
+            result.Should().Be($"A B{NL}0 lines.");
         }
 
         [Fact]
@@ -44,7 +47,7 @@ namespace Tharga.Console.Tests
             var result = data.ToFormattedString();
 
             //Assert
-            result.Should().Be("\r\n\r\n1 lines.");
+            result.Should().Be($"{NL}{NL}1 lines.");
         }
 
         [Fact]
@@ -59,7 +62,7 @@ namespace Tharga.Console.Tests
             var result = t.ToFormattedString();
 
             //Assert
-            result.Should().Be("A  B  C\r\nA1\r\nA2 B2\r\n2 lines.");
+            result.Should().Be($"A  B  C{NL}A1{NL}A2 B2{NL}2 lines.");
         }
 
         [Fact]
@@ -74,7 +77,7 @@ namespace Tharga.Console.Tests
             var result = t.ToFormattedString();
 
             //Assert
-            result.Should().Be("A  B  C\r\nA1\r\nA2 B2\r\nA3 B3 C3\r\nA4 B4 C4 D4\r\n4 lines.");
+            result.Should().Be($"A  B  C{NL}A1{NL}A2 B2{NL}A3 B3 C3{NL}A4 B4 C4 D4{NL}4 lines.");
         }
     }
 }
