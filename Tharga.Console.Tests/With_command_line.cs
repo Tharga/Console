@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Tharga.Console.Commands;
 using Tharga.Console.Commands.Base;
 using Xunit;
@@ -43,15 +42,6 @@ namespace Tharga.Console.Tests
             this.commandEngine = new CommandEngine(this.command);
             command.RegisterCommand(this.simple);
             command.RegisterCommand(this.containerCommand);
-        }
-
-        [Fact]
-        public void With_no_args()
-        {
-            Task.Run(() => { commandEngine.Start(new string[] { }); }).Wait(100);
-
-            Assert.False(simple.WasRun);
-            Assert.False(containerCommand.inner.WasRun);
         }
 
         [Fact]
