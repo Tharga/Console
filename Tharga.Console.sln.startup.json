@@ -2,14 +2,9 @@
   "Version": 3,
   "ListAllProjects": false,
   "MultiProjectConfigurations": {
-    "Sample Voice Console": {
+    "Sample.Cli": {
       "Projects": {
-        "SampleCoreConsole": {}
-      }
-    },
-    "Sample Framework Console": {
-      "Projects": {
-        "SampleFrameworkConsole": {}
+        "Sample.Cli": {}
       }
     }
   }

@@ -89,3 +89,4 @@ StyleCop.Cache
 *.vs
 /.NCrunch_*/*.cache
 **/nCrunchTemp_*.csproj
+/.claude/settings.local.json
