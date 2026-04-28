@@ -12,6 +12,8 @@ namespace Tharga.Console.Helpers
 
         public KeyInputEngine()
         {
+            if (System.Console.IsInputRedirected) return;
+
             Task.Run(() =>
             {
                 while (true)
