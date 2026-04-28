@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Tharga.Console.Helpers;
 using Tharga.Console.Interfaces;
 
 namespace Tharga.Console.Tests
@@ -15,7 +14,7 @@ namespace Tharga.Console.Tests
 
         public FakeConsoleManager(IKeyInputEngine keyInputEngine = null)
         {
-            KeyInputEngine = keyInputEngine ?? new KeyInputEngine();
+            KeyInputEngine = keyInputEngine ?? new FakeKeyInputEngine();
         }
 
         public void Dispose()

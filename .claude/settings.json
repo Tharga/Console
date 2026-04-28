@@ -1,0 +1,24 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },  
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(cd:*)",
+      "Bash(dotnet:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(gh pr *)",
+      "Bash(gh run *)"
+    ],
+    "additionalDirectories": [
+    ]
+  }
+}

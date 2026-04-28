@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Moq;
 using Tharga.Console.Commands;
-using Tharga.Console.Consoles;
 using Tharga.Console.Entities;
 using Xunit;
 
@@ -14,7 +13,8 @@ namespace Tharga.Console.Tests
         public void When_providing_the_exit_command_the_command_engine_should_exit()
         {
             //Arrange
-            var command = new RootCommand(new ClientConsole(new ConsoleConfiguration { RememberStartPosition = false }));
+            var console = new TestConsole(new FakeConsoleManager());
+            var command = new RootCommand(console);
 
             //Act
             new CommandEngine(command).Start(new[] { "exit" });
@@ -43,7 +43,7 @@ namespace Tharga.Console.Tests
         public void When_registering_two_commands_with_the_same_name()
         {
             //Arrange
-            var console = new ClientConsole(new ConsoleConfiguration { RememberStartPosition = false });
+            var console = new TestConsole(new FakeConsoleManager());
             var command = new RootCommand(console);
             var cmd1 = new Mock<ICommand>(MockBehavior.Strict);
             cmd1.Setup(x => x.Name).Returns("A");
