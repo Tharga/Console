@@ -98,6 +98,7 @@ jobs:
       - name: Pack
         run: |
           dotnet pack Tharga.Console/Tharga.Console.csproj -c Release --no-build -o ./artifacts -p:PackageVersion=${{ steps.version.outputs.version }}
+          dotnet pack Tharga.Console.Standard/Tharga.Console.Standard.csproj -c Release --no-build -o ./artifacts -p:PackageVersion=${{ steps.version.outputs.version }}
           dotnet pack Tharga.Console.Speech/Tharga.Console.Speech.csproj -c Release --no-build -o ./artifacts -p:PackageVersion=${{ steps.version.outputs.version }}
 
       - name: Upload artifacts
