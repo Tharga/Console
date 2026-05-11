@@ -10,13 +10,13 @@ Branch: `feature/fix-delimited-params` (off `master`, GitHub Actions strategy).
   - [x] Rewrote `ToInput` to always split on space then map captured GUIDs back to their values. The unquoted-only fast-path is preserved.
   - [x] All 5 new tests pass; full suite 42 pass / 0 fail / 2 pre-existing skips.
 
-- [~] **2. Fix #10 — buffer insert position negative**
-  - [ ] Reproduce the path: write a test (or `FakeConsoleManager`-based scenario) that drives `_startLocation` above `currentScreenLocation`. If a clean repro proves elusive, narrow scope to the recovery behavior only.
-  - [ ] Replace the throw at [InputInstance.cs:130-133](Tharga.Console.Standard/Helpers/InputInstance.cs#L130-L133) with a recovery: re-anchor `_startLocation` to `currentScreenLocation` and set `currentBufferPosition = 0` so subsequent keystrokes succeed. Keep a debug log line for diagnosis.
-  - [ ] Add a unit test that exercises the recovery branch.
-  - [ ] Run `dotnet test -c Release`; commit with `fix: recover from negative buffer insert position (#10)`.
+- [x] **2. Fix #10 — buffer insert position negative**
+  - [x] Decision: deterministic integration repro requires multi-thread coordination against private `_startLocation`. Took the plan's authorized fallback — extracted a tiny pure helper `InputInstance.RecoverNegativeBufferPosition` that encapsulates the recovery decision, and unit-tested it in isolation. Production verification via user testing of the pushed branch.
+  - [x] Replaced the throw at [InputInstance.cs:130](Tharga.Console.Standard/Helpers/InputInstance.cs#L130) with a recovery: re-anchor `_startLocation` to `currentScreenLocation` under `_locationLock` and reset `currentBufferPosition` to 0. Added `Debug.WriteLine` for diagnosis.
+  - [x] Added `InputInstance_recovery_tests` with 2 tests (no-op and recover cases).
+  - [x] Full suite green: 44/0/2.
 
-- [ ] **3. Rename `IsHidden` → `IsVisible`**
+- [~] **3. Rename `IsHidden` → `IsVisible`**
   - [ ] Update [ICommand.cs:15](Tharga.Console.Standard/Commands/ICommand.cs#L15) — `bool IsVisible { get; }`; remove the in-code TODO.
   - [ ] Update [CommandBase.cs:18,29](Tharga.Console.Standard/Commands/Base/CommandBase.cs#L18) — property + constructor param `bool visible = true`. Internally store `IsVisible` directly (no inversion).
   - [ ] Update all consumers in `ContainerCommandBase.cs` (8 sites — lines 204-236) — flip the `!x.IsHidden` checks to `x.IsVisible` and the `command.IsHidden ? "*" : ""` to `!command.IsVisible ? "*" : ""`.

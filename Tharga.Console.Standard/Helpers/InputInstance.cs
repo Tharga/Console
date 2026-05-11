@@ -129,7 +129,15 @@ namespace Tharga.Console.Helpers
                         //System.Console.Title = $"cbp: {currentBufferPosition} = (({currentScreenLocation.Top} - {_startLocation.Top}) * {_console.BufferWidth}) + {currentScreenLocation.Left} - {_startLocation.Left}";
                         if (currentBufferPosition < 0)
                         {
-                            throw new InvalidOperationException("Buffer insert position cannot be less than zero.");
+                            // The start anchor is stale (window resize, scroll, or external output moved the cursor above it).
+                            // Re-anchor to the current cursor instead of throwing on every subsequent keystroke.
+                            Debug.WriteLine($"InputInstance: recovering from negative buffer position (start={_startLocation.Top}, screen={currentScreenLocation.Top}). Re-anchoring.");
+                            var recovered = RecoverNegativeBufferPosition(currentBufferPosition, currentScreenLocation, _startLocation);
+                            lock (_locationLock)
+                            {
+                                _startLocation = recovered.StartLocation;
+                            }
+                            currentBufferPosition = recovered.BufferPosition;
                         }
 
                         if (IsOutputKey(readKey))
@@ -618,6 +626,12 @@ namespace Tharga.Console.Helpers
         public void Dispose()
         {
             _console?.Dispose();
+        }
+
+        internal static (Location StartLocation, int BufferPosition) RecoverNegativeBufferPosition(int currentBufferPosition, Location currentScreenLocation, Location startLocation)
+        {
+            if (currentBufferPosition >= 0) return (startLocation, currentBufferPosition);
+            return (currentScreenLocation, 0);
         }
     }
 }
