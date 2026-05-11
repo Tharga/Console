@@ -16,16 +16,14 @@ Branch: `feature/fix-delimited-params` (off `master`, GitHub Actions strategy).
   - [x] Added `InputInstance_recovery_tests` with 2 tests (no-op and recover cases).
   - [x] Full suite green: 44/0/2.
 
-- [~] **3. Rename `IsHidden` → `IsVisible`**
-  - [ ] Update [ICommand.cs:15](Tharga.Console.Standard/Commands/ICommand.cs#L15) — `bool IsVisible { get; }`; remove the in-code TODO.
-  - [ ] Update [CommandBase.cs:18,29](Tharga.Console.Standard/Commands/Base/CommandBase.cs#L18) — property + constructor param `bool visible = true`. Internally store `IsVisible` directly (no inversion).
-  - [ ] Update all consumers in `ContainerCommandBase.cs` (8 sites — lines 204-236) — flip the `!x.IsHidden` checks to `x.IsVisible` and the `command.IsHidden ? "*" : ""` to `!command.IsVisible ? "*" : ""`.
-  - [ ] Search for any subclass passing `: base(..., hidden: true)` or positional-`true` for hidden and flip them.
-  - [ ] Run `dotnet build -c Release` and `dotnet test -c Release`.
-  - [ ] If [README.md](README.md) documents `IsHidden`, update it.
-  - [ ] Commit with `refactor!: rename ICommand.IsHidden to IsVisible` (breaking change).
+- [x] **3. Rename `IsHidden` → `IsVisible`**
+  - [x] `ICommand`, `CommandBase` property + ctor (`bool visible = true`); subclass ctors on `ContainerCommandBase`, `ActionCommandBase`, `AsyncActionCommandBase` updated.
+  - [x] Flipped 8 consumer sites in `ContainerCommandBase.cs` to use `IsVisible`.
+  - [x] 6 subclasses previously passing `hidden: true` positionally — `ScreenCommand`, `StartupCommand`, `PoshCommand`, `ExecuteProcessCommand`, `ExecuteCommand`, `CmdCommand` — now pass `false` (visible=false), preserving their previously-hidden behavior.
+  - [x] README mentions "normally hidden" commands as prose only — no `IsHidden` reference; no update needed.
+  - [x] Build clean (0 warnings, 0 errors across net8/net9/net10). 44 tests pass, 0 fail, 2 pre-existing skips.
 
-- [ ] **4. Version bump**
+- [~] **4. Version bump**
   - [ ] Change `MAJOR_MINOR: '3.7'` → `'4.1'` in [.github/workflows/build.yml](.github/workflows/build.yml#L9).
   - [ ] If any csproj `<Version>` tags carry a real version (not the placeholder `1.0.0`), align them too. Otherwise leave them.
   - [ ] Commit with `chore: bump version to 4.1`.

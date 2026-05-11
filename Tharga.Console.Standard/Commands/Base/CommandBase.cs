@@ -15,7 +15,7 @@ namespace Tharga.Console.Commands.Base
         public string Name => _names.Keys.First();
         public IEnumerable<string> Names => _names.Select(x => x.Key);
         public string Description { get; }
-        public bool IsHidden { get; }
+        public bool IsVisible { get; }
 
         public abstract IEnumerable<HelpLine> HelpText { get; }
 
@@ -24,9 +24,9 @@ namespace Tharga.Console.Commands.Base
         protected RootCommandBase RootCommand;
         protected int ParamIndex;
 
-        internal CommandBase(string name, string description = null, bool hidden = false)
+        internal CommandBase(string name, string description = null, bool visible = true)
         {
-            IsHidden = hidden;
+            IsVisible = visible;
             _names = new Dictionary<string, string> { { name.ToLower(), name } };
             Description = description ?? $"Command that manages {name}.";
         }

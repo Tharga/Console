@@ -11,7 +11,7 @@ internal class StartupCommand : ContainerCommandBase
     public static readonly string RegKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
 
     public StartupCommand(IConsole console)
-        : base("startup", null, true)
+        : base("startup", null, false)
     {
         if (console is ConsoleBase)
         {

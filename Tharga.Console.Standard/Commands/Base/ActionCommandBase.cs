@@ -17,8 +17,8 @@ namespace Tharga.Console.Commands.Base
 
         public override IEnumerable<HelpLine> HelpText { get { yield break; } }
 
-        protected ActionCommandBase(string name, string description = null, bool hidden = false)
-            : base(name, description, hidden)
+        protected ActionCommandBase(string name, string description = null, bool visible = true)
+            : base(name, description, visible)
         {
         }
 

@@ -9,7 +9,7 @@ namespace Tharga.Console.Commands
     internal class PoshCommand : ActionCommandBase
     {
         public PoshCommand()
-            : base("posh", "Powershell commands.", true)
+            : base("posh", "Powershell commands.", false)
         {
             AddName("ps");
         }

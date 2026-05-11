@@ -17,8 +17,8 @@ namespace Tharga.Console.Commands.Base
 
         public event EventHandler<CommandRegisteredEventArgs> CommandRegisteredEvent;
 
-        protected ContainerCommandBase(string name, string description = null, bool hidden = false)
-            : base(name, description, hidden)
+        protected ContainerCommandBase(string name, string description = null, bool visible = true)
+            : base(name, description, visible)
         {
         }
 
@@ -201,16 +201,16 @@ namespace Tharga.Console.Commands.Base
 
             var padLength = containerCommands.Max(x => x.Name.Length, 0).Max(actionCommands.Max(x => x.Name.Length, 0));
 
-            if (containerCommands.Any(x => !x.IsHidden || showHidden))
+            if (containerCommands.Any(x => x.IsVisible || showHidden))
             {
                 helpCommand.AddLine(string.Empty);
                 helpCommand.AddLine($"Sections for {Name}:", foreColor: ConsoleColor.DarkCyan);
                 foreach (var command in containerCommands)
                 {
-                    if (!command.IsHidden || showHidden)
+                    if (command.IsVisible || showHidden)
                     {
-                        var hidden = command.IsHidden ? "*" : "";
-                        if (command.IsHidden) anyHidden = true;
+                        var hidden = command.IsVisible ? "" : "*";
+                        if (!command.IsVisible) anyHidden = true;
                         helpCommand.AddLine($"{(hidden + command.Name).PadStringAfter(padLength)} {command.Description}", () =>
                         {
                             var canExecute = command.CanExecute(out _);
@@ -224,16 +224,16 @@ namespace Tharga.Console.Commands.Base
                 }
             }
 
-            if (actionCommands.Any(x => !x.IsHidden || showHidden))
+            if (actionCommands.Any(x => x.IsVisible || showHidden))
             {
                 helpCommand.AddLine(string.Empty);
                 helpCommand.AddLine($"Commands for {Name}:", foreColor: ConsoleColor.DarkCyan);
                 foreach (var command in actionCommands)
                 {
-                    if (!command.IsHidden || showHidden)
+                    if (command.IsVisible || showHidden)
                     {
-                        var hidden = command.IsHidden ? "*" : "";
-                        if (command.IsHidden) anyHidden = true;
+                        var hidden = command.IsVisible ? "" : "*";
+                        if (!command.IsVisible) anyHidden = true;
                         helpCommand.AddLine($"{(hidden + command.Name).PadStringAfter(padLength)} {command.Description}", () =>
                         {
                             var canExecute = command.CanExecute(out _);

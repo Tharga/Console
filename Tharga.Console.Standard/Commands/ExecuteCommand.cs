@@ -5,7 +5,7 @@ namespace Tharga.Console.Commands
     internal class ExecuteCommand : ContainerCommandBase
     {
         public ExecuteCommand(RootCommandBase rootCommand)
-            : base("exec", "Execute command features.", true)
+            : base("exec", "Execute command features.", false)
         {
             RegisterCommand(new ExecuteFileCommand(rootCommand));
             RegisterCommand(new ExecuteSleepCommand());

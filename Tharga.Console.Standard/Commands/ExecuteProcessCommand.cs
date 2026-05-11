@@ -9,7 +9,7 @@ namespace Tharga.Console.Commands
     internal class ExecuteProcessCommand : ActionCommandBase
     {
         public ExecuteProcessCommand()
-            : base("run", "Execute command.", true)
+            : base("run", "Execute command.", false)
         {
             AddName("exe");
             AddName("execute");
