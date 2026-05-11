@@ -23,12 +23,12 @@ Branch: `feature/fix-delimited-params` (off `master`, GitHub Actions strategy).
   - [x] README mentions "normally hidden" commands as prose only — no `IsHidden` reference; no update needed.
   - [x] Build clean (0 warnings, 0 errors across net8/net9/net10). 44 tests pass, 0 fail, 2 pre-existing skips.
 
-- [~] **4. Version bump**
-  - [ ] Change `MAJOR_MINOR: '3.7'` → `'4.1'` in [.github/workflows/build.yml](.github/workflows/build.yml#L9).
-  - [ ] If any csproj `<Version>` tags carry a real version (not the placeholder `1.0.0`), align them too. Otherwise leave them.
-  - [ ] Commit with `chore: bump version to 4.1`.
+- [x] **4. Version bump**
+  - [x] `MAJOR_MINOR` is now `'4.1'` in [.github/workflows/build.yml](.github/workflows/build.yml#L10).
+  - [x] csproj `<Version>` tags are placeholder `1.0.0` (overridden by workflow at pack time) — left as-is per plan.
+  - [x] Build clean after bump.
 
-- [ ] **5. Push for user testing**
+- [~] **5. Push for user testing**
   - [ ] Run the full test suite one more time.
   - [ ] Push `feature/fix-delimited-params` to origin.
   - [ ] Ask the user to test from the pushed branch. **Do not open the PR yet** (per feature workflow — PR opens after close-out commit).
