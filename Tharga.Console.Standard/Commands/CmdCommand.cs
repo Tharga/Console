@@ -9,7 +9,7 @@ namespace Tharga.Console.Commands
     internal class CmdCommand : ActionCommandBase
     {
         public CmdCommand()
-            : base("cmd", "Command shell commands.", true)
+            : base("cmd", "Command shell commands.", false)
         {
             AddName("command");
         }

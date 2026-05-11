@@ -12,7 +12,7 @@ namespace Tharga.Console.Commands
         string Description { get; }
         bool CanExecute(out string reasonMessage);
         IEnumerable<HelpLine> HelpText { get; }
-        bool IsHidden { get; } //TODO: Change to IsVisible
+        bool IsVisible { get; }
         void Invoke(string[] param);
     }
 }

@@ -9,7 +9,7 @@ namespace Tharga.Console.Commands.ScreenCommands
     internal class ScreenCommand : ContainerCommandBase
     {
         public ScreenCommand(IConsole console)
-            : base("screen", null, true)
+            : base("screen", null, false)
         {
             AddName("scr");
             RegisterCommand(new ClearCommand());

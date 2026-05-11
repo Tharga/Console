@@ -12,11 +12,11 @@ namespace Tharga.Console.Helpers
                 return new List<string>();
 
             var verbs = GetDelimiteredVerbs(ref paramList, '\"');
-            if (verbs.Any())
-                return verbs.Select(x => x.Key);
-
             var paramArray = paramList.Split(' ');
-            return paramArray;
+            if (verbs.Count == 0)
+                return paramArray;
+
+            return paramArray.Select(x => verbs.TryGetValue(x, out var value) ? value : x);
         }
 
         public static string ToParamString(this IEnumerable<string> param)
