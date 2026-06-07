@@ -1,0 +1,10 @@
+/* Custom style overrides for the Tharga.Console documentation site.
+   Loaded after the modern template's docfx.min.css, so these win. */
+
+/* The source logo (https://thargelion.net/assets/component-console.png) is 150x150;
+   constrain its display size in the navbar instead of resizing the image file. */
+#logo,
+.navbar-brand img {
+  height: 32px;
+  width: auto;
+}

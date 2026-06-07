@@ -4,6 +4,8 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub repo Issues](https://img.shields.io/github/issues/Tharga/Console?style=flat&logo=github&logoColor=red&label=Issues)](https://github.com/Tharga/Console/issues?q=is%3Aopen)
 
+**Docs:** [console.tharga.net](https://console.tharga.net) — guides and API reference.
+
 Tharga Console is used to simplify construction of advanced console applications.
 
 Perfect for hosting local services where you want to be able to perform some extra features.

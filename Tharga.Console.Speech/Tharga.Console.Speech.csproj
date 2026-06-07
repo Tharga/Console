@@ -8,7 +8,7 @@
 		<Company>Thargelion AB</Company>
 		<Product>Tharga Console Speech</Product>
 		<PackageTags>console poc posh powershell speech</PackageTags>
-		<PackageIconUrl>http://thargelion.se/wp-content/uploads/2019/11/Thargelion-White-Icon-150.png</PackageIconUrl>
+		<PackageIconUrl>https://thargelion.net/assets/component-console.png</PackageIconUrl>
 		<RepositoryUrl>https://github.com/poxet/tharga-console.git</RepositoryUrl>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageProjectUrl>https://github.com/Tharga/Console</PackageProjectUrl>
