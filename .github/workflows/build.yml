@@ -13,6 +13,8 @@ permissions:
   contents: write
   pull-requests: write
   security-events: write
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -271,3 +273,49 @@ jobs:
             --notes "Pre-release from \`${{ github.head_ref }}\` branch." \
             --prerelease \
             ./artifacts/*.nupkg
+
+  docs:
+    needs: release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Install DocFX
+        run: dotnet tool install -g docfx
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build site
+        run: docfx docs/docfx.json
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_site
+
+  docs-deploy:
+    needs: docs
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

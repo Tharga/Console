@@ -7,7 +7,7 @@
 		<Company>Thargelion AB</Company>
 		<Product>Tharga Console</Product>
 		<PackageTags>console poc posh powershell</PackageTags>
-		<PackageIconUrl>http://thargelion.se/wp-content/uploads/2019/11/Thargelion-White-Icon-150.png</PackageIconUrl>
+		<PackageIconUrl>https://thargelion.net/assets/component-console.png</PackageIconUrl>
 		<RepositoryUrl>https://github.com/poxet/tharga-console.git</RepositoryUrl>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageProjectUrl>https://github.com/Tharga/Console</PackageProjectUrl>
@@ -32,7 +32,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
-	  <PackageReference Include="Tharga.Runtime" Version="0.1.12" />
+	  <PackageReference Include="Tharga.Runtime" Version="0.1.14" />
 	</ItemGroup>
 
 </Project>
