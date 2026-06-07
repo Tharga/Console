@@ -2,23 +2,32 @@
   "attribution": {
     "commit": "",
     "pr": ""
-  },  
+  },
   "permissions": {
     "allow": [
-      "Bash(git:*)",
-      "Bash(cd:*)",
-      "Bash(dotnet:*)",
-      "Bash(mkdir:*)",
-      "Bash(cp:*)",
-      "Bash(rm:*)",
-      "Bash(ls:*)",
       "Bash(cat:*)",
+      "Bash(cd:*)",
+      "Bash(cp:*)",
+      "Bash(curl:*)",
+      "Bash(docfx:*)",
+      "Bash(dotnet:*)",
+      "Bash(echo:*)",
+      "Bash(find:*)",
+      "Bash(for:*)",
+      "Bash(gh:*)",
+      "Bash(git:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(nslookup:*)",
+      "Bash(rm:*)",
+      "Bash(tail:*)",
+      "Bash(tee:*)",
+      "Bash(wc:*)",
       "Skill(update-config)",
-      "Skill(update-config:*)",
-      "Bash(gh pr *)",
-      "Bash(gh run *)"
+      "Skill(update-config:*)"
     ],
-    "additionalDirectories": [
-    ]
+    "additionalDirectories": []
   }
 }
