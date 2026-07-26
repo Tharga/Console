@@ -9,10 +9,13 @@ namespace Tharga.Console.Helpers
 {
     internal class TextWriterInterceptor : TextWriter
     {
-        public new static readonly TextWriter Null;
+        // `Null` and `CoreNewLine` used to be redeclared here with `new`, hiding
+        // the TextWriter members of the same name. Neither was ever assigned, so
+        // TextWriterInterceptor.Null was always null instead of TextWriter.Null,
+        // and the shadowed CoreNewLine was dead. Nothing referenced either, so
+        // they are gone and the inherited members apply.
         private readonly IConsole _console;
         private readonly IConsoleManager _consoleWriter;
-        protected new char[] CoreNewLine;
 
         private const bool _writeLineFeed = false; //TODO: When performing writel, a temporary buffer location should be stored so that next write will continue where the previous one left off.
 

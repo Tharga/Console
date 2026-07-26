@@ -431,10 +431,9 @@ namespace Tharga.Console.Consoles.Base
 
         private void SetLocation(string tag, Location location)
         {
-            if (_tagLocalLocation.ContainsKey(tag))
-                _tagLocalLocation[tag] = location;
-            else
-                _tagLocalLocation.Add(tag, location);
+            // The indexer already adds when the key is absent and replaces when
+            // it is present, so the ContainsKey probe was a redundant lookup.
+            _tagLocalLocation[tag] = location;
         }
 
         public void OutputError(Exception exception, bool includeStackTrace = false, string prefix = null)

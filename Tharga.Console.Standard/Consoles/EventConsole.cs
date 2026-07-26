@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using Tharga.Console.Consoles.Base;
@@ -61,16 +61,6 @@ namespace Tharga.Console.Consoles
         protected override void OnKeyReadEvent(KeyReadEventArgs e)
         {
             base.OnKeyReadEvent(e);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
 
         internal override void OnLineWrittenEvent(LineWrittenEventArgs e)

@@ -25,6 +25,10 @@ namespace Tharga.Console.Helpers
         public T Get<T>(string value)
         {
             var var = _variables.SingleOrDefault(x => string.Compare(x.Name, value, StringComparison.InvariantCultureIgnoreCase) == 0);
+            // Variable is a class, so an unknown name yielded null here and the
+            // next line threw a bare NullReferenceException naming nothing.
+            if (var == null) throw new InvalidOperationException($"There is no variable named '{value}'.");
+
             var stringVar = var.Value.ToString();
             return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(stringVar);
         }

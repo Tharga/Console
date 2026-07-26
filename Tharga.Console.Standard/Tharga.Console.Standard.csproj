@@ -3,13 +3,12 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<RootNamespace>Tharga.Console</RootNamespace>
-		<Version>1.0.0</Version>
 		<Authors>Daniel Bohlin</Authors>
 		<Company>Thargelion AB</Company>
 		<Product>Tharga Console Standard</Product>
 		<PackageTags>console poc posh powershell</PackageTags>
 		<PackageIconUrl>https://thargelion.net/assets/component-console.png</PackageIconUrl>
-		<RepositoryUrl>https://github.com/poxet/tharga-console.git</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Tharga/Console</RepositoryUrl>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageProjectUrl>https://github.com/Tharga/Console</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
@@ -17,7 +16,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<NoWarn>1701;1702;CS1591</NoWarn>
+		<!--
+			NU5048: PackageIconUrl is deprecated in favour of an embedded PackageIcon.
+			Suppressed deliberately. Tharga packages reference their icon from
+			https://thargelion.net/assets/ so all package icons are maintained in one
+			place and can be updated without republishing a package.
+		-->
+		<NoWarn>1701;1702;CS1591;NU5048</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
