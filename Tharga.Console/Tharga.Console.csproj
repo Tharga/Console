@@ -15,7 +15,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<NoWarn>1701;1702;CS1591</NoWarn>
+		<!--
+			NU5048: PackageIconUrl is deprecated in favour of an embedded PackageIcon.
+			Suppressed deliberately. Tharga packages reference their icon from
+			https://thargelion.net/assets/ so all package icons are maintained in one
+			place and can be updated without republishing a package.
+		-->
+		<NoWarn>1701;1702;CS1591;NU5048</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,7 +37,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
-	  <PackageReference Include="Tharga.Runtime" Version="0.1.15" />
+	  <PackageReference Include="Tharga.Runtime" Version="1.0.0" />
 	</ItemGroup>
 
 </Project>

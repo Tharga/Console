@@ -28,41 +28,17 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build -c Release --no-restore 2>&1 | tee build.log
-
-      - name: Check warnings
-        run: |
-          WARNING_COUNT=$(grep -c " warning " build.log || true)
-          echo "Build warnings: $WARNING_COUNT"
-          if [ "$WARNING_COUNT" -gt 15 ]; then
-            echo "::error::Build has $WARNING_COUNT warnings (threshold: 15)"
-            exit 1
-          fi
-
-      - name: Test
-        run: dotnet test -c Release --no-build --verbosity normal --filter "Category!=Database" --blame-hang-timeout 90s --blame-hang-dump-type none
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          directory: ./coverage
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-
+      # Version is computed BEFORE the build so it can be passed as -p:Version.
+      # Passing it only to `dotnet pack` sets PackageVersion alone, leaving
+      # AssemblyVersion and FileVersion at their default 1.0.0.0 inside the
+      # shipped assembly.
       - name: Compute version
         id: version
         run: |
           LATEST_TAG=$(git tag -l "${MAJOR_MINOR}.*" --sort=-v:refname \
-            | grep -E "^${MAJOR_MINOR}\.[0-9]+$" \
+            | { grep -E "^${MAJOR_MINOR}\.[0-9]+$" || true; } \
             | head -1)
 
           if [ -z "$LATEST_TAG" ]; then
@@ -97,11 +73,52 @@ jobs:
           echo "version=$PRE_VERSION" >> "$GITHUB_OUTPUT"
           echo "Computed pre-release version: $PRE_VERSION"
 
-      - name: Pack
+      # Pull requests build the pre-release version, pushes to master the
+      # stable one. One value drives build and pack so the assembly and the
+      # package can never disagree.
+      - name: Resolve build version
+        id: buildversion
+        shell: bash
         run: |
-          dotnet pack Tharga.Console/Tharga.Console.csproj -c Release --no-build -o ./artifacts -p:PackageVersion=${{ steps.version.outputs.version }}
-          dotnet pack Tharga.Console.Standard/Tharga.Console.Standard.csproj -c Release --no-build -o ./artifacts -p:PackageVersion=${{ steps.version.outputs.version }}
-          dotnet pack Tharga.Console.Speech/Tharga.Console.Speech.csproj -c Release --no-build -o ./artifacts -p:PackageVersion=${{ steps.version.outputs.version }}
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            VERSION="${{ steps.preversion.outputs.version }}"
+          else
+            VERSION="${{ steps.version.outputs.version }}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Building as: $VERSION"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release --no-restore -p:Version=${{ steps.buildversion.outputs.version }} 2>&1 | tee build.log
+
+      - name: Check warnings
+        run: |
+          WARNING_COUNT=$(grep -c " warning " build.log || true)
+          echo "Build warnings: $WARNING_COUNT"
+          if [ "$WARNING_COUNT" -gt 15 ]; then
+            echo "::error::Build has $WARNING_COUNT warnings (threshold: 15)"
+            exit 1
+          fi
+
+      - name: Test
+        run: dotnet test -c Release --no-build --verbosity normal --filter "Category!=Database" --blame-hang-timeout 90s --blame-hang-dump-type none
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          directory: ./coverage
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Pack
+        shell: bash
+        run: |
+          dotnet pack Tharga.Console/Tharga.Console.csproj -c Release --no-build -o ./artifacts -p:Version=${{ steps.buildversion.outputs.version }}
+          dotnet pack Tharga.Console.Standard/Tharga.Console.Standard.csproj -c Release --no-build -o ./artifacts -p:Version=${{ steps.buildversion.outputs.version }}
+          dotnet pack Tharga.Console.Speech/Tharga.Console.Speech.csproj -c Release --no-build -o ./artifacts -p:Version=${{ steps.buildversion.outputs.version }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -123,10 +140,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
       - name: Build for CodeQL
         run: dotnet build -c Release
@@ -160,7 +174,7 @@ jobs:
         id: version
         run: |
           LATEST_TAG=$(git tag -l "${MAJOR_MINOR}.*" --sort=-v:refname \
-            | grep -E "^${MAJOR_MINOR}\.[0-9]+$" \
+            | { grep -E "^${MAJOR_MINOR}\.[0-9]+$" || true; } \
             | head -1)
 
           if [ -z "$LATEST_TAG" ]; then
@@ -234,7 +248,7 @@ jobs:
         id: version
         run: |
           LATEST_TAG=$(git tag -l "${MAJOR_MINOR}.*" --sort=-v:refname \
-            | grep -E "^${MAJOR_MINOR}\.[0-9]+$" \
+            | { grep -E "^${MAJOR_MINOR}\.[0-9]+$" || true; } \
             | head -1)
 
           if [ -z "$LATEST_TAG" ]; then
@@ -285,10 +299,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
       - name: Install DocFX
         run: dotnet tool install -g docfx
