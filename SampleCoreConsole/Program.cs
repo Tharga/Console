@@ -13,7 +13,6 @@ using Tharga.Console;
 using Tharga.Console.Commands;
 using Tharga.Console.Commands.Base;
 using Tharga.Console.Entities;
-using Tharga.Console.Helpers;
 using Tharga.Console.Interfaces;
 using Timer = System.Timers.Timer;
 
