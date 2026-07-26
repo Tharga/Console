@@ -112,6 +112,10 @@ namespace Tharga.Console.Commands.Base
                 var entitySource = pair[1];
 
                 var property = entity.GetType().GetProperty(entitySource);
+                // GetProperty returns null for an unknown name, which used to
+                // surface as a bare NullReferenceException on the next line.
+                if (property == null) throw new InvalidOperationException($"Type '{entity.GetType().Name}' has no property named '{entitySource}'.");
+
                 var val = property.GetValue(entity);
 
                 VariableStore.Instance.Add(new Variable(pair[0], val));
