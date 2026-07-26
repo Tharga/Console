@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using Tharga.Console.Consoles.Base;
+﻿using Tharga.Console.Consoles.Base;
 using Tharga.Console.Entities;
 using Tharga.Console.Helpers;
 using Tharga.Console.Interfaces;
@@ -28,16 +25,6 @@ namespace Tharga.Console.Consoles
         {
         }
 
-        public override void Attach(IRootCommand command)
-        {
-            base.Attach(command);
-        }
-
-        public override void Initiate(IEnumerable<string> commandKeys)
-        {
-            base.Initiate(commandKeys);
-        }
-
         protected override void OnKeyReadEvent(KeyReadEventArgs e)
         {
         }
@@ -48,16 +35,6 @@ namespace Tharga.Console.Consoles
 
         protected override void OnPushBufferDownEvent(int lineCount)
         {
-        }
-
-        public override ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
-        {
-            return base.ReadKey(cancellationToken);
-        }
-
-        public override string ToString()
-        {
-            return base.ToString();
         }
     }
 }

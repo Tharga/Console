@@ -12,6 +12,16 @@
 		<PackageProjectUrl>https://github.com/Tharga/Console</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<DebugType>portable</DebugType>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<IncludeSource>true</IncludeSource>
+		<IncludeSymbols>true</IncludeSymbols>
+		<!-- snupkg, not the legacy .symbols.nupkg: that name still ends in .nupkg,
+		     so the release push loop would upload it as a regular package and
+		     nuget.org would reject it as a duplicate. -->
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<PropertyGroup>

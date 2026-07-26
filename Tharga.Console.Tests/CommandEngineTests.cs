@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Moq;
 using Tharga.Console.Commands;
-using Tharga.Console.Entities;
 using Xunit;
 
 namespace Tharga.Console.Tests

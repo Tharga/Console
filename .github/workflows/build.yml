@@ -190,9 +190,15 @@ jobs:
 
       - name: Push to NuGet
         run: |
+          # Only *.nupkg is globbed. Each matching package's sibling .snupkg is
+          # uploaded automatically by dotnet nuget push, so symbols must NOT be
+          # pushed explicitly or nuget.org sees a duplicate.
+          ls -l ./artifacts/
           for pkg in ./artifacts/*.nupkg; do
             echo "Pushing $pkg..."
-            dotnet nuget push "$pkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate || true
+            # --skip-duplicate already makes a re-run of an existing version a
+            # success, so a failure here is a real failure and must fail the job.
+            dotnet nuget push "$pkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
           done
 
       - name: Create GitHub Release
@@ -273,9 +279,15 @@ jobs:
 
       - name: Push to NuGet
         run: |
+          # Only *.nupkg is globbed. Each matching package's sibling .snupkg is
+          # uploaded automatically by dotnet nuget push, so symbols must NOT be
+          # pushed explicitly or nuget.org sees a duplicate.
+          ls -l ./artifacts/
           for pkg in ./artifacts/*.nupkg; do
             echo "Pushing $pkg..."
-            dotnet nuget push "$pkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate || true
+            # --skip-duplicate already makes a re-run of an existing version a
+            # success, so a failure here is a real failure and must fail the job.
+            dotnet nuget push "$pkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
           done
 
       - name: Create GitHub Pre-release
