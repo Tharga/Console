@@ -7,7 +7,7 @@
 		<Product>Tharga Console</Product>
 		<PackageTags>console poc posh powershell</PackageTags>
 		<PackageIconUrl>https://thargelion.net/assets/component-console.png</PackageIconUrl>
-		<RepositoryUrl>https://github.com/poxet/tharga-console.git</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Tharga/Console</RepositoryUrl>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageProjectUrl>https://github.com/Tharga/Console</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
