@@ -95,3 +95,6 @@ StyleCop.Cache
 /docs/_site/
 /docs/api/
 /docs/obj/
+
+# Microsoft.Testing.Platform coverage output directory (--results-directory ./coverage)
+coverage/
