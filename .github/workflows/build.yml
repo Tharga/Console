@@ -104,7 +104,7 @@ jobs:
           fi
 
       - name: Test
-        run: dotnet test -c Release --no-build --verbosity normal --filter "Category!=Database" --blame-hang-timeout 90s --blame-hang-dump-type none
+        run: dotnet test -c Release --no-build --results-directory ./coverage -- --filter-not-trait "Category=Database" --coverage --coverage-output-format cobertura --timeout 90s
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
