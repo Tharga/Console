@@ -209,11 +209,29 @@ jobs:
           if [ -n "${{ steps.version.outputs.previous_tag }}" ]; then
             NOTES_FLAG="--notes-start-tag ${{ steps.version.outputs.previous_tag }}"
           fi
-          gh release create "${{ steps.version.outputs.version }}" \
-            --title "v${{ steps.version.outputs.version }}" \
-            --generate-notes \
-            $NOTES_FLAG \
-            ./artifacts/*.nupkg
+          # The package is already on nuget.org by this point, so a transient GitHub API failure here
+          # leaves a published package with no tag. The next build then recomputes the SAME version,
+          # pushes a duplicate that --skip-duplicate swallows silently, and the version after it never
+          # ships. Observed three times on 2026-08-17 during a GitHub incident (HTTP 503/504).
+          # Retry, and treat an already-created release as success so a re-run is safe.
+          for attempt in 1 2 3 4 5; do
+            if gh release create "${{ steps.version.outputs.version }}" \
+                 --title "v${{ steps.version.outputs.version }}" \
+                 --generate-notes \
+                 $NOTES_FLAG \
+                 ./artifacts/*.nupkg; then
+              echo "Release ${{ steps.version.outputs.version }} created."
+              exit 0
+            fi
+            if gh release view "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+              echo "Release ${{ steps.version.outputs.version }} already exists - an earlier attempt succeeded."
+              exit 0
+            fi
+            echo "Attempt $attempt failed; retrying in 20s..."
+            sleep 20
+          done
+          echo "::error::Could not create the GitHub release for ${{ steps.version.outputs.version }} after 5 attempts. The package is most likely already on nuget.org, so the tag must be created by hand or the next release will silently republish this version: git tag ${{ steps.version.outputs.version }} <sha> && git push origin ${{ steps.version.outputs.version }}"
+          exit 1
 
       - name: Comment released version on merged PR
         if: always()
@@ -294,11 +312,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${{ steps.version.outputs.version }}" \
-            --title "v${{ steps.version.outputs.version }} (pre-release)" \
-            --notes "Pre-release from \`${{ github.head_ref }}\` branch." \
-            --prerelease \
-            ./artifacts/*.nupkg
+          # Same reasoning as the release job: the pre-release package is pushed before this runs, so a
+          # transient API failure would leave it published with no tag to match.
+          for attempt in 1 2 3 4 5; do
+            if gh release create "${{ steps.version.outputs.version }}" \
+                 --title "v${{ steps.version.outputs.version }} (pre-release)" \
+                 --notes "Pre-release from \`${{ github.head_ref }}\` branch." \
+                 --prerelease \
+                 ./artifacts/*.nupkg; then
+              echo "Pre-release ${{ steps.version.outputs.version }} created."
+              exit 0
+            fi
+            if gh release view "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+              echo "Pre-release ${{ steps.version.outputs.version }} already exists - an earlier attempt succeeded."
+              exit 0
+            fi
+            echo "Attempt $attempt failed; retrying in 20s..."
+            sleep 20
+          done
+          echo "::error::Could not create the GitHub pre-release for ${{ steps.version.outputs.version }} after 5 attempts."
+          exit 1
 
   docs:
     needs: release
