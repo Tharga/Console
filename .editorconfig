@@ -42,3 +42,9 @@ resharper_unused_auto_property_accessor_global_highlighting = none
 # future overload-resolution surprise.
 [Tharga.Console.Standard/Extensions/QueryInputExtension.cs]
 resharper_redundant_type_arguments_of_method_highlighting = none
+
+# The extension classes live in the root `Tharga.Console` namespace on purpose, so
+# consumers get them without an extra `using`. Moving them to match the folder
+# would break every consumer, so the folder and namespace stay different.
+[Tharga.Console.Standard/Extensions/**.cs]
+resharper_check_namespace_highlighting = none
