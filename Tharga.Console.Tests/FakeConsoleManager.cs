@@ -10,6 +10,7 @@ namespace Tharga.Console.Tests
         private const int CbufferHeight = 300;
         private const int CbufferWidth = 80;
         private int _cursorTop;
+        private int _cursorLeft;
 
         public string[] LineOutput = new string[CbufferHeight];
 
@@ -23,7 +24,21 @@ namespace Tharga.Console.Tests
         }
 
         public Encoding Encoding => Encoding.UTF8;
-        public int CursorLeft { get; private set; }
+
+        // Runs once, the next time the cursor column is read. Lets a test write output at that moment, as another thread could.
+        public Action OnNextCursorRead { get; set; }
+
+        public int CursorLeft
+        {
+            get
+            {
+                var onRead = OnNextCursorRead;
+                OnNextCursorRead = null;
+                onRead?.Invoke();
+                return _cursorLeft;
+            }
+            private set { _cursorLeft = value; }
+        }
 
         public int CursorTop
         {

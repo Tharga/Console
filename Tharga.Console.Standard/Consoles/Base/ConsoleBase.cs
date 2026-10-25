@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Tharga.Console.Entities;
 using Tharga.Console.Helpers;
 using Tharga.Console.Interfaces;
@@ -402,21 +401,6 @@ namespace Tharga.Console.Consoles.Base
 		}
 
 		public virtual void Output(IOutput output)
-        {
-            try
-            {
-                Task.Delay(20); //Makes the exception less probable
-                OutputInternal(output);
-            }
-            catch (NullReferenceException)
-            {
-                // Workaround for an intermittent exception at startup whose cause is unknown. See #60.
-                Task.Delay(100);
-                OutputInternal(output);
-            }
-        }
-
-        private void OutputInternal(IOutput output)
         {
             if (output == null) throw new ArgumentNullException(nameof(output), "No output parameter provided.");
 

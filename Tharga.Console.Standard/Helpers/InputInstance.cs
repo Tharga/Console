@@ -41,9 +41,11 @@ namespace Tharga.Console.Helpers
             _passwordChar = passwordChar;
             _cancellationToken = cancellationToken;
 
+            // Set the start location before subscribing. The handlers read it, and output written on another thread
+            // can raise the events as soon as they are subscribed. See #60.
+            _startLocation = new Location(CursorLeft, CursorTop);
             _console.PushBufferDownEvent += PushBufferDownEvent;
             _console.LinesInsertedEvent += LinesInsertedEvent;
-            _startLocation = new Location(CursorLeft, CursorTop);
         }
 
         private int CursorLeft => _console.CursorLeft;
