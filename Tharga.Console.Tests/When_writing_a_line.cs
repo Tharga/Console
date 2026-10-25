@@ -1,10 +1,17 @@
-﻿using AwesomeAssertions;
-using Tharga.Console.Commands;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using AwesomeAssertions;
 using Tharga.Console.Entities;
+using Tharga.Console.Helpers;
 using Xunit;
 
 namespace Tharga.Console.Tests
 {
+    // The long query line tests leave the static input state of InputInstance (#59) describing a two-line entry.
+    // Every line written in the process reads that state, so the class runs apart from the parallel tests.
+    [Collection(ProcessStateCollection.Name)]
     public class When_writing_a_line
     {
         [Fact]
@@ -93,39 +100,71 @@ namespace Tharga.Console.Tests
             consoleManager.CursorTop.Should().Be(consoleManager.BufferHeight - 1);
         }
 
+        // Pins the current, wrong placement; see #62. The output should be on line 2, below both lines of the entry.
         [Fact]
-        // Placeholder: asserts nothing yet. See #53.
-        public void Should_output_on_new_line_when_entering_a_long_query_line_with_cursor_at_end()
+        public void Currently_outputs_inside_a_long_query_line_entered_with_cursor_at_end()
         {
             //Arrange
-            var fakeKeyInput = new FakeKeyInputEngine();
-            var consoleManager = new FakeConsoleManager(fakeKeyInput);
+            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(LongEntry().Append(ConsoleKey.Enter).ToArray()));
             var console = new TestConsole(consoleManager);
-            var command = new RootCommand(console);
-            _ = new CommandEngine(command);
 
-            console.Output(new WriteEventArgs("a"));
-            command.Execute(new string('x', console.BufferWidth + 1));
-            console.Output(new WriteEventArgs("z"));
+            try
+            {
+                var entry = new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
 
-            //Assert.That(consoleManager.LineOutput[0], Is.EqualTo("abc"));
-            //Assert.That(consoleManager.LineOutput[1], Is.Null);
+                //Act
+                console.Output(new WriteEventArgs("z"));
 
-            //Act
-            //Assert
+                //Assert
+                entry.Should().Be(new string('X', consoleManager.BufferWidth + 1));
+                consoleManager.LineOutput[0].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
+                consoleManager.LineOutput[1].Should().Be("z");
+                consoleManager.LineOutput[2].Should().Be(new string('X', Constants.Prompt.Length + 1), "the rest of the entry is pushed below the output");
+            }
+            finally
+            {
+                ResetInputState();
+            }
         }
 
+        // Pins the current, wrong placement; see #62. The output should be on line 2, below both lines of the entry.
         [Fact]
-        // Placeholder: asserts nothing yet. See #53.
-        public void Should_output_on_new_line_when_entering_a_long_query_line_with_cursor_at_beginning()
+        public void Currently_outputs_inside_a_long_query_line_entered_with_cursor_at_beginning()
         {
             //Arrange
-            var consoleManager = new FakeConsoleManager();
-            _ = new TestConsole(consoleManager);
+            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(LongEntry().Append(ConsoleKey.Home).Append(ConsoleKey.Enter).ToArray()));
+            var console = new TestConsole(consoleManager);
 
-            //Act
+            try
+            {
+                var entry = new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
 
-            //Assert
+                //Act
+                console.Output(new WriteEventArgs("z"));
+
+                //Assert
+                entry.Should().Be(new string('X', consoleManager.BufferWidth + 1));
+                consoleManager.LineOutput[0].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
+                consoleManager.LineOutput[1].Should().Be("z");
+                consoleManager.LineOutput[2].Should().Be(new string('X', Constants.Prompt.Length + 1), "the rest of the entry is pushed below the output");
+            }
+            finally
+            {
+                ResetInputState();
+            }
+        }
+
+        // One character more than the buffer width, so with the prompt the entry wraps onto a second line.
+        private static ConsoleKey[] LongEntry()
+        {
+            return Enumerable.Repeat(ConsoleKey.X, new FakeConsoleManager().BufferWidth + 1).ToArray();
+        }
+
+        // Puts the static input state back to a one-line entry with the cursor on it, as it is when no entry was long.
+        private static void ResetInputState()
+        {
+            InputInstance.CursorLineOffset = 0;
+            typeof(InputInstance).GetField("_currentBufferLineCount", BindingFlags.NonPublic | BindingFlags.Static).SetValue(null, 0);
         }
     }
 }

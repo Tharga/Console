@@ -73,14 +73,25 @@ namespace Tharga.Console.Tests
 
         public void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop)
         {
-            if (sourceLeft == 0 && (sourceWidth == BufferWidth && (targetLeft == 0 && sourceHeight == 1)))
+            if (sourceLeft == 0 && sourceWidth == BufferWidth && targetLeft == 0)
             {
-                LineOutput[targetTop] = LineOutput[sourceTop];
-                LineOutput[sourceTop] = null;
+                // Whole lines, one or several: lift them all out first so an overlapping move keeps every line.
+                var lines = new string[sourceHeight];
+                for (var i = 0; i < sourceHeight; i++)
+                {
+                    lines[i] = LineOutput[sourceTop + i];
+                    LineOutput[sourceTop + i] = null;
+                }
+
+                for (var i = 0; i < sourceHeight; i++)
+                {
+                    LineOutput[targetTop + i] = lines[i];
+                }
             }
             else if (sourceTop == targetTop && sourceHeight == 1)
             {
-                if (LineOutput[targetTop].Length != sourceLeft)
+                // Moving the blank part after the text changes nothing.
+                if (sourceLeft < (LineOutput[targetTop]?.Length ?? 0))
                 {
                     throw new NotImplementedException("Move buffer on same line, is not yet implemented.");
                 }
@@ -120,15 +131,12 @@ namespace Tharga.Console.Tests
         {
             if (string.IsNullOrEmpty(value))
             {
-                if (CursorLeft == 0)
-                {
-                    LineOutput[CursorTop] = string.Empty;
-                    CursorTop++;
-                }
-                else
-                {
-                    CursorTop++;
-                }
+                if (!lineFeed) return;
+
+                // A line feed moves the cursor to the start of the next line and leaves the text where it is.
+                LineOutput[CursorTop] ??= string.Empty;
+                CursorTop++;
+                CursorLeft = 0;
             }
             else
             {
@@ -161,9 +169,18 @@ namespace Tharga.Console.Tests
                         CursorTop++;
                         CursorLeft = 0;
                     }
-                    else
+                    else if (LineOutput[CursorTop].Length < BufferWidth)
                     {
                         CursorLeft = LineOutput[CursorTop].Length;
+                    }
+                    else
+                    {
+                        // As on a real console, a write that reaches the buffer width continues on the next line.
+                        var overflow = LineOutput[CursorTop].Substring(BufferWidth);
+                        LineOutput[CursorTop] = LineOutput[CursorTop].Substring(0, BufferWidth);
+                        CursorTop++;
+                        CursorLeft = 0;
+                        DoWriteLine(overflow, false);
                     }
                 }
             }
