@@ -81,8 +81,6 @@ namespace Tharga.Console.Tests
             }
             else
             {
-                //TODO: Implement buffer move and remove this feature.
-                //if (!_bufferMoveEnabled) return; //NOTE: This feature is just becuase Im lazy and do not want to implement this function
                 throw new NotImplementedException("Move partial buffer, is not yet implemented.");
             }
         }
@@ -130,7 +128,6 @@ namespace Tharga.Console.Tests
             {
                 var lineCount = (int)Math.Ceiling(value.Length / (decimal)BufferWidth);
 
-                //TODO: If this is longer thant the buffer, separate to several lines
                 if (value.Length > BufferWidth)
                 {
                     for (var i = 0; i < lineCount; i++)

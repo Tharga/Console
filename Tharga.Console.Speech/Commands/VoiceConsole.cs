@@ -63,20 +63,12 @@ public class VoiceConsole : ClientConsole
     {
         if (!ApplicationIsActivated() && _consoleConfiguration.OnlyActiveWhenInFocus) return;
 
-        //TODO: Execute the statement as a command (or input)
         OutputInformation(e.Result.Text);
         ConsoleManager.KeyInputEngine.Feed(e.Result.Text);
     }
 
     public override void Attach(CommandEngine commandEngine)
     {
-        //TODO: When using commanding 'some option' it should be possible to.
-        //- Tab
-        //- Cancel or Escape
-        //- Also start listening for words that are options so the can be selected by voice.
-        //TODO: When using commanding 'some item' it should be possible to.
-        //- Cancel or Escape
-        //- Also start listening for any word freely as input.
         var coreCommands = new[] { "help" };
         var baseCommands = GetCommands(_rootCommand.SubCommands);
 
@@ -95,7 +87,7 @@ public class VoiceConsole : ClientConsole
         _mainSpeechRecognitionEngine.RequestRecognizerUpdate();
         _mainSpeechRecognitionEngine.LoadGrammar(gr);
 
-        //TODO: Have sound feedback when using the app. (This is just a hello world test)
+        // Placeholder greeting until spoken feedback is designed. See #55.
         if (_consoleConfiguration.UseOutputSound)
         {
             var ss = new SpeechSynthesizer();
@@ -135,12 +127,10 @@ public class VoiceConsole : ClientConsole
             OutputInformation(x.Name);
         }
 
-        // Deliberate: the recognition loop runs for the life of the process.
+        // The recognition loop runs for the life of the process and always uses the command grammar. See #55.
         // ReSharper disable once FunctionNeverReturns
         Task.Run(() =>
         {
-            //TODO: Terminate when application exists
-            //TODO: This is the main recognizer, only use it when waiting for a main command. Not a command parameter input.
             while (true)
             {
                 if (!ApplicationIsActivated() && _consoleConfiguration.OnlyActiveWhenInFocus)

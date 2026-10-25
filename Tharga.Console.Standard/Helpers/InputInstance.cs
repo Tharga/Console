@@ -28,7 +28,7 @@ namespace Tharga.Console.Helpers
         private InputBuffer _inputBuffer;
         private readonly CancellationToken _cancellationToken;
 
-        //TODO: Theese values should be read from the instance, not as a static value!
+        // Static, so shared by every input instance and console. See #59.
         public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
         public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
@@ -58,13 +58,12 @@ namespace Tharga.Console.Helpers
 
         private void PushBufferDownEvent(object sender, PushBufferDownEventArgs e)
         {
-            //TODO: Create e.LineCount free extra lines after the current buffer and move the cursor where it was before.
+            // Incomplete: step 2 is missing, so the lines are inserted at the cursor rather than after the input buffer. See #59.
 
             //Step1: Remember cursor position
             var location = new Location(CursorLeft, CursorTop);
 
             //Step2: move the cursor to the end of the input buffer,
-            //TODO: (Test by having text after the buffer, in one or several lines
 
             //Step3: Insert lines
             for (var i = 0; i < e.LineCount; i++)

@@ -94,12 +94,9 @@ namespace Tharga.Console.Tests
         }
 
         [Fact]
-        //TODO: There is an issue with this case, find a good way to set up the test for this.
+        // Placeholder: asserts nothing yet. See #53.
         public void Should_output_on_new_line_when_entering_a_long_query_line_with_cursor_at_end()
         {
-            //TODO: Prepare a query entry that is longer than one line
-            //TODO: Place cursor at end of the input buffer and press enter.
-
             //Arrange
             var fakeKeyInput = new FakeKeyInputEngine();
             var consoleManager = new FakeConsoleManager(fakeKeyInput);
@@ -119,20 +116,16 @@ namespace Tharga.Console.Tests
         }
 
         [Fact]
-        //TODO: There is an issue with this case, find a good way to set up the test for this.
+        // Placeholder: asserts nothing yet. See #53.
         public void Should_output_on_new_line_when_entering_a_long_query_line_with_cursor_at_beginning()
         {
             //Arrange
             var consoleManager = new FakeConsoleManager();
             _ = new TestConsole(consoleManager);
-            //TODO: Prepare a query entry that is longer than one line
-            //TODO: Place cursor at start (on first line) and press enter.
 
             //Act
-            //TODO: Press enter
 
             //Assert
-            //TODO: See where the response output appears
         }
     }
 }

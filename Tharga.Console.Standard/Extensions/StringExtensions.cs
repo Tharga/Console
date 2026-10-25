@@ -16,7 +16,7 @@ namespace Tharga.Console
 
         public static string Truncate(this string value)
         {
-            var maxLength = System.Console.BufferWidth; //TODO: Access through Console Manager
+            var maxLength = System.Console.BufferWidth;
             if (value.Length > maxLength)
                 value = value.Substring(0, maxLength);
             return value;

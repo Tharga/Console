@@ -320,7 +320,7 @@ namespace Tharga.Console.Commands.Base
 
         public override void Invoke(string[] param)
         {
-            var paramList = param.ToParamString(); //TODO: Do not convert, use input all the way
+            var paramList = param.ToParamString();
 
             if (!CanExecute(out var reasonMessage))
             {

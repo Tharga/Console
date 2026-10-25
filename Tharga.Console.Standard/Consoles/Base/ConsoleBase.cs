@@ -69,10 +69,9 @@ namespace Tharga.Console.Consoles.Base
             ConsoleManager.SetCursorPosition(left, top);
         }
 
-        //TODO: Merge Write and WriteLine to be the same method
+        // Writes at the cursor without moving the input buffer or applying colours. See #58 and #50.
         private void Write(string value)
         {
-            //TODO: Missing stuff, look at WriteLine, there is more stuff going on there!
             WriteEx(value);
         }
 
@@ -87,7 +86,7 @@ namespace Tharga.Console.Consoles.Base
             var linesToInsert = GetLineCount(value);
             var inputBufferLines = InputInstance.CurrentBufferLineCount;
             var intCursorLineOffset = MoveCursorUp();
-            var cursorLocation = MoveInputBufferDown(linesToInsert, inputBufferLines); //TODO: If this is located at the end of the buffer, then the buffer should be pushed...
+            var cursorLocation = MoveInputBufferDown(linesToInsert, inputBufferLines);
 
             //NOTE: At this point, the buffer is moved down. The cursor is ready to output the 'value' to be written.
             //When done the buffer (ie '> ') should still be visible, and the cursor should be moved in position
@@ -185,7 +184,6 @@ namespace Tharga.Console.Consoles.Base
 
         private void WriteEx(string value)
         {
-            //TODO: Duplicated code here and in WriteLineEx
             if (ConsoleManager.ForegroundColor == ConsoleManager.BackgroundColor)
             {
                 ConsoleManager.ForegroundColor = ConsoleManager.ForegroundColor != ConsoleColor.Black ? ConsoleColor.Black : ConsoleColor.White;
@@ -194,7 +192,6 @@ namespace Tharga.Console.Consoles.Base
             ConsoleManager?.Write(value);
         }
 
-        //TODO: All outputs should go via this method! (Entry to this method is from different methods, should only be one, or)
         protected internal virtual Location WriteLineEx(string value, OutputLevel level)
         {
             if (ConsoleManager.ForegroundColor == ConsoleManager.BackgroundColor)
@@ -294,7 +291,7 @@ namespace Tharga.Console.Consoles.Base
 
                 if (inputBufferLines + CursorTop + linesToInsert > ConsoleManager.BufferHeight)
                 {
-                    //TODO: Does now work when there has been other inserted lines between the named write input and the cursor.
+                    // Does not account for lines inserted between a tagged line and the cursor. See #58.
                     SetCursorPosition(BufferWidth - 1, BufferHeight - 1);
                     var cursorMovement = CursorTop - cursorTop;
                     var linesNeeded = inputBufferLines + CursorTop + linesToInsert - ConsoleManager.BufferHeight - cursorMovement;
@@ -363,7 +360,7 @@ namespace Tharga.Console.Consoles.Base
             }
             catch (NullReferenceException)
             {
-                //TODO: Find when this happens and solve it the right way. It only happens randomly at startup)
+                // Workaround for an intermittent exception at startup whose cause is unknown. See #60.
                 Task.Delay(100);
                 OutputInternal(output);
             }
