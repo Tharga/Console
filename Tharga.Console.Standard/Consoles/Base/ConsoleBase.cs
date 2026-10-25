@@ -69,10 +69,10 @@ namespace Tharga.Console.Consoles.Base
             ConsoleManager.SetCursorPosition(left, top);
         }
 
-        // Writes at the cursor without moving the input buffer or applying colours. See #58 and #50.
-        private void Write(string value)
+        // Writes at the cursor without moving the input buffer. See #58.
+        private void Write(string value, OutputLevel level, ConsoleColor? textColor, ConsoleColor? textBackgroundColor)
         {
-            WriteEx(value);
+            ColorManager(level, textColor, textBackgroundColor, () => WriteEx(value));
         }
 
         private void WriteLine(string value, OutputLevel level = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
@@ -373,6 +373,8 @@ namespace Tharga.Console.Consoles.Base
             if (_mutedTypes?.Contains(output.OutputLevel) ?? false) return;
 
             var textColor = output.TextColor; // ?? ConsoleColor.White;
+            // Lines default to a black background. Writes without a line feed (the prompt and typed input among them)
+            // only change the background when one is given, so they keep the console's background.
             var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
             var tag = output.Tag ?? string.Empty;
             var outputLevel = output.OutputLevel;
@@ -388,7 +390,7 @@ namespace Tharga.Console.Consoles.Base
                     }
                     else
                     {
-                        Write(message);
+                        Write(message, outputLevel, textColor, output.TextBackgroundColor);
                     }
                 }
                 else
@@ -417,7 +419,7 @@ namespace Tharga.Console.Consoles.Base
 
                             var cursor = new Location(CursorLeft, CursorTop);
                             SetCursorPosition(_tagLocalLocation[tag].Left, _tagLocalLocation[tag].Top);
-                            Write(message);
+                            Write(message, outputLevel, textColor, output.TextBackgroundColor);
                             _tagLocalLocation[tag] = new Location(CursorLeft, CursorTop);
                             SetCursorPosition(cursor.Left, cursor.Top);
                         }

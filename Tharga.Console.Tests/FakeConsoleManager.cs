@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Tharga.Console.Interfaces;
 
@@ -52,13 +53,18 @@ namespace Tharga.Console.Tests
             set { throw new NotSupportedException(); }
         }
 
+        // Every write, with the colours that were set when it was made.
+        public List<(string Value, ConsoleColor ForegroundColor, ConsoleColor BackgroundColor)> Writes { get; } = new List<(string, ConsoleColor, ConsoleColor)>();
+
         public void WriteLine(string value)
         {
+            Writes.Add((value, ForegroundColor, BackgroundColor));
             DoWriteLine(value, true);
         }
 
         public void Write(string value)
         {
+            Writes.Add((value, ForegroundColor, BackgroundColor));
             DoWriteLine(value, false);
         }
 
