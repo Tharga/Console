@@ -10,6 +10,9 @@ namespace Tharga.Console.Tests
 {
     public class Tab_command_recall_tests
     {
+        private static readonly ConsoleKeyInfo ShiftTab = new ConsoleKeyInfo('\t', ConsoleKey.Tab, true, false, false);
+        private static readonly ConsoleKeyInfo Enter = new ConsoleKeyInfo((char)13, ConsoleKey.Enter, false, false, false);
+
         [Fact]
         public void Should_recall_nothing_when_pressing_Tab_and_no_commands_are_provided()
         {
@@ -64,6 +67,69 @@ namespace Tharga.Console.Tests
             //Assert
             r.Should().Be(selection.Subs[1].Key);
             consoleManager.LineOutput.First().Should().Be(Constants.Prompt + selection.Subs[1].Value);
+        }
+
+        [Fact]
+        public void Should_recall_last_command_when_pressing_Shift_Tab()
+        {
+            //Arrange
+            var input = new[] { ShiftTab, Enter };
+            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
+            var console = new TestConsole(consoleManager);
+            var cancellationToken = new CancellationToken();
+            var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
+            var selection = new CommandTreeNode<string>(new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
+
+            //Act
+            var r = inputInstance.ReadLine(selection, true);
+
+            //Assert
+            r.Should().Be("Last");
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + "x");
+        }
+
+        [Fact]
+        public void Should_recall_second_last_command_when_pressing_Shift_Tab_twice()
+        {
+            //Arrange
+            var input = new[] { ShiftTab, ShiftTab, Enter };
+            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
+            var console = new TestConsole(consoleManager);
+            var cancellationToken = new CancellationToken();
+            var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
+            var selection = new CommandTreeNode<string>(new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
+
+            //Act
+            var r = inputInstance.ReadLine(selection, true);
+
+            //Assert
+            r.Should().Be("Second");
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + "2");
+        }
+
+        [Fact]
+        public void Should_recall_last_command_with_a_specific_letter_when_pressing_Shift_Tab()
+        {
+            //Arrange
+            var input = new[] { new ConsoleKeyInfo('T', ConsoleKey.T, false, false, false), ShiftTab, Enter };
+            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
+            var console = new TestConsole(consoleManager);
+            var cancellationToken = new CancellationToken();
+            var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
+            var selection = new CommandTreeNode<string>(new[]
+            {
+                new CommandTreeNode<string>("First", "One"),
+                new CommandTreeNode<string>("Second", "Two"),
+                new CommandTreeNode<string>("Third", "Three"),
+                new CommandTreeNode<string>("Last", "x")
+            });
+
+            //Act
+            var r = inputInstance.ReadLine(selection, true);
+
+            //Assert
+            r.Should().Be("Third");
+            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + "Three");
         }
 
         [Fact]

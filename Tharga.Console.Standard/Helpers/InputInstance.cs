@@ -262,7 +262,10 @@ namespace Tharga.Console.Helpers
                                         CommandTreeNode<T> s;
                                         if (_selection == null)
                                         {
-                                            s = selection.Select(_inputBuffer.ToString());
+                                            if (readKey.Modifiers == ConsoleModifiers.Shift)
+                                                s = selection.SelectLast(_inputBuffer.ToString());
+                                            else
+                                                s = selection.Select(_inputBuffer.ToString());
                                         }
                                         else
                                         {

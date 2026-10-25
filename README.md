@@ -406,6 +406,7 @@ There are also async versions that takes functions of possible selections, when 
 ### Tab
 Using the Tab-key, it is possible to cycle over all possible inputs. You can also type the first letters of a command and have the Tab-cycle start from there.
 Also combination of command and sub commands can be Tab-Cycled.
+Shift+Tab cycles backwards. Pressed before anything is selected, it starts from the last matching input.
 
 Example.
 ```
