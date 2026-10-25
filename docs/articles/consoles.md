@@ -8,7 +8,7 @@ Tharga.Console writes through an `IConsole` abstraction instead of `System.Conso
 |---|---|---|
 | `ClientConsole` | `Tharga.Console` | The default — regular interactive use. Wraps `System.Console`. |
 | `EventConsole` | `Tharga.Console.Standard` | Raise `OutputEvent` events instead of writing to a stream. Useful for forwarding to a UI or logger. |
-| `ActionConsole` | `Tharga.Console.Standard` | Invoke a delegate (`Action<WriteEventArgs>`) for every output. The minimal "plug your own sink" option. |
+| `ActionConsole` | `Tharga.Console.Standard` | Invoke a delegate (`Action<IActionConsoleOutput>`) for every output. The minimal "plug your own sink" option. A configuration passed to it is applied as for `ClientConsole`. |
 | `AggregateConsole` | `Tharga.Console.Standard` | Compose two or more consoles; every write goes to all of them. Pair `ClientConsole` with `EventConsole` to render *and* forward. |
 | `NullConsole` | `Tharga.Console.Standard` | Drops every write. Useful in tests where you don't want to mock anything. |
 | `VoiceConsole` | `Tharga.Console.Speech` | Extends `ClientConsole` with `System.Speech` voice input. Windows only. |
@@ -44,6 +44,10 @@ console.OutputDefault("Plain text, no level.");
 ```
 
 The `OutputLevel` enum (passed via `WriteEventArgs` to event subscribers) is the same enum the colored output uses, so subscribers can branch on severity.
+
+## Text written to System.Console
+
+The consoles that wrap `System.Console` (all of the above except `NullConsole`) take over its standard output and standard error. Text written with `Console.Write`, `Console.WriteLine` or `Console.Error.WriteLine`, by your code or by a library, goes through the console like any other output instead of breaking into the prompt. Standard error is shown at the `Error` level.
 
 ## Disposing
 

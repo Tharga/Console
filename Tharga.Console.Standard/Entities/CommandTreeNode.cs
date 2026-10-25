@@ -33,10 +33,16 @@ namespace Tharga.Console.Entities
 
         public CommandTreeNode<T> Select(string entry)
         {
-            return FindNode(entry, Subs);
+            return FindNode(entry, Subs, false);
         }
 
-        private CommandTreeNode<T> FindNode(string entry, List<CommandTreeNode<T>> nodes)
+        // Like Select, but picks the last of the matching options. Used by Shift+Tab, which cycles backwards.
+        internal CommandTreeNode<T> SelectLast(string entry)
+        {
+            return FindNode(entry, Subs, true);
+        }
+
+        private CommandTreeNode<T> FindNode(string entry, List<CommandTreeNode<T>> nodes, bool last)
         {
             var segments = entry.Split(' ');
             foreach (var segment in segments)
@@ -49,21 +55,21 @@ namespace Tharga.Console.Entities
                         return hits.First();
 
                     var subEntry = entry.Substring(segment.Length + 1);
-                    return FindNode(subEntry, hits.First().Subs);
+                    return FindNode(subEntry, hits.First().Subs, last);
                 }
                 else if (segments.Length > 1 && exactHit != null)
                 {
                     var subEntry = entry.Substring(segment.Length + 1);
-                    return FindNode(subEntry, hits.First().Subs);
+                    return FindNode(subEntry, hits.First().Subs, last);
                 }
 
                 if (hits.Length >= 1)
                 {
-                    return hits.First();
+                    return last ? hits.Last() : hits.First();
                 }
             }
 
-            return nodes.FirstOrDefault();
+            return last ? nodes.LastOrDefault() : nodes.FirstOrDefault();
         }
 
         public CommandTreeNode<T> Previous(CommandTreeNode<T> selection)

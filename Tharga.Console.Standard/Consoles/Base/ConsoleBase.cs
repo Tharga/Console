@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Tharga.Console.Entities;
 using Tharga.Console.Helpers;
 using Tharga.Console.Interfaces;
@@ -69,10 +68,10 @@ namespace Tharga.Console.Consoles.Base
             ConsoleManager.SetCursorPosition(left, top);
         }
 
-        // Writes at the cursor without moving the input buffer or applying colours. See #58 and #50.
-        private void Write(string value)
+        // Writes at the cursor without moving the input buffer. See #58.
+        private void Write(string value, OutputLevel level, ConsoleColor? textColor, ConsoleColor? textBackgroundColor)
         {
-            WriteEx(value);
+            ColorManager(level, textColor, textBackgroundColor, () => WriteEx(value));
         }
 
         private void WriteLine(string value, OutputLevel level = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
@@ -158,6 +157,56 @@ namespace Tharga.Console.Consoles.Base
 
         public virtual void Initiate(IEnumerable<string> commandKeys)
         {
+        }
+
+        // Applies colours, title, splash screen and assembly info. Shared by the consoles that take a configuration.
+        internal void ApplyConfiguration(IConsoleConfiguration consoleConfiguration)
+        {
+            SetColor(consoleConfiguration);
+            UpdateTitle(consoleConfiguration);
+            ShowSplashScreen(consoleConfiguration);
+            ShowAssemblyInfo(consoleConfiguration);
+        }
+
+        private void SetColor(IConsoleConfiguration consoleConfiguration)
+        {
+            if (ConsoleManager.BackgroundColor == consoleConfiguration.BackgroundColor && ConsoleManager.ForegroundColor == consoleConfiguration.DefaultTextColor) return;
+
+            ConsoleManager.BackgroundColor = consoleConfiguration.BackgroundColor;
+            ConsoleManager.ForegroundColor = consoleConfiguration.DefaultTextColor;
+            ConsoleManager.Clear();
+        }
+
+        private void UpdateTitle(IConsoleConfiguration consoleConfiguration)
+        {
+            try
+            {
+                ConsoleManager.Title = consoleConfiguration.Title ?? AssemblyHelper.GetAssemblyInfo() ?? "Tharga Console";
+            }
+            catch (IOException exception)
+            {
+                Trace.TraceError($"Cannot set console title. {exception.Message}");
+            }
+        }
+
+        private void ShowSplashScreen(IConsoleConfiguration consoleConfiguration)
+        {
+            if (string.IsNullOrEmpty(consoleConfiguration.SplashScreen))
+                return;
+
+            Output(new WriteEventArgs(consoleConfiguration.SplashScreen));
+        }
+
+        private void ShowAssemblyInfo(IConsoleConfiguration consoleConfiguration)
+        {
+            if (consoleConfiguration.ShowAssemblyInfo)
+            {
+                var info = AssemblyHelper.GetAssemblyInfo();
+                if (!string.IsNullOrEmpty(info))
+                {
+                    Output(new WriteEventArgs(info));
+                }
+            }
         }
 
         public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
@@ -353,26 +402,13 @@ namespace Tharga.Console.Consoles.Base
 
 		public virtual void Output(IOutput output)
         {
-            try
-            {
-                Task.Delay(20); //Makes the exception less probable
-                OutputInternal(output);
-            }
-            catch (NullReferenceException)
-            {
-                // Workaround for an intermittent exception at startup whose cause is unknown. See #60.
-                Task.Delay(100);
-                OutputInternal(output);
-            }
-        }
-
-        private void OutputInternal(IOutput output)
-        {
             if (output == null) throw new ArgumentNullException(nameof(output), "No output parameter provided.");
 
             if (_mutedTypes?.Contains(output.OutputLevel) ?? false) return;
 
             var textColor = output.TextColor; // ?? ConsoleColor.White;
+            // Lines default to a black background. Writes without a line feed (the prompt and typed input among them)
+            // only change the background when one is given, so they keep the console's background.
             var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
             var tag = output.Tag ?? string.Empty;
             var outputLevel = output.OutputLevel;
@@ -388,7 +424,7 @@ namespace Tharga.Console.Consoles.Base
                     }
                     else
                     {
-                        Write(message);
+                        Write(message, outputLevel, textColor, output.TextBackgroundColor);
                     }
                 }
                 else
@@ -417,7 +453,7 @@ namespace Tharga.Console.Consoles.Base
 
                             var cursor = new Location(CursorLeft, CursorTop);
                             SetCursorPosition(_tagLocalLocation[tag].Left, _tagLocalLocation[tag].Top);
-                            Write(message);
+                            Write(message, outputLevel, textColor, output.TextBackgroundColor);
                             _tagLocalLocation[tag] = new Location(CursorLeft, CursorTop);
                             SetCursorPosition(cursor.Left, cursor.Top);
                         }

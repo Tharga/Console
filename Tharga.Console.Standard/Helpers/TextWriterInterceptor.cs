@@ -16,14 +16,22 @@ namespace Tharga.Console.Helpers
         // they are gone and the inherited members apply.
         private readonly IConsole _console;
         private readonly IConsoleManager _consoleWriter;
+        private readonly OutputLevel _outputLevel;
 
         private const bool _writeLineFeed = false;
 
-        public TextWriterInterceptor(IConsoleManager consoleWriter, IConsole console)
+        // Installs itself as standard output, or as standard error when standardError is set.
+        // What it receives is passed to the console; standard error at the error level.
+        public TextWriterInterceptor(IConsoleManager consoleWriter, IConsole console, bool standardError = false)
         {
             _consoleWriter = consoleWriter;
             _console = console;
-            System.Console.SetOut(this);
+            _outputLevel = standardError ? OutputLevel.Error : OutputLevel.Default;
+
+            if (standardError)
+                System.Console.SetError(this);
+            else
+                System.Console.SetOut(this);
         }
 
         public override Encoding Encoding => _consoleWriter.Encoding;
@@ -255,7 +263,7 @@ namespace Tharga.Console.Helpers
 
         private void WriteStuff(string value, bool lineFeed, string tag = "Intercept")
         {
-            _console.Output(new WriteEventArgs(value, lineFeed: lineFeed, tag: tag));
+            _console.Output(new WriteEventArgs(value, _outputLevel, lineFeed: lineFeed, tag: tag));
         }
     }
 }
