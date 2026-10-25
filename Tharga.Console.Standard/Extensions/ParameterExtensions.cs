@@ -114,12 +114,12 @@ namespace Tharga.Console
 
         public static IEnumerable<KeyValuePair<T, string>> And<T>(this IEnumerable<KeyValuePair<T, string>> item, T add)
         {
-            return item.Union(new[] { new KeyValuePair<T, string>(add, add.ToString()) });
+            return item.Union(new[] { new KeyValuePair<T, string>(add, add.ToString()) }, OptionComparer<T>.Instance);
         }
 
         public static IEnumerable<KeyValuePair<T, string>> And<T>(this IEnumerable<KeyValuePair<T, string>> item, (T, string) add)
         {
-            return item.Union(new[] { new KeyValuePair<T, string>(add.Item1, add.Item2) });
+            return item.Union(new[] { new KeyValuePair<T, string>(add.Item1, add.Item2) }, OptionComparer<T>.Instance);
         }
 
         public static IEnumerable<T> And<T>(this IEnumerable<T> item, T add)
@@ -139,7 +139,7 @@ namespace Tharga.Console
 
         public static IEnumerable<KeyValuePair<T, string>> And<T>(this IDictionary<T, string> item, T add)
         {
-            return item.Union(new []{ new KeyValuePair<T, string>(add, add.ToString()) });
+            return item.Union(new []{ new KeyValuePair<T, string>(add, add.ToString()) }, OptionComparer<T>.Instance);
         }
 
         //public static IEnumerable<T> And<T>(this T[] item, T add)
@@ -159,6 +159,24 @@ namespace Tharga.Console
         //        }
         //        yield return add;
         //    }
+
+        private sealed class OptionComparer<T> : IEqualityComparer<KeyValuePair<T, string>>
+        {
+            public static readonly OptionComparer<T> Instance = new OptionComparer<T>();
+
+            public bool Equals(KeyValuePair<T, string> x, KeyValuePair<T, string> y)
+            {
+                return EqualityComparer<T>.Default.Equals(x.Key, y.Key) && string.Equals(x.Value, y.Value);
+            }
+
+            public int GetHashCode(KeyValuePair<T, string> obj)
+            {
+                unchecked
+                {
+                    return (EqualityComparer<T>.Default.GetHashCode(obj.Key) * 397) ^ (obj.Value?.GetHashCode() ?? 0);
+                }
+            }
+        }
 
         #endregion
     }

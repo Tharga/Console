@@ -99,7 +99,7 @@ namespace Tharga.Console.Commands.Base
             if (paramList != " details")
             {
                 showHidden = false;
-                command = GetSubCommand(paramList, out subCommand, out var typeRegistration);
+                command = GetSubCommand(paramList, out subCommand, out _);
             }
 
             if (command == null)
@@ -256,8 +256,7 @@ namespace Tharga.Console.Commands.Base
 
         public override bool CanExecute(out string reasonMessage)
         {
-            string dummy;
-            if (!_subCommands.Any(x => x.CanExecute(out dummy)))
+            if (!_subCommands.Any(x => x.CanExecute(out _)))
             {
                 reasonMessage = "There are no executable subcommands.";
                 return false;
@@ -321,17 +320,16 @@ namespace Tharga.Console.Commands.Base
 
         public override void Invoke(string[] param)
         {
-            var enumerable = param as string[] ?? param.ToArray();
-            var paramList = enumerable.ToParamString(); //TODO: Do not convert, use input all the way
+            var paramList = param.ToParamString();
 
             if (!CanExecute(out var reasonMessage))
             {
                 OutputWarning(GetCanExecuteFailMessage(reasonMessage));
-                GetHelpCommand(paramList).Invoke(enumerable);
+                GetHelpCommand(paramList).Invoke(param);
             }
             else if (string.IsNullOrEmpty(paramList))
             {
-                GetHelpCommand(paramList).Invoke(enumerable);
+                GetHelpCommand(paramList).Invoke(param);
             }
             else
             {

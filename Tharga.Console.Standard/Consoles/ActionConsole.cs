@@ -10,8 +10,10 @@ namespace Tharga.Console.Consoles
     {
         private readonly Action<IActionConsoleOutput> _action;
 
+        // Public parameter kept for compatibility; ActionConsole does not apply a configuration.
+        // ReSharper disable once UnusedParameter.Local
         public ActionConsole(Action<IActionConsoleOutput> action, IConsoleConfiguration consoleConfiguration = null)
-            : base(new ConsoleManager(System.Console.Out, System.Console.In))
+            : base(new ConsoleManager(System.Console.Out))
         {
             _action = action;
         }

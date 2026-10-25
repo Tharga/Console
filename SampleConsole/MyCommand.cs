@@ -5,6 +5,8 @@ namespace SampleConsole;
 
 internal class MyCommand : AsyncActionCommandBase
 {
+	// The sample only shows constructor injection; the service itself is not used.
+	// ReSharper disable once NotAccessedField.Local
 	private readonly MyService _myService;
 
 	public MyCommand(MyService myService)

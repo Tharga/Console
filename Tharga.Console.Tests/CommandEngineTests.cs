@@ -1,5 +1,5 @@
 ﻿using System;
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 using Tharga.Console.Commands;
 using Xunit;
@@ -64,8 +64,7 @@ namespace Tharga.Console.Tests
             }
 
             //Assert
-            exceptionThrown.Should().NotBeNull();
-            exceptionThrown.GetType().Should().Be(typeof(CommandAlreadyRegisteredException));
+            exceptionThrown.Should().BeOfType<CommandAlreadyRegisteredException>();
         }
     }
 }

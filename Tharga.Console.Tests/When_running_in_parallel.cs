@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using AwesomeAssertions;
 using Tharga.Console.Commands;
 using Tharga.Console.Entities;
 using Xunit;
@@ -49,8 +49,8 @@ namespace Tharga.Console.Tests
             var console2 = new TestConsole(new FakeConsoleManager());
             var command1 = new RootCommand(console1);
             var command2 = new RootCommand(console2);
-            var commandEngine1 = new CommandEngine(command1);
-            var commandEngine2 = new CommandEngine(command2);
+            _ = new CommandEngine(command1);
+            _ = new CommandEngine(command2);
 
             //Act
             command1.Execute("help");

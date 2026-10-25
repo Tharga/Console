@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Tharga.Console.Interfaces;
 
 namespace Tharga.Console.Helpers
@@ -9,11 +8,6 @@ namespace Tharga.Console.Helpers
     {
         public ConsoleKeyInfo ReadKey(CancellationToken cancellationToken)
         {
-            Task.Run(() =>
-            {
-                while (true) Thread.Sleep(10000);
-            });
-
             return new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false);
         }
 

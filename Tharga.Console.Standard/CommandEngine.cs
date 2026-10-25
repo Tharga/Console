@@ -37,8 +37,6 @@ namespace Tharga.Console
             _cancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource();
             RootCommand.RequestCloseEvent += (sender, e) => { Stop(); };
 
-            //TODO: Try reversing the dependency, so that the root command has an engine instead of the engine having a root command.
-
             var rc = RootCommand as RootCommandBase;
             rc?.Initiate(this);
         }
@@ -61,9 +59,6 @@ namespace Tharga.Console
                 _commandMode = commands.Count > 0;
 
                 var commandIndex = 0;
-
-                //TODO: This is only used by the voice console. Solve that some other way!
-                //_rootCommand.Initiate();
 
                 if (TaskRunners != null)
                 {

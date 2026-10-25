@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Tharga.Console.Entities;
 using Tharga.Console.Helpers;
 using Xunit;

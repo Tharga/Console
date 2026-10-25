@@ -7,14 +7,12 @@ namespace Tharga.Console.Tests
 
     class TestAction : ActionCommandBase
     {
-        internal bool WasRun = false;
-        string[] Params = null;
+        internal bool WasRun;
         public TestAction(string name) : base(name) { }
 
         public override void Invoke(string[] param)
         {
             WasRun = true;
-            Params = param;
         }
     }
 
@@ -32,14 +30,13 @@ namespace Tharga.Console.Tests
         private TestAction simple;
         private TestContainerCommand containerCommand;
         private CommandEngine commandEngine;
-        private RootCommand command;
 
         public With_command_line()
         {
             this.simple = new TestAction("Simple");
             this.containerCommand = new TestContainerCommand();
-            this.command = new RootCommand(new TestConsole(new FakeConsoleManager()));
-            this.commandEngine = new CommandEngine(this.command);
+            var command = new RootCommand(new TestConsole(new FakeConsoleManager()));
+            this.commandEngine = new CommandEngine(command);
             command.RegisterCommand(this.simple);
             command.RegisterCommand(this.containerCommand);
         }
@@ -47,7 +44,7 @@ namespace Tharga.Console.Tests
         [Fact]
         public void With_top_level_command()
         {
-            var args = new string[] { "Simple" };
+            var args = new[] { "Simple" };
             commandEngine.Start(args);
 
             Assert.True(simple.WasRun, "EXPECTED SIMPLE TO BE RUN");
@@ -57,7 +54,7 @@ namespace Tharga.Console.Tests
         [Fact]
         public void With_subcommand()
         {
-            var args = new string[] { "Outer Inner" };
+            var args = new[] { "Outer Inner" };
             commandEngine.Start(args);
 
             Assert.False(simple.WasRun);

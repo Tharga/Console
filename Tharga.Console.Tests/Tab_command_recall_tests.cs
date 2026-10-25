@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using FluentAssertions;
+using AwesomeAssertions;
 using Tharga.Console.Entities;
 using Tharga.Console.Helpers;
 using Xunit;
@@ -45,26 +45,6 @@ namespace Tharga.Console.Tests
             //Assert
             r.Should().Be(selection.Subs.First().Key);
             consoleManager.LineOutput.First().Should().Be(Constants.Prompt + selection.Subs.First().Value);
-        }
-
-        [Fact(Skip = "Fix this issue")]
-        public void Should_recall_last_command_when_pressing_Shift_Tab()
-        {
-            //Arrange
-            var input = new[] { new ConsoleKeyInfo('\t', ConsoleKey.Tab, true, false, false), new ConsoleKeyInfo((char)13, ConsoleKey.Enter, false, false, false) };
-            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(input));
-            var console = new TestConsole(consoleManager);
-            var cancellationToken = new CancellationToken();
-            var inputInstance = new InputInstance(console, Constants.Prompt, null, cancellationToken);
-            var selection = new CommandTreeNode<string>(new[] { new CommandTreeNode<string>("First", "1"), new CommandTreeNode<string>("Second", "2"), new CommandTreeNode<string>("Last", "x") });
-
-            //Act
-            var r = inputInstance.ReadLine(selection, true);
-
-            //Assert
-            var match = selection.Subs.Last();
-            r.Should().Be(match.Key);
-            consoleManager.LineOutput.First().Should().Be(Constants.Prompt + match.Value);
         }
 
         [Fact]

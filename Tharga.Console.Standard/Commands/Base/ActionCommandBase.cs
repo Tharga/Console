@@ -65,9 +65,6 @@ namespace Tharga.Console.Commands.Base
             var helpCommand = new HelpCommand(RootCommand.CommandEngine);
             if (HelpText.Any())
             {
-                //TODO: Get the help color
-                //var c = ((SystemConsoleBase)((CommandBase)this).Console).GetConsoleColor(OutputLevel.Title);
-                //var col = ((SystemConsoleBase)Console).GetConsoleColor(OutputLevel.Title);
                 helpCommand.AddLine($"Help for command {Name}.", foreColor: ConsoleColor.DarkCyan);
                 foreach (var helpText in HelpText)
                 {

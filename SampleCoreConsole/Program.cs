@@ -305,12 +305,15 @@ namespace SampleCoreConsole
             OutputInformation(selection.ToString());
         }
 
+        // The members are offered as options through reflection, so nothing references them by name.
+        // ReSharper disable UnusedMember.Local
         private enum MyEnum
         {
             B,
             A,
             C
         }
+        // ReSharper restore UnusedMember.Local
     }
 
     internal class SomeBoolCommand : ActionCommandBase
@@ -725,8 +728,7 @@ namespace SampleCoreConsole
         {
             Task.Run(() =>
             {
-                //TODO: There is a minor bug here.
-                //This code overwrites what is underneeth. A written line should be pushed down.
+                // Known issue: the dots overwrite what is underneath instead of pushing it down. See #58.
                 for (var i = 0; i < 100; i++)
                 {
                     Thread.Sleep(100);
