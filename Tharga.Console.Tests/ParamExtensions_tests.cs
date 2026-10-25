@@ -1,5 +1,5 @@
 using System.Linq;
-using FluentAssertions;
+using AwesomeAssertions;
 using Tharga.Console.Helpers;
 using Xunit;
 

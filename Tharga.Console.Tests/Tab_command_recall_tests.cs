@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using FluentAssertions;
+using AwesomeAssertions;
 using Tharga.Console.Entities;
 using Tharga.Console.Helpers;
 using Xunit;

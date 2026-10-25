@@ -1,5 +1,5 @@
 ﻿using System;
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 using Tharga.Console.Commands;
 using Xunit;
