@@ -45,6 +45,10 @@ console.OutputDefault("Plain text, no level.");
 
 The `OutputLevel` enum (passed via `WriteEventArgs` to event subscribers) is the same enum the colored output uses, so subscribers can branch on severity.
 
+## Text written to System.Console
+
+The consoles that wrap `System.Console` (all of the above except `NullConsole`) take over its standard output and standard error. Text written with `Console.Write`, `Console.WriteLine` or `Console.Error.WriteLine`, by your code or by a library, goes through the console like any other output instead of breaking into the prompt. Standard error is shown at the `Error` level.
+
 ## Disposing
 
 All console implementations implement `IDisposable`. Wrap them in `using` (top-level statement) or `using (var ...)` (classic) — `Dispose` clears handlers, restores console colors, and releases speech resources where applicable.
