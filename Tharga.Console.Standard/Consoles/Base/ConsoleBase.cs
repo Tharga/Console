@@ -160,6 +160,56 @@ namespace Tharga.Console.Consoles.Base
         {
         }
 
+        // Applies colours, title, splash screen and assembly info. Shared by the consoles that take a configuration.
+        internal void ApplyConfiguration(IConsoleConfiguration consoleConfiguration)
+        {
+            SetColor(consoleConfiguration);
+            UpdateTitle(consoleConfiguration);
+            ShowSplashScreen(consoleConfiguration);
+            ShowAssemblyInfo(consoleConfiguration);
+        }
+
+        private void SetColor(IConsoleConfiguration consoleConfiguration)
+        {
+            if (ConsoleManager.BackgroundColor == consoleConfiguration.BackgroundColor && ConsoleManager.ForegroundColor == consoleConfiguration.DefaultTextColor) return;
+
+            ConsoleManager.BackgroundColor = consoleConfiguration.BackgroundColor;
+            ConsoleManager.ForegroundColor = consoleConfiguration.DefaultTextColor;
+            ConsoleManager.Clear();
+        }
+
+        private void UpdateTitle(IConsoleConfiguration consoleConfiguration)
+        {
+            try
+            {
+                ConsoleManager.Title = consoleConfiguration.Title ?? AssemblyHelper.GetAssemblyInfo() ?? "Tharga Console";
+            }
+            catch (IOException exception)
+            {
+                Trace.TraceError($"Cannot set console title. {exception.Message}");
+            }
+        }
+
+        private void ShowSplashScreen(IConsoleConfiguration consoleConfiguration)
+        {
+            if (string.IsNullOrEmpty(consoleConfiguration.SplashScreen))
+                return;
+
+            Output(new WriteEventArgs(consoleConfiguration.SplashScreen));
+        }
+
+        private void ShowAssemblyInfo(IConsoleConfiguration consoleConfiguration)
+        {
+            if (consoleConfiguration.ShowAssemblyInfo)
+            {
+                var info = AssemblyHelper.GetAssemblyInfo();
+                if (!string.IsNullOrEmpty(info))
+                {
+                    Output(new WriteEventArgs(info));
+                }
+            }
+        }
+
         public event EventHandler<LineWrittenEventArgs> LineWrittenEvent;
 
         protected virtual void OnPushBufferDownEvent(int lineCount)

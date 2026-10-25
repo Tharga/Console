@@ -10,12 +10,25 @@ namespace Tharga.Console.Consoles
     {
         private readonly Action<IActionConsoleOutput> _action;
 
-        // Public parameter kept for compatibility; ActionConsole does not apply a configuration.
-        // ReSharper disable once UnusedParameter.Local
+        /// <summary>
+        /// Creates a console that passes every output to an action.
+        /// </summary>
+        /// <param name="action">Receives every output.</param>
+        /// <param name="consoleConfiguration">
+        /// Applied as <see cref="ClientConsole"/> applies it: colours, title, splash screen and assembly info.
+        /// The splash screen and assembly info are passed to <paramref name="action"/>. When omitted, nothing is applied.
+        /// </param>
         public ActionConsole(Action<IActionConsoleOutput> action, IConsoleConfiguration consoleConfiguration = null)
-            : base(new ConsoleManager(System.Console.Out))
+            : this(new ConsoleManager(System.Console.Out), action, consoleConfiguration)
+        {
+        }
+
+        internal ActionConsole(IConsoleManager consoleManager, Action<IActionConsoleOutput> action, IConsoleConfiguration consoleConfiguration)
+            : base(consoleManager)
         {
             _action = action;
+            if (consoleConfiguration != null)
+                ApplyConfiguration(consoleConfiguration);
         }
 
         public override void Output(IOutput output)

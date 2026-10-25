@@ -371,6 +371,7 @@ Fires off an event on each console output.
 
 ### ActionConsole
 Fires off a function on each console output.
+A console configuration passed to it is applied as for the *ClientConsole*. The splash screen and assembly info are passed to the function.
 
 ### NullConsole
 Swallows all inputs and outputs.
