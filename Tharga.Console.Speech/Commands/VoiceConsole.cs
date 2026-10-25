@@ -23,32 +23,12 @@ public class VoiceConsole : ClientConsole
         if (_mainSpeechRecognitionEngine == null) throw new InvalidOperationException("Cannot use SpeechRecognitionEngine.");
         _consoleConfiguration = consoleConfiguration ?? new VoiceConsoleConfiguration();
 
-        //_mainSpeechRecognitionEngine.AudioLevelUpdated += _mainSpeechRecognitionEngine_AudioLevelUpdated;
-        //_mainSpeechRecognitionEngine.AudioSignalProblemOccurred += _mainSpeechRecognitionEngine_AudioSignalProblemOccurred;
-        //_mainSpeechRecognitionEngine.AudioStateChanged += _mainSpeechRecognitionEngine_AudioStateChanged;
         _mainSpeechRecognitionEngine.EmulateRecognizeCompleted += _mainSpeechRecognitionEngine_EmulateRecognizeCompleted;
         _mainSpeechRecognitionEngine.LoadGrammarCompleted += _mainSpeechRecognitionEngine_LoadGrammarCompleted;
         _mainSpeechRecognitionEngine.RecognizeCompleted += _mainSpeechRecognitionEngine_RecognizeCompleted;
         _mainSpeechRecognitionEngine.RecognizerUpdateReached += _mainSpeechRecognitionEngine_RecognizerUpdateReached;
-        //_mainSpeechRecognitionEngine.SpeechDetected += _mainSpeechRecognitionEngine_SpeechDetected;
-        //_mainSpeechRecognitionEngine.SpeechHypothesized += _mainSpeechRecognitionEngine_SpeechHypothesized;
         _mainSpeechRecognitionEngine.SpeechRecognitionRejected += _mainSpeechRecognitionEngine_SpeechRecognitionRejected;
         _mainSpeechRecognitionEngine.SpeechRecognized += _mainSpeechRecognitionEngine_SpeechRecognized;
-    }
-
-    private void _mainSpeechRecognitionEngine_AudioLevelUpdated(object sender, AudioLevelUpdatedEventArgs e)
-    {
-        OutputDefault("_mainSpeechRecognitionEngine_AudioLevelUpdated");
-    }
-
-    private void _mainSpeechRecognitionEngine_AudioSignalProblemOccurred(object sender, AudioSignalProblemOccurredEventArgs e)
-    {
-        OutputDefault("_mainSpeechRecognitionEngine_AudioSignalProblemOccurred");
-    }
-
-    private void _mainSpeechRecognitionEngine_AudioStateChanged(object sender, AudioStateChangedEventArgs e)
-    {
-        OutputDefault("_mainSpeechRecognitionEngine_AudioStateChanged");
     }
 
     private void _mainSpeechRecognitionEngine_EmulateRecognizeCompleted(object sender, EmulateRecognizeCompletedEventArgs e)
@@ -69,16 +49,6 @@ public class VoiceConsole : ClientConsole
     private void _mainSpeechRecognitionEngine_RecognizerUpdateReached(object sender, RecognizerUpdateReachedEventArgs e)
     {
         OutputDefault("_mainSpeechRecognitionEngine_RecognizerUpdateReached");
-    }
-
-    private void _mainSpeechRecognitionEngine_SpeechDetected(object sender, SpeechDetectedEventArgs e)
-    {
-        OutputDefault("_mainSpeechRecognitionEngine_SpeechDetected");
-    }
-
-    private void _mainSpeechRecognitionEngine_SpeechHypothesized(object sender, SpeechHypothesizedEventArgs e)
-    {
-        OutputDefault("_mainSpeechRecognitionEngine_SpeechHypothesized");
     }
 
     private void _mainSpeechRecognitionEngine_SpeechRecognitionRejected(object sender, SpeechRecognitionRejectedEventArgs e)
@@ -165,6 +135,8 @@ public class VoiceConsole : ClientConsole
             OutputInformation(x.Name);
         }
 
+        // Deliberate: the recognition loop runs for the life of the process.
+        // ReSharper disable once FunctionNeverReturns
         Task.Run(() =>
         {
             //TODO: Terminate when application exists

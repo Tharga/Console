@@ -21,7 +21,7 @@ namespace Tharga.Console.Tests
         {
         }
 
-        public Encoding Encoding { get; }
+        public Encoding Encoding => Encoding.UTF8;
         public int CursorLeft { get; private set; }
 
         public int CursorTop

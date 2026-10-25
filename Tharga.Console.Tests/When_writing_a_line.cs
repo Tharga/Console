@@ -105,7 +105,7 @@ namespace Tharga.Console.Tests
             var consoleManager = new FakeConsoleManager(fakeKeyInput);
             var console = new TestConsole(consoleManager);
             var command = new RootCommand(console);
-            var commandEngine = new CommandEngine(command);
+            _ = new CommandEngine(command);
 
             console.Output(new WriteEventArgs("a"));
             command.Execute(new string('x', console.BufferWidth + 1));
@@ -124,7 +124,7 @@ namespace Tharga.Console.Tests
         {
             //Arrange
             var consoleManager = new FakeConsoleManager();
-            var console = new TestConsole(consoleManager);
+            _ = new TestConsole(consoleManager);
             //TODO: Prepare a query entry that is longer than one line
             //TODO: Place cursor at start (on first line) and press enter.
 

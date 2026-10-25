@@ -9,12 +9,15 @@ namespace Tharga.Console.Helpers
     class ConsoleManager : IConsoleManager
     {
         private readonly TextWriter _textWriter;
+        // The interceptors install themselves through System.Console.SetOut and SetIn; the fields only name them.
+        // ReSharper disable NotAccessedField.Local
         private TextWriterInterceptor _textWriterInterceptor;
         private TextReaderInterceptor _textReaderInterceptor;
         private TextWriterInterceptor _errorInterceptor;
+        // ReSharper restore NotAccessedField.Local
         private IKeyInputEngine _keyInputEngine;
 
-        public ConsoleManager(TextWriter textWriter, TextReader textReader)
+        public ConsoleManager(TextWriter textWriter)
         {
             _textWriter = textWriter;
         }
@@ -22,7 +25,7 @@ namespace Tharga.Console.Helpers
         public void Intercept(IConsole console)
         {
             _textWriterInterceptor = new TextWriterInterceptor(this, console);
-            _textReaderInterceptor = new TextReaderInterceptor(this, console);
+            _textReaderInterceptor = new TextReaderInterceptor();
             _errorInterceptor = new TextWriterInterceptor(this, console);
         }
 

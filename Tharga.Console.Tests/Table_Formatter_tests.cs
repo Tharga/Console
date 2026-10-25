@@ -55,7 +55,7 @@ namespace Tharga.Console.Tests
         {
             //Arrange
             var title = new[] { "A", "B", "C" };
-            var data = new string[][] { new [] { "A1" }, new[] { "A2", "B2" }, };
+            var data = new[] { new [] { "A1" }, new[] { "A2", "B2" }, };
             var t = new[] { title }.Union(data);
 
             //Act
@@ -70,7 +70,7 @@ namespace Tharga.Console.Tests
         {
             //Arrange
             var title = new[] { "A", "B", "C" };
-            var data = new string[][] { new[] { "A1" }, new[] { "A2", "B2" }, new[] { "A3", "B3", "C3" }, new[] { "A4", "B4", "C4", "D4" }, };
+            var data = new[] { new[] { "A1" }, new[] { "A2", "B2" }, new[] { "A3", "B3", "C3" }, new[] { "A4", "B4", "C4", "D4" }, };
             var t = new[] { title }.Union(data);
 
             //Act

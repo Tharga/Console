@@ -11,7 +11,7 @@ namespace Tharga.Console.Consoles
         public event EventHandler<OutputEventArgs> OutputEv;
 
         public EventConsole()
-            : base(new ConsoleManager(System.Console.Out, System.Console.In))
+            : base(new ConsoleManager(System.Console.Out))
         {
         }
 

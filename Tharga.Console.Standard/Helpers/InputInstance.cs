@@ -481,7 +481,7 @@ namespace Tharga.Console.Helpers
                         try
                         {
                             response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
-                            _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+                            _console.Output(new WriteEventArgs(null));
                         }
                         catch (FormatException exception)
                         {
@@ -499,7 +499,7 @@ namespace Tharga.Console.Helpers
                             throw new EntryException("There are several matches to the entry.");
                         }
 
-                        _console.Output(new WriteEventArgs(null, OutputLevel.Default));
+                        _console.Output(new WriteEventArgs(null));
                         response = items.Single().Key;
                     }
                 }

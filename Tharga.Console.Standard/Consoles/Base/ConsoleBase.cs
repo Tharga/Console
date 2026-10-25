@@ -70,7 +70,7 @@ namespace Tharga.Console.Consoles.Base
         }
 
         //TODO: Merge Write and WriteLine to be the same method
-        private void Write(string value, OutputLevel level = OutputLevel.Default, ConsoleColor? textColor = null, ConsoleColor? textBackgroundColor = null)
+        private void Write(string value)
         {
             //TODO: Missing stuff, look at WriteLine, there is more stuff going on there!
             WriteEx(value);
@@ -326,7 +326,7 @@ namespace Tharga.Console.Consoles.Base
 
         public void OutputDefault(string message)
         {
-            Output(new WriteEventArgs(message, OutputLevel.Default));
+            Output(new WriteEventArgs(message));
         }
 
         public void OutputWarning(string message)
@@ -391,7 +391,7 @@ namespace Tharga.Console.Consoles.Base
                     }
                     else
                     {
-                        Write(message, outputLevel, textColor, textBackgroundColor);
+                        Write(message);
                     }
                 }
                 else
@@ -420,7 +420,7 @@ namespace Tharga.Console.Consoles.Base
 
                             var cursor = new Location(CursorLeft, CursorTop);
                             SetCursorPosition(_tagLocalLocation[tag].Left, _tagLocalLocation[tag].Top);
-                            Write(message, outputLevel, textColor, textBackgroundColor);
+                            Write(message);
                             _tagLocalLocation[tag] = new Location(CursorLeft, CursorTop);
                             SetCursorPosition(cursor.Left, cursor.Top);
                         }
@@ -458,44 +458,25 @@ namespace Tharga.Console.Consoles.Base
                 case OutputLevel.Default:
                     return new Tuple<ConsoleColor?, ConsoleColor?>(null, null);
                 case OutputLevel.Information:
-                    return GetConsoleColor("Information", ConsoleColor.Green, null);
+                    return GetConsoleColor(ConsoleColor.Green, null);
                 case OutputLevel.Warning:
-                    return GetConsoleColor("Warning", ConsoleColor.Yellow, null);
+                    return GetConsoleColor(ConsoleColor.Yellow, null);
                 case OutputLevel.Error:
-                    return GetConsoleColor("Error", ConsoleColor.Red, null);
+                    return GetConsoleColor(ConsoleColor.Red, null);
                 case OutputLevel.Event:
-                    return GetConsoleColor("Event", ConsoleColor.Cyan, null);
+                    return GetConsoleColor(ConsoleColor.Cyan, null);
                 case OutputLevel.Help:
-                    return GetConsoleColor("Help", ConsoleColor.Magenta, null);
+                    return GetConsoleColor(ConsoleColor.Magenta, null);
                 case OutputLevel.Title:
-                    return GetConsoleColor("Title", ConsoleColor.DarkCyan, null);
+                    return GetConsoleColor(ConsoleColor.DarkCyan, null);
                 default:
                     return new Tuple<ConsoleColor?, ConsoleColor?>(null, null);
             }
         }
 
-        private static Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(string name, ConsoleColor defaultColor, ConsoleColor? defaultTextBackgroundColor)
+        private static Tuple<ConsoleColor?, ConsoleColor?> GetConsoleColor(ConsoleColor defaultColor, ConsoleColor? defaultTextBackgroundColor)
         {
-            var colorString = string.Empty; //ConfigurationManager.AppSettings[name + "Color"];
-            if (string.IsNullOrEmpty(colorString)) return new Tuple<ConsoleColor?, ConsoleColor?>(defaultColor, defaultTextBackgroundColor);
-            var cols = colorString.Split(';');
-            ConsoleColor color;
-            if (!Enum.TryParse(cols[0], out color))
-            {
-                color = defaultColor;
-            }
-
-            ConsoleColor? color3 = defaultTextBackgroundColor;
-            if (cols.Length > 1)
-            {
-                ConsoleColor color2;
-                if (Enum.TryParse(cols[1], out color2))
-                {
-                    color3 = color2;
-                }
-            }
-
-            return new Tuple<ConsoleColor?, ConsoleColor?>(color, color3);
+            return new Tuple<ConsoleColor?, ConsoleColor?>(defaultColor, defaultTextBackgroundColor);
         }
 
         public void Dispose()

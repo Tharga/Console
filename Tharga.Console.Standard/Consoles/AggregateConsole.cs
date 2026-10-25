@@ -14,7 +14,7 @@ namespace Tharga.Console.Consoles
         private readonly ConsoleBase _mainConsole;
 
         public AggregateConsole(ConsoleBase mainConsole, params ConsoleBase[] consoles)
-            : this(new ConsoleManager(System.Console.Out, System.Console.In), mainConsole, consoles)
+            : this(new ConsoleManager(System.Console.Out), mainConsole, consoles)
         {
         }
 

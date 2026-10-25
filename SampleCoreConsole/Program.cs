@@ -305,12 +305,15 @@ namespace SampleCoreConsole
             OutputInformation(selection.ToString());
         }
 
+        // The members are offered as options through reflection, so nothing references them by name.
+        // ReSharper disable UnusedMember.Local
         private enum MyEnum
         {
             B,
             A,
             C
         }
+        // ReSharper restore UnusedMember.Local
     }
 
     internal class SomeBoolCommand : ActionCommandBase

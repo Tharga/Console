@@ -27,3 +27,18 @@ resharper_inconsistent_naming_highlighting = none
 [*.{yml,yaml}]
 indent_style = space
 indent_size = 2
+
+# Public EventArgs and configuration types. Consumers of the packages read and set
+# these properties, which ReSharper cannot see from inside this solution, so its
+# `.Global` accessor inspection is a false positive here.
+[Tharga.Console.Standard/Entities/**.cs]
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+[Tharga.Console.Speech/Commands/VoiceConsoleConfiguration.cs]
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+# The explicit `QueryParam<T>` type arguments are deliberate. Nine overloads differ
+# only by the options collection type, and the explicit `<T>` guards against a
+# future overload-resolution surprise.
+[Tharga.Console.Standard/Extensions/QueryInputExtension.cs]
+resharper_redundant_type_arguments_of_method_highlighting = none

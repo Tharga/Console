@@ -60,7 +60,7 @@ public class Param_And_tests
     {
         var options = new[] { new KeyValuePair<string, string>(null, "None") };
 
-        var result = options.And(((string)null, "None")).ToArray();
+        var result = options.And((null, "None")).ToArray();
 
         result.Should().ContainSingle().Which.Should().Be(new KeyValuePair<string, string>(null, "None"));
     }

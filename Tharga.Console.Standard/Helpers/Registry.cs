@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
@@ -96,10 +95,5 @@ namespace Tharga.Console.Helpers
 
         //    return key;
         //}
-
-        private static T ConvertValue<T>(string value)
-        {
-            return (T)Convert.ChangeType(value, typeof(T));
-        }
     }
 }

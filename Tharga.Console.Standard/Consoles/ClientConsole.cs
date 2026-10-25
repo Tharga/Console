@@ -10,7 +10,7 @@ namespace Tharga.Console.Consoles
     public class ClientConsole : ConsoleBase
     {
         public ClientConsole(IConsoleConfiguration consoleConfiguration = null)
-            : base(new ConsoleManager(System.Console.Out, System.Console.In))
+            : base(new ConsoleManager(System.Console.Out))
         {
             Initiate(consoleConfiguration ?? new ConsoleConfiguration());
         }
