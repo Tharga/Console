@@ -65,11 +65,14 @@ namespace Tharga.Console.Entities
 
         public void Start()
         {
-            _task = Task.Run(() =>
+            _task = Task.Run(async () =>
             {
                 try
                 {
-                    _action(_cancellationToken.Token, _autoResetEvent);
+                    await _action(_cancellationToken.Token, _autoResetEvent);
+                }
+                catch (OperationCanceledException) when (_cancellationToken.IsCancellationRequested)
+                {
                 }
                 catch (Exception exception)
                 {
