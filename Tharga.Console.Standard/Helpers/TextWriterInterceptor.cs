@@ -105,7 +105,7 @@ namespace Tharga.Console.Helpers
 
         public override void WriteLine(object value)
         {
-            WriteStuff(value.ToString(), true);
+            WriteStuff(value?.ToString(), true);
         }
 
         public override void WriteLine(string format, object arg0)
@@ -163,7 +163,7 @@ namespace Tharga.Console.Helpers
 
         public override void Write(object value)
         {
-            WriteStuff(value.ToString(), _writeLineFeed);
+            WriteStuff(value?.ToString(), _writeLineFeed);
         }
 
         public override void Write(long value)
@@ -263,7 +263,7 @@ namespace Tharga.Console.Helpers
 
         private void WriteStuff(string value, bool lineFeed, string tag = "Intercept")
         {
-            _console.Output(new WriteEventArgs(value, _outputLevel, lineFeed: lineFeed, tag: tag));
+            _console.Output(new WriteEventArgs(value ?? string.Empty, _outputLevel, lineFeed: lineFeed, tag: tag));
         }
     }
 }
