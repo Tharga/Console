@@ -16,6 +16,7 @@
 		<PackageReference Include="xunit.v3" Version="4.0.2" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\Tharga.Console\Tharga.Console.csproj" />
 	  <ProjectReference Include="..\Tharga.Console.Standard\Tharga.Console.Standard.csproj" />
 	</ItemGroup>
 </Project>

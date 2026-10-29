@@ -24,13 +24,13 @@ internal class ShowCommand : ActionCommandBase
         {
             OutputInformation($"No registry for '{name}'.");
         }
-        else if ($"{k}".Contains(asm.Location))
+        else if (string.Equals($"{k}", StartupCommand.GetCommandLine(asm.Location), StringComparison.OrdinalIgnoreCase))
         {
             OutputInformation($"Registry contains application path. ({k})");
         }
         else
         {
-            OutputWarning($"Registry does not contain application path. ({k})");
+            OutputWarning($"Registry does not match the application path. Run 'startup register' to update it. ({k})");
         }
     }
 }
