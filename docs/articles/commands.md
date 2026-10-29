@@ -129,3 +129,5 @@ public override bool CanExecute(out string reasonMessage)
 ```
 
 The `help` listing greys out disabled commands and shows the reason.
+
+A container's guard also covers the commands in it: while the container cannot execute, its commands are refused with the container's reason, followed by "Inherited by parent." The container is asked each time, so its commands can run as soon as it can execute again. A guard set on the command itself with `SetCanExecute` is kept.

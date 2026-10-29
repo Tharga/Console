@@ -10,8 +10,10 @@ Tharga.Console writes through an `IConsole` abstraction instead of `System.Conso
 | `EventConsole` | `Tharga.Console.Standard` | Raise `OutputEvent` events instead of writing to a stream. Useful for forwarding to a UI or logger. |
 | `ActionConsole` | `Tharga.Console.Standard` | Invoke a delegate (`Action<IActionConsoleOutput>`) for every output. The minimal "plug your own sink" option. A configuration passed to it is applied as for `ClientConsole`. |
 | `AggregateConsole` | `Tharga.Console.Standard` | Compose two or more consoles; every write goes to all of them. Pair `ClientConsole` with `EventConsole` to render *and* forward. |
-| `NullConsole` | `Tharga.Console.Standard` | Drops every write. Useful in tests where you don't want to mock anything. |
+| `NullConsole` | `Tharga.Console.Standard` | Drops every write, and has no keys to read: reading a key waits until the read is cancelled. Useful in tests where you don't want to mock anything. |
 | `VoiceConsole` | `Tharga.Console.Speech` | Extends `ClientConsole` with `System.Speech` voice input. Windows only. |
+
+Changed in 4.3: reading a key from `NullConsole` waits until the cancellation token passed to `ReadKey` is cancelled, then throws `OperationCanceledException`, so a query on it ends with an empty entry when the engine stops. It used to return a space at once, and a query on it never ended.
 
 ## Choosing one
 
@@ -48,6 +50,12 @@ The `OutputLevel` enum (passed via `WriteEventArgs` to event subscribers) is the
 ## Text written to System.Console
 
 The consoles that wrap `System.Console` (all of the above except `NullConsole`) take over its standard output and standard error. Text written with `Console.Write`, `Console.WriteLine` or `Console.Error.WriteLine`, by your code or by a library, goes through the console like any other output instead of breaking into the prompt. Standard error is shown at the `Error` level.
+
+## Redirected standard input
+
+The consoles that wrap `System.Console` read keys with `Console.ReadKey`, which cannot read from redirected standard input (piped input, many CI jobs and services). When keys cannot be read, the prompt or query ends with an error that says so, and `CommandEngine.Start` writes it and returns. Pass the commands as program arguments in that case.
+
+Changed in 4.3: the console used to wait at its prompt without an error when keys could not be read.
 
 ## Disposing
 

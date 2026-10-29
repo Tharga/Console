@@ -218,6 +218,10 @@ internal static class Program
 }
 ```
 
+When the engine stops, it cancels the token and sets the event passed to each runner, then waits for every runner to finish. A runner that ends because its token was cancelled has finished normally. Any other exception from a runner is written to the console, and `TaskRunner.Close` rethrows it.
+
+Changed in 4.3: an async runner (`new TaskRunner(async (c, a) => { ... })`) is awaited like any other. Before, the engine stopped waiting for it at its first `await`, and an exception thrown after that was lost.
+
 #### Basic text input
 In this example we start by registering a command named *Input*. Start the program and type input to test.
 
@@ -374,7 +378,7 @@ Fires off a function on each console output.
 A console configuration passed to it is applied as for the *ClientConsole*. The splash screen and assembly info are passed to the function.
 
 ### NullConsole
-Swallows all inputs and outputs.
+Swallows all inputs and outputs. Reading a key waits until the read is cancelled (changed in 4.3; it used to return a space at once, so a query on it never ended).
 
 ### AggregateConsole
 Merge serveral consoles together and use them all. For instance *ClientConsole* and *EventConsole* in combination.

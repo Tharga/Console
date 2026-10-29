@@ -42,5 +42,70 @@ namespace Tharga.Console.Tests
             outputs.Should().ContainSingle(x => x.Message == "output text").Which.OutputLevel.Should().Be(OutputLevel.Default);
             outputs.Should().ContainSingle(x => x.Message == "error text").Which.OutputLevel.Should().Be(OutputLevel.Error);
         }
+
+        public static TheoryData<string> NullWrites => new TheoryData<string> { "WriteLine(string)", "Write(string)", "WriteLine(object)", "Write(object)" };
+
+        [Theory]
+        [MemberData(nameof(NullWrites))]
+        public void Should_write_a_null_value_without_throwing(string overload)
+        {
+            //Arrange
+            var originalOut = System.Console.Out;
+            var originalError = System.Console.Error;
+            var originalIn = System.Console.In;
+            var consoleManager = new FakeConsoleManager();
+            var console = new TestConsole(consoleManager);
+
+            try
+            {
+                new ConsoleManager(TextWriter.Null).Intercept(console);
+
+                //Act
+                var act = () => WriteNull(overload);
+
+                //Assert
+                act.Should().NotThrow();
+            }
+            finally
+            {
+                System.Console.SetOut(originalOut);
+                System.Console.SetError(originalError);
+                System.Console.SetIn(originalIn);
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Should_write_a_tagged_output_without_a_message(bool lineFeed)
+        {
+            //Arrange
+            var console = new TestConsole(new FakeConsoleManager());
+
+            //Act
+            var act = () => console.Output(new WriteEventArgs(null, lineFeed: lineFeed, tag: "Tag"));
+
+            //Assert
+            act.Should().NotThrow();
+        }
+
+        private static void WriteNull(string overload)
+        {
+            switch (overload)
+            {
+                case "WriteLine(string)":
+                    System.Console.WriteLine((string)null);
+                    break;
+                case "Write(string)":
+                    System.Console.Write((string)null);
+                    break;
+                case "WriteLine(object)":
+                    System.Console.WriteLine((object)null);
+                    break;
+                case "Write(object)":
+                    System.Console.Write((object)null);
+                    break;
+            }
+        }
     }
 }

@@ -79,9 +79,10 @@ namespace Tharga.Console
                 while (!_cancellationTokenSource.IsCancellationRequested)
                 {
                     string entry;
+                    var stopAfterEntry = false;
                     if (_commandMode)
                     {
-                        entry = GetCommandModeEntry(commands, ref commandIndex, flags);
+                        entry = GetCommandModeEntry(commands, ref commandIndex, flags, out stopAfterEntry);
                     }
                     else
                     {
@@ -95,7 +96,17 @@ namespace Tharga.Console
                         }
                     }
 
-                    if (!Execute(entry))
+                    bool success;
+                    try
+                    {
+                        success = Execute(entry);
+                    }
+                    finally
+                    {
+                        if (stopAfterEntry) Stop();
+                    }
+
+                    if (!success)
                     {
                         if (_commandMode && HasFlag(args, FlagContinueInConsoleModeIfError))
                         {
@@ -156,11 +167,13 @@ namespace Tharga.Console
             return flags.Any(x => string.Compare(x.Replace("/", string.Empty), flag.Replace("/", string.Empty), StringComparison.OrdinalIgnoreCase) == 0);
         }
 
-        private string GetCommandModeEntry(IEnumerable<string> commands, ref int commandIndex, IEnumerable<string> flags)
+        // Sets stopAfterEntry for the last command, so the engine stops once that command has run.
+        private string GetCommandModeEntry(IEnumerable<string> commands, ref int commandIndex, IEnumerable<string> flags, out bool stopAfterEntry)
         {
             var cmds = commands as string[] ?? commands.ToArray();
             var entry = cmds.ToList()[commandIndex++];
 
+            stopAfterEntry = false;
             if (commandIndex >= cmds.Length)
             {
                 if (HasFlag(flags, FlagContinueInConsoleMode))
@@ -169,7 +182,7 @@ namespace Tharga.Console
                 }
                 else
                 {
-                    Stop();
+                    stopAfterEntry = true;
                 }
             }
 

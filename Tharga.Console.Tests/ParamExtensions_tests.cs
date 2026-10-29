@@ -46,4 +46,36 @@ public class ParamExtensions_tests
 
         result.Should().Equal("hello world");
     }
+
+    [Fact]
+    public void Quoted_part_inside_an_argument_is_kept_with_its_spaces()
+    {
+        var result = "a=\"b c\" d".ToInput().ToArray();
+
+        result.Should().Equal("a=b c", "d");
+    }
+
+    [Fact]
+    public void Quoted_part_between_letters_is_joined_to_them()
+    {
+        var result = "x\"y\"z".ToInput().ToArray();
+
+        result.Should().Equal("xyz");
+    }
+
+    [Fact]
+    public void Unterminated_quote_runs_to_the_end_of_the_input()
+    {
+        var result = "echo \"abc def".ToInput().ToArray();
+
+        result.Should().Equal("echo", "abc def");
+    }
+
+    [Fact]
+    public void Every_space_outside_quotes_separates_arguments()
+    {
+        var result = "a  b".ToInput().ToArray();
+
+        result.Should().Equal("a", "", "b");
+    }
 }

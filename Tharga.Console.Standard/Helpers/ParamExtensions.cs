@@ -1,22 +1,45 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Tharga.Console.Helpers
 {
     public static class ParamExtensions
     {
+        private const char Quote = '"';
+
+        /// <summary>
+        /// Splits an entry into its parameters. Every space outside quotes separates two parameters.
+        /// A quoted part keeps its spaces and loses its quotes, also inside a parameter (a="b c" gives a=b c).
+        /// A quote that is not closed runs to the end of the entry.
+        /// </summary>
         public static IEnumerable<string> ToInput(this string paramList)
         {
             if (string.IsNullOrEmpty(paramList))
                 return new List<string>();
 
-            var verbs = GetDelimiteredVerbs(ref paramList, '\"');
-            var paramArray = paramList.Split(' ');
-            if (verbs.Count == 0)
-                return paramArray;
+            var parameters = new List<string>();
+            var current = new StringBuilder();
+            var inQuotes = false;
+            foreach (var character in paramList)
+            {
+                if (character == Quote)
+                {
+                    inQuotes = !inQuotes;
+                }
+                else if (character == ' ' && !inQuotes)
+                {
+                    parameters.Add(current.ToString());
+                    current.Clear();
+                }
+                else
+                {
+                    current.Append(character);
+                }
+            }
 
-            return paramArray.Select(x => verbs.TryGetValue(x, out var value) ? value : x);
+            parameters.Add(current.ToString());
+            return parameters;
         }
 
         public static string ToParamString(this IEnumerable<string> param)
@@ -38,26 +61,6 @@ namespace Tharga.Console.Helpers
                 else
                     yield return i;
             }
-        }
-
-        private static Dictionary<string, string> GetDelimiteredVerbs(ref string paramList, char delimiter)
-        {
-            var verbs = new Dictionary<string, string>();
-
-            var pos = paramList.IndexOf(delimiter, 0);
-            while (pos != -1)
-            {
-                var endPos = paramList.IndexOf(delimiter, pos + 1);
-                var data = paramList.Substring(pos + 1, endPos - pos - 1);
-                var key = Guid.NewGuid().ToString();
-                verbs.Add(key, data);
-
-                paramList = paramList.Substring(0, pos) + key + paramList.Substring(endPos + 1);
-
-                pos = paramList.IndexOf(delimiter, pos + 1);
-            }
-
-            return verbs;
         }
     }
 }

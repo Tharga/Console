@@ -21,6 +21,12 @@ internal class StartupCommand : ContainerCommandBase
         }
     }
 
+    // Starts the program, or dotnet with the program when it is a dll, with the path quoted because Windows splits the command line at spaces.
+    internal static string GetCommandLine(string location)
+    {
+        return location.EndsWith(".dll") ? $"dotnet \"{location}\"" : $"\"{location}\"";
+    }
+
     public override IEnumerable<HelpLine> HelpText
     {
         get { yield return new HelpLine("Commands to manage the startup."); }

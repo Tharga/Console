@@ -7,8 +7,8 @@ namespace Tharga.Console
     {
         public static Location Move(this Location item, IConsoleManager consoleManager, string data)
         {
-            if (!data.Contains("\n"))
-                return item.Move(consoleManager, data.Length);
+            if (data == null || !data.Contains("\n"))
+                return item.Move(consoleManager, data?.Length ?? 0);
 
             var lns = data.Split('\n');
             foreach (var ln in lns)
