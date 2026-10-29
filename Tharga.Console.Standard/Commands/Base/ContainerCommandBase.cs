@@ -96,10 +96,11 @@ namespace Tharga.Console.Commands.Base
             var showHidden = true;
             var command = this as ICommand;
             var subCommand = paramList?.Trim();
+            string parentReason = null;
             if (paramList != " details")
             {
                 showHidden = false;
-                command = GetSubCommand(paramList, out subCommand, out _);
+                command = GetSubCommand(paramList, out subCommand, out _, out parentReason);
             }
 
             if (command == null)
@@ -120,7 +121,10 @@ namespace Tharga.Console.Commands.Base
                 helpCommand.AddLine(command.Description);
             }
 
-            command.CanExecute(out var reasonMessage);
+            if (command.CanExecute(out var reasonMessage) && parentReason != null)
+            {
+                reasonMessage = parentReason;
+            }
 
             if (subCommand != null && subCommand.EndsWith("details"))
             {
@@ -267,8 +271,15 @@ namespace Tharga.Console.Commands.Base
 
         protected internal ICommand GetSubCommand(string entry, out string subCommand, out bool typeRegistration)
         {
+            return GetSubCommand(entry, out subCommand, out typeRegistration, out _);
+        }
+
+        // parentReason is why a container above the action command found cannot execute it now, or null when nothing blocks it.
+        internal ICommand GetSubCommand(string entry, out string subCommand, out bool typeRegistration, out string parentReason)
+        {
             typeRegistration = false;
             subCommand = null;
+            parentReason = null;
 
             if (string.IsNullOrEmpty(entry))
             {
@@ -302,17 +313,12 @@ namespace Tharga.Console.Commands.Base
             }
 
             //If there is a command, take the next parameter and look for a sub-command
-            var x1 = containerCommandBase.GetSubCommand(subCommand, out var nextSub, out typeRegistration);
+            var x1 = containerCommandBase.GetSubCommand(subCommand, out var nextSub, out typeRegistration, out parentReason);
             if (x1 == null) return containerCommandBase; //If there is no sub-command, return the command found
             subCommand = nextSub;
-            if (x1 is ActionCommandBase actionCommandBase)
+            if (x1 is ActionCommandBase && parentReason == null && !command.CanExecute(out var reasonMessage))
             {
-                var a = x1.CanExecute(out var reasonMessage);
-                var b = command.CanExecute(out reasonMessage);
-                if (a && !b)
-                {
-                    actionCommandBase.SetCanExecute(() => $"{reasonMessage} Inherited by parent.");
-                }
+                parentReason = $"{reasonMessage} Inherited by parent.";
             }
 
             return x1;

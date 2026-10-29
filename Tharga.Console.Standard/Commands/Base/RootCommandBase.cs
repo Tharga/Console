@@ -132,7 +132,7 @@ namespace Tharga.Console.Commands.Base
         {
             try
             {
-                var command = GetSubCommand(entry, out var subCommand, out var typeRegistration);
+                var command = GetSubCommand(entry, out var subCommand, out var typeRegistration, out var parentReason);
                 if (command != null)
                 {
                     var bc = command as CommandBase;
@@ -144,6 +144,12 @@ namespace Tharga.Console.Commands.Base
                         if (!command.CanExecute(out var reason))
                         {
                             OutputWarning(GetCanExecuteFailMessage(reason));
+                            return false;
+                        }
+
+                        if (parentReason != null)
+                        {
+                            OutputWarning(GetCanExecuteFailMessage(parentReason));
                             return false;
                         }
                     }
