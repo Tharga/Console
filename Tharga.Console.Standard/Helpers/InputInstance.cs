@@ -340,6 +340,10 @@ namespace Tharga.Console.Helpers
                 {
                     throw;
                 }
+                catch (KeyInputException)
+                {
+                    throw;
+                }
                 catch (Exception exception)
                 {
                     Trace.TraceError(exception.Message);

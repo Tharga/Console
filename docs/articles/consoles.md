@@ -51,6 +51,12 @@ The `OutputLevel` enum (passed via `WriteEventArgs` to event subscribers) is the
 
 The consoles that wrap `System.Console` (all of the above except `NullConsole`) take over its standard output and standard error. Text written with `Console.Write`, `Console.WriteLine` or `Console.Error.WriteLine`, by your code or by a library, goes through the console like any other output instead of breaking into the prompt. Standard error is shown at the `Error` level.
 
+## Redirected standard input
+
+The consoles that wrap `System.Console` read keys with `Console.ReadKey`, which cannot read from redirected standard input (piped input, many CI jobs and services). When keys cannot be read, the prompt or query ends with an error that says so, and `CommandEngine.Start` writes it and returns. Pass the commands as program arguments in that case.
+
+Changed in 4.3: the console used to wait at its prompt without an error when keys could not be read.
+
 ## Disposing
 
 All console implementations implement `IDisposable`. Wrap them in `using` (top-level statement) or `using (var ...)` (classic) — `Dispose` clears handlers, restores console colors, and releases speech resources where applicable.
