@@ -374,7 +374,7 @@ Fires off a function on each console output.
 A console configuration passed to it is applied as for the *ClientConsole*. The splash screen and assembly info are passed to the function.
 
 ### NullConsole
-Swallows all inputs and outputs.
+Swallows all inputs and outputs. Reading a key waits until the read is cancelled (changed in 4.3; it used to return a space at once, so a query on it never ended).
 
 ### AggregateConsole
 Merge serveral consoles together and use them all. For instance *ClientConsole* and *EventConsole* in combination.
