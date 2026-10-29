@@ -5,8 +5,7 @@ using Tharga.Console.Interfaces;
 
 namespace Tharga.Console.Tests
 {
-    // Returns keys in order and runs each action when its turn comes, on the thread that reads the keys.
-    // When the script has run out, a read waits until it is cancelled.
+    // Returns keys in order and runs each action in turn on the reading thread; once the script has run out, a read waits until it is cancelled.
     internal class ScriptedKeyInputEngine : IKeyInputEngine
     {
         private readonly Queue<object> _script = new Queue<object>();
