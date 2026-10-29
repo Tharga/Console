@@ -347,7 +347,8 @@ namespace Tharga.Console.Consoles.Base
                     for (var i = 0; i < linesNeeded; i++)
                         ConsoleManager?.WriteLine(null);
 
-                    MoveBufferArea(0, CursorTop - linesToInsert, BufferWidth, inputBufferLines, 0, CursorTop);
+                    // The screen has scrolled: the input buffer starts linesToInsert lines above its place on the last lines.
+                    MoveBufferArea(0, CursorTop - inputBufferLines - linesToInsert + 1, BufferWidth, inputBufferLines, 0, CursorTop - inputBufferLines + 1);
                     SetCursorPosition(0, CursorTop - inputBufferLines - linesToInsert + 1);
                 }
                 else
@@ -412,7 +413,7 @@ namespace Tharga.Console.Consoles.Base
             var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
             var tag = output.Tag ?? string.Empty;
             var outputLevel = output.OutputLevel;
-            var message = output.TrunkateSingleLine ? (output.Message?.Truncate() ?? string.Empty) : output.Message;
+            var message = output.TrunkateSingleLine ? (output.Message?.Truncate(BufferWidth) ?? string.Empty) : output.Message;
 
             lock (CommandEngine.SyncRoot)
             {

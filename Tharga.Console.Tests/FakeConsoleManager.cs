@@ -8,14 +8,15 @@ namespace Tharga.Console.Tests
     internal class FakeConsoleManager : IConsoleManager
     {
         private const int CbufferHeight = 300;
-        private const int CbufferWidth = 80;
+        private readonly int _bufferWidth;
         private int _cursorTop;
         private int _cursorLeft;
 
         public string[] LineOutput = new string[CbufferHeight];
 
-        public FakeConsoleManager(IKeyInputEngine keyInputEngine = null)
+        public FakeConsoleManager(IKeyInputEngine keyInputEngine = null, int bufferWidth = 80)
         {
+            _bufferWidth = bufferWidth;
             KeyInputEngine = keyInputEngine ?? new FakeKeyInputEngine();
         }
 
@@ -46,8 +47,12 @@ namespace Tharga.Console.Tests
             private set
             {
                 if (value == CbufferHeight)
+                {
+                    // Scrolls, as a real console does: every line moves up one and the new last line is blank.
                     for (var i = 0; i < CbufferHeight - 1; i++)
                         LineOutput[i] = LineOutput[i + 1];
+                    LineOutput[CbufferHeight - 1] = null;
+                }
                 else
                     _cursorTop = value;
             }
@@ -58,7 +63,7 @@ namespace Tharga.Console.Tests
 
         public int BufferWidth
         {
-            get { return CbufferWidth; }
+            get { return _bufferWidth; }
             set { throw new NotSupportedException(); }
         }
 

@@ -154,6 +154,62 @@ namespace Tharga.Console.Tests
             }
         }
 
+        [Fact]
+        public void Should_write_above_an_entry_of_two_lines_that_ends_on_the_last_line_of_the_buffer()
+        {
+            //Arrange: the entry wraps from the second last line onto the last line, then a line is written.
+            var keys = new ScriptedKeyInputEngine();
+            var consoleManager = new FakeConsoleManager(keys);
+            var console = new TestConsole(consoleManager);
+            var last = consoleManager.BufferHeight - 1;
+            for (var i = 0; i < last - 1; i++)
+                console.Output(new WriteEventArgs($"Line {i}"));
+
+            string[] screen = null;
+            (int Left, int Top) cursor = default;
+            keys.Keys(new string('X', consoleManager.BufferWidth + 1))
+                .Then(() => console.Output(new WriteEventArgs("z")))
+                .Then(() =>
+                {
+                    screen = (string[])consoleManager.LineOutput.Clone();
+                    cursor = (consoleManager.CursorLeft, consoleManager.CursorTop);
+                })
+                .Keys("Y\r");
+
+            try
+            {
+                //Act
+                var entry = new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
+
+                //Assert: the screen scrolls one line, the output goes above the entry and the entry stays whole.
+                screen[last - 3].Should().Be($"Line {last - 2}");
+                screen[last - 2].Should().Be("z");
+                screen[last - 1].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
+                screen[last].Should().Be(new string('X', Constants.Prompt.Length + 1));
+                cursor.Should().Be((Constants.Prompt.Length + 1, last));
+                entry.Should().Be(new string('X', consoleManager.BufferWidth + 1) + "Y");
+            }
+            finally
+            {
+                ResetInputState();
+            }
+        }
+
+        [Fact]
+        public void Should_truncate_a_single_line_to_the_width_of_the_console()
+        {
+            //Arrange
+            var consoleManager = new FakeConsoleManager(bufferWidth: 50);
+            var console = new TestConsole(consoleManager);
+
+            //Act
+            console.Output(new WriteEventArgs(new string('A', 70), trunkateSingleLine: true));
+
+            //Assert
+            consoleManager.LineOutput[0].Should().Be(new string('A', 50));
+            consoleManager.LineOutput[1].Should().BeNull();
+        }
+
         // One character more than the buffer width, so with the prompt the entry wraps onto a second line.
         private static ConsoleKey[] LongEntry()
         {

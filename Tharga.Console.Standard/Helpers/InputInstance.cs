@@ -58,21 +58,27 @@ namespace Tharga.Console.Helpers
             _console.SetCursorPosition(left, top);
         }
 
+        // Makes the requested number of free lines after the input buffer and puts the cursor back where it was.
         private void PushBufferDownEvent(object sender, PushBufferDownEventArgs e)
         {
-            // Incomplete: step 2 is missing, so the lines are inserted at the cursor rather than after the input buffer. See #59.
+            lock (CommandEngine.SyncRoot)
+            {
+                var location = new Location(CursorLeft, CursorTop);
+                if (_inputBuffer != null) MoveCursorToEnd(_startLocation, _inputBuffer);
 
-            //Step1: Remember cursor position
-            var location = new Location(CursorLeft, CursorTop);
+                var topWithoutScroll = CursorTop + e.LineCount;
+                for (var i = 0; i < e.LineCount; i++)
+                    _console.Output(new WriteEventArgs(null));
 
-            //Step2: move the cursor to the end of the input buffer,
+                // Line feeds on the last line scroll the screen, which moves the input buffer up.
+                var scrolled = Math.Max(0, topWithoutScroll - CursorTop);
+                lock (_locationLock)
+                {
+                    _startLocation = new Location(_startLocation.Left, Math.Max(0, _startLocation.Top - scrolled));
+                }
 
-            //Step3: Insert lines
-            for (var i = 0; i < e.LineCount; i++)
-                System.Console.WriteLine(string.Empty);
-
-            //Step4: Move cursor back to position
-            SetCursorPosition(location.Left, location.Top - 1);
+                SetCursorPosition(location.Left, Math.Max(0, location.Top - scrolled));
+            }
         }
 
         private void LinesInsertedEvent(object sender, LinesInsertedEventArgs e)
@@ -80,10 +86,14 @@ namespace Tharga.Console.Helpers
             lock (_locationLock)
             {
                 var top = _startLocation.Top + e.LineCount;
-                if (top >= BufferHeight) top = BufferHeight - 1;
+                var lastTop = BufferHeight - InputLineCount;
+                if (top > lastTop) top = lastTop;
                 _startLocation = new Location(_startLocation.Left, top);
             }
         }
+
+        // The number of lines the input buffer takes up on the screen, from its start location.
+        private int InputLineCount => BufferWidth > 0 ? (_startLocation.Left + (_inputBuffer?.Length ?? 0)) / BufferWidth + 1 : 1;
 
         public T ReadLine<T>(CommandTreeNode<T> selection, bool allowEscape)
         {
