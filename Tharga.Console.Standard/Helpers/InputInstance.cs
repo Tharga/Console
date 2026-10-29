@@ -629,7 +629,8 @@ namespace Tharga.Console.Helpers
 
         public void Dispose()
         {
-            _console?.Dispose();
+            _console.PushBufferDownEvent -= PushBufferDownEvent;
+            _console.LinesInsertedEvent -= LinesInsertedEvent;
         }
 
         internal static (Location StartLocation, int BufferPosition) RecoverNegativeBufferPosition(int currentBufferPosition, Location currentScreenLocation, Location startLocation)
