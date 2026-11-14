@@ -17,6 +17,8 @@ Nuget packages can be downloaded from here...
 - [.NET](https://www.nuget.org/packages/Tharga.Console/)
 - [.NET with Speech](https://www.nuget.org/packages/Tharga.Console.Speech/)
 
+Supported frameworks: `Tharga.Console` and `Tharga.Console.Speech` target .NET 10 (`net10.0`) and .NET 11 (`net11.0`). `Tharga.Console.Standard` targets `netstandard2.0`.
+
 ## Engine, Command and Console
 
 Tharga console has an engine that runs the program. The engine needs a root command and a console to run.
