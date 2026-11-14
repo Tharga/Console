@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using Tharga.Console.Consoles.Base;
 using Tharga.Console.Entities;
 using Tharga.Console.Interfaces;
 
@@ -18,25 +19,22 @@ namespace Tharga.Console.Helpers
         private readonly char? _passwordChar;
 
         private readonly IConsole _console;
+        private readonly InputLayout _layout;
         private static readonly Dictionary<string, List<string>> _commandHistory = new Dictionary<string, List<string>>();
         private int _commandHistoryIndex = -1;
         private Location _startLocation;
         private object _selection;
 
-        private static int _currentBufferLineCount;
-        private static int _cursorLineOffset;
         private InputBuffer _inputBuffer;
         private readonly CancellationToken _cancellationToken;
 
-        // Static, so shared by every input instance and console. See #59.
-        public static int CurrentBufferLineCount { get { return _currentBufferLineCount == 0 ? 1 : (_currentBufferLineCount + 1); } private set { _currentBufferLineCount = value; } }
-        public static int CursorLineOffset { get { return _cursorLineOffset; } set { _cursorLineOffset = value; } }
 
         public InputInstance(IConsole console, string paramName, char? passwordChar, CancellationToken cancellationToken)
         {
             if (console == null) throw new ArgumentNullException(nameof(console), "No console provided.");
 
             _console = console;
+            _layout = (console as ConsoleBase)?.InputLayout ?? new InputLayout();
             _paramName = paramName;
             _passwordChar = passwordChar;
             _cancellationToken = cancellationToken;
@@ -241,7 +239,7 @@ namespace Tharga.Console.Helpers
                                     if (currentBufferPosition == _inputBuffer.Length) continue;
                                     MoveBufferLeft(new Location(currentScreenLocation.Left + 1, currentScreenLocation.Top), _inputBuffer, _startLocation);
                                     _inputBuffer.RemoveAt(currentBufferPosition);
-                                    CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                    _layout.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                     break;
 
                                 case ConsoleKey.Backspace:
@@ -249,7 +247,7 @@ namespace Tharga.Console.Helpers
                                     MoveBufferLeft(currentScreenLocation, _inputBuffer, _startLocation);
                                     _inputBuffer.RemoveAt(currentBufferPosition - 1);
                                     MoveCursorLeft();
-                                    CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                    _layout.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                     break;
 
                                 case ConsoleKey.Escape:
@@ -292,7 +290,7 @@ namespace Tharga.Console.Helpers
                                             Clear(_inputBuffer);
                                             _console.Output(new WriteEventArgs(s.FullValuePath, OutputLevel.Default, null, null, false, false));
                                             _inputBuffer.Add(s.FullValuePath);
-                                            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+                                            _layout.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(_inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
                                             _selection = s;
                                         }
                                     }
@@ -327,7 +325,7 @@ namespace Tharga.Console.Helpers
                             }
                         }
 
-                        CursorLineOffset = CursorTop - _startLocation.Top;
+                        _layout.CursorLineOffset = CursorTop - _startLocation.Top;
                     }
                 }
                 catch (OperationCanceledException exception)
@@ -475,7 +473,7 @@ namespace Tharga.Console.Helpers
             _console.Output(new WriteEventArgs(new string(' ', inputBuffer.Length), OutputLevel.Default, null, null, false, false));
             MoveCursorToStart(_startLocation);
             inputBuffer.Clear();
-            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+            _layout.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
         }
 
         private T GetResponse<T>(CommandTreeNode<T> selection, InputBuffer inputBuffer)
@@ -565,7 +563,7 @@ namespace Tharga.Console.Helpers
             }
 
             inputBuffer.Insert(currentBufferPosition, input.ToString(CultureInfo.InvariantCulture));
-            CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
+            _layout.CurrentBufferLineCount = (int)Math.Ceiling((decimal)(inputBuffer.Length - BufferWidth + _startLocation.Left + 1) / BufferWidth);
         }
 
         private void MoveBufferLeft(Location currentScreenLocation, InputBuffer inputBuffer, Location startLocation)

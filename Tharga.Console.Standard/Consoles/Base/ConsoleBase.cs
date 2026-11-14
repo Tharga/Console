@@ -13,6 +13,7 @@ namespace Tharga.Console.Consoles.Base
     public abstract class ConsoleBase : IConsole
     {
         internal readonly IConsoleManager ConsoleManager;
+        internal InputLayout InputLayout { get; } = new InputLayout();
         private readonly List<OutputLevel> _mutedTypes = new List<OutputLevel>();
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private Dictionary<string, Location> _tagLocalLocation = new Dictionary<string, Location>();
@@ -83,7 +84,7 @@ namespace Tharga.Console.Consoles.Base
             }
 
             var linesToInsert = GetLineCount(value);
-            var inputBufferLines = InputInstance.CurrentBufferLineCount;
+            var inputBufferLines = InputLayout.CurrentBufferLineCount;
             var intCursorLineOffset = MoveCursorUp();
             var cursorLocation = MoveInputBufferDown(linesToInsert, inputBufferLines);
 
@@ -278,7 +279,7 @@ namespace Tharga.Console.Consoles.Base
         {
             try
             {
-                var intCursorLineOffset = InputInstance.CursorLineOffset;
+                var intCursorLineOffset = InputLayout.CursorLineOffset;
                 SetCursorPosition(CursorLeft, CursorTop - intCursorLineOffset);
                 return intCursorLineOffset;
             }

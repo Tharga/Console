@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using AwesomeAssertions;
 using Tharga.Console.Entities;
@@ -108,23 +107,16 @@ namespace Tharga.Console.Tests
             var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(LongEntry().Append(ConsoleKey.Enter).ToArray()));
             var console = new TestConsole(consoleManager);
 
-            try
-            {
-                var entry = new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
+            var entry = new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
 
-                //Act
-                console.Output(new WriteEventArgs("z"));
+            //Act
+            console.Output(new WriteEventArgs("z"));
 
-                //Assert
-                entry.Should().Be(new string('X', consoleManager.BufferWidth + 1));
-                consoleManager.LineOutput[0].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
-                consoleManager.LineOutput[1].Should().Be("z");
-                consoleManager.LineOutput[2].Should().Be(new string('X', Constants.Prompt.Length + 1), "the rest of the entry is pushed below the output");
-            }
-            finally
-            {
-                ResetInputState();
-            }
+            //Assert
+            entry.Should().Be(new string('X', consoleManager.BufferWidth + 1));
+            consoleManager.LineOutput[0].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
+            consoleManager.LineOutput[1].Should().Be("z");
+            consoleManager.LineOutput[2].Should().Be(new string('X', Constants.Prompt.Length + 1), "the rest of the entry is pushed below the output");
         }
 
         // Pins the current, wrong placement; see #62. The output should be on line 2, below both lines of the entry.
@@ -135,23 +127,16 @@ namespace Tharga.Console.Tests
             var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(LongEntry().Append(ConsoleKey.Home).Append(ConsoleKey.Enter).ToArray()));
             var console = new TestConsole(consoleManager);
 
-            try
-            {
-                var entry = new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
+            var entry = new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
 
-                //Act
-                console.Output(new WriteEventArgs("z"));
+            //Act
+            console.Output(new WriteEventArgs("z"));
 
-                //Assert
-                entry.Should().Be(new string('X', consoleManager.BufferWidth + 1));
-                consoleManager.LineOutput[0].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
-                consoleManager.LineOutput[1].Should().Be("z");
-                consoleManager.LineOutput[2].Should().Be(new string('X', Constants.Prompt.Length + 1), "the rest of the entry is pushed below the output");
-            }
-            finally
-            {
-                ResetInputState();
-            }
+            //Assert
+            entry.Should().Be(new string('X', consoleManager.BufferWidth + 1));
+            consoleManager.LineOutput[0].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
+            consoleManager.LineOutput[1].Should().Be("z");
+            consoleManager.LineOutput[2].Should().Be(new string('X', Constants.Prompt.Length + 1), "the rest of the entry is pushed below the output");
         }
 
         [Fact]
@@ -176,23 +161,16 @@ namespace Tharga.Console.Tests
                 })
                 .Keys("Y\r");
 
-            try
-            {
-                //Act
-                var entry = new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
+            //Act
+            var entry = new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
 
-                //Assert: the screen scrolls one line, the output goes above the entry and the entry stays whole.
-                screen[last - 3].Should().Be($"Line {last - 2}");
-                screen[last - 2].Should().Be("z");
-                screen[last - 1].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
-                screen[last].Should().Be(new string('X', Constants.Prompt.Length + 1));
-                cursor.Should().Be((Constants.Prompt.Length + 1, last));
-                entry.Should().Be(new string('X', consoleManager.BufferWidth + 1) + "Y");
-            }
-            finally
-            {
-                ResetInputState();
-            }
+            //Assert: the screen scrolls one line, the output goes above the entry and the entry stays whole.
+            screen[last - 3].Should().Be($"Line {last - 2}");
+            screen[last - 2].Should().Be("z");
+            screen[last - 1].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
+            screen[last].Should().Be(new string('X', Constants.Prompt.Length + 1));
+            cursor.Should().Be((Constants.Prompt.Length + 1, last));
+            entry.Should().Be(new string('X', consoleManager.BufferWidth + 1) + "Y");
         }
 
         [Fact]
@@ -214,13 +192,6 @@ namespace Tharga.Console.Tests
         private static ConsoleKey[] LongEntry()
         {
             return Enumerable.Repeat(ConsoleKey.X, new FakeConsoleManager().BufferWidth + 1).ToArray();
-        }
-
-        // Puts the static input state back to a one-line entry with the cursor on it, as it is when no entry was long.
-        private static void ResetInputState()
-        {
-            InputInstance.CursorLineOffset = 0;
-            typeof(InputInstance).GetField("_currentBufferLineCount", BindingFlags.NonPublic | BindingFlags.Static).SetValue(null, 0);
         }
     }
 }
