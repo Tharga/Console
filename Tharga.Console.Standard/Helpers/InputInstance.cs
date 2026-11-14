@@ -152,6 +152,7 @@ namespace Tharga.Console.Helpers
                         if (IsOutputKey(readKey))
                         {
                             var input = readKey.KeyChar;
+                            currentScreenLocation = ScrollEntryAboveLastLine(currentScreenLocation);
                             InsertText(currentScreenLocation, input, _inputBuffer, currentBufferPosition, _startLocation);
                         }
                         else if (readKey.Modifiers == ConsoleModifiers.Control)
@@ -348,6 +349,29 @@ namespace Tharga.Console.Helpers
                     _console.OutputError(exception);
                 }
             }
+        }
+
+        // An echo that fills the last cell of the screen buffer scrolls the screen, so make the room first and move the entry up with it. See #79.
+        private Location ScrollEntryAboveLastLine(Location currentScreenLocation)
+        {
+            if (BufferWidth <= 1) return currentScreenLocation;
+
+            var endTop = _startLocation.Top + ((_startLocation.Left + _inputBuffer.Length + 1) / BufferWidth);
+            var lines = endTop - BufferHeight + 1;
+            if (lines <= 0) return currentScreenLocation;
+
+            MoveCursorToEnd(_startLocation, _inputBuffer);
+            for (var i = 0; i < lines; i++)
+                _console.Output(new WriteEventArgs(null));
+
+            lock (_locationLock)
+            {
+                _startLocation = new Location(_startLocation.Left, Math.Max(0, _startLocation.Top - lines));
+            }
+
+            var scrolledLocation = new Location(currentScreenLocation.Left, Math.Max(0, currentScreenLocation.Top - lines));
+            SetCursorPosition(scrolledLocation.Left, scrolledLocation.Top);
+            return scrolledLocation;
         }
 
         private T Enter<T>(CommandTreeNode<T> selection)
