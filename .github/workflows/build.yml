@@ -194,7 +194,17 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "previous_tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
 
+      - name: Log in to NuGet (Trusted Publishing)
+        id: nuget-login
+        if: vars.NUGET_USER != ''
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
       - name: Push to NuGet
+        env:
+          # The short-lived key from Trusted Publishing when it is set up, otherwise the stored key.
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY || secrets.NUGET_API_KEY }}
         run: |
           # Only *.nupkg is globbed. Each matching package's sibling .snupkg is
           # uploaded automatically by dotnet nuget push, so symbols must NOT be
@@ -204,7 +214,7 @@ jobs:
             echo "Pushing $pkg..."
             # --skip-duplicate already makes a re-run of an existing version a
             # success, so a failure here is a real failure and must fail the job.
-            dotnet nuget push "$pkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+            dotnet nuget push "$pkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
           done
 
       - name: Create GitHub Release
