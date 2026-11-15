@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0</TargetFrameworks>
+		<TargetFrameworks>net10.0;net11.0</TargetFrameworks>
 		<RootNamespace>Tharga.Console</RootNamespace>
 		<Authors>Daniel Bohlin</Authors>
 		<Company>Thargelion AB</Company>
@@ -36,7 +36,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="System.Speech" Version="10.0.14" />
+	  <PackageReference Include="System.Speech" Version="10.0.15" Condition="'$(TargetFramework)' == 'net10.0'" />
+	  <PackageReference Include="System.Speech" Version="11.0.0" Condition="'$(TargetFramework)' == 'net11.0'" />
 	</ItemGroup>
 
 	<ItemGroup>

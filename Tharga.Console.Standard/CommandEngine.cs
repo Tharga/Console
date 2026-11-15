@@ -96,19 +96,24 @@ namespace Tharga.Console
                         }
                     }
 
+                    var executed = false;
                     bool success;
                     try
                     {
                         success = Execute(entry);
+                        executed = true;
                     }
                     finally
                     {
-                        if (stopAfterEntry) Stop();
+                        if (stopAfterEntry && !executed) Stop();
                     }
+
+                    var continueInConsoleMode = !success && _commandMode && HasFlag(args, FlagContinueInConsoleModeIfError);
+                    if (stopAfterEntry && !continueInConsoleMode) Stop();
 
                     if (!success)
                     {
-                        if (_commandMode && HasFlag(args, FlagContinueInConsoleModeIfError))
+                        if (continueInConsoleMode)
                         {
                             _commandMode = false;
                             continue;

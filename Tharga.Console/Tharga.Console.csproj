@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0</TargetFrameworks>
+		<TargetFrameworks>net10.0;net11.0</TargetFrameworks>
 		<Authors>Daniel Bohlin</Authors>
 		<Company>Thargelion AB</Company>
 		<Product>Tharga Console</Product>
@@ -50,8 +50,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.14" />
-	  <PackageReference Include="Tharga.Runtime" Version="1.0.7" />
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.15" Condition="'$(TargetFramework)' == 'net10.0'" />
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="11.0.0" Condition="'$(TargetFramework)' == 'net11.0'" />
+	  <PackageReference Include="Tharga.Runtime" Version="1.2.1" />
 	</ItemGroup>
 
 </Project>
