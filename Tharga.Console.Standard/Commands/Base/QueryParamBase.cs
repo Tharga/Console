@@ -172,7 +172,7 @@ namespace Tharga.Console.Commands.Base
                     return item;
                 }
 
-                item = selection.Subs.SingleOrDefault(x => string.Compare(x.Key.ToString(), autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
+                item = selection.Subs.SingleOrDefault(x => string.Compare(x.Key?.ToString(), autoProvideValue, StringComparison.InvariantCultureIgnoreCase) == 0);
                 if (item != null)
                 {
                     if (item.Key != null && item.Key.ToString() == autoProvideValue)

@@ -112,12 +112,12 @@ namespace Tharga.Console.Commands.Base
             if (command.Name == "root")
             {
                 var assembly = Assembly.GetEntryAssembly();
-                helpCommand.AddLine($"Application {assembly?.GetName().Name ?? "main"} help.", foreColor: ConsoleColor.DarkCyan);
+                helpCommand.AddTitle($"Application {assembly?.GetName().Name ?? "main"} help.");
                 helpCommand.AddLine($"Version {assembly?.GetName().Version}");
             }
             else
             {
-                helpCommand.AddLine($"Help for command {command.Name}.", foreColor: ConsoleColor.DarkCyan);
+                helpCommand.AddTitle($"Help for command {command.Name}.");
                 helpCommand.AddLine(command.Description);
             }
 
@@ -146,7 +146,7 @@ namespace Tharga.Console.Commands.Base
                 if (command.Name == "root")
                 {
                     helpCommand.AddLine(string.Empty);
-                    helpCommand.AddLine("How to use help.", foreColor: ConsoleColor.DarkCyan);
+                    helpCommand.AddTitle("How to use help.");
                     helpCommand.AddLine("Use the parameter -? at the end of any command to get more details.");
                     helpCommand.AddLine("It is also possible to type 'help [command]' to get details.");
 
@@ -159,7 +159,7 @@ namespace Tharga.Console.Commands.Base
                     //helpCommand.AddLine("Visit https://github.com/poxet/tharga-console.");
 
                     helpCommand.AddLine(string.Empty);
-                    helpCommand.AddLine("Switches:", foreColor: ConsoleColor.DarkCyan);
+                    helpCommand.AddTitle("Switches:");
                     helpCommand.AddLine("/c Keeps the console open when parameters are sent to the console.");
                     helpCommand.AddLine("/e Keeps the console open when parameters are sent to the console and something goes wrong.");
                     helpCommand.AddLine("/r Resets settings.");

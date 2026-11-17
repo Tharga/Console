@@ -61,11 +61,20 @@ namespace Tharga.Console.Helpers
         {
             foreach (var item in data)
             {
-                Enum.TryParse(item.ToString(), true, out ConsoleKey val);
-                _buffer.Add(new ConsoleKeyInfo(item, val, false, false, false));
+                _buffer.Add(new ConsoleKeyInfo(item, GetConsoleKey(item), false, false, false));
             }
 
             _buffer.Add(new ConsoleKeyInfo((char)13, ConsoleKey.Enter, false, false, false));
+        }
+
+        private static ConsoleKey GetConsoleKey(char character)
+        {
+            if (character >= '0' && character <= '9') return ConsoleKey.D0 + (character - '0');
+
+            var upper = char.ToUpperInvariant(character);
+            if (upper >= 'A' && upper <= 'Z') return ConsoleKey.A + (upper - 'A');
+
+            return character == ' ' ? ConsoleKey.Spacebar : ConsoleKey.NoName;
         }
     }
 }
