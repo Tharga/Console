@@ -79,7 +79,9 @@ namespace Tharga.Console.Consoles.Base
         {
             if (value == null)
             {
+                var atLastLine = IsCursorOnLastLine();
                 ConsoleManager?.WriteLine(null);
+                if (atLastLine) ShiftTaggedLines(1);
                 return;
             }
 
@@ -275,6 +277,28 @@ namespace Tharga.Console.Consoles.Base
             return endOfTextLocation;
         }
 
+        private bool IsCursorOnLastLine()
+        {
+            try
+            {
+                return CursorTop == BufferHeight - 1;
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+        }
+
+        // The remembered location of a tagged line moves up with the screen when it scrolls. A line that has scrolled out of the buffer is forgotten.
+        private void ShiftTaggedLines(int lines)
+        {
+            if (lines <= 0 || _tagLocalLocation.Count == 0) return;
+
+            _tagLocalLocation = _tagLocalLocation
+                .Where(x => x.Value.Top >= lines)
+                .ToDictionary(x => x.Key, x => new Location(x.Value.Left, x.Value.Top - lines));
+        }
+
         private int MoveCursorUp()
         {
             try
@@ -341,12 +365,12 @@ namespace Tharga.Console.Consoles.Base
 
                 if (inputBufferLines + CursorTop + linesToInsert > ConsoleManager.BufferHeight)
                 {
-                    // Does not account for lines inserted between a tagged line and the cursor. See #58.
                     SetCursorPosition(BufferWidth - 1, BufferHeight - 1);
                     var cursorMovement = CursorTop - cursorTop;
                     var linesNeeded = inputBufferLines + CursorTop + linesToInsert - ConsoleManager.BufferHeight - cursorMovement;
                     for (var i = 0; i < linesNeeded; i++)
                         ConsoleManager?.WriteLine(null);
+                    ShiftTaggedLines(linesNeeded);
 
                     // The screen has scrolled: the input buffer starts linesToInsert lines above its place on the last lines.
                     MoveBufferArea(0, CursorTop - inputBufferLines - linesToInsert + 1, BufferWidth, inputBufferLines, 0, CursorTop - inputBufferLines + 1);
