@@ -409,9 +409,7 @@ namespace Tharga.Console.Consoles.Base
             if (_mutedTypes?.Contains(output.OutputLevel) ?? false) return;
 
             var textColor = output.TextColor; // ?? ConsoleColor.White;
-            // Lines default to a black background. Writes without a line feed (the prompt and typed input among them)
-            // only change the background when one is given, so they keep the console's background.
-            var textBackgroundColor = output.TextBackgroundColor ?? ConsoleColor.Black;
+            var textBackgroundColor = output.TextBackgroundColor;
             var tag = output.Tag ?? string.Empty;
             var outputLevel = output.OutputLevel;
             var message = output.TrunkateSingleLine ? (output.Message?.Truncate(BufferWidth) ?? string.Empty) : output.Message;
