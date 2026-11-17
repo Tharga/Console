@@ -99,9 +99,8 @@ namespace Tharga.Console.Tests
             consoleManager.CursorTop.Should().Be(consoleManager.BufferHeight - 1);
         }
 
-        // Pins the current, wrong placement; see #62. The output should be on line 2, below both lines of the entry.
         [Fact]
-        public void Currently_outputs_inside_a_long_query_line_entered_with_cursor_at_end()
+        public void Should_output_below_a_long_query_line_entered_with_cursor_at_end()
         {
             //Arrange
             var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(LongEntry().Append(ConsoleKey.Enter).ToArray()));
@@ -115,13 +114,12 @@ namespace Tharga.Console.Tests
             //Assert
             entry.Should().Be(new string('X', consoleManager.BufferWidth + 1));
             consoleManager.LineOutput[0].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
-            consoleManager.LineOutput[1].Should().Be("z");
-            consoleManager.LineOutput[2].Should().Be(new string('X', Constants.Prompt.Length + 1), "the rest of the entry is pushed below the output");
+            consoleManager.LineOutput[1].Should().Be(new string('X', Constants.Prompt.Length + 1));
+            consoleManager.LineOutput[2].Should().Be("z");
         }
 
-        // Pins the current, wrong placement; see #62. The output should be on line 2, below both lines of the entry.
         [Fact]
-        public void Currently_outputs_inside_a_long_query_line_entered_with_cursor_at_beginning()
+        public void Should_output_below_a_long_query_line_entered_with_cursor_at_beginning()
         {
             //Arrange
             var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(LongEntry().Append(ConsoleKey.Home).Append(ConsoleKey.Enter).ToArray()));
@@ -135,8 +133,26 @@ namespace Tharga.Console.Tests
             //Assert
             entry.Should().Be(new string('X', consoleManager.BufferWidth + 1));
             consoleManager.LineOutput[0].Should().Be(Constants.Prompt + new string('X', consoleManager.BufferWidth - Constants.Prompt.Length));
-            consoleManager.LineOutput[1].Should().Be("z");
-            consoleManager.LineOutput[2].Should().Be(new string('X', Constants.Prompt.Length + 1), "the rest of the entry is pushed below the output");
+            consoleManager.LineOutput[1].Should().Be(new string('X', Constants.Prompt.Length + 1));
+            consoleManager.LineOutput[2].Should().Be("z");
+        }
+
+        [Fact]
+        public void Should_keep_writing_below_a_finished_long_query_line()
+        {
+            //Arrange
+            var consoleManager = new FakeConsoleManager(new FakeKeyInputEngine(LongEntry().Append(ConsoleKey.Enter).ToArray()));
+            var console = new TestConsole(consoleManager);
+            new InputInstance(console, Constants.Prompt, null, CancellationToken.None).ReadLine<string>(null, true);
+
+            //Act
+            console.Output(new WriteEventArgs("z"));
+            console.Output(new WriteEventArgs("y"));
+
+            //Assert
+            consoleManager.LineOutput[2].Should().Be("z");
+            consoleManager.LineOutput[3].Should().Be("y");
+            consoleManager.CursorTop.Should().Be(4);
         }
 
         [Fact]

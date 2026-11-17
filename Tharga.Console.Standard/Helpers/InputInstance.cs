@@ -509,7 +509,7 @@ namespace Tharga.Console.Helpers
             {
                 if (_selection != null)
                 {
-                    _console.Output(new WriteEventArgs(null));
+                    FinishEntryLine();
                     var v = _selection as CommandTreeNode<T>;
                     response = v == null ? default(T) : v.Key;
                 }
@@ -521,7 +521,7 @@ namespace Tharga.Console.Helpers
                         try
                         {
                             response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
-                            _console.Output(new WriteEventArgs(null));
+                            FinishEntryLine();
                         }
                         catch (FormatException exception)
                         {
@@ -539,7 +539,7 @@ namespace Tharga.Console.Helpers
                             throw new EntryException("There are several matches to the entry.");
                         }
 
-                        _console.Output(new WriteEventArgs(null));
+                        FinishEntryLine();
                         response = items.Single().Key;
                     }
                 }
@@ -547,11 +547,20 @@ namespace Tharga.Console.Helpers
             else
             {
                 response = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(inputBuffer.ToString());
-                _console.Output(new WriteEventArgs(null));
+                FinishEntryLine();
             }
 
             _finished = true;
             return response;
+        }
+
+        // The line feed of a finished entry goes after the whole entry, wherever the cursor is, and the entry no longer counts as an input buffer. See #62.
+        private void FinishEntryLine()
+        {
+            MoveCursorToEnd(_startLocation, _inputBuffer);
+            _console.Output(new WriteEventArgs(null));
+            _layout.CurrentBufferLineCount = 0;
+            _layout.CursorLineOffset = 0;
         }
 
         private void InputBufferChangedEvent(object sender, InputBufferChangedEventArgs e)
