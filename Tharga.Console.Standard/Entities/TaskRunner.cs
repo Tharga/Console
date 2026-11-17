@@ -79,14 +79,14 @@ namespace Tharga.Console.Entities
                     Instance.Console.OutputError(exception);
                     throw;
                 }
-            }, _cancellationToken.Token);
+            });
         }
 
         public void Close()
         {
             _cancellationToken.Cancel();
             _autoResetEvent.Set();
-            _task.Wait();
+            _task?.Wait();
         }
     }
 }
